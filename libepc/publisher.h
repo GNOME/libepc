@@ -88,11 +88,12 @@ struct _EpcPublisher
   /*< private >*/
   GObject parent_instance;
   EpcPublisherPrivate *priv;
+
+  /*< public >*/
 };
 
 /**
  * EpcPublisherClass:
- * @parent_class: virtual methods of the base class
  *
  * Virtual methods of the #EpcPublisher class.
  */
@@ -100,6 +101,8 @@ struct _EpcPublisherClass
 {
   /*< private >*/
   GObjectClass parent_class;
+
+  /*< public >*/
 };
 
 GType                 epc_publisher_get_type             (void) G_GNUC_CONST;

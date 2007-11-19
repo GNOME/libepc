@@ -36,15 +36,31 @@ typedef struct _EpcPasswordDialog        EpcPasswordDialog;
 typedef struct _EpcPasswordDialogClass   EpcPasswordDialogClass;
 typedef struct _EpcPasswordDialogPrivate EpcPasswordDialogPrivate;
 
+/**
+ * EpcPasswordDialog:
+ *
+ * Public fields of the #EpcPasswordDialog class.
+ */
 struct _EpcPasswordDialog
 {
+  /*< private >*/
   GtkDialog parent_instance;
   EpcPasswordDialogPrivate *priv;
+
+  /*< public >*/
 };
 
+/**
+ * EpcPasswordDialogClass:
+ *
+ * Virtual methods of the #EpcPasswordDialog class.
+ */
 struct _EpcPasswordDialogClass
 {
+  /*< private >*/
   GtkDialogClass parent_class;
+
+  /*< public >*/
 };
 
 GType                 epc_password_dialog_get_type              (void) G_GNUC_CONST;

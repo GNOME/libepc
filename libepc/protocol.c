@@ -25,7 +25,7 @@
 /**
  * SECTION:protocol
  * @short_description: transport protocols
- * @see_also: #service-type
+ * @see_also: #epc_service_type_new
  * @include: libepc/protcol.h
  * @stability: Unstable
  *

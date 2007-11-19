@@ -22,6 +22,16 @@
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
 
+/**
+ * SECTION:password-dialog
+ * @short_description: common password dialog
+ * @include: libepc-ui/password-dialog.h
+ * @stability: Unstable
+ *
+ * The #EpcPasswordDialog provides an user interface
+ * for the most common authentication scenarios.
+ */
+
 enum
 {
   PROP_NONE,
@@ -32,6 +42,11 @@ enum
   PROP_REALM
 };
 
+/**
+ * EpcPasswordDialogPrivate:
+ *
+ * Private fields of the #EpcPasswordDialog class.
+ */
 struct _EpcPasswordDialogPrivate
 {
   GtkWidget *anonymous;
@@ -275,6 +290,18 @@ epc_password_dialog_class_init (EpcPasswordDialogClass *cls)
   g_type_class_add_private (cls, sizeof (EpcPasswordDialogClass));
 }
 
+/**
+ * epc_password_dialog_new:
+ * @title: title of the dialog, or %NULL
+ * @parent: transient parent of the dialog, or %NULL
+ * @realm: authentication realm, or %NULL
+ * @first_button_text: stock ID or text to go in first button, or %NULL
+ * @...: response ID for first button, then additional buttons, ending with NULL
+ *
+ * Creates a new #EpcPasswordDialog instance.
+ *
+ * Returns: The newly created #EpcEntropyWindow.
+ */
 GtkWidget*
 epc_password_dialog_new (const gchar    *title,
                          GtkWindow      *parent,
@@ -322,6 +349,19 @@ epc_password_dialog_new (const gchar    *title,
   return GTK_WIDGET (dialog);
 }
 
+/**
+ * epc_password_dialog_set_anonymous_allowed:
+ * @dialog: a #EpcPasswordDialog
+ * @allowed: the new anonymous authentication support flag
+ *
+ * Toggles anonymous authentication support. With anonymous authentication
+ * support an aditional checkbox for requesting anonymous authentication is
+ * shown. See #EpcPasswordDialog:anonymous-allowed for details.
+ *
+ * See also: #epc_password_dialog_set_anonymous
+ *
+ * Returns: %TRUE if anonymous authentication is supported.
+ */
 void
 epc_password_dialog_set_anonymous_allowed (EpcPasswordDialog *self,
 					   gboolean           allowed)
@@ -330,6 +370,19 @@ epc_password_dialog_set_anonymous_allowed (EpcPasswordDialog *self,
   g_object_set (self, "anonymous-allowed", allowed, NULL);
 }
 
+/**
+ * epc_password_dialog_get_anonymous_allowed:
+ * @dialog: a #EpcPasswordDialog
+ *
+ * Queries if anonymous authentication is supported. With anonymous
+ * authentication support an aditional checkbox for requesting anonymous
+ * authentication is shown. See #EpcPasswordDialog:anonymous-allowed for
+ * details.
+ *
+ * See also: #epc_password_dialog_is_anonymous
+ *
+ * Returns: %TRUE if anonymous authentication is supported.
+ */
 gboolean
 epc_password_dialog_get_anonymous_allowed (EpcPasswordDialog *self)
 {
@@ -337,6 +390,16 @@ epc_password_dialog_get_anonymous_allowed (EpcPasswordDialog *self)
   return GTK_WIDGET_VISIBLE (self->priv->anonymous);
 }
 
+/**
+ * epc_password_dialog_set_anonymous:
+ * @dialog: a #EpcPasswordDialog
+ * @anonymous: the new anonymous authentication state
+ *
+ * See also: #epc_password_dialog_set_anonymous_allowed
+ *
+ * Changes the anonymous authentication state.
+ * See #EpcPasswordDialog:anonymous for details.
+ */
 void
 epc_password_dialog_set_anonymous (EpcPasswordDialog *self,
                                    gboolean           anonymous)
@@ -345,6 +408,17 @@ epc_password_dialog_set_anonymous (EpcPasswordDialog *self,
   g_object_set (self, "anonymous", anonymous, NULL);
 }
 
+/**
+ * epc_password_dialog_is_anonymous:
+ * @dialog: a #EpcPasswordDialog
+ *
+ * Queries if anonymous authentication is requested.
+ * See #EpcPasswordDialog:anonymous for details.
+ *
+ * See also: #epc_password_dialog_get_anonymous_allowed
+ *
+ * Returns: %TRUE if anonymous authentication is requested.
+ */
 gboolean
 epc_password_dialog_is_anonymous (EpcPasswordDialog *self)
 {
@@ -353,6 +427,14 @@ epc_password_dialog_is_anonymous (EpcPasswordDialog *self)
     gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (self->priv->anonymous));
 }
 
+/**
+ * epc_password_dialog_set_username:
+ * @dialog: a #EpcPasswordDialog
+ * @username: the new username
+ *
+ * Changes the current user name of the dialog.
+ * See #EpcPasswordDialog:username for details.
+ */
 void
 epc_password_dialog_set_username (EpcPasswordDialog *self,
 				  const gchar       *username)
@@ -361,6 +443,15 @@ epc_password_dialog_set_username (EpcPasswordDialog *self,
   g_object_set (self, "username", username, NULL);
 }
 
+/**
+ * epc_password_dialog_get_username:
+ * @dialog: a #EpcPasswordDialog
+ *
+ * Queries the current user name of the dialog.
+ * See #EpcPasswordDialog:username for details.
+ *
+ * Returns: the current user name of the dialog.
+ */
 G_CONST_RETURN gchar*
 epc_password_dialog_get_username (EpcPasswordDialog *self)
 {
@@ -372,6 +463,14 @@ epc_password_dialog_get_username (EpcPasswordDialog *self)
   return gtk_entry_get_text (GTK_ENTRY (self->priv->username));
 }
 
+/**
+ * epc_password_dialog_set_password:
+ * @dialog: a #EpcPasswordDialog
+ * @password: the new password
+ *
+ * Changes the current password of the dialog.
+ * See #EpcPasswordDialog:password for details.
+ */
 void
 epc_password_dialog_set_password (EpcPasswordDialog *self,
 				  const gchar       *password)
@@ -380,6 +479,15 @@ epc_password_dialog_set_password (EpcPasswordDialog *self,
   g_object_set (self, "password", password, NULL);
 }
 
+/**
+ * epc_password_dialog_get_password:
+ * @dialog: a #EpcPasswordDialog
+ *
+ * Queries the current password of the dialog.
+ * See #EpcPasswordDialog:password for details.
+ *
+ * Returns: the current password of the dialog.
+ */
 G_CONST_RETURN gchar*
 epc_password_dialog_get_password (EpcPasswordDialog *self)
 {
@@ -391,6 +499,14 @@ epc_password_dialog_get_password (EpcPasswordDialog *self)
   return gtk_entry_get_text (GTK_ENTRY (self->priv->password));
 }
 
+/**
+ * epc_password_dialog_set_realm:
+ * @dialog: a #EpcPasswordDialog
+ * @realm: the new realm
+ *
+ * Changes the authentication realm the dialog shows.
+ * See #EpcPasswordDialog:realm for details.
+ */
 void
 epc_password_dialog_set_realm (EpcPasswordDialog *self,
 			       const gchar       *realm)
@@ -399,6 +515,15 @@ epc_password_dialog_set_realm (EpcPasswordDialog *self,
   g_object_set (self, "realm", realm, NULL);
 }
 
+/**
+ * epc_password_dialog_get_realm:
+ * @dialog: a #EpcPasswordDialog
+ *
+ * Queries the authentication realm of the dialog.
+ * See #EpcPasswordDialog:realm for details.
+ *
+ * Returns: the current realm of the dialog.
+ */
 G_CONST_RETURN gchar*
 epc_password_dialog_get_realm (EpcPasswordDialog *self)
 {

@@ -63,11 +63,12 @@ struct _EpcDispatcher
   /*< private >*/
   GObject parent_instance;
   EpcDispatcherPrivate *priv;
+
+  /*< public >*/
 };
 
 /**
  * EpcDispatcherClass:
- * @parent_class: virtual methods of the base class
  *
  * Virtual methods of the #EpcDispatcher class.
  */
@@ -75,6 +76,8 @@ struct _EpcDispatcherClass
 {
   /*< private >*/
   GObjectClass parent_class;
+
+  /*< public >*/
 };
 
 GType                 epc_dispatcher_get_type            (void) G_GNUC_CONST;

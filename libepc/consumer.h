@@ -54,6 +54,8 @@ struct _EpcConsumer
   /*< private >*/
   GObject parent_instance;
   EpcConsumerPrivate *priv;
+
+  /*< public >*/
 };
 
 /**

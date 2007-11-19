@@ -1,5 +1,21 @@
 2007-11-12  Mathias Hasselmann  <mathias@openismus.com>
 
+	Document libepc-ui widgets.
+
+	* docs/reference/libepc/libepc-docs.xml: Add libepc-ui sections.
+	* docs/reference/libepc/libepc-sections.txt: Add libepc-ui symbols.
+	* docs/reference/libepc/Makefile.am: Add libepc-ui.
+	* libepc-ui/entropy-window.c, libepc-ui/entropy-window.h:
+	Add API documentation and rename EpcEntropyProgress to EpcEntropyWindow.
+	* libepc-ui/password-dialog.c, libepc-ui/password-dialog.h: Add docs.
+	* libepc/consumer.h, libepc/dispatcher.h, libepc/publisher.h:
+	Add /*< public >*/ annotations to make gtk-doc happy.
+	* libepc/protocol.c: Link to epc_service_type_new.
+	* Makefile.am, examples/server-credentials.c:
+	Rename EpcEntropyProgress to EpcEntropyWindow.
+
+2007-11-12  Mathias Hasselmann  <mathias@openismus.com>
+
 	Finish API documentation.
 
 	* libepc/consumer.c, libepc/dispatcher.c, libepc/dispatcher.h,

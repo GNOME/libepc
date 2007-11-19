@@ -155,4 +155,47 @@ epc_tls_set_private_key_hooks
 epc_tls_error_quark
 </SECTION>
 
+<SECTION>
+<FILE>password-dialog</FILE>
+EpcPasswordDialogClass
+EpcPasswordDialogPrivate
+<TITLE>EpcPasswordDialog</TITLE>
+EpcPasswordDialog
+epc_password_dialog_new
+epc_password_dialog_set_anonymous_allowed
+epc_password_dialog_get_anonymous_allowed
+epc_password_dialog_set_anonymous
+epc_password_dialog_is_anonymous
+epc_password_dialog_set_username
+epc_password_dialog_get_username
+epc_password_dialog_set_password
+epc_password_dialog_get_password
+epc_password_dialog_set_realm
+epc_password_dialog_get_realm
+<SUBSECTION Standard>
+EPC_PASSWORD_DIALOG
+EPC_IS_PASSWORD_DIALOG
+EPC_TYPE_PASSWORD_DIALOG
+epc_password_dialog_get_type
+EPC_PASSWORD_DIALOG_CLASS
+EPC_IS_PASSWORD_DIALOG_CLASS
+EPC_PASSWORD_DIALOG_GET_CLASS
+</SECTION>
 
+<SECTION>
+<FILE>entropy-window</FILE>
+EpcEntropyWindowClass
+EpcEntropyWindowPrivate
+<TITLE>EpcEntropyWindow</TITLE>
+EpcEntropyWindow
+epc_entropy_window_new
+epc_entropy_window_install
+<SUBSECTION Standard>
+EPC_ENTROPY_WINDOW
+EPC_IS_ENTROPY_WINDOW
+EPC_TYPE_ENTROPY_WINDOW
+epc_entropy_window_get_type
+EPC_ENTROPY_WINDOW_CLASS
+EPC_IS_ENTROPY_WINDOW_CLASS
+EPC_ENTROPY_WINDOW_GET_CLASS
+</SECTION>
