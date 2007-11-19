@@ -10,8 +10,8 @@ lib_LTLIBRARIES = \
 noinst_LTLIBRARIES = \
 	tests/libepc-test.la
 noinst_PROGRAMS = \
-	tests/test-publisher \
-	tests/test-consumer \
+	examples/test-publisher \
+	examples/test-consumer \
 	$(TESTS)
 TESTS = \
 	tests/test-dispatcher-simple-service \
@@ -34,15 +34,14 @@ tests_libepc_test_la_SOURCES = \
 	tests/framework.c \
 	tests/framework.h
 
-tests_test_publisher_LDADD = libepc/libepc.la
+examples_test_publisher_LDADD = libepc/libepc.la
+examples_test_consumer_CFLAGS = $(AM_CFLAGS) $(AVAHIUI_CFLAGS)
+examples_test_consumer_LDADD = libepc/libepc.la $(AVAHIUI_LIBS)
 
 tests_test_dispatcher_simple_service_LDADD = libepc/libepc.la tests/libepc-test.la
 tests_test_dispatcher_multiple_services_LDADD = libepc/libepc.la tests/libepc-test.la
 tests_test_dispatcher_subtypes_LDADD = libepc/libepc.la tests/libepc-test.la
 tests_test_dispatcher_local_collision_LDADD = libepc/libepc.la tests/libepc-test.la
-
-tests_test_consumer_CFLAGS = $(AM_CFLAGS) $(AVAHIUI_CFLAGS)
-tests_test_consumer_LDADD = libepc/libepc.la $(AVAHIUI_LIBS)
 
 libepc_includedir = $(includedir)/libepc
 pkgconfigdir = $(libdir)/pkgconfig

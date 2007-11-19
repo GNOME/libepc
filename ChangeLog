@@ -1,5 +1,13 @@
 2007-11-05  Mathias Hasselmann  <mathias@openismus.com>
 
+	Move examples into separate folder.
+
+	* examples/.gitignore, Makefile.am, tests/.gitignore:
+	Moved test-consumer and test-publisher from tests to examples.
+	* tests/test-consumer.c, tests/test-publisher.c: Moved to examples.
+
+2007-11-05  Mathias Hasselmann  <mathias@openismus.com>
+
 	Document epc_publisher_add_handler and related API.
 
 	* docs/reference/libepc/libepc-sections.txt:

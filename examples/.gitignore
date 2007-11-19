@@ -1,0 +1,5 @@
+*.o
+.dirstamp
+
+test-consumer
+test-publisher
