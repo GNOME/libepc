@@ -1,5 +1,14 @@
 2007-11-14  Mathias Hasselmann  <mathias@openismus.com>
 
+	Give EpcConsumer and EpcPublisher separate sections.
+	Give separete files for EpcPublisher helper structures.
+
+	* docs/reference/libepc/libepc-docs.xml,
+	docs/reference/libepc/libepc-sections.txt: Reorganize sections.
+	* libepc/publisher.c: Document EpcAuthContext and EpcContents section.
+
+2007-11-14  Mathias Hasselmann  <mathias@openismus.com>
+
 	Rename EpcContent: "Inhalt" is "contents" with "s", not "content".
 
 	* docs/reference/libepc/libepc-sections.txt,

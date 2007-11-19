@@ -34,9 +34,88 @@
 #include <string.h>
 
 /**
+ * SECTION:auth-context
+ * @short_description: manage authentication
+ * @see_also: #EpcPublisher
+ * @include: libepc/publish.h
+ * @stability: Unstable
+ *
+ * With each request the #EpcPublisher verify access authorization by calling
+ * the #EpcAuthHandler registered for the key in question. Information about
+ * that process is stored in the #EpcAuthContext structure.
+ *
+ * To register an authentication handler call #epc_publisher_set_auth_handler:
+ *
+ * <example id="register-auth-handler">
+ *  <title>Register an authentication handler</title>
+ *  <programlisting>
+ *   epc_publisher_set_auth_handler (publisher, "sensitive-key",
+ *                                   my_auth_handler, my_object);
+ *  </programlisting>
+ * </example>
+ *
+ * To verify that the user password provided password matches
+ * the expected one use #epc_auth_context_check_password:
+ *
+ * <example id="check-password">
+ *  <title>Verify a password</title>
+ *  <programlisting>
+ *   static gboolean
+ *   my_auth_handler (EpcAuthContext *context,
+ *                    const gchar    *username,
+ *                    gpointer        user_data)
+ *   {
+ *     MyObject *self = user_data;
+ *     const gchar *expected_password;
+ *     const gchar *requested_key;
+ *
+ *     requested_key = epc_auth_context_get_key (context);
+ *     expected_password = lookup_password (self, requested_key);
+ *
+ *     return epc_auth_context_check_password (context, expected_password);
+ *   }
+ *  </programlisting>
+ * </example>
+ */
+
+/**
+ * SECTION:contents
+ * @short_description: custom contents
+ * @see_also: #EpcPublisher
+ * @include: libepc/publish.h
+ * @stability: Unstable
+ *
+ * #EpcContents is a reference counted structure for storing custom contents.
+ * To publish custom content call #epc_publisher_add_handler to register a
+ * #EpcContentsHandler like this:
+ *
+ * <example id="custom-contents-handler">
+ *  <title>A custom contents handler</title>
+ *  <programlisting>
+ *   static EpcContents*
+ *   timestamp_handler (EpcPublisher *publisher G_GNUC_UNUSED,
+ *                      const gchar  *key G_GNUC_UNUSED,
+ *                      gpointer      data)
+ *   {
+ *     time_t now = time (NULL);
+ *     struct tm *tm = localtime (&now);
+ *     const gchar *format = data;
+ *     gsize length = 60;
+ *     gchar *buffer;
+ *
+ *     buffer = g_malloc (length);
+ *     length = strftime (buffer, length, format, tm);
+ *
+ *     return epc_content_new ("text/plain", buffer, length);
+ *   }
+ *  </programlisting>
+ * </example>
+ */
+
+/**
  * SECTION:publisher
  * @short_description: easily publish values
- * @see_also: #EpcConsumer
+ * @see_also: #EpcConsumer, #EpcAuthContext, #EpcContentsHandler
  * @include: libepc/publish.h
  * @stability: Unstable
  *

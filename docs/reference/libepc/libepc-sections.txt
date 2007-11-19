@@ -27,55 +27,66 @@ EPC_DISPATCHER_GET_CLASS
 
 <SECTION>
 <FILE>publisher</FILE>
-EpcAuthContext
-EpcAuthHandler
-EpcContents
-EpcContentsHandler
 EpcPublisherPrivate
 EpcPublisherClass
 <TITLE>EpcPublisher</TITLE>
 EpcPublisher
 epc_publisher_new
-epc_publisher_set_protocol
-epc_publisher_set_service_name
-epc_publisher_set_credentials
-epc_publisher_get_protocol
-epc_publisher_get_service_name
-epc_publisher_get_service_domain
-epc_publisher_get_certificate_file
-epc_publisher_get_private_key_file
 epc_publisher_add
 epc_publisher_add_file
 epc_publisher_add_handler
-epc_publisher_set_auth_handler
 epc_publisher_run
 epc_publisher_run_async
 epc_publisher_quit
-<SUBSECTION EpcAuthContext>
+
+epc_publisher_set_auth_handler
+epc_publisher_set_credentials
+epc_publisher_set_protocol
+epc_publisher_set_service_name
+
+epc_publisher_get_certificate_file
+epc_publisher_get_private_key_file
+epc_publisher_get_protocol
+epc_publisher_get_service_name
+epc_publisher_get_service_domain
+
+<SUBSECTION Standard>
+EPC_IS_PUBLISHER
+EPC_IS_PUBLISHER_CLASS
+EPC_PUBLISHER
+EPC_PUBLISHER_CLASS
+EPC_PUBLISHER_GET_CLASS
+EPC_TYPE_PUBLISHER
+epc_publisher_get_type
+</SECTION>
+
+<SECTION>
+<FILE>auth-context</FILE>
+EpcAuthHandler
+<TITLE>EpcAuthContext</TITLE>
+EpcAuthContext
 epc_auth_context_check_password
 epc_auth_context_get_key
 epc_auth_context_get_publisher
-<SUBSECTION EpcContents>
+</SECTION>
+
+<SECTION>
+<FILE>contents</FILE>
+EpcContentsHandler
+<TITLE>EpcContents</TITLE>
+EpcContents
 epc_contents_new
 epc_contents_ref
 epc_contents_unref
-<SUBSECTION Standard>
-EPC_PUBLISHER
-EPC_IS_PUBLISHER
-EPC_TYPE_PUBLISHER
-epc_publisher_get_type
-EPC_PUBLISHER_CLASS
-EPC_IS_PUBLISHER_CLASS
-EPC_PUBLISHER_GET_CLASS
 </SECTION>
 
 <SECTION>
 <FILE>consumer</FILE>
+EPC_CONSUMER_DEFAULT_TIMEOUT
+EPC_HTTP_ERROR
 EpcConsumerPrivate
 EpcConsumerClass
 <TITLE>EpcConsumer</TITLE>
-EPC_HTTP_ERROR
-EPC_CONSUMER_DEFAULT_TIMEOUT
 EpcConsumer
 epc_consumer_new
 epc_consumer_new_for_name
@@ -86,12 +97,12 @@ epc_consumer_resolve_publisher
 epc_consumer_lookup
 <SUBSECTION Standard>
 EPC_CONSUMER
+EPC_CONSUMER_CLASS
+EPC_CONSUMER_GET_CLASS
 EPC_IS_CONSUMER
+EPC_IS_CONSUMER_CLASS
 EPC_TYPE_CONSUMER
 epc_consumer_get_type
-EPC_CONSUMER_CLASS
-EPC_IS_CONSUMER_CLASS
-EPC_CONSUMER_GET_CLASS
 epc_http_error_quark
 </SECTION>
 
@@ -176,13 +187,13 @@ epc_password_dialog_set_realm
 epc_password_dialog_get_realm
 epc_password_dialog_attach
 <SUBSECTION Standard>
-EPC_PASSWORD_DIALOG
 EPC_IS_PASSWORD_DIALOG
+EPC_IS_PASSWORD_DIALOG_CLASS
+EPC_PASSWORD_DIALOG
+EPC_PASSWORD_DIALOG_CLASS
+EPC_PASSWORD_DIALOG_GET_CLASS
 EPC_TYPE_PASSWORD_DIALOG
 epc_password_dialog_get_type
-EPC_PASSWORD_DIALOG_CLASS
-EPC_IS_PASSWORD_DIALOG_CLASS
-EPC_PASSWORD_DIALOG_GET_CLASS
 </SECTION>
 
 <SECTION>
@@ -195,10 +206,10 @@ epc_entropy_window_new
 epc_entropy_window_install
 <SUBSECTION Standard>
 EPC_ENTROPY_WINDOW
+EPC_ENTROPY_WINDOW_CLASS
+EPC_ENTROPY_WINDOW_GET_CLASS
 EPC_IS_ENTROPY_WINDOW
+EPC_IS_ENTROPY_WINDOW_CLASS
 EPC_TYPE_ENTROPY_WINDOW
 epc_entropy_window_get_type
-EPC_ENTROPY_WINDOW_CLASS
-EPC_IS_ENTROPY_WINDOW_CLASS
-EPC_ENTROPY_WINDOW_GET_CLASS
 </SECTION>

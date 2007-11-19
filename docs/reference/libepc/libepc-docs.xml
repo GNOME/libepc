@@ -11,7 +11,7 @@
       <holder><ulink type="http" url="http://www.openismus.com/">Openismus GmbH</ulink></holder>
     </copyright>
 
-    <legalnotice>
+    <legalnotice id="legalnotice">
       <para>
         This library is free software; you can redistribute it and/or modify it under the terms
         of the <citetitle>GNU Lesser General Public License</citetitle> as published by the
@@ -52,16 +52,27 @@
     </abstract>
   </bookinfo>
 
-  <chapter id="publish-consume">
-    <title>Publish and Consume</title>
-    <xi:include href="xml/publisher.xml"/>
+  <chapter id="consuming">
+    <title>Consuming</title>
     <xi:include href="xml/consumer.xml"/>
     <xi:include href="xml/protocol.xml"/>
     <xi:include href="xml/service-type.xml"/>
 
     <para>
-     This objects and functions define the public API of the Easy Publish and
-     Consume library. To use them link with the <filename>libepc</filename>.
+     This objects and functions are use to consume Easy Publish and Consume resources.
+     To use them link with the <filename>libepc</filename>.
+    </para>
+  </chapter>
+
+  <chapter id="publishing">
+    <title>Publishing</title>
+    <xi:include href="xml/auth-context.xml"/>
+    <xi:include href="xml/contents.xml"/>
+    <xi:include href="xml/publisher.xml"/>
+
+    <para>
+     This objects and functions are use to publish Easy Publish and Consume resources.
+     To use them link with the <filename>libepc</filename>.
     </para>
   </chapter>
 
