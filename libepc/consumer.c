@@ -633,7 +633,7 @@ epc_consumer_class_init (EpcConsumerClass *cls)
    * #gtk_main). So to reliably consume this signal connect to it directly
    * after creating the #EpcConsumer.
    *
-   * See also: #epc_consumer_resolve_publisher, #epc_consumer_get_pulisher_resolved
+   * See also: #epc_consumer_resolve_publisher, #epc_consumer_is_pulisher_resolved
    */
   signals[SIGNAL_PUBLISHER_RESOLVED] = g_signal_new ("publisher-resolved", EPC_TYPE_CONSUMER, G_SIGNAL_RUN_FIRST,
                                                      G_STRUCT_OFFSET (EpcConsumerClass, publisher_resolved), NULL, NULL,
@@ -682,18 +682,8 @@ epc_consumer_new (EpcProtocol  protocol,
  * used for searching the #EpcPublisher is derived from the application's
  * program name as returned by #g_get_prgname.
  *
- * For better control of the search process have a look at
- * #epc_consumer_new_for_name_full.
- *
- * <note><para>
- *  The connection is not established until a function retrieving
- *  data, like for instance #epc_consumer_lookup, is called.
- *
- *  Explicitly call #epc_consumer_resolve_publisher or connect to
- *  the #EpcConsumer::publisher-resolved signal, when your application
- *  needs reliable information about the existance of the #EpcPublisher
- *  described by @name.
- * </para></note>
+ * See #epc_consumer_new_for_name_full for additional notes
+ * and a method allowing better control over the search process.
  *
  * Returns: The newly created #EpcConsumer object
  */
@@ -712,6 +702,21 @@ epc_consumer_new_for_name (const gchar *name)
  * Creates a new #EpcConsumer object and associates it with the #EpcPublisher
  * announcing itself with @name on @domain. The DNS-SD service of the
  * #EpcPublisher is derived from @application using #epc_service_type_new.
+ *
+ * <note><para>
+ *  This function shall be used to re-connect to a formerly used #EpcPublisher,
+ *  selected for instance from a list for recently used services. Therefore
+ *  using #epc_consumer_new_for_name_full is a quite optimistic approach for
+ *  contacting a publisher: You call it without really knowing if the
+ *  publisher you requested really exists. You only know that it existed
+ *  in the past when you added it to your list of recently used publishers,
+ *  but you do not know if it still exists.
+ *
+ *  To let your users choose from an up-to-date service list, you have to
+ *  use a dynamic service list as provided by avahi-ui for choosing a service
+ *  and pass the information this widget provides (hostname, port, protocol)
+ *  to #epc_consumer_new.
+ * </para></note>
  *
  * <note><para>
  *  The connection is not established until a function retrieving
