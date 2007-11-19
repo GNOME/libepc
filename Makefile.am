@@ -4,6 +4,8 @@ else
 AVAHI_UI_DEFINES =
 endif
 
+LIBEPC_UI_CFLAGS += $(AVAHI_UI_DEFINES)
+
 AM_CFLAGS = \
 	-Wall \
 	-DGTK_DISABLE_DEPRECATED=1 \
@@ -16,9 +18,10 @@ lib_LTLIBRARIES = \
 noinst_LTLIBRARIES = \
 	tests/libepc-tests.la
 noinst_PROGRAMS = \
-	examples/test-publisher \
-	examples/test-consumer \
 	examples/list-resources \
+	examples/lookup-resource \
+	examples/simple-publisher \
+	examples/consumer-ui \
 	examples/server-credentials \
 	$(TESTS)
 TESTS = \
@@ -92,14 +95,17 @@ libepc_libepc_la_LDFLAGS = $(LIBEPC_LIBS)
 libepc_ui_libepc_ui_la_CFLAGS = $(AM_CFLAGS) $(LIBEPC_UI_CFLAGS) -DGETTEXT_PACKAGE=\"libepc-ui\"
 libepc_ui_libepc_ui_la_LDFLAGS = $(LIBEPC_UI_LIBS) libepc/libepc.la
 
-examples_test_publisher_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-examples_test_publisher_LDADD = libepc/libepc.la
-examples_test_consumer_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS) $(AVAHI_UI_CFLAGS) $(AVAHI_UI_DEFINES)
-examples_test_consumer_LDADD = libepc/libepc.la libepc-ui/libepc-ui.la $(AVAHI_UI_LIBS)
-examples_server_credentials_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS)
-examples_server_credentials_LDADD = libepc/libepc.la libepc-ui/libepc-ui.la
-examples_list_resources_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-examples_list_resources_LDADD = libepc/libepc.la
+examples_list_resources_CFLAGS 			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+examples_list_resources_LDADD 			= libepc/libepc.la
+examples_lookup_resource_CFLAGS 		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+examples_lookup_resource_LDADD 			= libepc/libepc.la
+examples_simple_publisher_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+examples_simple_publisher_LDADD			= libepc/libepc.la
+
+examples_consumer_ui_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS) $(AVAHI_UI_CFLAGS)
+examples_consumer_ui_LDADD			= libepc/libepc.la libepc-ui/libepc-ui.la $(AVAHI_UI_LIBS)
+examples_server_credentials_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS)
+examples_server_credentials_LDADD		= libepc/libepc.la libepc-ui/libepc-ui.la
 
 tests_libepc_tests_la_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 

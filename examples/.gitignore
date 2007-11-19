@@ -1,7 +1,8 @@
 *.o
 .dirstamp
 
-test-consumer
-test-publisher
+consumer-ui
 list-resources
+lookup-resource
+simple-publisher
 server-credentials

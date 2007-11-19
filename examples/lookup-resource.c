@@ -1,37 +1,34 @@
-/* This example demonstrates listing of Easy Publisher resources.
- * Expects file globbing patterns describing the keys to list on command line.
- * Without any globbing pattern all resources are listed.
+/* This example demonstrates looking up Easy Publisher resources.
+ * Expects the keys of the resources to lookup on command line.
+ * Without any keys the `date-time' resource is looked up.
  */
 #include <libepc/consumer.h>
 #include <glib/gi18n.h>
 
 static void
-list (EpcConsumer *consumer,
-      const gchar *pattern)
+lookup (EpcConsumer *consumer,
+        const gchar *key)
 {
   GError *error = NULL;
-  GList *items, *iter;
+  gchar *value = NULL;
+  gsize length = 0;
 
-  /* retrieve resources matching @pattern */
+  /* retrieve the resource matching @key */
 
-  g_print ("listing `%s':\n", pattern ? pattern : "*");
-  items = epc_consumer_list (consumer, pattern, &error);
+  g_print ("looking up `%s':\n", key);
+  value = epc_consumer_lookup (consumer, key, &length, &error);
 
-  /* list the resources matched */
+  /* print the retreived value */
 
-  if (error)
-    g_print ("- failed: %s\n", error->message);
-  else if (NULL == items)
-    g_print ("- no items found\n");
+  if (value)
+    g_print ("%s\n%d byte(s)\n", value, length);
   else
-    for (iter = items; iter; iter = iter->next)
-      g_print ("- item: `%s'\n", (const gchar*) iter->data);
+    g_print ("%s: %s\n", key, error->message);
 
   /* release resources */
 
   g_clear_error (&error);
-  g_list_foreach (items, (GFunc) g_free, NULL);
-  g_list_free (items);
+  g_free (value);
 }
 
 int
@@ -67,7 +64,7 @@ main (int   argc,
 
   /* Parse command line options. */
 
-  options = g_option_context_new (_("[PATTERNS...] - list Easy Publisher resources"));
+  options = g_option_context_new (_("[KEYS...] - looks up Easy Publisher resources"));
   g_option_context_add_main_entries (options, entries, NULL);
 
   if (!g_option_context_parse (options, &argc, &argv, &error))
@@ -79,15 +76,15 @@ main (int   argc,
 
   g_option_context_free (options);
 
-  /* Create an consumer and list the request items. */
+  /* Create an consumer and lookup the request items. */
 
   consumer = epc_consumer_new_for_name_full (service_name, application, domain);
 
   if (argc > 1)
     for (i = 1; i < argc; ++i)
-      list (consumer, argv[i]);
+      lookup (consumer, argv[i]);
   else
-    list (consumer, NULL);
+    lookup (consumer, "date-time");
 
   /* Release resources. */
 

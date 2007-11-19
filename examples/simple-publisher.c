@@ -25,18 +25,18 @@ timestamp_handler (EpcPublisher *publisher G_GNUC_UNUSED,
                    const gchar  *key G_GNUC_UNUSED,
                    gpointer      data)
 {
+  time_t now = time (NULL);
+  struct tm *tm = localtime (&now);
   const gchar *format = data;
-  gsize bufsize = 60;
+  gsize length = 60;
   gchar *buffer;
-  struct tm *tm;
-  time_t now;
 
-  now = time (NULL);
-  tm = localtime (&now);
-  buffer = g_malloc (bufsize);
-  strftime (buffer, bufsize, format, tm);
+  /* Create custom content */
 
-  return epc_contents_new ("text/plain", buffer, strlen (buffer));
+  buffer = g_malloc (length);
+  length = strftime (buffer, length, format, tm);
+
+  return epc_contents_new ("text/plain", buffer, length);
 }
 
 static gboolean
@@ -44,6 +44,8 @@ authentication_handler (EpcAuthContext *context,
                         const gchar    *user_name,
                         gpointer        user_data)
 {
+  /* Check if he password supplied matches @user_data */
+
   return
     NULL != user_name &&
     g_str_equal (user_name, g_get_user_name ()) &&
@@ -60,6 +62,8 @@ parse_protocol (const gchar *option G_GNUC_UNUSED,
   GEnumValue *result;
   gchar *lower;
 
+  /* Look up @text in EpcProtocol enumeration */
+
   if (G_UNLIKELY (NULL == cls))
     cls = g_type_class_ref (EPC_TYPE_PROTOCOL);
 
@@ -69,6 +73,8 @@ parse_protocol (const gchar *option G_GNUC_UNUSED,
 
   if (NULL == result || EPC_PROTOCOL_UNKNOWN == result->value)
     {
+      /* Report parsing error */
+
       g_set_error (error,
                    G_OPTION_ERROR_FAILED,
                    G_OPTION_ERROR_BAD_VALUE,
@@ -87,23 +93,26 @@ int
 main (int   argc,
       char *argv[])
 {
-  static GOptionEntry entries[] =
-    {
-      { "protocol", 'p', 0, G_OPTION_ARG_CALLBACK, parse_protocol, N_("Transport protocol"), N_("PROTOCOL") },
-      { NULL, 0, 0, 0, NULL, NULL, NULL }
-    };
-
   EpcPublisher *publisher;
   GOptionContext *options;
   GError *error = NULL;
 
-  /* Initialize the toolkit.
-   */
+  /* Declare command line options. */
+
+  static GOptionEntry entries[] =
+    {
+      { "protocol", 'p', 0, G_OPTION_ARG_CALLBACK, parse_protocol,
+	N_("Transport protocol"), N_("PROTOCOL") },
+      { NULL, 0, 0, 0, NULL, NULL, NULL }
+    };
+
+  /* Initialize the toolkit. */
+
   g_thread_init (NULL);
   g_type_init ();
 
-  /* Parse command line options.
-   */
+  /* Parse command line options. */
+
   options = g_option_context_new (NULL);
   g_option_context_add_main_entries (options, entries, NULL);
 
@@ -116,16 +125,16 @@ main (int   argc,
 
   g_option_context_free (options);
 
-  /* Create a new publisher.
-   */
+  /* Create a new publisher. */
+
   publisher = epc_publisher_new ("Easy Publisher Test", NULL);
   epc_publisher_set_protocol (publisher, protocol);
 
   if (1 == argc)
     {
       /* Publish some default values,
-       * as no arguments are passed on the command line.
-       */
+       * as no arguments are passed on the command line. */
+
       epc_publisher_add (publisher, "test", "value", -1);
       epc_publisher_add_file (publisher, "source-code", __FILE__);
       epc_publisher_add_handler (publisher, "date", timestamp_handler, "%x", NULL);
@@ -142,8 +151,8 @@ main (int   argc,
     {
       /* Publish the values passed on the command line. Each argument has the
        * form "key=value". When a key is prefix with the string "file:" the
-       * file of the name passed as value is published.
-       */
+       * file of the name passed as value is published. */
+
       int i;
 
       for (i = 1; i < argc; ++i)
@@ -160,8 +169,8 @@ main (int   argc,
         }
     }
 
-  /* Actually run the publisher.
-   */
+  /* Actually run the publisher. */
+
   epc_publisher_run (publisher);
   g_object_unref (publisher);
 
