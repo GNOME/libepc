@@ -584,7 +584,7 @@ epc_consumer_class_init (EpcConsumerClass *cls)
    * @username: return location for the username
    * @password: return location for the password
    *
-   * Emitted when the credentials provided by the application to the #
+   * Emitted when the credentials provided by the application to the
    * authenticate signal have failed. This gives the application a second
    * chance to provide authentication credentials. If the new credentials
    * also fail, #EpcConsumer will emit reauthenticate again, and will

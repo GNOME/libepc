@@ -1,5 +1,9 @@
 2007-11-15  Mathias Hasselmann  <mathias@openismus.com>
 
+	Remove a bogous hash sign from API documentation.
+
+2007-11-15  Mathias Hasselmann  <mathias@openismus.com>
+
 	Further discussion of epc_consumer_new_for_name.
 
 	* libepc/consumer.c: Discuss epc_consumer_new_for_name.
