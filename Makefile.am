@@ -75,14 +75,27 @@ libepc_includedir = $(includedir)/libepc/libepc
 libepc_ui_includedir = $(includedir)/libepc/libepc-ui
 pkgconfigdir = $(libdir)/pkgconfig
 
--include Makefile.local
-
-TESTS_ENVIRONMENT = tests/test-runner.sh
 DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
-SUBDIRS = docs/reference/libepc
+TESTS_ENVIRONMENT = tests/test-runner.sh
+
+all-local:
+	cd docs/reference/libepc && $(MAKE) all
+clean-local:
+	cd docs/reference/libepc && $(MAKE) clean
+dist-hook:
+	cd docs/reference/libepc && $(MAKE) dist
+docs:
+	cd docs/reference/libepc && $(MAKE) docs
+install-data-local:
+	cd docs/reference/libepc && $(MAKE) install-data
+maintainer-clean-local:
+	cd docs/reference/libepc && $(MAKE) maintainer-clean
+uninstall-local:
+	cd docs/reference/libepc && $(MAKE) uninstall
 
 libepc/marshal.h: libepc/marshal.list
 	$(GLIB_GENMARSHAL) $< --header --prefix=_epc_marshal > $@
 libepc/marshal.c: libepc/marshal.list
 	$(GLIB_GENMARSHAL) $< --body --prefix=_epc_marshal > $@
 
+-include Makefile.local

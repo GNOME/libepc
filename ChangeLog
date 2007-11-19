@@ -1,5 +1,11 @@
 2007-11-06  Mathias Hasselmann  <mathias@openismus.com>
 
+	Prevent that make tries to build API docs before building the library.
+
+	* Makefile.am: Explicitly list the rules of gtk-doc.make.
+
+2007-11-06  Mathias Hasselmann  <mathias@openismus.com>
+
 	Prevent that repeated calls of epc_test_quit kills the EpcShell.
 
 	* libepc/shell.c: Trace epc_shell_ref/unref when EPC_DEBUG is set.
