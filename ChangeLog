@@ -1,5 +1,13 @@
 2007-11-06  Mathias Hasselmann  <mathias@openismus.com>
 
+	Prevent that repeated calls of epc_test_quit kills the EpcShell.
+
+	* libepc/shell.c: Trace epc_shell_ref/unref when EPC_DEBUG is set.
+	* tests/framework.c: Try to call epc_shell_unref only once.
+	* tests/test-dispatcher-simple-service.c: Your changes...
+
+2007-11-06  Mathias Hasselmann  <mathias@openismus.com>
+
 	Remove g_debug calls in test-consumer-by-name.
 
 	* tests/test-consumer-by-name.c: Remove g_debug calls.

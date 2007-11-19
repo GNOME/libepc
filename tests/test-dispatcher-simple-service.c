@@ -23,6 +23,11 @@ service_browser_cb (AvahiServiceBrowser     *browser G_GNUC_UNUSED,
       type && g_str_equal (type, test_type))
     {
       epc_test_pass (EPC_TEST_MASK_ALL);
+
+      /* This epc_test_quit is not needed to reach the primary goal of this
+       * test since epc_test_pass should call it, but it checks under real
+       * conditionas that repeated calls of epc_test_quit work properly.
+       */
       epc_test_quit ();
     }
 }

@@ -58,17 +58,20 @@ epc_test_quit (void)
 
   g_slist_foreach (epc_test_service_browsers,
                    (GFunc) avahi_service_browser_free, NULL);
+  epc_test_service_browsers = NULL;
 
   if (epc_test_client)
-    avahi_client_free (epc_test_client);
+    {
+      avahi_client_free (epc_test_client);
+      epc_test_client = NULL;
+      epc_shell_unref ();
+    }
+
   if (epc_test_loop)
-    g_main_loop_unref (epc_test_loop);
-
-  epc_shell_unref ();
-
-  epc_test_service_browsers = NULL;
-  epc_test_client = NULL;
-  epc_test_loop = NULL;
+    {
+      g_main_loop_unref (epc_test_loop);
+      epc_test_loop = NULL;
+    }
 }
 
 void

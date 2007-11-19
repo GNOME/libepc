@@ -72,11 +72,17 @@ epc_shell_ref (void)
 
       g_module_close (module);
     }
+
+  if (G_UNLIKELY (_epc_debug))
+    g_debug ("%s: %d", G_STRFUNC, epc_shell.ref_count);
 }
 
 void
 epc_shell_unref (void)
 {
+  if (G_UNLIKELY (_epc_debug))
+    g_debug ("%s: %d", G_STRFUNC, epc_shell.ref_count);
+
   if (g_atomic_int_dec_and_test (&epc_shell.ref_count))
     {
       g_assert (NULL != epc_shell.poll);
