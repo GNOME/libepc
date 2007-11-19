@@ -46,12 +46,11 @@
  */
 
 #include "dispatcher.h"
+#include "avahi-shell.h"
 
 #include <avahi-client/publish.h>
 #include <avahi-common/alternative.h>
 #include <avahi-common/error.h>
-#include <avahi-glib/glib-malloc.h>
-#include <avahi-glib/glib-watch.h>
 
 #include <string.h>
 
@@ -89,7 +88,6 @@ static gboolean epc_debug = FALSE;
 struct _EpcDispatcherPrivate
 {
   gchar *name;
-  AvahiGLibPoll *poll;
   AvahiClient *client;
   AvahiIfIndex interface;
   AvahiProtocol protocol;
@@ -276,8 +274,10 @@ epc_service_new (EpcDispatcher *dispatcher,
 }
 
 static void
-epc_service_free (EpcService *self)
+epc_service_free (gpointer data)
 {
+  EpcService *self = data;
+
   avahi_entry_group_free (self->group);
   avahi_string_list_free (self->details);
 
@@ -376,8 +376,6 @@ epc_dispatcher_handle_collision (EpcDispatcher *self)
 static void
 epc_dispatcher_reset_client (EpcDispatcher *self)
 {
-  int error = 0;
-
   if (self->priv->client)
     {
       avahi_client_free (self->priv->client);
@@ -385,13 +383,10 @@ epc_dispatcher_reset_client (EpcDispatcher *self)
     }
 
   self->priv->client =
-    avahi_client_new (avahi_glib_poll_get (self->priv->poll),
-                      AVAHI_CLIENT_NO_FAIL, epc_dispatcher_client_cb,
-                      self, &error);
+    epc_avahi_shell_create_client (AVAHI_CLIENT_NO_FAIL,
+                                   epc_dispatcher_client_cb, self);
 
-  if (!self->priv->client)
-    g_warning ("%s: Failed to setup Avahi client: %s (%d)\n",
-               G_STRLOC, avahi_strerror (error), error);
+  g_return_if_fail (NULL != self->priv->client);
 }
 
 static void
@@ -401,13 +396,10 @@ epc_dispatcher_init (EpcDispatcher *self)
                                             EPC_TYPE_DISPATCHER,
                                             EpcDispatcherPrivate);
 
-  self->priv->services =
-    g_hash_table_new_full (g_str_hash, g_str_equal, NULL,
-                           (GDestroyNotify) epc_service_free);
+  self->priv->services = g_hash_table_new_full (g_str_hash, g_str_equal,
+                                                NULL, epc_service_free);
 
-  avahi_set_allocator (avahi_glib_allocator ());
-
-  self->priv->poll = avahi_glib_poll_new (NULL, G_PRIORITY_DEFAULT);
+  epc_avahi_shell_ref ();
   epc_dispatcher_reset_client (self);
 }
 
@@ -486,14 +478,10 @@ epc_dispatcher_dispose (GObject *object)
       self->priv->client = NULL;
     }
 
-  if (self->priv->poll)
-    {
-      avahi_glib_poll_free (self->priv->poll);
-      self->priv->poll = NULL;
-    }
-
   g_free (self->priv->name);
   self->priv->name = NULL;
+
+  epc_avahi_shell_unref ();
 
   G_OBJECT_CLASS (epc_dispatcher_parent_class)->dispose (object);
 }

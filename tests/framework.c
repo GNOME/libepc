@@ -19,12 +19,11 @@
  *      Mathias Hasselmann
  */
 #include "framework.h"
+#include "libepc/avahi-shell.h"
 
 #include <avahi-client/client.h>
 #include <avahi-common/error.h>
-#include <avahi-glib/glib-watch.h>
 
-static AvahiGLibPoll *epc_test_poll = NULL;
 static AvahiClient *epc_test_client = NULL;
 static GSList *epc_test_service_browsers = NULL;
 static GMainLoop *epc_test_loop = NULL;
@@ -34,31 +33,19 @@ static gint epc_test_result = 1;
 gboolean
 epc_test_init (void)
 {
-  int error = AVAHI_OK;
-
   epc_test_result = EPC_TEST_MASK_ALL;
+  epc_avahi_shell_ref ();
 
   if (NULL == epc_test_loop)
     epc_test_loop = g_main_loop_new (NULL, FALSE);
 
   g_return_val_if_fail (NULL != epc_test_loop, FALSE);
 
-  if (NULL == epc_test_poll)
-    epc_test_poll = avahi_glib_poll_new (NULL, G_PRIORITY_DEFAULT);
-
-  g_return_val_if_fail (NULL != epc_test_poll, FALSE);
-
   if (NULL == epc_test_client)
-    epc_test_client = avahi_client_new (avahi_glib_poll_get (epc_test_poll),
-                                        AVAHI_CLIENT_IGNORE_USER_CONFIG |
-                                        AVAHI_CLIENT_NO_FAIL,
-                                        NULL, NULL, &error);
+    epc_test_client = epc_avahi_shell_create_client (AVAHI_CLIENT_IGNORE_USER_CONFIG |
+                                                     AVAHI_CLIENT_NO_FAIL, NULL, NULL);
 
-  if (NULL == epc_test_client)
-    {
-      g_warning ("%s: %s (%d)", G_STRLOC, avahi_strerror (error), error);
-      return FALSE;
-    }
+  g_return_val_if_fail (NULL != epc_test_client, FALSE);
 
   return TRUE;
 }
@@ -74,14 +61,13 @@ epc_test_quit (void)
 
   if (epc_test_client)
     avahi_client_free (epc_test_client);
-  if (epc_test_poll)
-    avahi_glib_poll_free (epc_test_poll);
   if (epc_test_loop)
     g_main_loop_unref (epc_test_loop);
 
+  epc_avahi_shell_unref ();
+
   epc_test_service_browsers = NULL;
   epc_test_client = NULL;
-  epc_test_poll = NULL;
   epc_test_loop = NULL;
 }
 

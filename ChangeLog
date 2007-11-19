@@ -1,3 +1,11 @@
+2007-11-06  Mathias Hasselmann  <mathias@openismus.com>
+
+	Introduce common API for managing basic, shareable Avahi infrastructure.
+
+	* libepc/avahi-shell.c, libepc/avahi-shell.h: Introduce EpcAvahiShell.
+	* libepc/dispatcher.c, tests/framework.c: Use EpcAvahiShell.
+	* Makefile.am: Add libepc/avahi-shell.c and libepc/avahi-shell.h.
+
 2007-11-05  Mathias Hasselmann  <mathias@openismus.com>
 
 	Merge password dialog from the libank experiment.

@@ -19,6 +19,7 @@ TESTS = \
 	tests/test-dispatcher-subtypes \
 	tests/test-dispatcher-local-collision
 libepc_include_HEADERS = \
+	libepc/avahi-shell.c \
 	libepc/consumer.h \
 	libepc/dispatcher.h \
 	libepc/marshal.h \
@@ -30,6 +31,7 @@ pkgconfig_DATA = \
 	libepc-ui.pc
 
 libepc_libepc_la_SOURCES = \
+	libepc/avahi-shell.c \
 	libepc/consumer.c \
 	libepc/dispatcher.c \
 	libepc/marshal.c \
