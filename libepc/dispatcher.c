@@ -512,21 +512,22 @@ epc_dispatcher_class_init (EpcDispatcherClass *cls)
 
   g_object_class_install_property (oclass, PROP_INTERFACE,
                                    g_param_spec_int ("interface", "Interface Index",
-                                                     "The interface this service shall be announced on",
+                                                     "The index of the network interface "
+						     "this service is announced on",
                                                      AVAHI_IF_UNSPEC, G_MAXINT, AVAHI_IF_UNSPEC,
                                                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
                                                      G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                      G_PARAM_STATIC_BLURB));
   g_object_class_install_property (oclass, PROP_PROTOCOL,
                                    g_param_spec_int ("protocol", "Protocol",
-                                                     "The protocol this service shall be announced on",
+                                                     "The network protocol this service is announced for",
                                                      AVAHI_PROTO_UNSPEC, G_MAXINT, AVAHI_PROTO_UNSPEC,
                                                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
                                                      G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                      G_PARAM_STATIC_BLURB));
   g_object_class_install_property (oclass, PROP_NAME,
                                    g_param_spec_string ("name", "Name",
-                                                        "User friendly name for the service", NULL,
+                                                        "User friendly name of the service", NULL,
                                                         G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
                                                         G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
@@ -685,6 +686,15 @@ epc_dispatcher_set_service_details (EpcDispatcher *self,
   epc_service_publish_details (service, TRUE);
 }
 
+/**
+ * epc_dispatcher_get_interface:
+ * @dispatcher: the #EpcDispatcher
+ *
+ * Queries the index of the network interface this service is announced on.
+ * See #EpcDispatcher:interface.
+ *
+ * Returns: The network interface index of this service.
+ */
 AvahiIfIndex
 epc_dispatcher_get_interface (EpcDispatcher *self)
 {
@@ -692,6 +702,15 @@ epc_dispatcher_get_interface (EpcDispatcher *self)
   return self->priv->interface;
 }
 
+/**
+ * epc_dispatcher_get_protocol:
+ * @dispatcher: the #EpcDispatcher
+ *
+ * Queries the network protocol this service is announced for.
+ * See #EpcDispatcher:protocol.
+ *
+ * Returns: The network protocol of this service.
+ */
 AvahiProtocol
 epc_dispatcher_get_protocol (EpcDispatcher *self)
 {
@@ -699,6 +718,15 @@ epc_dispatcher_get_protocol (EpcDispatcher *self)
   return self->priv->protocol;
 }
 
+/**
+ * epc_dispatcher_get_name:
+ * @dispatcher: the #EpcDispatcher
+ *
+ * Queries the user friendly name of the service.
+ * See #EpcDispatcher:name.
+ *
+ * Returns: The user friendly name of the service.
+ */
 const gchar*
 epc_dispatcher_get_name (EpcDispatcher *self)
 {

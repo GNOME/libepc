@@ -8,6 +8,9 @@ epc_dispatcher_new
 epc_dispatcher_add_service
 epc_dispatcher_add_service_subtype
 epc_dispatcher_set_service_details
+epc_dispatcher_get_interface
+epc_dispatcher_get_protocol
+epc_dispatcher_get_name
 <SUBSECTION Standard>
 EPC_DISPATCHER
 EPC_IS_DISPATCHER

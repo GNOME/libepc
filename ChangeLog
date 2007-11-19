@@ -1,5 +1,12 @@
 2007-11-04  Mathias Hasselmann  <mathias@openismus.com>
 
+	Document the property accessors of EpcDispatcher.
+
+	* docs/reference/libepc/libepc-sections.txt,
+	libepc/dispatcher.c: Document the property accessors.
+
+2007-11-04  Mathias Hasselmann  <mathias@openismus.com>
+
 	Implement regression tests for the EpcDispatcher.
 
 	* Makefile.am, tests/.gitignore: Add regression tests.
