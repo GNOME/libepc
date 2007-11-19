@@ -1,8 +1,17 @@
 2007-11-12  Mathias Hasselmann  <mathias@openismus.com>
 
+	Finish API documentation.
+
+	* libepc/consumer.c, libepc/dispatcher.c, libepc/dispatcher.h,
+	libepc/publisher.c, libepc/shell.c: Finish API documentation.
+	* docs/reference/libepc/libepc-docs.xml: Add chapters comments.
+
+2007-11-12  Mathias Hasselmann  <mathias@openismus.com>
+
 	Split service-type files into service-type and protocol files
 	for better documentation. Update documentation.
 
+	* docs/reference/libepc/libepc-sections.txt: Update symbols.
 	* libepc/protocol.c, libepc/protocol.h: Take over the EpcProtocol
 	related functions of the service-type files. Update documentation.
 	* libepc/service-type.c, libepc/service-type.h: Drop the EpcProtocol

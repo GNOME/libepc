@@ -37,6 +37,14 @@ typedef struct _EpcDispatcher        EpcDispatcher;
 typedef struct _EpcDispatcherClass   EpcDispatcherClass;
 typedef struct _EpcDispatcherPrivate EpcDispatcherPrivate;
 
+/**
+ * EpcAddressFamily:
+ * @EPC_ADDRESS_UNSPEC: No preferences exist. Use all address families supported.
+ * @EPC_ADDRESS_IPV4: Exclusively use IPv4 for addressing network services.
+ * @EPC_ADDRESS_IPV6: Exclusively use IPv6 for addressing network services.
+ *
+ * The address family to use for contacting network services.
+ */
 typedef enum
 {
   EPC_ADDRESS_UNSPEC = AF_UNSPEC,

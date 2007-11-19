@@ -771,10 +771,10 @@ epc_consumer_create_request (EpcConsumer *self,
   g_return_val_if_fail (NULL != self->priv->hostname, NULL);
   g_return_val_if_fail (self->priv->port > 0, NULL);
 
-  request_uri = epc_service_type_build_uri (self->priv->protocol,
-                                            self->priv->hostname,
-                                            self->priv->port,
-                                            path);
+  request_uri = epc_protocol_build_uri (self->priv->protocol,
+                                        self->priv->hostname,
+                                        self->priv->port,
+                                        path);
 
   g_return_val_if_fail (NULL != request_uri, NULL);
 

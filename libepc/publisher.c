@@ -404,7 +404,7 @@ epc_publisher_announce (EpcPublisher *self)
   if (!host)
     host = epc_dispatcher_get_host_name (self->priv->dispatcher);
 
-  service = epc_service_type_build_uri (self->priv->protocol, host, port, NULL);
+  service = epc_protocol_build_uri (self->priv->protocol, host, port, NULL);
   g_print ("%s: listening on %s\n", G_STRFUNC, service);
   g_free (service);
 }
@@ -673,7 +673,7 @@ epc_publisher_class_init (EpcPublisherClass *cls)
 
   g_object_class_install_property (oclass, PROP_CERTIFICATE_FILE,
                                    g_param_spec_string ("certificate-file", "Certificate File",
-                                                        "Filename for the PEM encoded server certificate",
+                                                        "File name for the PEM encoded server certificate",
                                                         NULL,
                                                         G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
                                                         G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
@@ -681,7 +681,7 @@ epc_publisher_class_init (EpcPublisherClass *cls)
 
   g_object_class_install_property (oclass, PROP_PRIVATE_KEY_FILE,
                                    g_param_spec_string ("private-key-file", "Private Key File",
-                                                        "Filename for the PEM encoded private server key",
+                                                        "File name for the PEM encoded private server key",
                                                         NULL,
                                                         G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
                                                         G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
@@ -876,7 +876,7 @@ epc_publisher_set_auth_handler (EpcPublisher   *self,
 }
 
 /**
- * epc_publisher_set_name:
+ * epc_publisher_set_service_name:
  * @publisher: a #EpcPublisher
  * @name: the new name of this #EpcPublisher
  *
@@ -891,6 +891,19 @@ epc_publisher_set_service_name (EpcPublisher *self,
   g_object_set (self, "service-name", name, NULL);
 }
 
+/**
+ * epc_publisher_set_credentials:
+ * @publisher: a #EpcPublisher
+ * @certfile: file name of the server certificate
+ * @keyfile: file name of the private key
+ *
+ * Changes the file names of the PEM encoded TLS credentials the publisher use
+ * for it's services, when the transport #EpcPublisher:protocol is
+ * #EPC_PROTOCOL_HTTPS.
+ *
+ * See #EpcPublisher:certificate-file and
+ * #EpcPublisher:private-key-file for details.
+ */
 void
 epc_publisher_set_credentials (EpcPublisher *self,
                                const gchar  *certfile,
@@ -903,6 +916,14 @@ epc_publisher_set_credentials (EpcPublisher *self,
                       NULL);
 }
 
+/**
+ * epc_publisher_set_protocol:
+ * @publisher: a #EpcPublisher
+ * @protocol: the transport protocol
+ *
+ * Changes the transport protocol the publisher uses.
+ * See #EpcPublisher:protocol for details.
+ */
 void
 epc_publisher_set_protocol (EpcPublisher *self,
                             EpcProtocol   protocol)
@@ -943,6 +964,15 @@ epc_publisher_get_service_domain (EpcPublisher *self)
   return self->priv->service_domain;
 }
 
+/**
+ * epc_publisher_get_certificate_file:
+ * @publisher: a #EpcPublisher
+ *
+ * Queries the file name of the PEM encoded server certificate.
+ * See #EpcPublisher:certificate-file for details.
+ *
+ * Returns: The certificate's file name, or %NULL.
+ */
 G_CONST_RETURN gchar*
 epc_publisher_get_certificate_file (EpcPublisher *self)
 {
@@ -950,6 +980,15 @@ epc_publisher_get_certificate_file (EpcPublisher *self)
   return self->priv->certificate_file;
 }
 
+/**
+ * epc_publisher_get_private_key_file:
+ * @publisher: a #EpcPublisher
+ *
+ * Queries the file name of the PEM encoded private server key.
+ * See #EpcPublisher:private-key-file for details.
+ *
+ * Returns: The private key's file name, or %NULL.
+ */
 G_CONST_RETURN gchar*
 epc_publisher_get_private_key_file (EpcPublisher *self)
 {
@@ -957,6 +996,15 @@ epc_publisher_get_private_key_file (EpcPublisher *self)
   return self->priv->private_key_file;
 }
 
+/**
+ * epc_publisher_get_protocol:
+ * @publisher: a #EpcPublisher
+ *
+ * Queries the transport protocol the publisher uses.
+ * See #EpcPublisher:protocol for details.
+ *
+ * Returns: The transport protocol the publisher uses, or #EPC_PROTOCOL_UNKNOWN.
+ */
 EpcProtocol
 epc_publisher_get_protocol (EpcPublisher *self)
 {

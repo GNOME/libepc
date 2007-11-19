@@ -34,7 +34,7 @@
  * @include: libepc/shell.h
  * @stability: Private
  *
- * The functions collected here are used to manage library resources.
+ * The methods of the #EpcShell singleton are used to manage library resources.
  */
 
 typedef struct _EpcAvahiShell EpcAvahiShell;

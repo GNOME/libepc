@@ -82,6 +82,9 @@ extern gboolean _epc_debug;
 
 /**
  * EpcDispatcherPrivate:
+ * @name: the service name
+ * @client: the Avahi client
+ * @services: all services announced with the service type as key
  *
  * Private fields of the #EpcDispatcher class.
  */
@@ -89,7 +92,6 @@ struct _EpcDispatcherPrivate
 {
   gchar        *name;
   AvahiClient  *client;
-  AvahiIfIndex  interface;
   GHashTable   *services;
 };
 
@@ -535,6 +537,12 @@ epc_dispatcher_new (const gchar *name)
   return g_object_new (EPC_TYPE_DISPATCHER, "name", name, NULL);
 }
 
+/**
+ * epc_dispatcher_reset:
+ * @dispatcher: a #EpcDispatcher
+ *
+ * Revokes all service announcements of this #EpcDispatcher.
+ */
 void
 epc_dispatcher_reset (EpcDispatcher *self)
 {
@@ -544,7 +552,8 @@ epc_dispatcher_reset (EpcDispatcher *self)
 
 /**
  * epc_dispatcher_add_service:
- * @dispatcher: the #EpcDispatcher
+ * @dispatcher: a #EpcDispatcher
+ * @protocol: the #EpcAddressFamily this service supports
  * @type: the machine friendly name of the service
  * @domain: the DNS domain for the announcement, or %NULL
  * @host: the fully qualified host name of the service, or %NULL
@@ -598,7 +607,7 @@ epc_dispatcher_add_service (EpcDispatcher    *self,
 
 /**
  * epc_dispatcher_add_service_subtype:
- * @dispatcher: the #EpcDispatcher
+ * @dispatcher: a #EpcDispatcher
  * @type: the base service type
  * @subtype: the sub service type
  *
@@ -630,7 +639,7 @@ epc_dispatcher_add_service_subtype (EpcDispatcher *self,
 
 /**
  * epc_dispatcher_set_service_details:
- * @dispatcher: the #EpcDispatcher
+ * @dispatcher: a #EpcDispatcher
  * @type: the service type
  * @...: a list of TXT records, terminated by %NULL
  *
@@ -670,6 +679,14 @@ epc_dispatcher_set_service_details (EpcDispatcher *self,
   epc_service_publish_details (service);
 }
 
+/**
+ * epc_dispatcher_set_name:
+ * @dispatcher: a #EpcDispatcher
+ * @name: the new user friendly name
+ *
+ * Changes the user friendly name used for announcing services.
+ * See #EpcDispatcher:name.
+ */
 void
 epc_dispatcher_set_name (EpcDispatcher *self,
                          const gchar   *name)
@@ -680,9 +697,9 @@ epc_dispatcher_set_name (EpcDispatcher *self,
 
 /**
  * epc_dispatcher_get_name:
- * @dispatcher: the #EpcDispatcher
+ * @dispatcher: a #EpcDispatcher
  *
- * Queries the user friendly name of the service.
+ * Queries the user friendly name used for announcing services.
  * See #EpcDispatcher:name.
  *
  * Returns: The user friendly name of the service.
@@ -694,7 +711,14 @@ epc_dispatcher_get_name (EpcDispatcher *self)
   return self->priv->name;
 }
 
-
+/**
+ * epc_dispatcher_get_host_name:
+ * @dispatcher: a #EpcDispatcher
+ *
+ * Query the official host name of this machine.
+ *
+ * Returns: The official host name, or %NULL on error.
+ */
 G_CONST_RETURN gchar*
 epc_dispatcher_get_host_name (EpcDispatcher *self)
 {
