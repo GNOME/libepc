@@ -101,51 +101,51 @@ struct _EpcPublisherClass
   GObjectClass parent_class;
 };
 
-GType                 epc_publisher_get_type          (void) G_GNUC_CONST;
+GType                 epc_publisher_get_type           (void) G_GNUC_CONST;
 
-EpcPublisher*         epc_publisher_new               (const gchar       *name,
-                                                       const gchar       *service,
-                                                       const gchar       *domain);
+EpcPublisher*         epc_publisher_new                (const gchar       *service_name,
+                                                        const gchar       *service_type,
+                                                        const gchar       *service_domain);
 
-void                  epc_publisher_set_name          (EpcPublisher      *publisher,
-                                                       const gchar       *name);
-G_CONST_RETURN gchar* epc_publisher_get_name          (EpcPublisher      *publisher);
-G_CONST_RETURN gchar* epc_publisher_get_domain        (EpcPublisher      *publisher);
-G_CONST_RETURN gchar* epc_publisher_get_service       (EpcPublisher      *publisher);
+void                  epc_publisher_set_service_name   (EpcPublisher      *publisher,
+                                                        const gchar       *service_name);
+G_CONST_RETURN gchar* epc_publisher_get_service_name   (EpcPublisher      *publisher);
+G_CONST_RETURN gchar* epc_publisher_get_service_type   (EpcPublisher      *publisher);
+G_CONST_RETURN gchar* epc_publisher_get_service_domain (EpcPublisher      *publisher);
 
-void                  epc_publisher_add               (EpcPublisher      *publisher,
-                                                       const gchar       *key,
-                                                       const gchar       *value,
-                                                       gssize             length);
-void                  epc_publisher_add_file          (EpcPublisher      *publisher,
-                                                       const gchar       *key,
-                                                       const gchar       *filename);
-void                  epc_publisher_add_handler       (EpcPublisher      *publisher,
-                                                       const gchar       *key,
-                                                       EpcContentHandler  handler,
-                                                       gpointer           user_data,
-                                                       GDestroyNotify     destroy_data);
+void                  epc_publisher_add                (EpcPublisher      *publisher,
+                                                        const gchar       *key,
+                                                        const gchar       *value,
+                                                        gssize             length);
+void                  epc_publisher_add_file           (EpcPublisher      *publisher,
+                                                        const gchar       *key,
+                                                        const gchar       *filename);
+void                  epc_publisher_add_handler        (EpcPublisher      *publisher,
+                                                        const gchar       *key,
+                                                        EpcContentHandler  handler,
+                                                        gpointer           user_data,
+                                                        GDestroyNotify     destroy_data);
 
-void                  epc_publisher_set_auth_handler  (EpcPublisher      *publisher,
-                                                       const gchar       *key,
-                                                       EpcAuthHandler     handler,
-                                                       gpointer           user_data,
-                                                       GDestroyNotify     destroy_data);
+void                  epc_publisher_set_auth_handler   (EpcPublisher      *publisher,
+                                                        const gchar       *key,
+                                                        EpcAuthHandler     handler,
+                                                        gpointer           user_data,
+                                                        GDestroyNotify     destroy_data);
 
-void                  epc_publisher_run               (EpcPublisher      *publisher);
-void                  epc_publisher_run_async         (EpcPublisher      *publisher);
-void                  epc_publisher_quit              (EpcPublisher      *publisher);
+void                  epc_publisher_run                (EpcPublisher      *publisher);
+void                  epc_publisher_run_async          (EpcPublisher      *publisher);
+void                  epc_publisher_quit               (EpcPublisher      *publisher);
 
-EpcPublisher*         epc_auth_context_get_publisher  (EpcAuthContext    *context);
-G_CONST_RETURN gchar* epc_auth_context_get_key        (EpcAuthContext    *context);
-gboolean              epc_auth_context_check_password (EpcAuthContext    *context,
-                                                       const gchar       *password);
+EpcPublisher*         epc_auth_context_get_publisher   (EpcAuthContext    *context);
+G_CONST_RETURN gchar* epc_auth_context_get_key         (EpcAuthContext    *context);
+gboolean              epc_auth_context_check_password  (EpcAuthContext    *context,
+                                                        const gchar       *password);
 
-EpcContent*           epc_content_new                 (const gchar       *type,
-                                                       gpointer           data,
-                                                       gsize              length);
-EpcContent*           epc_content_ref                 (EpcContent        *content);
-void                  epc_content_unref               (EpcContent        *content);
+EpcContent*           epc_content_new                  (const gchar       *type,
+                                                        gpointer           data,
+                                                        gsize              length);
+EpcContent*           epc_content_ref                  (EpcContent        *content);
+void                  epc_content_unref                (EpcContent        *content);
 
 G_END_DECLS
 

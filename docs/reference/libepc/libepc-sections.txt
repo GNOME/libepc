@@ -32,10 +32,10 @@ EpcPublisherClass
 <TITLE>EpcPublisher</TITLE>
 EpcPublisher
 epc_publisher_new
-epc_publisher_set_name
-epc_publisher_get_name
-epc_publisher_get_domain
-epc_publisher_get_service
+epc_publisher_set_service_name
+epc_publisher_get_service_name
+epc_publisher_get_service_domain
+epc_publisher_get_service_type
 epc_publisher_add
 epc_publisher_add_file
 epc_publisher_add_handler

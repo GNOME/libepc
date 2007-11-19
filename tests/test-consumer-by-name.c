@@ -27,7 +27,7 @@ main (void)
   epc_publisher_add (publisher, "maman", "bar", -1);
   epc_publisher_run_async (publisher);
 
-  name = epc_publisher_get_name (publisher);
+  name = epc_publisher_get_service_name (publisher);
   epc_test_goto_if_fail (NULL != name, out);
 
   consumer = epc_consumer_new_for_name (name);

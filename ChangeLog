@@ -1,5 +1,13 @@
 2007-11-08  Mathias Hasselmann  <mathias@openismus.com>
 
+	Use more descriptive property names for EpcPublisher.
+
+	* docs/reference/libepc/libepc-sections.txt,
+	libepc/publisher.c, libepc/publisher.h,
+	tests/test-consumer-by-name.c: Update property names.
+
+2007-11-08  Mathias Hasselmann  <mathias@openismus.com>
+
 	Rename epc_tls_privkey_* functions to epc_tls_private_key_*,
 	which results in same symbol length for private key and
 	equivalent certificate functions.

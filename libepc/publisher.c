@@ -62,9 +62,9 @@ typedef struct _EpcResource EpcResource;
 enum
 {
   PROP_NONE,
-  PROP_NAME,
-  PROP_DOMAIN,
-  PROP_SERVICE
+  PROP_SERVICE_NAME,
+  PROP_SERVICE_DOMAIN,
+  PROP_SERVICE_TYPE
 };
 
 /**
@@ -114,15 +114,17 @@ struct _EpcResource
 struct _EpcPublisherPrivate
 {
   EpcDispatcher         *dispatcher;
-  GHashTable            *resources;
+
   EpcResource           *default_resource;
+  GHashTable            *resources;
+
+  gboolean               server_running;
   SoupServerAuthContext  server_auth;
   SoupServer            *server;
-  gboolean               running;
 
-  gchar *name;
-  gchar *domain;
-  gchar *service;
+  gchar                 *service_name;
+  gchar                 *service_domain;
+  gchar                 *service_type;
 };
 
 /**
@@ -327,7 +329,7 @@ epc_publisher_server_auth_cb (SoupServerAuthContext *auth_ctx G_GNUC_UNUSED,
   if (NULL != auth)
     user = soup_server_auth_get_user (auth);
   if (NULL == user)
-    auth_ctx->digest_info.realm = context.publisher->priv->name;
+    auth_ctx->digest_info.realm = context.publisher->priv->service_name;
   if (NULL != context.key)
     resource = g_hash_table_lookup (context.publisher->priv->resources, context.key);
   if (NULL == resource)
@@ -382,7 +384,7 @@ epc_publisher_constructed (GObject *object)
     G_OBJECT_CLASS (epc_publisher_parent_class)->constructed (object);
 
   self = EPC_PUBLISHER (object);
-  name = self->priv->name;
+  name = self->priv->service_name;
 
   if (!name)
     name = g_get_application_name ();
@@ -394,8 +396,8 @@ epc_publisher_constructed (GObject *object)
       gint hash = g_random_int ();
 
       name = G_OBJECT_TYPE_NAME (self);
-      self->priv->name = g_strdup_printf ("%s-%08x", name, hash);
-      name = self->priv->name;
+      self->priv->service_name = g_strdup_printf ("%s-%08x", name, hash);
+      name = self->priv->service_name;
 
       g_warning ("%s: No service name set - using generated name (`%s'). "
                  "Consider passing a service name to the publisher's "
@@ -403,11 +405,11 @@ epc_publisher_constructed (GObject *object)
                  G_STRLOC, name);
     }
 
-  if (!self->priv->name)
-    self->priv->name = g_strdup (name);
+  if (!self->priv->service_name)
+    self->priv->service_name = g_strdup (name);
 
-  if (!self->priv->service)
-    self->priv->service = epc_shell_create_service_type (NULL);
+  if (!self->priv->service_type)
+    self->priv->service_type = epc_shell_create_service_type (NULL);
 
   listener = soup_server_get_listener (self->priv->server);
   port = soup_server_get_port (self->priv->server);
@@ -421,13 +423,13 @@ epc_publisher_constructed (GObject *object)
   self->priv->dispatcher = epc_dispatcher_new (AVAHI_IF_UNSPEC, protocol, name);
 
   epc_dispatcher_add_service (self->priv->dispatcher, EPC_SERVICE_NAME_HTTP,
-                              self->priv->domain, host, port,
+                              self->priv->service_domain, host, port,
                               NULL);
 
-  if (self->priv->service)
+  if (self->priv->service_type)
     epc_dispatcher_add_service_subtype (self->priv->dispatcher,
                                         EPC_SERVICE_NAME,
-                                        self->priv->service);
+                                        self->priv->service_type);
 }
 
 static void
@@ -440,19 +442,19 @@ epc_publisher_set_property (GObject      *object,
 
   switch (prop_id)
     {
-      case PROP_NAME:
-        g_free (self->priv->name);
-        self->priv->name = g_value_dup_string (value);
+      case PROP_SERVICE_NAME:
+        g_free (self->priv->service_name);
+        self->priv->service_name = g_value_dup_string (value);
         break;
 
-      case PROP_DOMAIN:
-        g_return_if_fail (NULL == self->priv->domain);
-        self->priv->domain = g_value_dup_string (value);
+      case PROP_SERVICE_DOMAIN:
+        g_return_if_fail (NULL == self->priv->service_domain);
+        self->priv->service_domain = g_value_dup_string (value);
         break;
 
-      case PROP_SERVICE:
-        g_return_if_fail (NULL == self->priv->service);
-        self->priv->service = g_value_dup_string (value);
+      case PROP_SERVICE_TYPE:
+        g_return_if_fail (NULL == self->priv->service_type);
+        self->priv->service_type = g_value_dup_string (value);
         break;
 
       default:
@@ -471,16 +473,16 @@ epc_publisher_get_property (GObject    *object,
 
   switch (prop_id)
     {
-      case PROP_NAME:
-        g_value_set_string (value, self->priv->name);
+      case PROP_SERVICE_NAME:
+        g_value_set_string (value, self->priv->service_name);
         break;
 
-      case PROP_DOMAIN:
-        g_value_set_string (value, self->priv->domain);
+      case PROP_SERVICE_DOMAIN:
+        g_value_set_string (value, self->priv->service_domain);
         break;
 
-      case PROP_SERVICE:
-        g_value_set_string (value, self->priv->service);
+      case PROP_SERVICE_TYPE:
+        g_value_set_string (value, self->priv->service_type);
         break;
 
       default:
@@ -502,7 +504,7 @@ epc_publisher_dispose (GObject *object)
 
   if (self->priv->server)
     {
-      if (self->priv->running)
+      if (self->priv->server_running)
         soup_server_quit (self->priv->server);
 
       g_object_unref (self->priv->server);
@@ -521,14 +523,14 @@ epc_publisher_dispose (GObject *object)
       self->priv->default_resource = NULL;
     }
 
-  g_free (self->priv->name);
-  self->priv->name = NULL;
+  g_free (self->priv->service_name);
+  self->priv->service_name = NULL;
 
-  g_free (self->priv->domain);
-  self->priv->domain = NULL;
+  g_free (self->priv->service_domain);
+  self->priv->service_domain = NULL;
 
-  g_free (self->priv->service);
-  self->priv->service = NULL;
+  g_free (self->priv->service_type);
+  self->priv->service_type = NULL;
 
   G_OBJECT_CLASS (epc_publisher_parent_class)->dispose (object);
 }
@@ -543,20 +545,20 @@ epc_publisher_class_init (EpcPublisherClass *cls)
   oclass->get_property = epc_publisher_get_property;
   oclass->dispose = epc_publisher_dispose;
 
-  g_object_class_install_property (oclass, PROP_NAME,
-                                   g_param_spec_string ("name", "Name",
+  g_object_class_install_property (oclass, PROP_SERVICE_NAME,
+                                   g_param_spec_string ("service-name", "Service Name",
                                                         "User friendly name for the service", NULL,
                                                         G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
                                                         G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
-  g_object_class_install_property (oclass, PROP_DOMAIN,
-                                   g_param_spec_string ("domain", "Domain",
+  g_object_class_install_property (oclass, PROP_SERVICE_DOMAIN,
+                                   g_param_spec_string ("service-domain", "Service Domain",
                                                         "Internet domain for publishing the service", NULL,
                                                         G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
                                                         G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
-  g_object_class_install_property (oclass, PROP_SERVICE,
-                                   g_param_spec_string ("service", "Service",
+  g_object_class_install_property (oclass, PROP_SERVICE_TYPE,
+                                   g_param_spec_string ("service-type", "Service Type",
                                                         "Wellknown DNS-SD name the service", NULL,
                                                         G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
                                                         G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
@@ -567,9 +569,9 @@ epc_publisher_class_init (EpcPublisherClass *cls)
 
 /**
  * epc_publisher_new:
- * @name: the human friendly service name, or %NULL
- * @service: the DNS-SD service name, or %NULL
- * @domain: the DNS domain, or %NULL
+ * @service_name: the human friendly service name, or %NULL
+ * @service_type: the DNS-SD service name, or %NULL
+ * @service_domain: the DNS domain for announcing the service, or %NULL
  *
  * Creates a new #EpcPublisher object. The publisher announces its service
  * per DNS-SD to the DNS domain specified by @domain, using @name as service
@@ -584,12 +586,15 @@ epc_publisher_class_init (EpcPublisherClass *cls)
  * Returns: The newly created #EpcPublisher object.
  */
 EpcPublisher*
-epc_publisher_new (const gchar *name,
-                   const gchar *service,
-                   const gchar *domain)
+epc_publisher_new (const gchar *service_name,
+                   const gchar *service_type,
+                   const gchar *service_domain)
 {
-  return g_object_new (EPC_TYPE_PUBLISHER, "name", name,
-                       "service", service, "domain", domain, NULL);
+  return g_object_new (EPC_TYPE_PUBLISHER,
+                       "service-name", service_name,
+                       "service-type", service_type,
+                       "service-domain", service_domain,
+                       NULL);
 }
 
 /**
@@ -753,21 +758,21 @@ epc_publisher_set_auth_handler (EpcPublisher   *self,
 /**
  * epc_publisher_set_name:
  * @publisher: a #EpcPublisher
- * @name: the new name of this #EpcPublisher
+ * @service_name: the new name of this #EpcPublisher
  *
  * Changes the human friendly name this #EpcPublisher uses
  * to announce its service. See #EpcPublisher:name for details.
  */
 void
-epc_publisher_set_name (EpcPublisher *self,
-                        const gchar  *name)
+epc_publisher_set_service_name (EpcPublisher *self,
+                                const gchar  *service_name)
 {
   g_return_if_fail (EPC_IS_PUBLISHER (self));
-  g_object_set (self, "name", name, NULL);
+  g_object_set (self, "service-name", service_name, NULL);
 }
 
 /**
- * epc_publisher_get_name:
+ * epc_publisher_get_service_name:
  * @publisher: a #EpcPublisher
  *
  * Queries the human friendly name this #EpcPublisher uses
@@ -776,30 +781,14 @@ epc_publisher_set_name (EpcPublisher *self,
  * Returns: The human friendly name of this #EpcPublisher.
  */
 G_CONST_RETURN char*
-epc_publisher_get_name (EpcPublisher *self)
+epc_publisher_get_service_name (EpcPublisher *self)
 {
   g_return_val_if_fail (EPC_IS_PUBLISHER (self), NULL);
-  return self->priv->name;
+  return self->priv->service_name;
 }
 
 /**
- * epc_publisher_get_domain:
- * @publisher: a #EpcPublisher
- *
- * Queries the DNS domain for which this #EpcPublisher announces its service.
- * See #EpcPublisher:domain for details.
- *
- * Returns: The DNS-SD domain of this #EpcPublisher, or %NULL.
- */
-G_CONST_RETURN char*
-epc_publisher_get_domain (EpcPublisher *self)
-{
-  g_return_val_if_fail (EPC_IS_PUBLISHER (self), NULL);
-  return self->priv->domain;
-}
-
-/**
- * epc_publisher_get_service:
+ * epc_publisher_get_service_type:
  * @publisher: a #EpcPublisher
  *
  * Queries the DNS-SD service name of this #EpcPublisher.
@@ -808,10 +797,26 @@ epc_publisher_get_domain (EpcPublisher *self)
  * Returns: The DNS-SD service name of this #EpcPublisher.
  */
 G_CONST_RETURN char*
-epc_publisher_get_service (EpcPublisher *self)
+epc_publisher_get_service_type (EpcPublisher *self)
 {
   g_return_val_if_fail (EPC_IS_PUBLISHER (self), NULL);
-  return self->priv->service;
+  return self->priv->service_type;
+}
+
+/**
+ * epc_publisher_get_service_domain:
+ * @publisher: a #EpcPublisher
+ *
+ * Queries the DNS domain for which this #EpcPublisher announces its service.
+ * See #EpcPublisher:domain for details.
+ *
+ * Returns: The DNS-SD domain of this #EpcPublisher, or %NULL.
+ */
+G_CONST_RETURN char*
+epc_publisher_get_service_domain (EpcPublisher *self)
+{
+  g_return_val_if_fail (EPC_IS_PUBLISHER (self), NULL);
+  return self->priv->service_domain;
 }
 
 /**
@@ -827,7 +832,11 @@ void
 epc_publisher_run (EpcPublisher *self)
 {
   g_return_if_fail (EPC_IS_PUBLISHER (self));
+
   soup_server_run (self->priv->server);
+
+  /* try to deal with bug #494128 by tracking server state */
+  self->priv->server_running = FALSE;
 }
 
 /**
@@ -842,8 +851,12 @@ void
 epc_publisher_run_async (EpcPublisher *self)
 {
   g_return_if_fail (EPC_IS_PUBLISHER (self));
+  g_return_if_fail (self->priv->server_running);
+
   soup_server_run_async (self->priv->server);
-  self->priv->running = TRUE;
+
+  /* try to deal with bug #494128 by tracking server state */
+  self->priv->server_running = TRUE;
 }
 
 /**
@@ -857,8 +870,12 @@ void
 epc_publisher_quit (EpcPublisher *self)
 {
   g_return_if_fail (EPC_IS_PUBLISHER (self));
-  soup_server_quit (self->priv->server);
-  self->priv->running = FALSE;
+
+  if (self->priv->server_running)
+    soup_server_quit (self->priv->server);
+
+  /* try to deal with bug #494128 by tracking server state */
+  self->priv->server_running = FALSE;
 }
 
 /**
