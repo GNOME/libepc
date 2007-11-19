@@ -9,13 +9,17 @@ lib_LTLIBRARIES = \
 	libepc/libepc.la
 noinst_PROGRAMS = \
 	tests/test-publisher \
-	tests/test-consumer
+	tests/test-consumer \
+	$(TESTS)
 libepc_include_HEADERS = \
 	libepc/consumer.h \
 	libepc/dispatcher.h \
 	libepc/publisher.h
 pkgconfig_DATA = \
 	libepc.pc
+
+TESTS = \
+	tests/test-dispatcher-001
 
 libepc_libepc_la_SOURCES = \
 	libepc/consumer.c \
@@ -24,6 +28,7 @@ libepc_libepc_la_SOURCES = \
 	$(libepc_HEADERS)
 
 tests_test_publisher_LDADD = libepc/libepc.la
+tests_test_dispatcher_001_LDADD = libepc/libepc.la
 
 tests_test_consumer_CFLAGS = $(AM_CFLAGS) $(AVAHIUI_CFLAGS)
 tests_test_consumer_LDADD = libepc/libepc.la $(AVAHIUI_LIBS)

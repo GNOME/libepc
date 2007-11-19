@@ -1,5 +1,12 @@
 2007-11-03  Mathias Hasselmann  <mathias@openismus.com>
 
+	Implement regression testing for EpcDispatcher.
+
+	* Makefile.am, tests/.gitignore: Add tests/test-dispatcher-001.c.
+	* tests/test-dispatcher-001.c: Regression test for EpcDispatcher.
+
+2007-11-03  Mathias Hasselmann  <mathias@openismus.com>
+
 	Handle local collisions.
 
 	* libepc/dispatcher.c: Handle local collisions.

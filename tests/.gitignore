@@ -1,4 +1,5 @@
 *.o
 .dirstamp
 test-consumer
+test-dispatcher-001
 test-publisher
