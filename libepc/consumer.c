@@ -198,7 +198,6 @@ epc_consumer_init (EpcConsumer *self)
   self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self, EPC_TYPE_CONSUMER, EpcConsumerPrivate);
   self->priv->loop = g_main_loop_new (NULL, FALSE);
   self->priv->session = soup_session_async_new ();
-  self->priv->protocol = EPC_PROTOCOL_HTTPS;
 
   g_signal_connect (self->priv->session, "authenticate",
                     G_CALLBACK (epc_consumer_authenticate_cb), self);
@@ -222,6 +221,8 @@ epc_consumer_set_property (GObject      *object,
         break;
 
       case PROP_PROTOCOL:
+        g_return_if_fail (NULL == self->priv->browsers &&
+                          NULL == self->priv->hostname);
         self->priv->protocol = g_value_get_enum (value);
         break;
 
@@ -553,8 +554,9 @@ epc_consumer_class_init (EpcConsumerClass *cls)
    *
    * Emitted when the #EpcConsumer requires authentication. The signal
    * handler should provide these credentials, which may come from the
-   * user or from cached information. If no credentials
-   * are available then the signal handler should leave @username and @password unchanged.
+   * user or from cached information. If no credentials are available
+   * then the signal handler should leave @username and @password
+   * unchanged.
    *
    * If the provided credentials fail then the reauthenticate signal
    * will be emmitted.
@@ -609,6 +611,13 @@ epc_consumer_class_init (EpcConsumerClass *cls)
    * This signal is emitted when a #EpcConsumer created with
    * #epc_consumer_new_for_name or #epc_consumer_new_for_name_full
    * has found its #EpcPublisher.
+   *
+   * Publisher detection is integrated with the GLib main loop. Therefore the
+   * signal will not be emitted before a main loop is run (#g_main_loop_run,
+   * #gtk_main). So to reliably consume this signal connect to it directly
+   * after creating the #EpcConsumer.
+   *
+   * See also: #epc_consumer_resolve_publisher, #epc_consumer_get_pulisher_resolved
    */
   signals[SIGNAL_PUBLISHER_RESOLVED] = g_signal_new ("publisher-resolved", EPC_TYPE_CONSUMER, G_SIGNAL_RUN_FIRST,
                                                      G_STRUCT_OFFSET (EpcConsumerClass, publisher_resolved), NULL, NULL,
@@ -657,14 +666,18 @@ epc_consumer_new (EpcProtocol  protocol,
  * used for searching the #EpcPublisher is derived from the application's
  * program name as returned by #g_get_prgname.
  *
- * <note><para>
- *  The connection is not established until #epc_consumer_lookup is called
- *  to retrieve values. Use #epc_consumer_resolve_publisher or connect to the
- *  #EpcConsumer::publisher-resolved signal to wait until the #EpcPublisher
- *  has been found.
- * </para></note>
+ * For better control of the search process have a look at
+ * #epc_consumer_new_for_name_full.
  *
- * For more control have a look at #epc_consumer_new_for_name_full.
+ * <note><para>
+ *  The connection is not established until a function retrieving
+ *  data, like for instance #epc_consumer_lookup, is called.
+ *
+ *  Explicitly call #epc_consumer_resolve_publisher or connect to
+ *  the #EpcConsumer::publisher-resolved signal, when your application
+ *  needs reliable information about the existance of the #EpcPublisher
+ *  described by @name.
+ * </para></note>
  *
  * Returns: The newly created #EpcConsumer object
  */
@@ -685,10 +698,13 @@ epc_consumer_new_for_name (const gchar *name)
  * #EpcPublisher is derived from @application using #epc_service_type_new.
  *
  * <note><para>
- *  The connection is not established until #epc_consumer_lookup is called
- *  to retrieve values. Use #epc_consumer_resolve_publisher or connect to the
- *  #EpcConsumer::publisher-resolved signal to wait until the #EpcPublisher
- *  has been found.
+ *  The connection is not established until a function retrieving
+ *  data, like for instance #epc_consumer_lookup, is called.
+ *
+ *  Explicitly call #epc_consumer_resolve_publisher or connect to
+ *  the #EpcConsumer::publisher-resolved signal, when your application
+ *  needs reliable information about the existance of the #EpcPublisher
+ *  described by @name.
  * </para></note>
  *
  * Returns: The newly created #EpcConsumer object
@@ -775,6 +791,24 @@ epc_consumer_resolve_publisher (EpcConsumer *self,
       g_main_loop_run (self->priv->loop);
     }
 
+  return epc_consumer_is_publisher_resolved (self);
+}
+
+/**
+ * epc_consumer_is_publisher_resolved:
+ * @consumer: a #EpcConsumer
+ *
+ * Checks if the host name of this consumer's #EpcPublisher
+ * has been resolved already.
+ *
+ * See also: #epc_consumer_resolve_publisher, #EpcPublisher::publisher-resolved
+ *
+ * Returns: %TRUE when the host name has been resolved, and %FALSE otherwise.
+ */
+gboolean
+epc_consumer_is_publisher_resolved (EpcConsumer *self)
+{
+  g_return_val_if_fail (EPC_IS_CONSUMER (self), FALSE);
   return (NULL != self->priv->hostname);
 }
 
@@ -890,7 +924,9 @@ epc_consumer_lookup (EpcConsumer  *self,
   else
     epc_consumer_set_http_error (error, request, status);
 
-  g_object_unref (request);
+  if (request)
+    g_object_unref (request);
+
   return contents;
 }
 
@@ -995,12 +1031,18 @@ epc_consumer_list_parser_text (GMarkupParseContext *context G_GNUC_UNUSED,
 /**
  * epc_consumer_list:
  * @consumer: a #EpcConsumer
- * @pattern: a file globbing pattern
+ * @pattern: a glob-style pattern, or %NULL
  * @error: return location for a #GError, or %NULL
  *
+ * Matches published keys against patterns containing '*' (wildcard) and '?'
+ * (joker). Passing %NULL as @pattern is equivalent to passing "*" and returns
+ * all published keys. This function is useful to find and select dynamically
+ * published values. See #GPatternSpec for information about glob-style
+ * patterns.
+ *
  * If the call was successful, a list of keys matching @pattern is returned.
- * If the call was not successful, it returns %NULL and sets @error. The error
- * domain is #EPC_HTTP_ERROR. Error codes are taken from the
+ * If the call was not successful, it returns %NULL and sets @error.
+ * The error domain is #EPC_HTTP_ERROR. Error codes are taken from the
  * #SoupKnownStatusCode enumeration.
  *
  * The returned list should be freed when no longer needed:

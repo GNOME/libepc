@@ -72,6 +72,11 @@ typedef EpcContents* (*EpcContentsHandler) (EpcPublisher   *publisher,
  * to verify that the password passed in the request matches the known password
  * for that user.
  *
+ * <note><para>
+ *  There is no way to retrieve the password from the #EpcAuthContext, as
+ *  the network protocol transfers just a hash code, not the actual password.
+ * </para></note>
+ *
  * Returns: %TRUE when access is granted, and %FALSE otherwise.
  */
 typedef gboolean    (*EpcAuthHandler)    (EpcAuthContext *context,

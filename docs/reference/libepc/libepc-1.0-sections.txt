@@ -94,6 +94,7 @@ epc_consumer_new_for_name_full
 epc_consumer_get_protocol
 epc_consumer_set_protocol
 epc_consumer_resolve_publisher
+epc_consumer_is_publisher_resolved
 epc_consumer_lookup
 epc_consumer_list
 <SUBSECTION Standard>

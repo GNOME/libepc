@@ -70,7 +70,7 @@ struct _EpcConsumer
 /**
  * EpcConsumerClass:
  * @authenticate: virtual method of the #EpcConsumer::authenticate signal
- * @reauthenticate: virtual method of the #EpcConsumer::re-authenticate signal
+ * @reauthenticate: virtual method of the #EpcConsumer::reauthenticate signal
  * @publisher_resolved: virtual method of the #EpcConsumer::publisher-resolved signal
  *
  * Virtual methods of the #EpcConsumer class.
@@ -97,32 +97,33 @@ struct _EpcConsumerClass
                               guint         port);
 };
 
-GType                 epc_consumer_get_type          (void) G_GNUC_CONST;
+GType                 epc_consumer_get_type              (void) G_GNUC_CONST;
 
-EpcConsumer*          epc_consumer_new               (EpcProtocol   protocol,
-                                                      const gchar  *hostname,
-                                                      guint16       port);
-EpcConsumer*          epc_consumer_new_for_name      (const gchar  *name);
-EpcConsumer*          epc_consumer_new_for_name_full (const gchar  *name,
-                                                      const gchar  *application,
-                                                      const gchar  *domain);
+EpcConsumer*          epc_consumer_new                   (EpcProtocol   protocol,
+                                                          const gchar  *hostname,
+                                                          guint16       port);
+EpcConsumer*          epc_consumer_new_for_name          (const gchar  *name);
+EpcConsumer*          epc_consumer_new_for_name_full     (const gchar  *name,
+                                                          const gchar  *application,
+                                                          const gchar  *domain);
 
-void                  epc_consumer_set_protocol      (EpcConsumer  *consumer,
-                                                      EpcProtocol   protocol);
-EpcProtocol           epc_consumer_get_protocol      (EpcConsumer  *consumer);
+void                  epc_consumer_set_protocol          (EpcConsumer  *consumer,
+                                                          EpcProtocol   protocol);
+EpcProtocol           epc_consumer_get_protocol          (EpcConsumer  *consumer);
 
-gboolean              epc_consumer_resolve_publisher (EpcConsumer  *consumer,
-                                                      guint         timeout);
+gboolean              epc_consumer_resolve_publisher     (EpcConsumer  *consumer,
+                                                          guint         timeout);
+gboolean              epc_consumer_is_publisher_resolved (EpcConsumer *consumer);
 
-gchar*                epc_consumer_lookup            (EpcConsumer  *consumer,
-                                                      const gchar  *key,
-                                                      gsize        *length,
-                                                      GError      **error);
-GList*                epc_consumer_list              (EpcConsumer  *consumer,
-                                                      const gchar  *pattern,
-                                                      GError      **error);
+gchar*                epc_consumer_lookup                (EpcConsumer  *consumer,
+                                                          const gchar  *key,
+                                                          gsize        *length,
+                                                          GError      **error);
+GList*                epc_consumer_list                  (EpcConsumer  *consumer,
+                                                          const gchar  *pattern,
+                                                          GError      **error);
 
-GQuark                epc_http_error_quark           (void) G_GNUC_CONST;
+GQuark                epc_http_error_quark               (void) G_GNUC_CONST;
 
 G_END_DECLS
 

@@ -159,12 +159,20 @@ enum
  * This data structure describes a pending authentication request
  * which shall be verified by an #EpcAuthHandler installed by
  * #epc_publisher_set_auth_handler.
+ *
+ * <note><para>
+ *  There is no way to retrieve the password from the #EpcAuthContext, as
+ *  the network protocol transfers just a hash code, not the actual password.
+ * </para></note>
  */
 struct _EpcAuthContext
 {
+  /*< private >*/
   SoupServerAuth *auth;
   EpcPublisher   *publisher;
   const gchar    *key;
+
+  /*< public >*/
 };
 
 /**
@@ -1366,10 +1374,10 @@ epc_auth_context_get_key (EpcAuthContext *context)
  * @context: a #EpcAuthContext
  * @password: the expected password
  *
- * Verifies that the password passed with the authentication request described
- * by @context matches the expected @password. The password cannot be verify
- * directly (i.e. by <function>strcmp</function>) because the authentication
- * mechanism sends hash codes ("fingerprints") instead of the actual password.
+ * Verifies that the password supplied with the network request matches
+ * the @password the application expects. There is no way to retrieve the
+ * password from the #EpcAuthContext, as the network protocol transfers
+ * just a hash code, not the actual password.
  *
  * Returns: %TRUE when the sent password matches, or %FALSE otherwise.
  */
