@@ -1,3 +1,16 @@
+2007-11-02  Mathias Hasselmann  <mathias@openismus.com>
+
+	Provide some initial API documentation.
+
+	* docs/reference/libepc/Makefile.am: Force rebuilding
+	of documentation when the code changes.
+	* docs/reference/libepc/.gitignore: Ignore *.bak files.
+	* libepc/consumer.c, libepc/consumer.h: Some initial documentation.
+	* libepc/publisher.c, libepc/publisher.h: Some initial documentation.
+	Rename EPC_PUBLISHER_SERVICE_TYPE to EPC_PUBLISHER_SERVICE_NAME.
+	* tests/test-consumer.c: Rename EPC_PUBLISHER_SERVICE_TYPE to
+	EPC_PUBLISHER_SERVICE_NAME.
+
 2007-11-01  Mathias Hasselmann  <mathias@openismus.com>
 
 	Integrate gtk-doc for API documentation.

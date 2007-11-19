@@ -76,3 +76,6 @@ include $(top_srcdir)/gtk-doc.make
 # Other files to distribute
 # e.g. EXTRA_DIST += version.xml.in
 EXTRA_DIST +=
+
+tmpl.stamp tmpl-build.stamp sgml.stamp sgml-build.stamp: \
+	$(top_srcdir)/libepc/libeasy-publish-consume.la

@@ -3,6 +3,21 @@
 #include <libsoup/soup-session-sync.h>
 #include <string.h>
 
+/**
+ * SECTION:consumer
+ * @short_description: this object is used to lookup published values
+ * @see_also: #EpcPublisher
+ * @include: libepc/consumer.h
+ *
+ * The #EpcConsumer object is used is used to lookup values by an
+ * #EpcPublisher service. Currently HTTP is used for communication.
+ * To find a publisher, use DNS-SD (also known as ZeroConf) to
+ * list #EPC_PUBLISHER_SERVICE_TYPE services.
+ *
+ * Currently neither encryption or autentication are implemented,
+ * but it is planed to change this in the future.
+ */
+
 enum
 {
   PROP_NONE,
@@ -105,13 +120,13 @@ epc_consumer_class_init (EpcConsumerClass *cls)
 
   g_object_class_install_property (oclass, PROP_HOST,
                                    g_param_spec_string ("host", "Host",
-                                                        "Hostname of the publisher service", NULL,
+                                                        "Host name of the publisher", NULL,
                                                         G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
                                                         G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
   g_object_class_install_property (oclass, PROP_PORT,
                                    g_param_spec_int ("port", "Port",
-                                                     "TCP/IP port of the publisher service",
+                                                     "TCP/IP port of the publisher",
                                                      1, G_MAXUINT16, 80,
                                                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
                                                      G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
@@ -120,6 +135,18 @@ epc_consumer_class_init (EpcConsumerClass *cls)
   g_type_class_add_private (cls, sizeof (EpcConsumerPrivate));
 }
 
+/**
+ * epc_consumer_new:
+ * @host: the host name of the publisher
+ * @port: the TCP/IP port number of the publisher
+ *
+ * Creates a new #EpcConsumer object. To find host name and port
+ * of a publisher service use DNS-SD (also known as ZeroConf) to
+ * list #EPC_PUBLISHER_SERVICE_TYPE services. To lookup published
+ * values, use #epc_consumer_lookup.
+ *
+ * Returns: The newly created #EpcConsumer object
+ */
 EpcConsumer*
 epc_consumer_new (const gchar *host,
                   guint16      port)
@@ -152,6 +179,19 @@ epc_consumer_create_request (EpcConsumer *self,
   return request;
 }
 
+/**
+ * epc_consumer_lookup:
+ * @consumer: the consumer
+ * @key: unique key of the value
+ * @length: location to store length in bytes of the contents, or %NULL
+ *
+ * Lookups information at the publisher the consumer is associated with.
+ * %NULL is returned when the publisher cannot be contacted or doesn't
+ * contain information for the requested key.
+ *
+ * Returns: The contents of the requested value,
+ * or %NULL when the key cannot be resolved
+ */
 gchar*
 epc_consumer_lookup (EpcConsumer *self,
                      const gchar *key,

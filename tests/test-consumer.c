@@ -117,7 +117,7 @@ main (int   argc,
                                    NULL);
 
   aui_service_dialog_set_browse_service_types (AUI_SERVICE_DIALOG (dialog),
-					       EPC_PUBLISHER_SERVICE_TYPE,
+					       EPC_PUBLISHER_SERVICE_NAME,
                                                NULL);
 
   if (GTK_RESPONSE_ACCEPT == gtk_dialog_run (GTK_DIALOG (dialog)))

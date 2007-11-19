@@ -8,6 +8,22 @@
 
 #include <string.h>
 
+/**
+ * SECTION:publisher
+ * @short_description: this object is used to publish values
+ * @see_also: #EpcConsumer
+ * @include: libepc/publish.h
+ *
+ * The #EpcPublisher starts a HTTP server to publish information.
+ * To allow #EpcConsumer to find it, it automatically publishes
+ * its contact information (host name, TCP/IP port) per DNS-SD.
+ *
+ * Currently neither encryption or autentication are implemented,
+ * but it is planed to change this in the future.
+ *
+ * Also there are some ideas on using DNS-DS to notify #EpcConsumer on changes.
+ */
+
 typedef struct _EpcRecord EpcRecord;
 
 enum
@@ -150,7 +166,7 @@ epc_publisher_constructed (GObject *object)
   if (!name)
     name = g_get_prgname ();
   if (!service)
-    service = EPC_PUBLISHER_SERVICE_TYPE;
+    service = EPC_PUBLISHER_SERVICE_NAME;
 
   listener = soup_server_get_listener (self->priv->server);
   port = soup_server_get_port (self->priv->server);
@@ -295,6 +311,21 @@ epc_publisher_class_init (EpcPublisherClass *cls)
   g_type_class_add_private (cls, sizeof (EpcPublisherPrivate));
 }
 
+/**
+ * epc_publisher_new:
+ * @name: the humany friendly service name
+ * @service: the DNS-SD service name, or %NULL
+ * @domain: the DNS domain, or %NULL
+ *
+ * Creates a new #EpcPublisher object. The publisher announces its service
+ * per DNS-SD to the DNS domain specified by @domain, using @name as service
+ * name and @service as service type.
+ *
+ * When %NULL is passed for @service or @domain reasonable
+ * default values are used.
+ *
+ * Returns: The newly created #EpcPublisher object.
+ */
 EpcPublisher*
 epc_publisher_new (const gchar *name,
                    const gchar *service,
@@ -304,6 +335,18 @@ epc_publisher_new (const gchar *name,
                        "service", service, "domain", domain, NULL);
 }
 
+/**
+ * epc_publisher_add:
+ * @publisher: the publisher
+ * @key: the key for addressing the value
+ * @value: the value to publish
+ * @length: the length of @value in bytes, or -1.
+ *
+ * Publishes a new @value on the #EpcPublisher using the unique @key for
+ * addressing. When -1 is passed or @length, @value is expected to be a
+ * null-terminated string and its length is determinated automatically
+ * using #strlen.
+ */
 void
 epc_publisher_add (EpcPublisher  *self,
                    const gchar   *key,
@@ -324,6 +367,18 @@ epc_publisher_add (EpcPublisher  *self,
   g_hash_table_insert (self->priv->records, g_strdup (key), record);
 }
 
+/**
+ * epc_publisher_add_file:
+ * @publisher: the publisher
+ * @key: the key for addressing the file
+ * @filename: the name of the file to publish
+ * @error: return location for a GError, or NULL
+ *
+ * Publishes the current content of a local file a new @value on the
+ * #EpcPublisher using the unique @key for addressing.
+ *
+ * Returns: %TRUE on success, or %FALSE when the file cannot be read.
+ */
 gboolean
 epc_publisher_add_file (EpcPublisher  *self,
                         const gchar   *key,
@@ -346,6 +401,14 @@ epc_publisher_add_file (EpcPublisher  *self,
   return (NULL != contents);
 }
 
+/**
+ * epc_publisher_set_name:
+ * @publisher: the publisher
+ * @name: the new name of this #EpcPublisher
+ *
+ * Changes the human friendly name this #EpcPublisher uses
+ * to announce its service. See #EpcPublisher:name for details.
+ */
 void
 epc_publisher_set_name (EpcPublisher *self,
                         const gchar  *name)
@@ -354,6 +417,15 @@ epc_publisher_set_name (EpcPublisher *self,
   g_object_set (self, "name", name, NULL);
 }
 
+/**
+ * epc_publisher_get_name:
+ * @publisher: the publisher
+ *
+ * Queries the human friendly name this #EpcPublisher uses
+ * to announce its service. See #EpcPublisher:name for details.
+ *
+ * Returns: The human friendly name of this #EpcPublisher.
+ */
 G_CONST_RETURN char*
 epc_publisher_get_name (EpcPublisher *self)
 {
@@ -361,14 +433,15 @@ epc_publisher_get_name (EpcPublisher *self)
   return self->priv->name;
 }
 
-void
-epc_publisher_set_domain (EpcPublisher *self,
-                          const gchar  *domain)
-{
-  g_return_if_fail (EPC_IS_PUBLISHER (self));
-  g_object_set (self, "domain", domain, NULL);
-}
-
+/**
+ * epc_publisher_get_domain:
+ * @publisher: the publisher
+ *
+ * Queries the DNS domain for which this #EpcPublisher announces its service.
+ * See #EpcPublisher:domain for details.
+ *
+ * Returns: The DNS-SD domain of this #EpcPublisher, or %NULL.
+ */
 G_CONST_RETURN char*
 epc_publisher_get_domain (EpcPublisher *self)
 {
@@ -376,14 +449,15 @@ epc_publisher_get_domain (EpcPublisher *self)
   return self->priv->domain;
 }
 
-void
-epc_publisher_set_service (EpcPublisher *self,
-                           const gchar  *service)
-{
-  g_return_if_fail (EPC_IS_PUBLISHER (self));
-  g_object_set (self, "service", service, NULL);
-}
-
+/**
+ * epc_publisher_get_service:
+ * @publisher: the publisher
+ *
+ * Queries the DNS-SD service name of this #EpcPublisher.
+ * See #EpcPublisher:service for details.
+ *
+ * Returns: The DNS-SD service name of this #EpcPublisher.
+ */
 G_CONST_RETURN char*
 epc_publisher_get_service (EpcPublisher *self)
 {
@@ -391,6 +465,15 @@ epc_publisher_get_service (EpcPublisher *self)
   return self->priv->service;
 }
 
+/**
+ * epc_publisher_run:
+ * @publisher: the publisher
+ *
+ * Starts the server component of the #EpcPublisher
+ * and blocks until it is shutdown using #epc_publisher_quit.
+ *
+ * To start the server without blocking call #epc_publisher_run_async.
+ */
 void
 epc_publisher_run (EpcPublisher *self)
 {
@@ -398,6 +481,14 @@ epc_publisher_run (EpcPublisher *self)
   soup_server_run (self->priv->server);
 }
 
+/**
+ * epc_publisher_run_async:
+ * @publisher: the publisher
+ *
+ * Starts the server component of the #EpcPublisher without blocking.
+ * To start the server without blocking call #epc_publisher_run_async.
+ * To stop the server component call #epc_publisher_quit.
+ */
 void
 epc_publisher_run_async (EpcPublisher *self)
 {
@@ -405,6 +496,13 @@ epc_publisher_run_async (EpcPublisher *self)
   soup_server_run_async (self->priv->server);
 }
 
+/**
+ * epc_publisher_quit:
+ * @publisher: the publisher
+ *
+ * Stops the server component of the #EpcPublisher
+ * started with #epc_publisher_run or #epc_publisher_run_async.
+ */
 void
 epc_publisher_quit (EpcPublisher *self)
 {

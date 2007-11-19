@@ -18,6 +18,7 @@ typedef struct _EpcConsumerPrivate EpcConsumerPrivate;
 
 struct _EpcConsumer
 {
+  /*< private >*/
   GObject parent_instance;
   EpcConsumerPrivate *priv;
 };

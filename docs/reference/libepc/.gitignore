@@ -1,4 +1,5 @@
 *.stamp
+*.bak
 
 html
 tmpl
