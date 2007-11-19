@@ -19,7 +19,7 @@
  *      Mathias Hasselmann
  */
 #include "framework.h"
-#include "libepc/avahi-shell.h"
+#include "libepc/shell.h"
 
 #include <avahi-client/client.h>
 #include <avahi-common/error.h>
@@ -34,7 +34,7 @@ gboolean
 epc_test_init (void)
 {
   epc_test_result = EPC_TEST_MASK_ALL;
-  epc_avahi_shell_ref ();
+  epc_shell_ref ();
 
   if (NULL == epc_test_loop)
     epc_test_loop = g_main_loop_new (NULL, FALSE);
@@ -42,7 +42,7 @@ epc_test_init (void)
   g_return_val_if_fail (NULL != epc_test_loop, FALSE);
 
   if (NULL == epc_test_client)
-    epc_test_client = epc_avahi_shell_create_client (AVAHI_CLIENT_IGNORE_USER_CONFIG |
+    epc_test_client = epc_shell_create_avahi_client (AVAHI_CLIENT_IGNORE_USER_CONFIG |
                                                      AVAHI_CLIENT_NO_FAIL, NULL, NULL);
 
   g_return_val_if_fail (NULL != epc_test_client, FALSE);
@@ -64,7 +64,7 @@ epc_test_quit (void)
   if (epc_test_loop)
     g_main_loop_unref (epc_test_loop);
 
-  epc_avahi_shell_unref ();
+  epc_shell_unref ();
 
   epc_test_service_browsers = NULL;
   epc_test_client = NULL;

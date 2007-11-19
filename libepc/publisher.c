@@ -45,7 +45,7 @@
  */
 
 #include "publisher.h"
-#include "avahi-shell.h"
+#include "shell.h"
 #include "dispatcher.h"
 #include "service-names.h"
 
@@ -407,7 +407,7 @@ epc_publisher_constructed (GObject *object)
     self->priv->name = g_strdup (name);
 
   if (!self->priv->service)
-    self->priv->service = epc_avahi_shell_create_service_type (NULL);
+    self->priv->service = epc_shell_create_service_type (NULL);
 
   listener = soup_server_get_listener (self->priv->server);
   port = soup_server_get_port (self->priv->server);

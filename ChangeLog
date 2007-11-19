@@ -1,5 +1,13 @@
 2007-11-06  Mathias Hasselmann  <mathias@openismus.com>
 
+	Rename EpcAvahiShell to EpcShell.
+
+	* libepc/dispatcher.c, libepc/publisher.c, libepc/shell.c,
+	libepc/shell.h, Makefile.am, tests/framework.c:
+	Rename EpcAvahiShell to EpcShell.
+
+2007-11-06  Mathias Hasselmann  <mathias@openismus.com>
+
 	Permit access when no authentication handler is installed.
 
 	* libepc/publisher.c: Let epc_publisher_server_auth_cb return TRUE,

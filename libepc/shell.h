@@ -18,24 +18,24 @@
  * Authors:
  *      Mathias Hasselmann
  */
-#ifndef __EPC_AVAHI_SHELL_H__
-#define __EPC_AVAHI_SHELL_H__
+#ifndef __EPC_SHELL_H__
+#define __EPC_SHELL_H__
 
 #include <glib.h>
 #include <avahi-client/client.h>
 
 G_BEGIN_DECLS
 
-void                        epc_avahi_shell_ref                 (void);
-void                        epc_avahi_shell_unref               (void);
+void                        epc_shell_ref                 (void);
+void                        epc_shell_unref               (void);
 
-G_CONST_RETURN AvahiPoll*   epc_avahi_shell_get_poll_api        (void);
-AvahiClient*                epc_avahi_shell_create_client       (AvahiClientFlags     flags,
-                                                                 AvahiClientCallback  callback,
-                                                                 gpointer             user_data);
+G_CONST_RETURN AvahiPoll*   epc_shell_get_avahi_poll_api  (void);
+AvahiClient*                epc_shell_create_avahi_client (AvahiClientFlags    flags,
+                                                           AvahiClientCallback callback,
+                                                           gpointer            user_data);
 
-gchar*                      epc_avahi_shell_create_service_type (const gchar         *basename);
+gchar*                      epc_shell_create_service_type (const gchar        *basename);
 
 G_END_DECLS
 
-#endif /* __EPC_AVAHI_SHELL_H__ */
+#endif /* __EPC_SHELL_H__ */

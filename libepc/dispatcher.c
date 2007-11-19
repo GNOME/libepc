@@ -46,7 +46,7 @@
  */
 
 #include "dispatcher.h"
-#include "avahi-shell.h"
+#include "shell.h"
 
 #include <avahi-client/publish.h>
 #include <avahi-common/alternative.h>
@@ -397,7 +397,7 @@ epc_dispatcher_reset_client (EpcDispatcher *self)
     }
 
   self->priv->client =
-    epc_avahi_shell_create_client (AVAHI_CLIENT_NO_FAIL,
+    epc_shell_create_avahi_client (AVAHI_CLIENT_NO_FAIL,
                                    epc_dispatcher_client_cb, self);
 
   g_return_if_fail (NULL != self->priv->client);
@@ -413,7 +413,7 @@ epc_dispatcher_init (EpcDispatcher *self)
   self->priv->services = g_hash_table_new_full (g_str_hash, g_str_equal,
                                                 NULL, epc_service_free);
 
-  epc_avahi_shell_ref ();
+  epc_shell_ref ();
   epc_dispatcher_reset_client (self);
 }
 
@@ -495,7 +495,7 @@ epc_dispatcher_dispose (GObject *object)
   g_free (self->priv->name);
   self->priv->name = NULL;
 
-  epc_avahi_shell_unref ();
+  epc_shell_unref ();
 
   G_OBJECT_CLASS (epc_dispatcher_parent_class)->dispose (object);
 }

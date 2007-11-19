@@ -18,7 +18,7 @@
  * Authors:
  *      Mathias Hasselmann
  */
-#include "avahi-shell.h"
+#include "shell.h"
 #include "service-names.h"
 
 #include <avahi-common/error.h>
@@ -33,47 +33,51 @@ struct _EpcAvahiShell
   AvahiGLibPoll *poll;
 };
 
-static EpcAvahiShell epc_avahi_shell;
+static EpcAvahiShell epc_shell;
 
 void
-epc_avahi_shell_ref (void)
+epc_shell_ref (void)
 {
-  if (0 == g_atomic_int_exchange_and_add (&epc_avahi_shell.ref_count, 1))
+  if (0 == g_atomic_int_exchange_and_add (&epc_shell.ref_count, 1))
     {
       avahi_set_allocator (avahi_glib_allocator ());
 
-      g_assert (NULL == epc_avahi_shell.poll);
-      epc_avahi_shell.poll = avahi_glib_poll_new (NULL, G_PRIORITY_DEFAULT);
+      g_assert (NULL == epc_shell.poll);
+      epc_shell.poll = avahi_glib_poll_new (NULL, G_PRIORITY_DEFAULT);
     }
+
+  g_debug ("%s: ref_count: %d", G_STRLOC, epc_shell.ref_count);
 }
 
 void
-epc_avahi_shell_unref (void)
+epc_shell_unref (void)
 {
-  if (g_atomic_int_dec_and_test (&epc_avahi_shell.ref_count))
+  if (g_atomic_int_dec_and_test (&epc_shell.ref_count))
     {
-      g_assert (NULL != epc_avahi_shell.poll);
-      avahi_glib_poll_free (epc_avahi_shell.poll);
-      epc_avahi_shell.poll = NULL;
+      g_assert (NULL != epc_shell.poll);
+      avahi_glib_poll_free (epc_shell.poll);
+      epc_shell.poll = NULL;
     }
+
+  g_debug ("%s: ref_count: %d", G_STRLOC, epc_shell.ref_count);
 }
 
 G_CONST_RETURN AvahiPoll*
-epc_avahi_shell_get_poll_api (void)
+epc_shell_get_avahi_poll_api (void)
 {
-  g_return_val_if_fail (NULL != epc_avahi_shell.poll, NULL);
-  return avahi_glib_poll_get (epc_avahi_shell.poll);
+  g_return_val_if_fail (NULL != epc_shell.poll, NULL);
+  return avahi_glib_poll_get (epc_shell.poll);
 }
 
 AvahiClient*
-epc_avahi_shell_create_client (AvahiClientFlags    flags,
+epc_shell_create_avahi_client (AvahiClientFlags    flags,
                                AvahiClientCallback callback,
                                gpointer            user_data)
 {
   gint error = AVAHI_OK;
   AvahiClient *client;
 
-  client = avahi_client_new (epc_avahi_shell_get_poll_api (),
+  client = avahi_client_new (epc_shell_get_avahi_poll_api (),
                              flags, callback, user_data, &error);
 
   if (!client)
@@ -83,9 +87,9 @@ epc_avahi_shell_create_client (AvahiClientFlags    flags,
   return client;
 }
 
-gchar*
-epc_avahi_shell_normalize_name (const gchar *name,
-                                gssize       length)
+static gchar*
+epc_shell_normalize_name (const gchar *name,
+                          gssize       length)
 {
   GError *error = NULL;
   gchar *normalized, *s;
@@ -113,7 +117,7 @@ epc_avahi_shell_normalize_name (const gchar *name,
 }
 
 gchar*
-epc_avahi_shell_create_service_type (const gchar *basename)
+epc_shell_create_service_type (const gchar *basename)
 {
   gchar *service_type = NULL;
   gchar *normalized = NULL;
@@ -130,7 +134,7 @@ epc_avahi_shell_create_service_type (const gchar *basename)
       return NULL;
     }
 
-  normalized = epc_avahi_shell_normalize_name (basename, -1);
+  normalized = epc_shell_normalize_name (basename, -1);
 
   if (normalized)
     {

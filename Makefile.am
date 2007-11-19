@@ -19,11 +19,11 @@ TESTS = \
 	tests/test-dispatcher-subtypes \
 	tests/test-dispatcher-local-collision
 libepc_include_HEADERS = \
-	libepc/avahi-shell.c \
 	libepc/consumer.h \
 	libepc/dispatcher.h \
 	libepc/marshal.h \
-	libepc/publisher.h
+	libepc/publisher.h \
+	libepc/shell.c
 libepc_ui_include_HEADERS = \
 	libepc-ui/passworddialog.h
 pkgconfig_DATA = \
@@ -31,11 +31,11 @@ pkgconfig_DATA = \
 	libepc-ui.pc
 
 libepc_libepc_la_SOURCES = \
-	libepc/avahi-shell.c \
 	libepc/consumer.c \
 	libepc/dispatcher.c \
 	libepc/marshal.c \
 	libepc/publisher.c \
+	libepc/shell.c \
 	$(libepc_HEADERS)
 
 libepc_ui_libepc_ui_la_SOURCES = \
