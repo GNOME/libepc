@@ -25,12 +25,12 @@
  * @see_also: #EpcPublisher
  * @include: libepc/consumer.h
  *
- * The #EpcConsumer object is used is used to lookup values by an
+ * The #EpcConsumer object is used to lookup values published by an
  * #EpcPublisher service. Currently HTTP is used for communication.
  * To find a publisher, use DNS-SD (also known as ZeroConf) to
  * list #EPC_PUBLISHER_SERVICE_TYPE services.
  *
- * Currently neither encryption or autentication are implemented,
+ * Currently neither encryption or authentication are implemented,
  * but it is planed to change this in the future.
  *
  * <example>
@@ -225,7 +225,7 @@ epc_consumer_create_request (EpcConsumer *self,
  * @key: unique key of the value
  * @length: location to store length in bytes of the contents, or %NULL
  *
- * Lookups information at the publisher the consumer is associated with.
+ * Looks up information at the publisher the consumer is associated with.
  * %NULL is returned when the publisher cannot be contacted or doesn't
  * contain information for the requested key.
  *

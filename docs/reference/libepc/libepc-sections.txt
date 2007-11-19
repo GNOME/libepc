@@ -20,7 +20,6 @@ EPC_DISPATCHER_GET_CLASS
 
 <SECTION>
 <FILE>publisher</FILE>
-EPC_PUBLISHER_SERVICE_NAME
 EpcPublisherPrivate
 EpcPublisherClass
 <TITLE>EpcPublisher</TITLE>

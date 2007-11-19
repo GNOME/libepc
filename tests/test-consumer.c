@@ -1,3 +1,10 @@
+/* This program demonstrates and tests lookup of published values.
+ *
+ * Usage: test-consumer [KEY...]
+ *
+ * When key names are passed those are used for lookup,
+ * otherwise value for the key "source-code" is retieved.
+ */
 #include "libepc/consumer.h"
 #include "libepc/publisher.h"
 #include "libepc/service-names.h"
@@ -6,6 +13,12 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+/* show_error:
+ * @message: the message to show
+ * @...: arguments for @message
+ *
+ * Creates a dialog to show an error message.
+ */
 static void
 show_error (const char *message, ...)
 {
@@ -25,6 +38,14 @@ show_error (const char *message, ...)
   gtk_widget_destroy (dialog);
 }
 
+/* show_value:
+ * @publisher: the publisher's name
+ * @key: the identifier of the value shown
+ * @value: the value to show
+ * @lenght: the length of @value in bytes
+ *
+ * Creates a dialog to show a text value.
+ */
 static void
 show_value (const gchar *publisher,
             const gchar *key,
@@ -45,6 +66,8 @@ show_value (const gchar *publisher,
                                         GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
                                         NULL);
 
+  /* Setup the heading label.
+   */
   markup = g_markup_printf_escaped (
     "Value stored for <b>%s</b> at <b>%s</b> (%d %s):",
     key, publisher, length, ngettext ("byte", "bytes", length));
@@ -55,6 +78,8 @@ show_value (const gchar *publisher,
   gtk_widget_show (label);
   g_free (markup);
 
+  /* Setup the text view and its scrollbars.
+   */
   buffer = gtk_text_buffer_new (NULL);
   gtk_text_buffer_set_text (buffer, value, length);
 
@@ -69,6 +94,8 @@ show_value (const gchar *publisher,
   gtk_container_add (GTK_CONTAINER (scroller), text_view);
   gtk_widget_show_all (scroller);
 
+  /* Attach the widgets to the dialog and show the dialog.
+   */
   gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox),
                       label, FALSE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox),
@@ -79,6 +106,13 @@ show_value (const gchar *publisher,
   gtk_widget_destroy (dialog);
 }
 
+/* lookup_value:
+ * @consumer: the #EpcConsumer
+ * @key: the key identifying the value
+ * @publisher: the name of the publisher
+ *
+ * Looks up a value identifyed by @key using the @consumer passed.
+ */
 static void
 lookup_value (EpcConsumer *consumer,
               const gchar *key,
@@ -104,14 +138,18 @@ main (int   argc,
       char *argv[])
 {
   EpcConsumer *consumer = NULL;
-  gchar *publisher = NULL;
+  gchar *publisher_name = NULL;
   GtkWidget *dialog;
   int i;
+
+  /* Initialize the toolkit */
 
   g_thread_init (NULL);
   gdk_threads_init ();
   gtk_init (&argc, &argv);
 
+  /* Show Avahi's stock dialog for choosing a publisher service.
+   */
   dialog = aui_service_dialog_new ("Choose an Easy Publish and Consume Service", NULL,
                                    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
                                    GTK_STOCK_CONNECT, GTK_RESPONSE_ACCEPT,
@@ -122,26 +160,38 @@ main (int   argc,
 
   if (GTK_RESPONSE_ACCEPT == gtk_dialog_run (GTK_DIALOG (dialog)))
     {
+      /* Retrieve contact information for the selected service.
+       */
       const gint port = aui_service_dialog_get_port (AUI_SERVICE_DIALOG (dialog));
       const gchar *host = aui_service_dialog_get_host_name (AUI_SERVICE_DIALOG (dialog));
-      publisher = g_strdup (aui_service_dialog_get_service_name (AUI_SERVICE_DIALOG (dialog)));
+
+      /* Create an EpcConsumer for the selected service.
+       */
       consumer = epc_consumer_new (host, port);
+
+      /* Retrieve the human readable name of the selected service,
+       * just for the purpose of displaying it in the UI later.
+       */
+      publisher_name = g_strdup (aui_service_dialog_get_service_name (AUI_SERVICE_DIALOG (dialog)));
     }
 
   gtk_widget_destroy (dialog);
 
   if (consumer)
     {
+      /* Lookup the values requested on the command line,
+       * or "source-code" when no arguments were passed.
+       */
       if (argc > 1)
         for (i = 1; i < argc; ++i)
-          lookup_value (consumer, argv[i], publisher);
+          lookup_value (consumer, argv[i], publisher_name);
       else
-        lookup_value (consumer, "source-code", publisher);
+        lookup_value (consumer, "source-code", publisher_name);
 
       g_object_unref (consumer);
     }
 
-  g_free (publisher);
+  g_free (publisher_name);
 
   return 0;
 }

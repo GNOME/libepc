@@ -1,5 +1,16 @@
 2007-11-02  Mathias Hasselmann  <mathias@openismus.com>
 
+	Improve API documentation and examples.
+
+	* libepc/consumer.c, libepc/dispatcher.c, libepc/publisher.c:
+	Improve API documentation.
+	* tests/test-consumer.c, tests/test-publisher.c: Insert code comments
+	as those files serve as examples and document command line arguments.
+	* docs/reference/libepc/libepc-sections.txt:
+	Remove EPC_PUBLISHER_SERVICE_NAME.
+
+2007-11-02  Mathias Hasselmann  <mathias@openismus.com>
+
 	Split EPC_PUBLISHER_SERVICE_NAME into EPC_SERVICE_NAME,
 	EPC_SERVICE_NAME_HTTP and EPC_SERVICE_NAME_HTTPS.
 

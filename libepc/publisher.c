@@ -387,9 +387,19 @@ epc_publisher_new (const gchar *name,
  * @length: the length of @value in bytes, or -1.
  *
  * Publishes a new @value on the #EpcPublisher using the unique @key for
- * addressing. When -1 is passed or @length, @value is expected to be a
- * null-terminated string and its length is determinated automatically
+ * addressing. When -1 is passed for @length, @value is expected to be a
+ * null-terminated string and its length is determined automatically
  * using <function>strlen</function>.
+ *
+ * <note><para>
+ *  Values published by the #EpcPublisher can be arbitrary data, possibly
+ *  including null characters in the middle. The kind of data associated
+ *  with a @key is chosen by the application providing values and has
+ *  to be specified separately.
+ *
+ *  Even though, when publishing plain text it is strongly recommended
+ *  to use UTF-8 encoding to avoid internationalization issues.
+ * </para></note>
  */
 void
 epc_publisher_add (EpcPublisher  *self,
@@ -418,8 +428,11 @@ epc_publisher_add (EpcPublisher  *self,
  * @filename: the name of the file to publish
  * @error: return location for a GError, or NULL
  *
- * Publishes the current content of a local file a new @value on the
- * #EpcPublisher using the unique @key for addressing.
+ * Publishes the current content of a local file as new @value on the
+ * #EpcPublisher using the unique @key for addressing. If the call was
+ * not successful, it returns %FALSE and sets error. The error domain
+ * is %G_FILE_ERROR. Possible error codes are those in the #GFileError
+ * enumeration.
  *
  * Returns: %TRUE on success, or %FALSE when the file cannot be read.
  */

@@ -24,11 +24,12 @@
  * @short_description: publish DNS-SD services
  * @include: libepc/dispatcher.h
  *
- * The #EpcDispatcher object provides an easy method or publishing
- * DNS-SD services. In opposition to established APIs like Avahi
- * or HOWL the #EpcDispatcher doesn't expose any state changes
- * reported by the DNS-SD daemon, but tries to correctly handle
- * them automatically.
+ * The #EpcDispatcher object provides an easy method for publishing
+ * DNS-SD services. Unlike established APIs like Avahi or HOWL the
+ * #EpcDispatcher doesn't expose any state changes reported by the
+ * DNS-SD daemon, but tries handle them automatically. Such state
+ * changes include for instance name collisions or restart of
+ * the DNS-SD daemon.
  *
  * <example>
  *  <title>Publish a printing service</title>
@@ -544,20 +545,32 @@ epc_dispatcher_new (AvahiIfIndex   interface,
  * @dispatcher: the #EpcDispatcher
  * @type: the machine friendly name of the service
  * @domain: the DNS domain for the announcement, or %NULL
- * @host: the host name of the service, or %NULL
+ * @host: the fully qualified host name of the service, or %NULL
  * @port: the TCP/IP port of the service
  * @...: an optional list of TXT records, terminated by %NULL
  *
  * Announces a TCP/IP service via DNS-SD.
  *
  * The service @type shall be a well-known DNS-SD service type as listed on
- * http://www.dns-sd.org/ServiceTypes.html. This function tries to announce
- * both the base service type and the sub service type, when the service name
- * contains more than just one dot: Passing "_anon._sub._ftp._tcp" for @type
- * will announce the services "_ftp._tcp" and "_anon._sub._ftp._tcp".
+ * <ulink url="http://www.dns-sd.org/ServiceTypes.html" />. This function tries
+ * to announce both the base service type and the sub service type when the
+ * service name contains more than just one dot: Passing "_anon._sub._ftp._tcp"
+ * for @type will announce the services "_ftp._tcp" and "_anon._sub._ftp._tcp".
  *
- * Passing %NULL for @domain or @host allows the DNS-DS damon to choose the
- * DNS domain, respectivly the host name.
+ * The function can be called more than once. Is this necessary when the server
+ * provides different access methods. For instance a web server could provide
+ * HTTP and encrypted HTTPS services at the same time. Calling this function
+ * multiple times also is useful for servers providing the same service at
+ * different, but not all network interfaces of the host.
+ *
+ * When passing %NULL for @domain, the service is announced within the local
+ * network only, otherwise it is announced at the specified DNS domain. The
+ * responsible server must be <ulink url="http://www.dns-sd.org/ServerSetup.html">
+ * configured to support DNS-SD</ulink>.
+ *
+ * Pass %NULL for @host to use the official host name of the machine to announce
+ * the service. On machines with multiple DNS entries you might want to explictly
+ * choose a fully qualified DNS name to announce the service.
  */
 void
 epc_dispatcher_add_service (EpcDispatcher *self,
