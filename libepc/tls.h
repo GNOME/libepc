@@ -1,22 +1,20 @@
-/* Easy Publish and Consume Library
- * Copyright (C) 2007  Openismus GmbH
+/* Easy Publish and Consume Library Copyright (C) 2007  Openismus GmbH
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by the
+ * Free Software Foundation; either version 2.1 of the License, or (at your
+ * option) any later version.
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * Authors:
- *      Mathias Hasselmann
+ * Authors: Mathias Hasselmann
  */
 #ifndef __EPC_TLS_H__
 #define __EPC_TLS_H__
@@ -24,13 +22,54 @@
 #include <glib-object.h>
 #include <gnutls/x509.h>
 
+/**
+ * EPC_TLS_ERROR:
+ *
+ * Error domain for TLS operations. Errors in this domain will
+ * be <citetitle>GNU TLS</citetitle> error codes. See GError
+ * for information on error domains.
+ */
 #define EPC_TLS_ERROR (epc_tls_error_quark ())
 
+/**
+ * EPC_TLS_SECONDS_PER_MINUTE:
+ *
+ * The number of seconds per minute.
+ */
 #define EPC_TLS_SECONDS_PER_MINUTE  (60)
+
+/**
+ * EPC_TLS_SECONDS_PER_HOUR:
+ *
+ * The number of seconds per hour.
+ */
 #define EPC_TLS_SECONDS_PER_HOUR    (60 * EPC_TLS_SECONDS_PER_MINUTE)
+
+/**
+ * EPC_TLS_SECONDS_PER_DAY:
+ *
+ * The number of seconds per day.
+ */
 #define EPC_TLS_SECONDS_PER_DAY     (24 * EPC_TLS_SECONDS_PER_HOUR)
 
+/**
+ * EpcTlsPrivkeyEnterHook:
+ *
+ * This hook is invoked when the TLS engine starts generating a private key.
+ * It can be used inform the user about this lengthly process by creating
+ * an #EpcEntropyProgress dialog.
+ *
+ * Returns: Information which shall be passed to the #EpcTlsPrivkeyLeaveHook.
+ */
 typedef gpointer (*EpcTlsPrivkeyEnterHook) (void);
+
+/**
+ * EpcTlsPrivkeyLeaveHook:
+ * @data: the information returned by #EpcTlsPrivkeyEnterHook
+ *
+ * This hook is invoked when the TLS engine has finished a privatekey.
+ * It shall be used to tear down information shown by #EpcTlsPrivkeyEnterHook.
+ */
 typedef void     (*EpcTlsPrivkeyLeaveHook) (gpointer data);
 
 G_BEGIN_DECLS
@@ -57,8 +96,8 @@ gboolean              epc_tls_private_key_save         (gnutls_x509_privkey_t   
 void                  epc_tls_set_private_key_hooks    (EpcTlsPrivkeyEnterHook  enter,
                                                         EpcTlsPrivkeyLeaveHook  leave);
 
-gchar*                epc_tls_get_certificate_filename (const gchar            *basename);
-gchar*                epc_tls_get_private_key_filename (const gchar            *basename);
+gchar*                epc_tls_get_certificate_filename (const gchar            *hostname);
+gchar*                epc_tls_get_private_key_filename (const gchar            *hostname);
 gboolean              epc_tls_get_server_credentials   (const gchar            *hostname,
                                                         gchar                 **crtfile,
                                                         gchar                 **keyfile,

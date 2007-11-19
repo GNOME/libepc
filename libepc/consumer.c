@@ -34,23 +34,60 @@
  * @short_description: lookup published values
  * @see_also: #EpcPublisher
  * @include: libepc/consumer.h
+ * @stability: Unstable
  *
  * The #EpcConsumer object is used to lookup values published by an
  * #EpcPublisher service. Currently HTTP is used for communication.
  * To find a publisher, use DNS-SD (also known as ZeroConf) to
  * list #EPC_PUBLISHER_SERVICE_TYPE services.
  *
- * <example>
+ * <example id="lookup-value">
  *  <title>Lookup a value</title>
  *  <programlisting>
- *   your_app_discover_server (&tansport, &host, &port);
- *   consumer = epc_consumer_new (transport, host, port);
+ *   service_name = choose_recently_used_service ();
+ *
+ *   if (service_name)
+ *     consumer = epc_consumer_new_for_name (service_name);
+ *   else if (your_app_discover_server (&protocol, &hostname, &port))
+ *     consumer = epc_consumer_new (protocol, hostname, port);
  *
  *   value = epc_consumer_lookup (consumer, "database.glom", NULL);
  *   g_object_unref (consumer);
  *
  *   your_app_consume_value (value);
  *   g_free (value);
+ *  </programlisting>
+ * </example>
+ *
+ * <example id="find-publisher">
+ *  <title>Find a publisher</title>
+ *  <programlisting>
+ *   dialog = aui_service_dialog_new ("Choose a Service", main_window,
+ *                                    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+ *                                    GTK_STOCK_CONNECT, GTK_RESPONSE_ACCEPT,
+ *                                    NULL);
+ *
+ *   aui_service_dialog_set_browse_service_types (AUI_SERVICE_DIALOG (dialog),
+ *                                                EPC_SERVICE_TYPE_HTTPS,
+ *                                                EPC_SERVICE_TYPE_HTTP,
+ *                                                NULL);
+ *
+ *  aui_service_dialog_set_service_type_name (AUI_SERVICE_DIALOG (dialog),
+ *                                            EPC_SERVICE_TYPE_HTTPS,
+ *                                            "Secure Transport");
+ *  aui_service_dialog_set_service_type_name (AUI_SERVICE_DIALOG (dialog),
+ *                                            EPC_SERVICE_TYPE_HTTP,
+ *                                            "Insecure Transport");
+ *
+ *  if (GTK_RESPONSE_ACCEPT == gtk_dialog_run (GTK_DIALOG (dialog)))
+ *   {
+ *      const gchar *transport = aui_service_dialog_get_service_type (AUI_SERVICE_DIALOG (dialog));
+ *      const gchar *hostname = aui_service_dialog_get_host_name (AUI_SERVICE_DIALOG (dialog));
+ *      const gint port = aui_service_dialog_get_port (AUI_SERVICE_DIALOG (dialog));
+ *
+ *      consumer = epc_consumer_new (epc_service_type_get_protocol (transport), hostname, port);
+ *      ...
+ *   }
  *  </programlisting>
  * </example>
  */
@@ -60,7 +97,7 @@ enum
   PROP_NONE,
   PROP_APPLICATION,
   PROP_PROTOCOL,
-  PROP_HOST,
+  PROP_HOSTNAME,
   PROP_PORT,
   PROP_NAME,
   PROP_DOMAIN
@@ -88,8 +125,8 @@ struct _EpcConsumerPrivate
 
   gchar        *application;
   EpcProtocol   protocol;
+  gchar        *hostname;
   guint16       port;
-  gchar        *host;
 
   gchar        *service_name;
   gchar        *service_domain;
@@ -165,9 +202,9 @@ epc_consumer_set_property (GObject      *object,
         self->priv->protocol = g_value_get_enum (value);
         break;
 
-      case PROP_HOST:
-        g_assert (NULL == self->priv->host);
-        self->priv->host = g_value_dup_string (value);
+      case PROP_HOSTNAME:
+        g_assert (NULL == self->priv->hostname);
+        self->priv->hostname = g_value_dup_string (value);
         break;
 
       case PROP_PORT:
@@ -209,8 +246,8 @@ epc_consumer_get_property (GObject    *object,
         g_value_set_enum (value, self->priv->protocol);
         break;
 
-      case PROP_HOST:
-        g_value_set_string (value, self->priv->host);
+      case PROP_HOSTNAME:
+        g_value_set_string (value, self->priv->hostname);
         break;
 
       case PROP_PORT:
@@ -272,8 +309,8 @@ epc_consumer_service_resolver_cb (AvahiServiceResolver   *resolver,
 
   g_main_loop_quit (self->priv->loop);
 
-  g_free (self->priv->host);
-  self->priv->host = g_strdup (hostname);
+  g_free (self->priv->hostname);
+  self->priv->hostname = g_strdup (hostname);
   self->priv->port = port;
 
   avahi_service_resolver_free (resolver);
@@ -356,11 +393,6 @@ epc_consumer_create_service_browsers (EpcConsumer *self,
     }
 
   va_end (args);
-/*
-  self->priv->service_browser =
-
-      g_return_if_fail (NULL != self->priv->service_browser);
-*/
 }
 
 static void
@@ -371,7 +403,7 @@ epc_consumer_constructed (GObject *object)
   if (G_OBJECT_CLASS (epc_consumer_parent_class)->constructed)
     G_OBJECT_CLASS (epc_consumer_parent_class)->constructed (object);
 
-  if (!self->priv->host)
+  if (!self->priv->hostname)
     {
       self->priv->client = epc_shell_create_avahi_client (AVAHI_CLIENT_NO_FAIL, NULL, NULL);
       g_return_if_fail (NULL != self->priv->client);
@@ -412,8 +444,8 @@ epc_consumer_dispose (GObject *object)
       self->priv->loop = NULL;
     }
 
-  g_free (self->priv->host);
-  self->priv->host = NULL;
+  g_free (self->priv->hostname);
+  self->priv->hostname = NULL;
 
   G_OBJECT_CLASS (epc_consumer_parent_class)->dispose (object);
 }
@@ -451,8 +483,8 @@ epc_consumer_class_init (EpcConsumerClass *cls)
                                                       G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                       G_PARAM_STATIC_BLURB));
 
-  g_object_class_install_property (oclass, PROP_HOST,
-                                   g_param_spec_string ("host", "Host",
+  g_object_class_install_property (oclass, PROP_HOSTNAME,
+                                   g_param_spec_string ("hostname", "Host Name",
                                                         "Host name of the publisher to use", NULL,
                                                         G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
                                                         G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
@@ -534,6 +566,17 @@ epc_consumer_class_init (EpcConsumerClass *cls)
                                                  _epc_marshal_VOID__STRING_POINTER_POINTER, G_TYPE_NONE,
                                                  3, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_POINTER);
 
+  /**
+   * EpcConsumer::publisher-resolved:
+   * @consumer: the #EpcConsumer emitting the signal
+   * @protocol: the publisher's transport protocol
+   * @hostname: the publisher's host name
+   * @port:  the publisher's TCP/IP port
+   *
+   * This signal is emitted when a #EpcConsumer created with
+   * #epc_consumer_new_for_name or #epc_consumer_new_for_name_full
+   * has found its #EpcPublisher.
+   */
   signals[SIGNAL_PUBLISHER_RESOLVED] = g_signal_new ("publisher-resolved", EPC_TYPE_CONSUMER, G_SIGNAL_RUN_FIRST,
                                                      G_STRUCT_OFFSET (EpcConsumerClass, publisher_resolved), NULL, NULL,
                                                      _epc_marshal_VOID__ENUM_STRING_UINT, G_TYPE_NONE,
@@ -545,35 +588,78 @@ epc_consumer_class_init (EpcConsumerClass *cls)
 /**
  * epc_consumer_new:
  * @protocol: the transport protocol to use
- * @host: the host name of the publisher
- * @port: the TCP/IP port number of the publisher
+ * @hostname: the publisher's host name
+ * @port:  the publisher's TCP/IP port
  *
- * Creates a new #EpcConsumer object. To find host name and port
- * of a publisher service use DNS-SD (also known as ZeroConf) to
- * list #EPC_PUBLISHER_SERVICE_TYPE services. To lookup published
- * values, use #epc_consumer_lookup.
+ * Creates a new #EpcConsumer object and associates it with a known
+ * #EpcPublisher. Values for @protocol, @hostname and @port can retrieve
+ * for instance by using the service selection dialog of bavahi-ui
+ * (#AuiServiceDialog). Call #epc_service_type_get_protocol to convert
+ * the service-type provided by that dialog into an #EpcProtocol value.
+ *
+ * The connection is not established until #epc_consumer_lookup
+ * is called to retrieve values.
  *
  * Returns: The newly created #EpcConsumer object
  */
 EpcConsumer*
 epc_consumer_new (EpcProtocol  protocol,
-                  const gchar *host,
+                  const gchar *hostname,
                   guint16      port)
 {
   g_return_val_if_fail (EPC_PROTOCOL_UNKNOWN != protocol, NULL);
-  g_return_val_if_fail (NULL != host, NULL);
+  g_return_val_if_fail (NULL != hostname, NULL);
   g_return_val_if_fail (port > 0, NULL);
 
   return g_object_new (EPC_TYPE_CONSUMER, "protocol", protocol,
-                       "host", host, "port", port, NULL);
+                       "hostname", hostname, "port", port, NULL);
 }
 
+/**
+ * epc_consumer_new_for_name:
+ * @name: the service name of an #EpcPublisher
+ *
+ * Creates a new #EpcConsumer object and associates it with the #EpcPublisher
+ * announcing itself with @name on the local network. The DNS-SD service name
+ * used for searching the #EpcPublisher is derived from the application's
+ * program name as returned by #g_get_prgname.
+ *
+ * <note><para>
+ *  The connection is not established until #epc_consumer_lookup is called
+ *  to retrieve values. Use #epc_consumer_resolve_publisher or connect to the
+ *  #EpcConsumer::publisher-resolved signal to wait until the #EpcPublisher
+ *  has been found.
+ * </para></note>
+ *
+ * For more control have a look at #epc_consumer_new_for_name_full.
+ *
+ * Returns: The newly created #EpcConsumer object
+ */
 EpcConsumer*
 epc_consumer_new_for_name (const gchar *name)
 {
   return epc_consumer_new_for_name_full (name, NULL, NULL);
 }
 
+/**
+ * epc_consumer_new_for_name_full:
+ * @name: the service name of an #EpcPublisher
+ * @application: the publisher's program name
+ * @domain: the DNS domain of the #EpcPublisher
+ *
+ * Creates a new #EpcConsumer object and associates it with the #EpcPublisher
+ * announcing itself with @name on @domain. The DNS-SD service of the
+ * #EpcPublisher is derived from @application using #epc_service_type_new.
+ *
+ * <note><para>
+ *  The connection is not established until #epc_consumer_lookup is called
+ *  to retrieve values. Use #epc_consumer_resolve_publisher or connect to the
+ *  #EpcConsumer::publisher-resolved signal to wait until the #EpcPublisher
+ *  has been found.
+ * </para></note>
+ *
+ * Returns: The newly created #EpcConsumer object
+ */
 EpcConsumer*
 epc_consumer_new_for_name_full (const gchar *name,
                                 const gchar *application,
@@ -587,6 +673,14 @@ epc_consumer_new_for_name_full (const gchar *name,
                        "name", name, NULL);
 }
 
+/**
+ * epc_consumer_set_protocol:
+ * @consumer: a #EpcConsumer
+ * @protocol: the new transport protocol
+ *
+ * Changes the transport protocol to use for contacting the publisher.
+ * See #EpcConsumer:protocol.
+ */
 void
 epc_consumer_set_protocol (EpcConsumer *self,
                            EpcProtocol  protocol)
@@ -595,6 +689,15 @@ epc_consumer_set_protocol (EpcConsumer *self,
   g_object_set (self, "protocol", protocol, NULL);
 }
 
+/**
+ * epc_consumer_get_protocol:
+ * @consumer: a #EpcConsumer
+ *
+ * Queries the transport protocol to use for contacting the publisher.
+ * See #EpcConsumer:protocol.
+ *
+ * Returns: The transport protocol this consumer uses.
+ */
 EpcProtocol
 epc_consumer_get_protocol (EpcConsumer *self)
 {
@@ -613,13 +716,25 @@ epc_consumer_wait_cb (gpointer data)
   return FALSE;
 }
 
+/**
+ * epc_consumer_resolve_publisher:
+ * @consumer: a #EpcConsumer
+ * @timeout: the amount of milliseconds to wait
+ *
+ * Waits until the @consumer has found its #EpcPublisher.
+ * A @timeout of 0 requests infinite waiting.
+ *
+ * See also: #EpcConsumer::publisher-resolved
+ *
+ * Returns: %TRUE when a publisher has been found, %FALSE otherwise.
+ */
 gboolean
 epc_consumer_resolve_publisher (EpcConsumer *self,
                                 guint        timeout)
 {
   g_return_val_if_fail (EPC_IS_CONSUMER (self), FALSE);
 
-  if (NULL == self->priv->host)
+  if (NULL == self->priv->hostname)
     {
       if (timeout > 0)
         g_timeout_add (timeout, epc_consumer_wait_cb, self);
@@ -627,7 +742,7 @@ epc_consumer_resolve_publisher (EpcConsumer *self,
       g_main_loop_run (self->priv->loop);
     }
 
-  return (NULL != self->priv->host);
+  return (NULL != self->priv->hostname);
 }
 
 static SoupMessage*
@@ -644,11 +759,11 @@ epc_consumer_create_request (EpcConsumer *self,
 
   epc_consumer_resolve_publisher (self, EPC_CONSUMER_DEFAULT_TIMEOUT);
 
-  g_return_val_if_fail (NULL != self->priv->host, NULL);
+  g_return_val_if_fail (NULL != self->priv->hostname, NULL);
   g_return_val_if_fail (self->priv->port > 0, NULL);
 
   request_uri = epc_service_type_build_uri (self->priv->protocol,
-                                            self->priv->host,
+                                            self->priv->hostname,
                                             self->priv->port,
                                             path);
 

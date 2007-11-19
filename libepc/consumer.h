@@ -33,6 +33,11 @@ G_BEGIN_DECLS
 #define EPC_IS_CONSUMER_CLASS(obj)  (G_TYPE_CHECK_CLASS_TYPE(obj, EPC_TYPE_CONSUMER))
 #define EPC_CONSUMER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), EPC_TYPE_CONSUMER, EpcConsumerClass))
 
+/**
+ * EPC_CONSUMER_DEFAULT_TIMEOUT:
+ *
+ * The timeout used when calling #epc_consumer_resolve_publisher internally.
+ */
 #define EPC_CONSUMER_DEFAULT_TIMEOUT 5000
 
 typedef struct _EpcConsumer        EpcConsumer;
@@ -53,8 +58,9 @@ struct _EpcConsumer
 
 /**
  * EpcConsumerClass:
- * @parent_class: virtual methods of the base class
- * @authenticate: virtual method of the "authenticate" signal
+ * @authenticate: virtual method of the #EpcConsumer::authenticate signal
+ * @reauthenticate: virtual method of the #EpcConsumer::re-authenticate signal
+ * @publisher_resolved: virtual method of the #EpcConsumer::publisher-resolved signal
  *
  * Virtual methods of the #EpcConsumer class.
  */
@@ -76,14 +82,14 @@ struct _EpcConsumerClass
 
   void (*publisher_resolved) (EpcConsumer  *consumer,
                               EpcProtocol   protocol,
-                              const gchar  *host,
+                              const gchar  *hostname,
                               guint         port);
 };
 
 GType                 epc_consumer_get_type          (void) G_GNUC_CONST;
 
 EpcConsumer*          epc_consumer_new               (EpcProtocol  protocol,
-                                                      const gchar *host,
+                                                      const gchar *hostname,
                                                       guint16      port);
 EpcConsumer*          epc_consumer_new_for_name      (const gchar *name);
 EpcConsumer*          epc_consumer_new_for_name_full (const gchar *name,
@@ -94,7 +100,7 @@ void                  epc_consumer_set_protocol      (EpcConsumer *consumer,
                                                       EpcProtocol  protocol);
 EpcProtocol           epc_consumer_get_protocol      (EpcConsumer *consumer);
 
-gboolean              epc_consumer_resolve_publisher (EpcConsumer *self,
+gboolean              epc_consumer_resolve_publisher (EpcConsumer *consumer,
                                                       guint        timeout);
 
 gchar*                epc_consumer_lookup            (EpcConsumer *consumer,

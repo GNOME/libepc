@@ -91,7 +91,7 @@ EPC_CONSUMER_GET_CLASS
 
 <SECTION>
 <FILE>shell</FILE>
-<TITLE>Library Management</TITLE>
+<TITLE>EpcShell</TITLE>
 epc_shell_create_avahi_client
 epc_shell_enter
 epc_shell_get_avahi_poll_api
@@ -103,14 +103,13 @@ epc_shell_unref
 
 <SECTION>
 <FILE>tls</FILE>
-<TITLE>TLS Support</TITLE>
+<TITLE>EpcTls</TITLE>
 EpcTlsPrivkeyEnterHook
 EpcTlsPrivkeyLeaveHook
 EPC_TLS_ERROR
 EPC_TLS_SECONDS_PER_DAY
 EPC_TLS_SECONDS_PER_HOUR
 EPC_TLS_SECONDS_PER_MINUTE
-epc_tls_error_quark
 epc_tls_certificate_load
 epc_tls_certificate_new
 epc_tls_certificate_save
@@ -121,20 +120,22 @@ epc_tls_get_private_key_filename
 epc_tls_get_certificate_filename
 epc_tls_get_server_credentials
 epc_tls_set_private_key_hooks
+<SUBSECTION Standard>
+epc_tls_error_quark
 </SECTION>
 
 <SECTION>
 <FILE>service-type</FILE>
-<TITLE>Service Types</TITLE>
+<TITLE>EpcServiceType</TITLE>
+EpcProtocol
 EPC_SERVICE_TYPE_HTTP
 EPC_SERVICE_TYPE_HTTPS
-EpcProtocol
 epc_protocol_get_service_type
-epc_protocol_get_type
 epc_protocol_get_uri_scheme
 epc_service_type_build_uri
 epc_service_type_get_protocol
 epc_service_type_new
 <SUBSECTION Standard>
 EPC_TYPE_PROTOCOL
+epc_protocol_get_type
 </SECTION>

@@ -27,6 +27,15 @@
 #include <gmodule.h>
 #include <gnutls/gnutls.h>
 
+/**
+ * SECTION:shell
+ * @short_description: library management functions
+ * @include: libepc/shell.h
+ * @stability: Private
+ *
+ * The functions collected here are used to manage library resources.
+ */
+
 typedef struct _EpcAvahiShell EpcAvahiShell;
 
 struct _EpcAvahiShell

@@ -1,3 +1,14 @@
+2007-11-10  Mathias Hasselmann  <mathias@openismus.com>
+
+	Update API documentation.
+
+	* docs/reference/libepc/libepc-docs.xml,
+	docs/reference/libepc/libepc-sections.txt, libepc/consumer.c,
+	libepc/consumer.h, libepc/dispatcher.c, libepc/publisher.c,
+	libepc/service-type.c, libepc/shell.c, libepc/tls.c, libepc/tls.h:
+	Update API documentation.
+	* docs/reference/libepc/Makefile.am: Improve stamp file dependencies.
+
 2007-11-09  Mathias Hasselmann  <mathias@openismus.com>
 
 	Use new avahi-ui API for overriding service type names (Avahi #180).

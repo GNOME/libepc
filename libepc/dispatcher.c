@@ -19,10 +19,20 @@
  *      Mathias Hasselmann
  */
 
+#include "dispatcher.h"
+#include "shell.h"
+
+#include <avahi-client/publish.h>
+#include <avahi-common/alternative.h>
+#include <avahi-common/error.h>
+
+#include <string.h>
+
 /**
  * SECTION:dispatcher
  * @short_description: publish DNS-SD services
  * @include: libepc/dispatcher.h
+ * @stability: Private
  *
  * The #EpcDispatcher object provides an easy method for publishing
  * DNS-SD services. Unlike established APIs like Avahi or HOWL the
@@ -31,7 +41,7 @@
  * changes include for instance name collisions or restart of
  * the DNS-SD daemon.
  *
- * <example>
+ * <example id="publish-printing-service">
  *  <title>Publish a printing service</title>
  *  <programlisting>
  *   dispatcher = epc_dispatcher_new (AVAHI_IF_UNSPEC,
@@ -44,15 +54,6 @@
  *  </programlisting>
  * </example>
  */
-
-#include "dispatcher.h"
-#include "shell.h"
-
-#include <avahi-client/publish.h>
-#include <avahi-common/alternative.h>
-#include <avahi-common/error.h>
-
-#include <string.h>
 
 typedef struct _EpcService EpcService;
 

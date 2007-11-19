@@ -30,6 +30,15 @@
 #include <glib/gi18n-lib.h>
 #include <glib/gstdio.h>
 
+/**
+ * SECTION:tls
+ * @short_description: TLS support
+ * @include: libepc/shell.h
+ * @stability: Private
+ *
+ * Functions for handling TLS (X.509) certificates and keys.
+ */
+
 #define epc_tls_check(result) G_STMT_START{     \
   if (GNUTLS_E_SUCCESS != (result))             \
     goto out;                                   \
@@ -58,12 +67,12 @@ epc_tls_error_quark (void)
 }
 
 static gchar*
-epc_tls_get_filename (const gchar *basename,
+epc_tls_get_filename (const gchar *hostname,
                       const gchar *category)
 {
   const gchar *progname = g_get_prgname ();
 
-  g_return_val_if_fail (NULL != basename, NULL);
+  g_return_val_if_fail (NULL != hostname, NULL);
   g_return_val_if_fail (NULL != category, NULL);
 
   if (NULL == progname)
@@ -76,19 +85,41 @@ epc_tls_get_filename (const gchar *basename,
     }
 
   return g_build_filename (g_get_user_config_dir (), progname,
-                           "libepc", category, basename, NULL);
+                           "libepc", category, hostname, NULL);
 }
 
+/**
+ * epc_tls_get_private_key_filename:
+ * @hostname: the server's host name
+ *
+ * Queries the preferred location for storing private X.509 keys for the server
+ * identified by @hostname. This file is located in the current user's XDG
+ * configuration folder (#g_get_user_config_dir). The filename also contains
+ * program's name when specified by #g_set_prgname.
+ *
+ * Returns: The preferred private key location for @hostname.
+ */
 gchar*
-epc_tls_get_private_key_filename (const gchar *basename)
+epc_tls_get_private_key_filename (const gchar *hostname)
 {
-  return epc_tls_get_filename (basename, "keys");
+  return epc_tls_get_filename (hostname, "keys");
 }
 
+/**
+ * epc_tls_get_certificate_filename:
+ * @hostname: the server's host name
+ *
+ * Queries the preferred location for storing X.509 certificates for the server
+ * identified by @hostname. This file is located in the current user's XDG
+ * configuration folder (#g_get_user_config_dir). The filename also contains
+ * program's name when specified by #g_set_prgname.
+ *
+ * Returns: The preferred certificate location for @hostname.
+ */
 gchar*
-epc_tls_get_certificate_filename (const gchar *basename)
+epc_tls_get_certificate_filename (const gchar *hostname)
 {
-  return epc_tls_get_filename (basename, "certs");
+  return epc_tls_get_filename (hostname, "certs");
 }
 
 static gpointer
@@ -101,6 +132,21 @@ epc_tls_private_key_enter_default (void)
   return NULL;
 }
 
+/**
+ * epc_tls_set_private_key_hooks:
+ * @enter: the function to call on start
+ * @leave: the function to call when finished
+ *
+ * Installs functions which are called when private keys have to be generated.
+ *
+ * Generating secure keys needs quite some time, so those functions shall be
+ * called to provide  some feedback to your users. Key generation takes place
+ * in a separate background thread, whilst the calling thread waits in a
+ * GMainLoop. So for instance the GTK+ widget system remains responsible during
+ * that phase.
+ *
+ * See also: #EpcEntropyProgress
+ */
 void
 epc_tls_set_private_key_hooks (EpcTlsPrivkeyEnterHook enter,
                                EpcTlsPrivkeyLeaveHook leave)
@@ -120,6 +166,27 @@ epc_tls_private_key_thread (gpointer data)
   return NULL;
 }
 
+/**
+ * epc_tls_private_key_new:
+ * @error: return location for a #GError, or %NULL
+ *
+ * Creates a self private X.509 key. Generating secure keys needs quite
+ * some time. Call #epc_tls_set_private_key_hooks to install hooks providing
+ * some feedback to your users. Key generation takes place in a separate
+ * background thread, whilst the calling thread waits in a GMainLoop. So
+ * for instance the GTK+ widget system remains responsible during that
+ * phase.
+ *
+ * If the call was successful, the newly created key is returned. This
+ * certificate can be used with functions of the <citetitle>GNU TLS</citetitle>
+ * library. If the call was not successful, it returns %NULL and sets @error.
+ * The error domain is #EPC_TLS_ERROR. Error codes are taken from the
+ * <citetitle>GNU TLS</citetitle> library.
+ *
+ * See also: #EpcEntropyProgress
+ *
+ * Returns: The newly created private key object, or %NULL.
+ */
 gnutls_x509_privkey_t
 epc_tls_private_key_new (GError **error)
 {
@@ -163,6 +230,21 @@ out:
   return context.key;
 }
 
+/**
+ * epc_tls_private_key_load:
+ * @filename: name of a file to read the key from, in the GLib file name encoding
+ * @error: return location for a #GError, or %NULL
+ *
+ * Reads a PEM encoded private X.509 key.
+ *
+ * If the call was successful, the newly created private key object is
+ * returned. This key can be used with functions of the <citetitle>GNU
+ * TLS</citetitle> library. If the call was not successful, it returns %NULL
+ * and sets @error. The error domain is #EPC_TLS_ERROR. Error codes are taken
+ * from the <citetitle>GNU TLS</citetitle> library.
+ *
+ * Returns: The newly created key object, or %NULL.
+ */
 gnutls_x509_privkey_t
 epc_tls_private_key_load (const gchar *filename,
                           GError     **error)
@@ -203,6 +285,21 @@ out:
   return key;
 }
 
+/**
+ * epc_tls_private_key_save:
+ * @key: a private X.509 key
+ * @filename: name of a file to write the private key to, in the GLib file name encoding
+ * @error: return location for a #GError, or %NULL
+ *
+ * Writes a PEM encoded private X.509 key.
+ *
+ * If the call was successful, it returns %TRUE. If the call was not
+ * successful, it returns %FALSE and sets @error. The error domain is
+ * #EPC_TLS_ERROR. Error codes are taken from the <citetitle>GNU
+ * TLS</citetitle> library.
+ *
+ * Returns: %TRUE on successful, %FALSE if an error occured
+ */
 gboolean
 epc_tls_private_key_save (gnutls_x509_privkey_t  key,
                           const gchar           *filename,
@@ -294,6 +391,25 @@ out:
   return (GNUTLS_E_SUCCESS == rc);
 }
 
+/**
+ * epc_tls_certificate_new:
+ * @hostname: the name of the host that will use this certificate
+ * @validity: the number of days the certificate will remain valid
+ * @key: the private key for signing the certificate
+ * @error: return location for a #GError, or %NULL
+ *
+ * Creates a self signed X.509 certificate. The certificate will mention
+ * @hostname as common name and as DNS host name, and it will be valid
+ * for @validity days.
+ *
+ * If the call was successful, the newly created certificate is returned. This
+ * certificate can be used with functions of the <citetitle>GNU TLS</citetitle>
+ * library. If the call was not successful, it returns %NULL and sets @error.
+ * The error domain is #EPC_TLS_ERROR. Error codes are taken from the
+ * <citetitle>GNU TLS</citetitle> library.
+ *
+ * Returns: The newly created certificate object, or %NULL.
+ */
 gnutls_x509_crt_t
 epc_tls_certificate_new (const gchar            *hostname,
                          guint                   validity,
@@ -336,6 +452,21 @@ out:
   return crt;
 }
 
+/**
+ * epc_tls_certificate_load:
+ * @filename: name of a file to read the certificate from, in the GLib file name encoding
+ * @error: return location for a #GError, or %NULL
+ *
+ * Reads a PEM encoded X.509 certificate.
+ *
+ * If the call was successful, the newly created certificate object is
+ * returned. This key can be used with functions of the <citetitle>GNU
+ * TLS</citetitle> library. If the call was not successful, it returns %NULL
+ * and sets @error. The error domain is #EPC_TLS_ERROR. Error codes are taken
+ * from the <citetitle>GNU TLS</citetitle> library.
+ *
+ * Returns: The newly created certificate object, or %NULL.
+ */
 gnutls_x509_crt_t
 epc_tls_certificate_load (const gchar *filename,
                           GError     **error)
@@ -377,8 +508,23 @@ out:
   return crt;
 }
 
+/**
+ * epc_tls_certificate_save:
+ * @certificate: a X.509 certificate
+ * @filename: name of a file to write the certificate to, in the GLib file name encoding
+ * @error: return location for a #GError, or %NULL
+ *
+ * Writes a PEM encoded X.509 certificate.
+ *
+ * If the call was successful, it returns %TRUE. If the call was not
+ * successful, it returns %FALSE and sets @error. The error domain is
+ * #EPC_TLS_ERROR. Error codes are taken from the <citetitle>GNU
+ * TLS</citetitle> library.
+ *
+ * Returns: %TRUE on successful, %FALSE if an error occurred
+ */
 gboolean
-epc_tls_certificate_save (gnutls_x509_crt_t  crt,
+epc_tls_certificate_save (gnutls_x509_crt_t  certificate,
                           const gchar       *filename,
                           GError           **error)
 {
@@ -388,19 +534,19 @@ epc_tls_certificate_save (gnutls_x509_crt_t  crt,
   gchar *dirname = NULL;
   gsize length = 0;
 
-  g_return_val_if_fail (NULL != crt, FALSE);
+  g_return_val_if_fail (NULL != certificate, FALSE);
   g_return_val_if_fail (NULL != filename, FALSE);
 
   if (G_UNLIKELY (_epc_debug))
     g_debug ("%s: Writing server certificate `%s'", G_STRLOC, filename);
 
-  rc = gnutls_x509_crt_export (crt, GNUTLS_X509_FMT_PEM, NULL, &length);
+  rc = gnutls_x509_crt_export (certificate, GNUTLS_X509_FMT_PEM, NULL, &length);
   g_assert (GNUTLS_E_SHORT_MEMORY_BUFFER == rc);
 
   contents = g_malloc (length);
 
   if (GNUTLS_E_SUCCESS != (rc =
-      gnutls_x509_crt_export (crt, GNUTLS_X509_FMT_PEM, contents, &length)))
+      gnutls_x509_crt_export (certificate, GNUTLS_X509_FMT_PEM, contents, &length)))
     {
       g_set_error (error, EPC_TLS_ERROR, rc,
                    _("Cannot export server certificate to PEM format: %s"),
@@ -434,6 +580,26 @@ out:
   return (GNUTLS_E_SUCCESS == rc);
 }
 
+/**
+ * epc_tls_get_server_credentials:
+ * @hostname: the server's host name
+ * @crtfile: location for storing the certificate's filename in GLib filename encoding
+ * @keyfile: location for storing the private key's filename in GLib filename encoding
+ * @error: return location for a #GError, or %NULL
+ *
+ * Searches or creates X.509 certificate and key for the server identified
+ * by @hostname. This function uses #epc_tls_get_certificate_filename and
+ * #epc_tls_get_private_key_filename to locate existing certificates and
+ * keys. New certificates and keys are generated, when the files cannot
+ * be found, or the existing files contain invalid or expired information.
+ *
+ * If the call was successful, it returns %TRUE. If the call was not
+ * successful, it returns %FALSE and sets @error. The error domain is
+ * #EPC_TLS_ERROR. Error codes are taken from the <citetitle>GNU
+ * TLS</citetitle> library.
+  *
+ * Returns: %TRUE on successful, %FALSE if an error occurred
+*/
 gboolean
 epc_tls_get_server_credentials (const gchar  *hostname,
                                 gchar       **crtfile,

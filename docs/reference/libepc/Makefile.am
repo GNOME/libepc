@@ -12,7 +12,7 @@ AUTOMAKE_OPTIONS = 1.6
 DOC_MODULE=libepc
 
 # The top-level SGML file. You can change this if you want to.
-DOC_MAIN_SGML_FILE=$(DOC_MODULE)-docs.sgml
+DOC_MAIN_SGML_FILE=$(DOC_MODULE)-docs.xml
 
 # The directory containing the source code. Relative to $(srcdir).
 # gtk-doc will search all .c & .h files beneath here for inline comments
@@ -78,4 +78,7 @@ include $(top_srcdir)/gtk-doc.make
 EXTRA_DIST +=
 
 tmpl.stamp tmpl-build.stamp sgml.stamp sgml-build.stamp: \
-	$(top_srcdir)/libepc/libepc.la
+	$(top_srcdir)/libepc/libepc.la \
+	$(DOC_MODULE)-sections.txt \
+	$(DOC_MAIN_SGML_FILE)
+

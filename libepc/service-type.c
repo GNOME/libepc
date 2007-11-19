@@ -23,12 +23,15 @@
 
 /**
  * SECTION:service-type
- * @short_description: DNS-SD service types of this library
+ * @short_description: service type handling
+ * @see_also: #EpcConsumer, #EpcPublisher
+ * @include: libepc/service-type.h
+ * @stability: Unstable
  *
  * DNS-SD uses well-known services types to discover service providers.
  * The following macros describe the service types uses by this library.
  *
- * <example>
+ * <example id="find-publisher">
  *  <title>Find an Easy-Publish server</title>
  *  <programlisting>
  *   dialog = aui_service_dialog_new ("Choose an Easy Publish Server", NULL,
@@ -44,6 +47,8 @@
  *     {
  *       const gint port = aui_service_dialog_get_port (AUI_SERVICE_DIALOG (dialog));
  *       const gchar *host = aui_service_dialog_get_host_name (AUI_SERVICE_DIALOG (dialog));
+ *       const gchar *type = aui_service_dialog_get_service_type (AUI_SERVICE_DIALOG (dialog));
+ *       EpcProtocol protocol = epc_service_type_get_protocol (type);
  *       ...
  *     }
  *  </programlisting>

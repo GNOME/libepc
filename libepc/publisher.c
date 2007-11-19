@@ -38,6 +38,7 @@
  * @short_description: easily publish values
  * @see_also: #EpcConsumer
  * @include: libepc/publish.h
+ * @stability: Unstable
  *
  * The #EpcPublisher starts a HTTP server to publish information.
  * To allow #EpcConsumer to find it, it automatically publishes
@@ -45,7 +46,7 @@
  *
  * Also there are some ideas on using DNS-DS to notify #EpcConsumer on changes.
  *
- * <example>
+ * <example id="publish-value">
  *  <title>Publish a value</title>
  *  <programlisting>
  *   publisher = epc_publisher_new ("Easy Publisher Example", NULL, NULL);
