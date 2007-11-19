@@ -64,6 +64,7 @@ enum
 enum
 {
   SIGNAL_AUTHENTICATE,
+  SIGNAL_REAUTHENTICATE,
   SIGNAL_LAST
 };
 
@@ -99,6 +100,21 @@ epc_consumer_authenticate_cb (SoupSession  *session G_GNUC_UNUSED,
 }
 
 static void
+epc_consumer_reauthenticate_cb (SoupSession  *session G_GNUC_UNUSED,
+                                SoupMessage  *message G_GNUC_UNUSED,
+                                gchar        *auth_type G_GNUC_UNUSED,
+                                gchar        *auth_realm,
+                                gchar       **username,
+                                gchar       **password,
+                                gpointer      data)
+{
+  EpcConsumer *self = EPC_CONSUMER (data);
+
+  g_signal_emit (self, signals[SIGNAL_REAUTHENTICATE], 0,
+                 auth_realm, username, password);
+}
+
+static void
 epc_consumer_init (EpcConsumer *self)
 {
   self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self, EPC_TYPE_CONSUMER, EpcConsumerPrivate);
@@ -106,6 +122,8 @@ epc_consumer_init (EpcConsumer *self)
 
   g_signal_connect (self->priv->session, "authenticate",
                     G_CALLBACK (epc_consumer_authenticate_cb), self);
+  g_signal_connect (self->priv->session, "reauthenticate",
+                    G_CALLBACK (epc_consumer_reauthenticate_cb), self);
 }
 
 static void
@@ -199,10 +217,59 @@ epc_consumer_class_init (EpcConsumerClass *cls)
                                                      G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                      G_PARAM_STATIC_BLURB));
 
+  /**
+   * EpcConsumer::authenticate:
+   * @consumer: the #EpcConsumer emitting the signal
+   * @realm: the realm being authenticated to
+   * @username: return location for the username (gchar*)
+   * @password: return location for the password (gchar*)
+   *
+   * Emitted when the #EpcConsumer requires authentication. The credentials
+   * may come for the user, or from cached information. If no credentials
+   * are available leave @username and @password unchanged.
+   *
+   * If the provided credentials fail, the reauthenticate signal
+   * will be emmitted.
+   *
+   * The consumer takes ownership of the credential strings.
+   */
   signals[SIGNAL_AUTHENTICATE] = g_signal_new ("authenticate", EPC_TYPE_CONSUMER, G_SIGNAL_RUN_FIRST,
                                                G_STRUCT_OFFSET (EpcConsumerClass, authenticate), NULL, NULL,
                                                _epc_marshal_VOID__STRING_POINTER_POINTER, G_TYPE_NONE,
                                                3, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_POINTER);
+
+  /**
+   * EpcConsumer::reauthenticate:
+   * @consumer: the #EpcConsumer emitting the signal
+   * @realm: the realm being authenticated to
+   * @username: return location for the username (gchar*)
+   * @password: return location for the password (gchar*)
+   *
+   * Emitted when the credentials provided by the application to the #
+   * authenticate signal have failed. This gives the application a second
+   * chance to provide authentication credentials. If the new credentials
+   * also fail, #EpcConsumer will emit reauthenticate again, and will
+   * continue doing so until the provided credentials work, or the signal
+   * emission "fails" because the handler left @username and @password
+   * unchanged.
+   *
+   * If your application only uses cached passwords, it should only connect
+   * to authenticate, but not to reauthenticate.
+   *
+   * If your application always prompts the user for a password, and never
+   * uses cached information, then you can connect the same handler to
+   * authenticate and reauthenticate.
+   *
+   * To get common behaviour, return either cached information or user-provided
+   * credentials (whichever is available) from the authenticate handler, but
+   * return only user-provided information from the authenticate handler.
+   *
+   * The consumer takes ownership of the credential strings.
+   */
+  signals[SIGNAL_REAUTHENTICATE] = g_signal_new ("reauthenticate", EPC_TYPE_CONSUMER, G_SIGNAL_RUN_FIRST,
+                                                 G_STRUCT_OFFSET (EpcConsumerClass, authenticate), NULL, NULL,
+                                                 _epc_marshal_VOID__STRING_POINTER_POINTER, G_TYPE_NONE,
+                                                 3, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_POINTER);
 
   g_type_class_add_private (cls, sizeof (EpcConsumerPrivate));
 }
@@ -296,3 +363,5 @@ epc_consumer_lookup (EpcConsumer *self,
   g_object_unref (request);
   return contents;
 }
+
+/* vim: set sw=2 sta et spl=en spell: */

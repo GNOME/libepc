@@ -1,5 +1,14 @@
 2007-11-05  Mathias Hasselmann  <mathias@openismus.com>
 
+	Document authentication mechanism and add "reauthenticate" signal.
+
+	* docs/reference/libepc/libepc-sections.txt, libepc/publisher.c,
+	libepc/publisher.h: Document authentication mechanism.
+	* libepc/consumer.c: Document authentication mechanism
+	and add "reauthenticate" signal.
+
+2007-11-05  Mathias Hasselmann  <mathias@openismus.com>
+
 	Implement authentication for EpcPublisher and EpcConsumer.
 
 	* examples/test-consumer.c: Demonstrate authentication callback.

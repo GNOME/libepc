@@ -42,7 +42,7 @@ typedef struct _EpcPublisherPrivate             EpcPublisherPrivate;
  * EpcContentHandler:
  * @publisher: the #EpcPublisher
  * @key: the unique key
- * @user_data: custom information for the handler
+ * @user_data: user data set when the signal handler was installed
  *
  * This callback is used to generate custom content published with the
  * #epc_publisher_add_handler function. The arguments passed are the same as
@@ -56,8 +56,25 @@ typedef EpcContent* (*EpcContentHandler) (EpcPublisher   *publisher,
                                           const gchar    *key,
                                           gpointer        user_data);
 
+/**
+ * EpcAuthHandler:
+ * @context: the #EpcAuthContext
+ * @username: the username provided for authentication, or %NULL
+ * @user_data: user data set when the signal handler was installed
+ *
+ * Functions implementing this callback shall return %TRUE when the
+ * credentials provided by the authentication request grant access
+ * to the resource described by @context.
+ *
+ * The @username is %NULL when no creditials were passed, and anonymous access
+ * is tried. When a @username was passed call #epc_auth_context_check_password
+ * to verify that the password passed in the request matches the known password
+ * for that user.
+ *
+ * Returns: %TRUE when access is granted, and %FALSE otherwise.
+ */
 typedef gboolean    (*EpcAuthHandler)    (EpcAuthContext *context,
-                                          const gchar    *user_name,
+                                          const gchar    *username,
                                           gpointer        user_data);
 
 /**

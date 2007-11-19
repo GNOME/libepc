@@ -23,6 +23,8 @@ EPC_DISPATCHER_GET_CLASS
 
 <SECTION>
 <FILE>publisher</FILE>
+EpcAuthContext
+EpcAuthHandler
 EpcContent
 EpcContentHandler
 EpcPublisherPrivate
@@ -37,9 +39,15 @@ epc_publisher_get_service
 epc_publisher_add
 epc_publisher_add_file
 epc_publisher_add_handler
+epc_publisher_set_auth_handler
 epc_publisher_run
 epc_publisher_run_async
 epc_publisher_quit
+<SUBSECTION EpcAuthContext>
+epc_auth_context_check_password
+epc_auth_context_get_key
+epc_auth_context_get_publisher
+<SUBSECTION EpcContent>
 epc_content_new
 epc_content_ref
 epc_content_unref
