@@ -1,0 +1,23 @@
+AC_INIT([libepc], [0.1], [mathias@openismus.com])
+AM_INIT_AUTOMAKE([-Wall dist-bzip2 subdir-objects])
+
+AC_PROG_CC
+AM_PROG_CC_C_O
+AM_PROG_LIBTOOL
+PKG_PROG_PKG_CONFIG([0.14])
+
+AC_CONFIG_HEADER([config.h])
+AC_CONFIG_FILES([Makefile])
+
+PKG_CHECK_MODULES(LIBEPC, [avahi-glib avahi-client avahi-ui libsoup-2.2])
+
+GLIB_GENMARSHAL=`$PKG_CONFIG --variable=glib_genmarshal glib-2.0`
+GLIB_MKENUMS=`$PKG_CONFIG --variable=glib_mkenums glib-2.0`
+
+AC_SUBST(LIBEPC_CFLAGS)
+AC_SUBST(LIBEPC_LIBS)
+
+AC_SUBST(GLIB_GENMARSHAL)
+AC_SUBST(GLIB_MKENUMS)
+
+AC_OUTPUT
