@@ -1,5 +1,9 @@
 2007-11-02  Mathias Hasselmann  <mathias@openismus.com>
 
+	Add copyright headers.
+
+2007-11-02  Mathias Hasselmann  <mathias@openismus.com>
+
 	Document EpcDispatcher and provide examples.
 
 	* docs/reference/libepc/.gitignore: Remove libepc-sections.txt.
