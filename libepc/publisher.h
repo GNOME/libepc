@@ -32,9 +32,14 @@ G_BEGIN_DECLS
 #define EPC_IS_PUBLISHER_CLASS(obj)  (G_TYPE_CHECK_CLASS_TYPE(obj, EPC_TYPE_PUBLISHER))
 #define EPC_PUBLISHER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), EPC_TYPE_PUBLISHER, EpcPublisherClass))
 
-typedef struct _EpcPublisher        EpcPublisher;
-typedef struct _EpcPublisherClass   EpcPublisherClass;
-typedef struct _EpcPublisherPrivate EpcPublisherPrivate;
+typedef struct _EpcContent                      EpcContent;
+typedef struct _EpcPublisher                    EpcPublisher;
+typedef struct _EpcPublisherClass               EpcPublisherClass;
+typedef struct _EpcPublisherPrivate             EpcPublisherPrivate;
+
+typedef EpcContent* (*EpcPublisherHandler)     (EpcPublisher        *publisher,
+                                                const gchar         *key,
+                                                gpointer             user_data);
 
 /**
  * EpcPublisher:
@@ -62,28 +67,38 @@ struct _EpcPublisherClass
 
 GType                epc_publisher_get_type    (void) G_GNUC_CONST;
 
-EpcPublisher*        epc_publisher_new         (const gchar   *name,
-                                                const gchar   *service,
-                                                const gchar   *domain);
+EpcPublisher*        epc_publisher_new         (const gchar         *name,
+                                                const gchar         *service,
+                                                const gchar         *domain);
 
-void                 epc_publisher_set_name    (EpcPublisher  *publisher,
-                                                const gchar   *name);
-G_CONST_RETURN char* epc_publisher_get_name    (EpcPublisher  *publisher);
-G_CONST_RETURN char* epc_publisher_get_domain  (EpcPublisher  *publisher);
-G_CONST_RETURN char* epc_publisher_get_service (EpcPublisher  *publisher);
+void                 epc_publisher_set_name    (EpcPublisher        *publisher,
+                                                const gchar         *name);
+G_CONST_RETURN char* epc_publisher_get_name    (EpcPublisher        *publisher);
+G_CONST_RETURN char* epc_publisher_get_domain  (EpcPublisher        *publisher);
+G_CONST_RETURN char* epc_publisher_get_service (EpcPublisher        *publisher);
 
-void                 epc_publisher_add         (EpcPublisher  *publisher,
-                                                const gchar   *key,
-                                                const gchar   *value,
-                                                gssize         length);
-gboolean             epc_publisher_add_file    (EpcPublisher  *publisher,
-                                                const gchar   *key,
-                                                const gchar   *filename,
-                                                GError       **error);
+void                 epc_publisher_add         (EpcPublisher        *publisher,
+                                                const gchar         *key,
+                                                const gchar         *value,
+                                                gssize               length);
+void                 epc_publisher_add_file    (EpcPublisher        *publisher,
+                                                const gchar         *key,
+                                                const gchar         *filename);
+void                 epc_publisher_add_handler (EpcPublisher        *publisher,
+                                                const gchar         *key,
+                                                EpcPublisherHandler  handler,
+                                                gpointer             user_data,
+                                                GDestroyNotify       destroy_data);
 
-void                 epc_publisher_run         (EpcPublisher  *publisher);
-void                 epc_publisher_run_async   (EpcPublisher  *publisher);
-void                 epc_publisher_quit        (EpcPublisher  *publisher);
+void                 epc_publisher_run         (EpcPublisher        *publisher);
+void                 epc_publisher_run_async   (EpcPublisher        *publisher);
+void                 epc_publisher_quit        (EpcPublisher        *publisher);
+
+EpcContent*          epc_content_new           (const gchar         *type,
+                                                gchar               *data,
+                                                gsize                length);
+EpcContent*          epc_content_ref           (EpcContent          *content);
+EpcContent*          epc_content_unref         (EpcContent          *content);
 
 G_END_DECLS
 

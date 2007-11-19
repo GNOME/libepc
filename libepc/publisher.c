@@ -40,9 +40,7 @@
  *   publisher = epc_publisher_new ("Easy Publisher Example", NULL, NULL);
  *
  *   epc_publisher_add (publisher, "maman", "bar", -1);
- *
- *   if (!epc_publisher_add_file (publisher, "source-code", __FILE__, &error))
- *     your_app_handle_error ("source-code", error);
+ *   epc_publisher_add_file (publisher, "source-code", __FILE__);
  *
  *   epc_publisher_run ();
  *  </programlisting>
@@ -60,7 +58,7 @@
 
 #include <string.h>
 
-typedef struct _EpcRecord EpcRecord;
+typedef struct _EpcPublication        EpcPublication;
 
 enum
 {
@@ -70,11 +68,19 @@ enum
   PROP_SERVICE
 };
 
-struct _EpcRecord
+struct _EpcContent
 {
-  gchar *mime_type;
-  gchar *contents;
+  volatile gint ref_count;
   gsize  length;
+  gchar *data;
+  gchar *type;
+};
+
+struct _EpcPublication
+{
+  EpcPublisherHandler handler;
+  gpointer            user_data;
+  GDestroyNotify      destroy_data;
 };
 
 /**
@@ -85,46 +91,102 @@ struct _EpcRecord
 struct _EpcPublisherPrivate
 {
   EpcDispatcher *dispatcher;
-  GHashTable *records;
-  SoupServer *server;
+  GHashTable    *publications;
+  SoupServer    *server;
 
   gchar *name;
   gchar *domain;
   gchar *service;
 };
 
-static EpcRecord*
-epc_record_new (const gchar *mime_type,
-                gchar       *contents,
-                gsize        length)
+EpcContent*
+epc_content_new (const gchar *type,
+                 gchar       *data,
+                 gsize        length)
 {
-  EpcRecord *record = g_slice_new0 (EpcRecord);
+  EpcContent *content = g_slice_new0 (EpcContent);
 
-  record->mime_type = g_strdup (mime_type);
-  record->contents = contents;
-  record->length = length;
+  content->ref_count = 1;
 
-  return record;
+  if (type)
+    content->type = g_strdup (type);
+
+  content->data = data;
+  content->length = length;
+
+  return content;
 }
 
-static EpcRecord*
-epc_record_dup (const gchar *mime_type,
-                const gchar *contents,
-                gsize        length)
+EpcContent*
+epc_content_ref (EpcContent *content)
 {
-  gchar *copy = g_malloc (length);
-  memcpy (copy, contents, length);
+  g_return_val_if_fail (NULL != content, NULL);
+  g_atomic_int_inc (&content->ref_count);
+  return content;
+}
 
-  return epc_record_new (mime_type, copy, length);
+EpcContent*
+epc_content_unref (EpcContent *content)
+{
+  g_return_val_if_fail (NULL != content, NULL);
+
+  if (g_atomic_int_dec_and_test (&content->ref_count))
+    {
+      g_slice_free (EpcContent, content);
+      content = NULL;
+    }
+
+  return content;
+}
+
+static EpcPublication*
+epc_publication_new (EpcPublisherHandler handler,
+                     gpointer            user_data,
+                     GDestroyNotify      destroy_data)
+{
+  EpcPublication *publication = g_slice_new0 (EpcPublication);
+
+  publication->handler = handler;
+  publication->user_data = user_data;
+  publication->destroy_data = destroy_data;
+
+  return publication;
 }
 
 static void
-epc_record_free (EpcRecord* record)
+epc_publication_free (gpointer data)
 {
-  g_free (record->contents);
-  g_free (record->mime_type);
+  EpcPublication *publication = data;
 
-  g_slice_free (EpcRecord, record);
+  if (publication->destroy_data)
+    publication->destroy_data (publication->user_data);
+
+  g_slice_free (EpcPublication, publication);
+}
+
+static EpcContent*
+epc_publisher_handle_static (EpcPublisher *publisher G_GNUC_UNUSED,
+                             const gchar  *key G_GNUC_UNUSED,
+                             gpointer      user_data)
+{
+  return epc_content_ref (user_data);
+}
+
+static EpcContent*
+epc_publisher_handle_file (EpcPublisher *publisher G_GNUC_UNUSED,
+                           const gchar  *key G_GNUC_UNUSED,
+                           gpointer      user_data)
+{
+  const gchar *filename = user_data;
+  EpcContent *content = NULL;
+  gchar *data = NULL;
+  gsize length = 0;
+
+  /* TODO: use gio to determinate mime-type */
+  if (g_file_get_contents (filename, &data, &length, NULL))
+    content = epc_content_new (NULL, data, length);
+
+  return content;
 }
 
 G_DEFINE_TYPE (EpcPublisher, epc_publisher, G_TYPE_OBJECT);
@@ -135,7 +197,8 @@ epc_publisher_get_handler (SoupServerContext *context,
                            gpointer           data)
 {
   EpcPublisher *self = data;
-  EpcRecord *record = NULL;
+  EpcPublication *publication = NULL;
+  EpcContent *content = NULL;
   const gchar *key = NULL;
 
   if ('/' == *context->path)
@@ -146,19 +209,26 @@ epc_publisher_get_handler (SoupServerContext *context,
     key += 1;
 
   if (key)
-    record = g_hash_table_lookup (self->priv->records, key);
+    publication = g_hash_table_lookup (self->priv->publications, key);
 
-  if (record)
+  if (publication)
+    content = publication->handler (self, key, publication->user_data);
+
+  if (content)
     {
-      const char *mime_type = record->mime_type;
+      const gchar *mime_type = content->type;
 
       if (!mime_type)
         mime_type = "application/octet-stream";
 
-      soup_message_set_response (message,
-                                 mime_type, SOUP_BUFFER_STATIC,
-                                 record->contents, record->length);
+      soup_message_set_response (message, mime_type,
+                                 SOUP_BUFFER_USER_OWNED,
+                                 content->data, content->length);
       soup_message_set_status (message, SOUP_STATUS_OK);
+
+      g_signal_connect_swapped (message, "finished",
+                                G_CALLBACK (epc_content_unref),
+                                content);
     }
   else
     soup_message_set_status (message, SOUP_STATUS_NOT_FOUND);
@@ -172,8 +242,8 @@ epc_publisher_init (EpcPublisher *self)
   self->priv->server = soup_server_new (SOUP_SERVER_PORT, SOUP_ADDRESS_ANY_PORT, NULL);
   soup_server_add_handler (self->priv->server, "/get", NULL, epc_publisher_get_handler, NULL, self);
 
-  self->priv->records = g_hash_table_new_full (g_str_hash, g_str_equal, g_free,
-                                               (GDestroyNotify)epc_record_free);
+  self->priv->publications = g_hash_table_new_full (g_str_hash, g_str_equal,
+                                                    g_free, epc_publication_free);
 }
 
 static void
@@ -302,10 +372,10 @@ epc_publisher_dispose (GObject *object)
       self->priv->server = NULL;
     }
 
-  if (self->priv->records)
+  if (self->priv->publications)
     {
-      g_hash_table_unref (self->priv->records);
-      self->priv->records = NULL;
+      g_hash_table_unref (self->priv->publications);
+      self->priv->publications = NULL;
     }
 
   g_free (self->priv->name);
@@ -407,18 +477,26 @@ epc_publisher_add (EpcPublisher  *self,
                    const gchar   *value,
                    gssize         length)
 {
-  EpcRecord *record;
+  const gchar *type = NULL;
+  gchar *data = NULL;
 
   g_return_if_fail (EPC_IS_PUBLISHER (self));
   g_return_if_fail (NULL != value);
   g_return_if_fail (NULL != key);
 
   if (-1 == length)
-    record = epc_record_dup ("text/plain", value, strlen (value));
-  else
-    record = epc_record_dup (NULL, value, length);
+    {
+      length = strlen (value);
+      type = "text/plain";
+    }
 
-  g_hash_table_insert (self->priv->records, g_strdup (key), record);
+  data = g_malloc (length);
+  memcpy (data, value, length);
+
+  epc_publisher_add_handler (self, key,
+                             epc_publisher_handle_static,
+                             epc_content_new (type, data, length),
+                             (GDestroyNotify) epc_content_unref);
 }
 
 /**
@@ -426,36 +504,40 @@ epc_publisher_add (EpcPublisher  *self,
  * @publisher: the publisher
  * @key: the key for addressing the file
  * @filename: the name of the file to publish
- * @error: return location for a GError, or NULL
  *
- * Publishes the current content of a local file as new @value on the
- * #EpcPublisher using the unique @key for addressing. If the call was
- * not successful, it returns %FALSE and sets error. The error domain
- * is %G_FILE_ERROR. Possible error codes are those in the #GFileError
- * enumeration.
- *
- * Returns: %TRUE on success, or %FALSE when the file cannot be read.
+ * Publishes a local file on the #EpcPublisher using the unique
+ * @key for addressing. The publisher delivers the current content
+ * of the file at the time of access.
  */
-gboolean
+void
 epc_publisher_add_file (EpcPublisher  *self,
                         const gchar   *key,
-                        const gchar   *filename,
-                        GError       **error)
+                        const gchar   *filename)
 {
-  gchar *contents = NULL;
-  gsize length = 0;
+  g_return_if_fail (EPC_IS_PUBLISHER (self));
+  g_return_if_fail (NULL != filename);
+  g_return_if_fail (NULL != key);
 
-  g_return_val_if_fail (EPC_IS_PUBLISHER (self), FALSE);
-  g_return_val_if_fail (NULL != filename, FALSE);
-  g_return_val_if_fail (NULL != key, FALSE);
+  epc_publisher_add_handler (self, key,
+                             epc_publisher_handle_file,
+                             g_strdup (filename), g_free);
+}
 
-  /* TODO: use gio to determinate mime-type */
+void
+epc_publisher_add_handler (EpcPublisher        *self,
+                           const gchar         *key,
+                           EpcPublisherHandler  handler,
+                           gpointer             user_data,
+                           GDestroyNotify       destroy_data)
+{
+  EpcPublication *publication;
 
-  if (g_file_get_contents (filename, &contents, &length, error))
-    g_hash_table_insert (self->priv->records, g_strdup (key),
-                         epc_record_new (NULL, contents, length));
+  g_return_if_fail (EPC_IS_PUBLISHER (self));
+  g_return_if_fail (NULL != handler);
+  g_return_if_fail (NULL != key);
 
-  return (NULL != contents);
+  publication = epc_publication_new (handler, user_data, destroy_data);
+  g_hash_table_insert (self->priv->publications, g_strdup (key), publication);
 }
 
 /**

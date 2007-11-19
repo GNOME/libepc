@@ -1,3 +1,12 @@
+2007-11-05  Mathias Hasselmann  <mathias@openismus.com>
+
+	Implement epc_publisher_add_handler. Rewrite epc_publisher_add
+	and epc_publisher_add_file to use it.
+
+	* docs/reference/libepc/libepc-sections.txt, libepc/publisher.c,
+	libepc/publisher.h: Add epc_publisher_add_handler and EpcContent.
+	* tests/test-publisher.c: Remove obsolete error variable.
+
 2007-11-04  Mathias Hasselmann  <mathias@openismus.com>
 
 	Document the property accessors of EpcDispatcher.

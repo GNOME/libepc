@@ -23,8 +23,10 @@ EPC_DISPATCHER_GET_CLASS
 
 <SECTION>
 <FILE>publisher</FILE>
+EpcContent
 EpcPublisherPrivate
 EpcPublisherClass
+EpcPublisherHandler
 <TITLE>EpcPublisher</TITLE>
 EpcPublisher
 epc_publisher_new
@@ -34,9 +36,13 @@ epc_publisher_get_domain
 epc_publisher_get_service
 epc_publisher_add
 epc_publisher_add_file
+epc_publisher_add_handler
 epc_publisher_run
 epc_publisher_run_async
 epc_publisher_quit
+epc_content_new
+epc_content_ref
+epc_content_unref
 <SUBSECTION Standard>
 EPC_PUBLISHER
 EPC_IS_PUBLISHER

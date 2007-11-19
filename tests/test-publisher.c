@@ -10,32 +10,11 @@
  */
 #include "libepc/publisher.h"
 
-/* report_error:
- * @strloc: the source-location
- * @error: the error
- *
- * Reports a GError to the console. Pass %G_STRLOC for @strloc.
- */
-static void
-report_error (const gchar  *strloc,
-              GError      **error)
-{
-  g_assert (NULL != strloc);
-  g_assert (NULL != error);
-
-  if (!(*error))
-    return;
-
-  g_warning ("%s: %s", strloc, (*error)->message);
-  g_clear_error (error);
-}
-
 int
 main (int   argc,
       char *argv[])
 {
   EpcPublisher *publisher;
-  GError *error = NULL;
 
   /* Initialize the toolkit.
    */
@@ -52,8 +31,7 @@ main (int   argc,
        * when no arguments are passed on the command line.
        */
       epc_publisher_add (publisher, "test", "value", -1);
-      epc_publisher_add_file (publisher, "source-code", __FILE__, &error);
-      report_error (G_STRLOC, &error);
+      epc_publisher_add_file (publisher, "source-code", __FILE__);
     }
   else
     {
@@ -69,10 +47,7 @@ main (int   argc,
           const char *key = pair[0], *value = pair[1];
 
           if (g_str_has_prefix (key, "file:"))
-            {
-              epc_publisher_add_file (publisher, key + 5, value, &error);
-              report_error (G_STRLOC, &error);
-            }
+            epc_publisher_add_file (publisher, key + 5, value);
           else
             epc_publisher_add (publisher, key, value, -1);
 
