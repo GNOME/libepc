@@ -1,5 +1,19 @@
 2007-11-02  Mathias Hasselmann  <mathias@openismus.com>
 
+	Split EPC_PUBLISHER_SERVICE_NAME into EPC_SERVICE_NAME,
+	EPC_SERVICE_NAME_HTTP and EPC_SERVICE_NAME_HTTPS.
+
+	* libepc/publisher.h: Remove EPC_PUBLISHER_SERVICE_NAME.
+	* libepc/service-names.h, docs/reference/libepc/libepc-docs.sgml,
+	docs/reference/libepc/libepc-sections.txt: Introduce
+	EPC_SERVICE_NAME, EPC_SERVICE_NAME_HTTP and EPC_SERVICE_NAME_HTTPS.
+	* libepc/publisher.c: Use EPC_SERVICE_NAME_HTTP
+	instead of EPC_PUBLISHER_SERVICE_NAME.
+	* tests/test-consumer.c: Use EPC_SERVICE_NAME
+	instead of EPC_PUBLISHER_SERVICE_NAME.
+
+2007-11-02  Mathias Hasselmann  <mathias@openismus.com>
+
 	Change library name to libepc.
 
 	* docs/reference/libepc/Makefile.am, libepc.pc.in,

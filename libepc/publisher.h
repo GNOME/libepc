@@ -32,17 +32,7 @@ G_BEGIN_DECLS
 #define EPC_IS_PUBLISHER_CLASS(obj)  (G_TYPE_CHECK_CLASS_TYPE(obj, EPC_TYPE_PUBLISHER))
 #define EPC_PUBLISHER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), EPC_TYPE_PUBLISHER, EpcPublisherClass))
 
-/**
- * EPC_PUBLISHER_SERVICE_NAME:
- *
- * The well-known DNS-SD service name of #EpcPublisher servers.
- */
-
-#define EPC_PUBLISHER_SERVICE_NAME   "_http._sub._easy-publish._tcp"
-
-/*< skip >*/
 typedef struct _EpcPublisher        EpcPublisher;
-/*< private >*/
 typedef struct _EpcPublisherClass   EpcPublisherClass;
 typedef struct _EpcPublisherPrivate EpcPublisherPrivate;
 

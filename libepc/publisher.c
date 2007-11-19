@@ -51,6 +51,7 @@
 
 #include "publisher.h"
 #include "dispatcher.h"
+#include "service-names.h"
 
 #include <libsoup/soup-address.h>
 #include <libsoup/soup-message.h>
@@ -206,7 +207,7 @@ epc_publisher_constructed (GObject *object)
   if (!name)
     name = g_get_prgname ();
   if (!service)
-    service = EPC_PUBLISHER_SERVICE_NAME;
+    service = EPC_SERVICE_NAME_HTTP;
 
   listener = soup_server_get_listener (self->priv->server);
   port = soup_server_get_port (self->priv->server);
@@ -364,8 +365,8 @@ epc_publisher_class_init (EpcPublisherClass *cls)
  * You have to call <function>g_set_application_name</function>, when passing
  * %NULL for @name, as the result of <function>g_set_application_name</function>
  * will be used in that case. When %NULL is passed for @service,
- * #EPC_PUBLISHER_SERVICE_NAME is used. Passing %NULL for @domain lets
- * the DNS-DS daemon choose.
+ * #EPC_SERVICE_NAME_HTTP is used. Passing %NULL for @domain lets the DNS-DS
+ * daemon choose.
  *
  * Returns: The newly created #EpcPublisher object.
  */

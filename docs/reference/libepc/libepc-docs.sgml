@@ -11,6 +11,7 @@
     <xi:include href="xml/dispatcher.xml"/>
     <xi:include href="xml/publisher.xml"/>
     <xi:include href="xml/consumer.xml"/>
+    <xi:include href="xml/service-names.xml"/>
   </chapter>
 
   <index />
