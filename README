@@ -1,0 +1,54 @@
+Publish and Consume Library
+Copyright (C) 2007  Openismus GmbH
+
+ABSTRACT
+========
+
+The Easy Publish and Consume library provides an easy method to:
+
+    * publish data per HTTPS
+    * announce that information via DNS-SD
+    * find that information
+    * and finally consume it
+
+You can use this library as hash table published to the network,
+using encryption, authentication and service discovery.
+
+REQUIREMENTS
+============
+
+The libepc library depends on:
+
+    * avahi-client >= 0.6
+    * avahi-glib   >= 0.6
+    * glib         >= 2.12
+    * gmodule-2.0  >= 2.0
+    * gobject      >= 2.4
+    * gnutls       >= 1.6
+    * libsoup      >= 2.2
+
+Additionally libepc-ui uses:
+
+    * gtk+         >= 2.10
+
+And finally the examples need:
+
+    * avahi-ui     >= 0.6
+
+LICENSE
+=======
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+

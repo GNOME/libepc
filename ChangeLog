@@ -1,5 +1,13 @@
 2007-11-19  Mathias Hasselmann  <mathias@openismus.com>
 
+	Add missing documentation and update package dependencies.
+
+	* NEWS, README: Add missing documentation.
+	* configure.ac: Update package dependencies.
+	* docs/reference/libepc/libepc-1.0-docs.xml: Add hash table metapher.
+
+2007-11-19  Mathias Hasselmann  <mathias@openismus.com>
+
 	Remove calls to g_timeout_add_seconds convenience function of glib-2.14,
 	as all other parts of the library are satisfied with glib-2.12.
 

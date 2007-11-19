@@ -40,14 +40,19 @@
 
     <abstract>
       <para>
-        The Easy Publish and Consume library provides an easy method to
+        The Easy Publish and Consume library provides an easy method to:
 
         <itemizedlist>
-          <listitem><emphasis>publish</emphasis> data per HTTPS</listitem>
-          <listitem><emphasis>announce</emphasis> that information via DNS-DS</listitem>
+          <listitem><emphasis>publish</emphasis> data per <ulink url="http://tools.ietf.org/html/rfc2818">HTTPS</ulink></listitem>
+          <listitem><emphasis>announce</emphasis> that information via <ulink url="http://www.dns-sd.org/">DNS-SD</ulink></listitem>
           <listitem><emphasis>find</emphasis> that information</listitem>
           <listitem>and finally <emphasis>consume</emphasis> it</listitem>
         </itemizedlist>
+
+        You can use this library as hash table published to the network, using
+        <ulink url="http://tools.ietf.org/html/rfc2818">encryption</ulink>,
+        <ulink url="http://tools.ietf.org/html/rfc2617#section-3">authentication</ulink> and
+        <ulink url="http://www.dns-sd.org/">service discovery</ulink>.
       </para>
     </abstract>
   </bookinfo>

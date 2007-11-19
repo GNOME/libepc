@@ -14,11 +14,18 @@ AM_PROG_LIBTOOL
 GTK_DOC_CHECK([1.4])
 
 PKG_PROG_PKG_CONFIG([0.14])
-PKG_CHECK_MODULES(AVAHI_UI, [avahi-ui >= 0.6])
-PKG_CHECK_MODULES(LIBEPC, [avahi-client >= 0.6 avahi-glib >= 0.6 gmodule-2.0 gnutls >= 1.6 libsoup-2.2])
-PKG_CHECK_MODULES(LIBEPC_UI, [gtk+-2.0])
+PKG_CHECK_MODULES(AVAHI_UI,  [avahi-ui     >= 0.6])
+PKG_CHECK_MODULES(LIBEPC,    [avahi-client >= 0.6
+                              avahi-glib   >= 0.6
+                              glib-2.0     >= 2.12
+                              gmodule-2.0  >= 2.0
+                              gobject-2.0  >= 2.4
+                              gnutls       >= 1.6
+                              libsoup-2.2  >= 2.2])
+PKG_CHECK_MODULES(LIBEPC_UI, [gtk+-2.0     >= 2.10])
 
-AM_CONDITIONAL([HAVE_AVAHI_UI_0_6_22], [$PKG_CONFIG avahi-ui --atleast-version 0.6.22])
+AM_CONDITIONAL([HAVE_AVAHI_UI_0_6_22],
+               [$PKG_CONFIG avahi-ui --atleast-version 0.6.22])
 
 GLIB_GENMARSHAL=`$PKG_CONFIG --variable=glib_genmarshal glib-2.0`
 GLIB_MKENUMS=`$PKG_CONFIG --variable=glib_mkenums glib-2.0`
