@@ -31,19 +31,27 @@ EpcPublisherPrivate
 EpcPublisherClass
 <TITLE>EpcPublisher</TITLE>
 EpcPublisher
+
+<SUBSECTION>
 epc_publisher_new
+
+<SUBSECTION>
 epc_publisher_add
 epc_publisher_add_file
 epc_publisher_add_handler
+
+<SUBSECTION>
 epc_publisher_run
 epc_publisher_run_async
 epc_publisher_quit
 
+<SUBSECTION>
 epc_publisher_set_auth_handler
 epc_publisher_set_credentials
 epc_publisher_set_protocol
 epc_publisher_set_service_name
 
+<SUBSECTION>
 epc_publisher_get_certificate_file
 epc_publisher_get_private_key_file
 epc_publisher_get_protocol
@@ -87,15 +95,22 @@ EpcConsumerPrivate
 EpcConsumerClass
 <TITLE>EpcConsumer</TITLE>
 EpcConsumer
+
+<SUBSECTION>
 epc_consumer_new
 epc_consumer_new_for_name
 epc_consumer_new_for_name_full
+
+<SUBSECTION>
 epc_consumer_get_protocol
 epc_consumer_set_protocol
+
+<SUBSECTION>
 epc_consumer_resolve_publisher
 epc_consumer_is_publisher_resolved
 epc_consumer_lookup
 epc_consumer_list
+
 <SUBSECTION Standard>
 EPC_CONSUMER
 EPC_CONSUMER_CLASS
@@ -155,12 +170,18 @@ EPC_TLS_ERROR
 EPC_TLS_SECONDS_PER_DAY
 EPC_TLS_SECONDS_PER_HOUR
 EPC_TLS_SECONDS_PER_MINUTE
+
+<SUBSECTION>
 epc_tls_certificate_load
 epc_tls_certificate_new
 epc_tls_certificate_save
+
+<SUBSECTION>
 epc_tls_private_key_load
 epc_tls_private_key_new
 epc_tls_private_key_save
+
+<SUBSECTION>
 epc_tls_get_private_key_filename
 epc_tls_get_certificate_filename
 epc_tls_get_server_credentials
@@ -175,7 +196,11 @@ EpcPasswordDialogClass
 EpcPasswordDialogPrivate
 <TITLE>EpcPasswordDialog</TITLE>
 EpcPasswordDialog
+
+<SUBSECTION>
 epc_password_dialog_new
+
+<SUBSECTION>
 epc_password_dialog_set_anonymous_allowed
 epc_password_dialog_get_anonymous_allowed
 epc_password_dialog_set_anonymous
@@ -186,6 +211,8 @@ epc_password_dialog_set_password
 epc_password_dialog_get_password
 epc_password_dialog_set_realm
 epc_password_dialog_get_realm
+
+<SUBSECTION>
 epc_password_dialog_attach
 <SUBSECTION Standard>
 EPC_IS_PASSWORD_DIALOG
