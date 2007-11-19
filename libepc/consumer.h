@@ -42,13 +42,6 @@ G_BEGIN_DECLS
 #define EPC_IS_CONSUMER_CLASS(obj)  (G_TYPE_CHECK_CLASS_TYPE(obj, EPC_TYPE_CONSUMER))
 #define EPC_CONSUMER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), EPC_TYPE_CONSUMER, EpcConsumerClass))
 
-/**
- * EPC_CONSUMER_DEFAULT_TIMEOUT:
- *
- * The timeout used when calling #epc_consumer_resolve_publisher internally.
- */
-#define EPC_CONSUMER_DEFAULT_TIMEOUT 5000
-
 typedef struct _EpcConsumer        EpcConsumer;
 typedef struct _EpcConsumerClass   EpcConsumerClass;
 typedef struct _EpcConsumerPrivate EpcConsumerPrivate;

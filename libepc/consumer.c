@@ -93,6 +93,8 @@
  * </example>
  */
 
+#define EPC_CONSUMER_DEFAULT_TIMEOUT 5000
+
 typedef struct _EpcListingState EpcListingState;
 
 typedef enum

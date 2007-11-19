@@ -82,7 +82,6 @@ epc_contents_unref
 
 <SECTION>
 <FILE>consumer</FILE>
-EPC_CONSUMER_DEFAULT_TIMEOUT
 EPC_HTTP_ERROR
 EpcConsumerPrivate
 EpcConsumerClass

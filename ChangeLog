@@ -1,5 +1,14 @@
 2007-11-15  Mathias Hasselmann  <mathias@openismus.com>
 
+	Move EPC_CONSUMER_DEFAULT_TIMEOUT to consumer.c
+	as it is some internal implementation detail.
+
+	* docs/reference/libepc/libepc-1.0-sections.txt,
+	libepc/consumer.h: Remove EPC_CONSUMER_DEFAULT_TIMEOUT.
+	* libepc/consumer.c: Add EPC_CONSUMER_DEFAULT_TIMEOUT.
+
+2007-11-15  Mathias Hasselmann  <mathias@openismus.com>
+
 	Improve documentation and add epc_consumer_is_publisher_resolved.
 
 	* docs/reference/libepc/libepc-1.0-sections.txt:
