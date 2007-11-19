@@ -26,6 +26,7 @@
 
 #include <avahi-client/lookup.h>
 #include <avahi-common/error.h>
+#include <glib/gi18n-lib.h>
 #include <libsoup/soup-session-async.h>
 #include <string.h>
 
@@ -51,7 +52,7 @@
  *   else if (your_app_discover_server (&protocol, &hostname, &port))
  *     consumer = epc_consumer_new (protocol, hostname, port);
  *
- *   value = epc_consumer_lookup (consumer, "database.glom", NULL);
+ *   value = epc_consumer_lookup (consumer, "glom-settings", NULL, &error);
  *   g_object_unref (consumer);
  *
  *   your_app_consume_value (value);
@@ -792,18 +793,24 @@ epc_consumer_create_request (EpcConsumer *self,
  * @consumer: the consumer
  * @key: unique key of the value
  * @length: location to store length in bytes of the contents, or %NULL
+ * @error: return location for a #GError, or %NULL
  *
- * Looks up information at the publisher the consumer is associated with.
- * %NULL is returned when the publisher cannot be contacted or doesn't
- * contain information for the requested key.
+ * If the call was successful, a newly allocated buffer holding containing
+ * the value the publisher stores for @key returned. If the call was not
+ * successful, it returns %NULL and sets @error. The error domain is
+ * #EPC_HTTP_ERROR. Error codes are taken from the #SoupKnownStatusCode
+ * enumeration.
  *
- * Returns: The contents of the requested value,
- * or %NULL when the key cannot be resolved
+ * The returned buffer should be freed when no longer needed.
+ *
+ * Returns: A copy of the publisher's value for the the requested @key,
+ * or %NULL when an error occurred.
  */
 gchar*
-epc_consumer_lookup (EpcConsumer *self,
-                     const gchar *key,
-                     gsize       *length)
+epc_consumer_lookup (EpcConsumer  *self,
+                     const gchar  *key,
+                     gsize        *length,
+                     GError      **error)
 {
   SoupMessage *request = NULL;
   gchar *contents = NULL;
@@ -823,7 +830,7 @@ epc_consumer_lookup (EpcConsumer *self,
   status = soup_session_send_message (self->priv->session, request);
   epc_shell_enter ();
 
-  if (SOUP_STATUS_OK == status)
+  if (SOUP_STATUS_IS_SUCCESSFUL (status))
     {
       if (length)
         *length = request->response.length;
@@ -834,9 +841,26 @@ epc_consumer_lookup (EpcConsumer *self,
       memcpy (contents, request->response.body,
               request->response.length);
     }
+  else
+    {
+      const gchar *details = request->reason_phrase;
+
+      if (!details)
+        details = soup_status_get_phrase (status);
+
+      g_set_error (error, EPC_HTTP_ERROR, status,
+                   "HTTP library error %d: %s.",
+                   status, details);
+    }
 
   g_object_unref (request);
   return contents;
+}
+
+GQuark
+epc_http_error_quark (void)
+{
+  return g_quark_from_static_string ("epc-http-error-quark");
 }
 
 /* vim: set sw=2 sta et spl=en spell: */

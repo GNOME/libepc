@@ -91,7 +91,7 @@ libepc_ui_libepc_ui_la_LDFLAGS = $(LIBEPC_UI_LIBS) libepc/libepc.la
 examples_test_publisher_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 examples_test_publisher_LDADD = libepc/libepc.la
 examples_test_consumer_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS) $(AVAHI_UI_CFLAGS) $(AVAHI_UI_DEFINES)
-examples_test_consumer_LDADD = libepc-ui/libepc-ui.la $(AVAHI_UI_LIBS)
+examples_test_consumer_LDADD = libepc/libepc.la libepc-ui/libepc-ui.la $(AVAHI_UI_LIBS)
 examples_server_credentials_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS)
 examples_server_credentials_LDADD = libepc/libepc.la libepc-ui/libepc-ui.la
 

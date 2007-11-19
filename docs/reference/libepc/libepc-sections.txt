@@ -74,6 +74,7 @@ EPC_PUBLISHER_GET_CLASS
 EpcConsumerPrivate
 EpcConsumerClass
 <TITLE>EpcConsumer</TITLE>
+EPC_HTTP_ERROR
 EPC_CONSUMER_DEFAULT_TIMEOUT
 EpcConsumer
 epc_consumer_new
@@ -91,6 +92,7 @@ epc_consumer_get_type
 EPC_CONSUMER_CLASS
 EPC_IS_CONSUMER_CLASS
 EPC_CONSUMER_GET_CLASS
+epc_http_error_quark
 </SECTION>
 
 <SECTION>

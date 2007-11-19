@@ -117,18 +117,25 @@ lookup_value (EpcConsumer *consumer,
               const gchar *key,
               const gchar *publisher)
 {
+  const gchar *details;
+  GError *error = NULL;
   gchar *value;
   gsize length;
 
-  value = epc_consumer_lookup (consumer, key, &length);
+  value = epc_consumer_lookup (consumer, key, &length, &error);
 
   if (value)
     show_value (publisher, key, value, length);
   else
-    show_error ("<b>Value not found.</b>\n\n"
-                "No value found for key <b>%s</b> at <b>%s</b>.",
-                key, publisher);
+    {
+      details = error ? error->message : "No error details available.";
 
+      show_error ("<b>Lookup Failed</b>\n\n"
+                  "Failed to lookup <b>%s</b> at <b>%s</b>: %s",
+                  key, publisher, details);
+    }
+
+  g_clear_error (&error);
   g_free (value);
 }
 

@@ -26,6 +26,15 @@
 
 G_BEGIN_DECLS
 
+/**
+ * EPC_HTTP_ERROR:
+ *
+ * Error domain for HTTP operations. Errors in this domain will
+ * be from the #SoupKnownStatusCode enumeration. See GError for
+ * information on error domains.
+ */
+#define EPC_HTTP_ERROR              (epc_http_error_quark())
+
 #define EPC_TYPE_CONSUMER           (epc_consumer_get_type())
 #define EPC_CONSUMER(obj)           (G_TYPE_CHECK_INSTANCE_CAST(obj, EPC_TYPE_CONSUMER, EpcConsumer))
 #define EPC_CONSUMER_CLASS(cls)     (G_TYPE_CHECK_CLASS_CAST(cls, EPC_TYPE_CONSUMER, EpcConsumerClass))
@@ -90,24 +99,27 @@ struct _EpcConsumerClass
 
 GType                 epc_consumer_get_type          (void) G_GNUC_CONST;
 
-EpcConsumer*          epc_consumer_new               (EpcProtocol  protocol,
-                                                      const gchar *hostname,
-                                                      guint16      port);
-EpcConsumer*          epc_consumer_new_for_name      (const gchar *name);
-EpcConsumer*          epc_consumer_new_for_name_full (const gchar *name,
-                                                      const gchar *application,
-                                                      const gchar *domain);
+EpcConsumer*          epc_consumer_new               (EpcProtocol   protocol,
+                                                      const gchar  *hostname,
+                                                      guint16       port);
+EpcConsumer*          epc_consumer_new_for_name      (const gchar  *name);
+EpcConsumer*          epc_consumer_new_for_name_full (const gchar  *name,
+                                                      const gchar  *application,
+                                                      const gchar  *domain);
 
-void                  epc_consumer_set_protocol      (EpcConsumer *consumer,
-                                                      EpcProtocol  protocol);
-EpcProtocol           epc_consumer_get_protocol      (EpcConsumer *consumer);
+void                  epc_consumer_set_protocol      (EpcConsumer  *consumer,
+                                                      EpcProtocol   protocol);
+EpcProtocol           epc_consumer_get_protocol      (EpcConsumer  *consumer);
 
-gboolean              epc_consumer_resolve_publisher (EpcConsumer *consumer,
-                                                      guint        timeout);
+gboolean              epc_consumer_resolve_publisher (EpcConsumer  *consumer,
+                                                      guint         timeout);
 
-gchar*                epc_consumer_lookup            (EpcConsumer *consumer,
-                                                      const gchar *key,
-                                                      gsize       *length);
+gchar*                epc_consumer_lookup            (EpcConsumer  *consumer,
+                                                      const gchar  *key,
+                                                      gsize        *length,
+                                                      GError      **error);
+
+GQuark                epc_http_error_quark           (void) G_GNUC_CONST;
 
 G_END_DECLS
 

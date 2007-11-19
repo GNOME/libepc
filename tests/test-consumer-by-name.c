@@ -14,6 +14,7 @@ main (void)
 {
   EpcPublisher *publisher = NULL;
   EpcConsumer *consumer = NULL;
+  GError *error = NULL;
   gchar *value = NULL;
   const gchar *name;
   gint result = 1;
@@ -34,12 +35,16 @@ main (void)
   consumer = epc_consumer_new_for_name (name);
   epc_test_goto_if_fail (EPC_IS_CONSUMER (consumer), out);
 
-  value = epc_consumer_lookup (consumer, "maman", NULL);
+  value = epc_consumer_lookup (consumer, "maman", NULL, &error);
   epc_test_goto_if_fail (value && g_str_equal (value, "bar"), out);
 
   result = 0;
 
 out:
+  if (error)
+    g_warning ("%s: lookup failed: %s", G_STRLOC, error->message);
+
+  g_clear_error (&error);
   g_free (value);
 
   if (consumer)

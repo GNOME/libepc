@@ -1,5 +1,17 @@
 2007-11-13  Mathias Hasselmann  <mathias@openismus.com>
 
+	Add error handling to epc_consumer_lookup.
+
+	* examples/test-consumer.c, tests/test-consumer-by-name.c:
+	Pass error argument to epc_consumer_lookup.
+	* docs/reference/libepc/libepc-sections.txt: Add EPC_HTTP_ERROR.
+	* libepc/consumer.c, libepc/consumer.h: Add error handling to
+	epc_consumer_lookup. Add EPC_HTTP_ERROR and epc_http_error_quark.
+	* Makefile.am: Add libepc/libepc.la to LDADD variable of
+	examples/test-consumer.
+
+2007-11-13  Mathias Hasselmann  <mathias@openismus.com>
+
 	Do more restrictive argument checks in epc_dispatcher_add_service to
 	work arround Avahi race conditions.
 
