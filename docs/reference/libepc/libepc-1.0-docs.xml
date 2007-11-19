@@ -59,8 +59,9 @@
     <xi:include href="xml/service-type.xml"/>
 
     <para>
-     This objects and functions are use to consume Easy Publish and Consume resources.
-     To use them link with the <filename>libepc</filename>.
+     These objects and functions are used to consume Easy Publish and Consume resources.
+     To use them link with <filename>libepc</filename> and include its headers,
+     for instance by checking for libepc-1.0 with pkg-config.
     </para>
   </chapter>
 
@@ -71,8 +72,9 @@
     <xi:include href="xml/publisher.xml"/>
 
     <para>
-     This objects and functions are use to publish Easy Publish and Consume resources.
-     To use them link with the <filename>libepc</filename>.
+     These objects and functions are used to publish Easy Publish and Consume resources.
+     To use them link with <filename>libepc</filename> and include its headers,
+     for instance by checking for libepc-1.0 with pkg-config.
     </para>
   </chapter>
 
@@ -82,8 +84,9 @@
     <xi:include href="xml/password-dialog.xml"/>
 
     <para>
-     This widgets perform common tasks when using the Easy Publish and Consume library.
-     To use them link with the <filename>libepc-ui</filename>.
+     These widgets perform common tasks when using the Easy Publish and Consume library.
+     To use them link with <filename>libepc-ui</filename> and include its headers,
+     for instance by checking for libepc-ui-1.0 with pkg-config.
     </para>
   </chapter>
 
@@ -94,8 +97,8 @@
     <xi:include href="xml/tls.xml"/>
 
     <para>
-     The objects and functions listed in this chapter are indented for internal
-     library use only. To use them link with the <filename>libepc</filename>.
+     The objects and functions listed in this chapter are intended for internal
+     library use only.
     </para>
   </chapter>
 </book>

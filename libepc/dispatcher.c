@@ -36,8 +36,8 @@
  * The #EpcDispatcher object provides an easy method for publishing
  * DNS-SD services. Unlike established APIs like Avahi or HOWL the
  * #EpcDispatcher doesn't expose any state changes reported by the
- * DNS-SD daemon, but tries handle them automatically. Such state
- * changes include for instance name collisions or restart of
+ * DNS-SD daemon, but instead tries to handle them automatically. Such state
+ * changes include, for instance, name collisions or a restart of
  * the DNS-SD daemon.
  *
  * <example id="publish-printing-service">

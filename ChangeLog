@@ -1,3 +1,11 @@
+2007-11-14  Murray Cumming  <murrayc@openismus.com>
+
+	Various documentation improvements.
+
+	* docs/reference/libepc/libepc-1.0-docs.xml: Fix package names.
+	* libepc/consumer.c, libepc/dispatcher.c, libepc/publisher.c,
+	libepc/service-type.c: Fix grammer and spelling. Clarify sentences.
+
 2007-11-14  Mathias Hasselmann  <mathias@openismus.com>
 
 	Update to gtk-doc trunk.

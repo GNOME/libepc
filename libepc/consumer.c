@@ -551,11 +551,12 @@ epc_consumer_class_init (EpcConsumerClass *cls)
    * @username: return location for the username (gchar*)
    * @password: return location for the password (gchar*)
    *
-   * Emitted when the #EpcConsumer requires authentication. The credentials
-   * may come for the user, or from cached information. If no credentials
-   * are available leave @username and @password unchanged.
+   * Emitted when the #EpcConsumer requires authentication. The signal
+   * handler should provide these credentials, which may come from the
+   * user or from cached information. If no credentials
+   * are available then the signal handler should leave @username and @password unchanged.
    *
-   * If the provided credentials fail, the reauthenticate signal
+   * If the provided credentials fail then the reauthenticate signal
    * will be emmitted.
    *
    * The consumer takes ownership of the credential strings.
@@ -580,16 +581,16 @@ epc_consumer_class_init (EpcConsumerClass *cls)
    * emission "fails" because the handler left @username and @password
    * unchanged.
    *
-   * If your application only uses cached passwords, it should only connect
-   * to authenticate, but not to reauthenticate.
+   * If your application only uses cached passwords it should only connect
+   * to authenticate but not to reauthenticate.
    *
    * If your application always prompts the user for a password, and never
    * uses cached information, then you can connect the same handler to
    * authenticate and reauthenticate.
    *
-   * To get common behaviour, return either cached information or user-provided
-   * credentials (whichever is available) from the authenticate handler, but
-   * return only user-provided information from the authenticate handler.
+   * To get ideal behaviour return either cached information or user-provided
+   * credentials (whichever are available) from the authenticate handler, but
+   * return only user-provided information from the reauthenticate handler.
    *
    * The consumer takes ownership of the credential strings.
    */
@@ -624,10 +625,10 @@ epc_consumer_class_init (EpcConsumerClass *cls)
  * @port:  the publisher's TCP/IP port
  *
  * Creates a new #EpcConsumer object and associates it with a known
- * #EpcPublisher. Values for @protocol, @hostname and @port can retrieve
- * for instance by using the service selection dialog of bavahi-ui
+ * #EpcPublisher. Values for @protocol, @hostname and @port can be retrieved,
+ * for instance, by using the service selection dialog of avahi-ui
  * (#AuiServiceDialog). Call #epc_service_type_get_protocol to convert
- * the service-type provided by that dialog into an #EpcProtocol value.
+ * the service-type provided by that dialog to an #EpcProtocol value.
  *
  * The connection is not established until #epc_consumer_lookup
  * is called to retrieve values.
@@ -836,9 +837,9 @@ epc_consumer_set_http_error (GError     **error,
  * @length: location to store length in bytes of the contents, or %NULL
  * @error: return location for a #GError, or %NULL
  *
- * If the call was successful, a newly allocated buffer holding containing
- * the value the publisher stores for @key returned. If the call was not
- * successful, it returns %NULL and sets @error. The error domain is
+ * If the call was successful, this returns a newly allocated buffer containing
+ * the value the publisher provides for @key. If the call was not
+ * successful it returns %NULL and sets @error. The error domain is
  * #EPC_HTTP_ERROR. Error codes are taken from the #SoupKnownStatusCode
  * enumeration.
  *

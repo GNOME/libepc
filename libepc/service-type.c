@@ -24,7 +24,7 @@
 
 /**
  * SECTION:service-type
- * @short_description: service type handling
+ * @short_description: service type details
  * @see_also: #EpcConsumer, #EpcPublisher
  * @include: libepc/service-type.h
  * @stability: Unstable
@@ -91,8 +91,8 @@ epc_service_type_normalize_name (const gchar *name,
  * @application: the application name, or %NULL
  *
  * Builds the DNS-SD service type for the given transport @protocol and
- * application. The application name is retrieved by calling #g_get_prgname
- * name, when @application is %NULL. The function aborts when this fails.
+ * application. When @application is %NULL, the application name is retrieved by
+ * calling #g_get_prgname(). %NULL is returned in that case if #g_get_prgname() returns %NULL.
  *
  * The string returned should be released when no longer needed.
  *
@@ -173,7 +173,7 @@ epc_service_type_get_base (const gchar *type)
  * See #EPC_SERVICE_TYPE_HTTP, #EPC_SERVICE_TYPE_HTTPS.
  *
  * Returns: Returns the #EpcProtocol associated with @service_type,
- * for unknown #EPC_PROTOCOL_UNKNOWN service types.
+ * or #EPC_PROTOCOL_UNKNOWN for unrecognized or unsupported service types.
  */
 EpcProtocol
 epc_service_type_get_protocol (const gchar *service_type)
