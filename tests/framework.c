@@ -31,9 +31,10 @@ static GMainLoop *epc_test_loop = NULL;
 static gint epc_test_result = 1;
 
 gboolean
-epc_test_init (void)
+epc_test_init (gint tests)
 {
-  epc_test_result = EPC_TEST_MASK_ALL;
+  tests &= EPC_TEST_MASK_USER;
+  epc_test_result = EPC_TEST_MASK_INIT | tests;
   epc_shell_ref ();
 
   if (NULL == epc_test_loop)

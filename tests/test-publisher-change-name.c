@@ -55,12 +55,10 @@ main (int   argc G_GNUC_UNUSED,
 
   publisher = epc_publisher_new (first_name, NULL, NULL);
 
-  if (epc_test_init () &&
+  if (epc_test_init (3) &&
       epc_test_init_service_browser (EPC_SERVICE_NAME, service_browser_cb, publisher))
     {
-      epc_test_pass (~3);
       epc_publisher_run_async (publisher);
-
       result = epc_test_run ();
     }
 

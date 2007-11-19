@@ -22,7 +22,7 @@ service_browser_cb (AvahiServiceBrowser     *browser G_GNUC_UNUSED,
       name && g_str_equal (name, test_name) &&
       type && g_str_equal (type, test_type))
     {
-      epc_test_pass (EPC_TEST_MASK_ALL);
+      epc_test_pass (1);
 
       /* This epc_test_quit is not needed to reach the primary goal of this
        * test since epc_test_pass should call it, but it checks under real
@@ -44,7 +44,7 @@ main (void)
   test_name = g_strdup_printf ("%s: %08x", __FILE__, hash);
   test_type = g_strdup_printf ("_test-%08x._tcp", g_random_int ());
 
-  if (epc_test_init () &&
+  if (epc_test_init (1) &&
       epc_test_init_service_browser (test_type, service_browser_cb, NULL))
     {
       dispatcher = epc_dispatcher_new (AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC, test_name);

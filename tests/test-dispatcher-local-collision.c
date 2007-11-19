@@ -47,11 +47,9 @@ main (void)
 
   g_assert (!g_str_equal (preferred_name, alternative_name));
 
-  if (epc_test_init () &&
+  if (epc_test_init (3) &&
       epc_test_init_service_browser (test_type, service_browser_cb, NULL))
     {
-      epc_test_pass (~3);
-
       dispatcher1 = epc_dispatcher_new (AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC, preferred_name);
       epc_dispatcher_add_service (dispatcher1, test_type, NULL, NULL, 2007, NULL);
 

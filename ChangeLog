@@ -1,5 +1,12 @@
 2007-11-08  Mathias Hasselmann  <mathias@openismus.com>
 
+	Change epc_test_init to take initial result mask as argument.
+
+	* tests/framework.c, tests/framework.h, tests/*.c:
+	Change epc_test_init to take initial result mask as argument.
+
+2007-11-08  Mathias Hasselmann  <mathias@openismus.com>
+
 	Always dump the test cases' stdout and stderr when EPC_DEBUG is set.
 
 	* tests/test-runner.sh: Consider EPC_DEBUG variable.

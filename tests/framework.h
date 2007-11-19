@@ -33,7 +33,7 @@ enum
   EPC_TEST_MASK_ALL = 255
 };
 
-gboolean epc_test_init                 (void);
+gboolean epc_test_init                 (gint                         tests);
 gboolean epc_test_init_service_browser (const gchar                 *service,
                                         AvahiServiceBrowserCallback  callback,
                                         gpointer                     data);
