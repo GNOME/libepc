@@ -1,3 +1,11 @@
+2007-11-14  Mathias Hasselmann  <mathias@openismus.com>
+
+	Rename EpcContent: "Inhalt" is "contents" with "s", not "content".
+
+	* docs/reference/libepc/libepc-sections.txt,
+	examples/test-publisher.c, libepc/publisher.c,
+	libepc/publisher.h: Rename EpcContent to EpcContents.
+
 2007-11-13  Mathias Hasselmann  <mathias@openismus.com>
 
 	Distribute gtk-doc.make, libepc-docs.xml and libepc-sections.txt.

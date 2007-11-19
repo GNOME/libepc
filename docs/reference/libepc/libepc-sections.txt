@@ -29,8 +29,8 @@ EPC_DISPATCHER_GET_CLASS
 <FILE>publisher</FILE>
 EpcAuthContext
 EpcAuthHandler
-EpcContent
-EpcContentHandler
+EpcContents
+EpcContentsHandler
 EpcPublisherPrivate
 EpcPublisherClass
 <TITLE>EpcPublisher</TITLE>
@@ -55,10 +55,10 @@ epc_publisher_quit
 epc_auth_context_check_password
 epc_auth_context_get_key
 epc_auth_context_get_publisher
-<SUBSECTION EpcContent>
-epc_content_new
-epc_content_ref
-epc_content_unref
+<SUBSECTION EpcContents>
+epc_contents_new
+epc_contents_ref
+epc_contents_unref
 <SUBSECTION Standard>
 EPC_PUBLISHER
 EPC_IS_PUBLISHER

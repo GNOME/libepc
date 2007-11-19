@@ -20,7 +20,7 @@
 
 static EpcProtocol protocol = EPC_PROTOCOL_HTTPS;
 
-static EpcContent*
+static EpcContents*
 timestamp_handler (EpcPublisher *publisher G_GNUC_UNUSED,
                    const gchar  *key G_GNUC_UNUSED,
                    gpointer      data)
@@ -36,7 +36,7 @@ timestamp_handler (EpcPublisher *publisher G_GNUC_UNUSED,
   buffer = g_malloc (bufsize);
   strftime (buffer, bufsize, format, tm);
 
-  return epc_content_new ("text/plain", buffer, strlen (buffer));
+  return epc_contents_new ("text/plain", buffer, strlen (buffer));
 }
 
 static gboolean

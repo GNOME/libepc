@@ -87,12 +87,12 @@ struct _EpcAuthContext
 };
 
 /**
- * EpcContent:
+ * EpcContents:
  *
- * A reference counted buffer for storing content to deliver by the
- * #EpcPublisher. Use #epc_content_new to create instances of this buffer.
+ * A reference counted buffer for storing contents to deliver by the
+ * #EpcPublisher. Use #epc_contents_new to create instances of this buffer.
  */
-struct _EpcContent
+struct _EpcContents
 {
   volatile gint ref_count;
   gsize         length;
@@ -102,13 +102,13 @@ struct _EpcContent
 
 struct _EpcResource
 {
-  EpcContentHandler handler;
-  gpointer          user_data;
-  GDestroyNotify    destroy_data;
+  EpcContentsHandler handler;
+  gpointer           user_data;
+  GDestroyNotify     destroy_data;
 
-  EpcAuthHandler    auth_handler;
-  gpointer          auth_user_data;
-  GDestroyNotify    auth_destroy_data;
+  EpcAuthHandler     auth_handler;
+  gpointer           auth_user_data;
+  GDestroyNotify     auth_destroy_data;
 };
 
 /**
@@ -138,72 +138,90 @@ struct _EpcPublisherPrivate
 
 extern gboolean _epc_debug;
 
+G_DEFINE_TYPE (EpcPublisher, epc_publisher, G_TYPE_OBJECT);
+
 /**
- * epc_content_new:
- * @type: the MIME type of this content, or %NULL
+ * epc_contents_new:
+ * @type: the MIME type of this contents, or %NULL
  * @data: the contents for this buffer
- * @length: the content length in bytes
+ * @length: the contents length in bytes
  *
- * Creates a new #EpcContent buffer.
+ * Creates a new #EpcContents buffer.
  * Passing %NULL for @type is equivalent to passing "application/octet-stream".
  *
- * Returns: The newly created #EpcContent buffer.
+ * Returns: The newly created #EpcContents buffer.
  */
-EpcContent*
-epc_content_new (const gchar *type,
-                 gpointer     data,
-                 gsize        length)
+EpcContents*
+epc_contents_new (const gchar *type,
+                  gpointer     data,
+                  gsize        length)
 {
-  EpcContent *content = g_slice_new0 (EpcContent);
+  EpcContents *self = g_slice_new0 (EpcContents);
 
-  content->ref_count = 1;
+  self->ref_count = 1;
 
   if (type)
-    content->type = g_strdup (type);
+    self->type = g_strdup (type);
 
-  content->data = data;
-  content->length = length;
+  self->data = data;
+  self->length = length;
 
-  return content;
+  return self;
 }
 
 /**
- * epc_content_ref:
- * @content: a EpcContent buffer
+ * epc_contents_ref:
+ * @contents: a EpcContents buffer
  *
- * Increases the reference count of @content.
+ * Increases the reference count of @contents.
  *
- * Returns: the same @content buffer.
+ * Returns: the same @contents buffer.
  */
-EpcContent*
-epc_content_ref (EpcContent *content)
+EpcContents*
+epc_contents_ref (EpcContents *self)
 {
-  g_return_val_if_fail (NULL != content, NULL);
-  g_atomic_int_inc (&content->ref_count);
-  return content;
+  g_return_val_if_fail (NULL != self, NULL);
+  g_atomic_int_inc (&self->ref_count);
+  return self;
 }
 
 /**
- * epc_content_unref:
- * @content: a EpcContent buffer
+ * epc_contents_unref:
+ * @contents: a EpcContents buffer
  *
- * Decreases the reference count of @content.
+ * Decreases the reference count of @contents.
  * When its reference count drops to 0, the buffer is released
  * (i.e. its memory is freed).
  */
 void
-epc_content_unref (EpcContent *content)
+epc_contents_unref (EpcContents *self)
 {
-  g_return_if_fail (NULL != content);
+  g_return_if_fail (NULL != self);
 
-  if (g_atomic_int_dec_and_test (&content->ref_count))
-    g_slice_free (EpcContent, content);
+  if (g_atomic_int_dec_and_test (&self->ref_count))
+    {
+      g_free (self->data);
+      g_free (self->type);
+
+      g_slice_free (EpcContents, self);
+    }
+}
+
+static G_CONST_RETURN gchar*
+epc_contents_get_mime_type (EpcContents *self)
+{
+  g_return_val_if_fail (NULL != self, NULL);
+
+  if (self->type)
+    return self->type;
+
+  return "application/octet-stream";
 }
 
 static EpcResource*
-epc_resource_new (EpcContentHandler handler,
-                  gpointer          user_data,
-                  GDestroyNotify    destroy_data)
+epc_resource_new (EpcContentsHandler handler,
+                  gpointer           user_data,
+                  GDestroyNotify     destroy_data)
 {
   EpcResource *self = g_slice_new0 (EpcResource);
 
@@ -240,32 +258,30 @@ epc_resource_set_auth_handler (EpcResource    *self,
   self->auth_destroy_data = destroy_data;
 }
 
-static EpcContent*
+static EpcContents*
 epc_publisher_handle_static (EpcPublisher *publisher G_GNUC_UNUSED,
                              const gchar  *key G_GNUC_UNUSED,
                              gpointer      user_data)
 {
-  return epc_content_ref (user_data);
+  return epc_contents_ref (user_data);
 }
 
-static EpcContent*
+static EpcContents*
 epc_publisher_handle_file (EpcPublisher *publisher G_GNUC_UNUSED,
                            const gchar  *key G_GNUC_UNUSED,
                            gpointer      user_data)
 {
   const gchar *filename = user_data;
-  EpcContent *content = NULL;
+  EpcContents *contents = NULL;
   gchar *data = NULL;
   gsize length = 0;
 
   /* TODO: use gio to determinate mime-type */
   if (g_file_get_contents (filename, &data, &length, NULL))
-    content = epc_content_new (NULL, data, length);
+    contents = epc_contents_new (NULL, data, length);
 
-  return content;
+  return contents;
 }
-
-G_DEFINE_TYPE (EpcPublisher, epc_publisher, G_TYPE_OBJECT);
 
 static G_CONST_RETURN gchar*
 epc_publisher_get_key (const gchar *path)
@@ -290,7 +306,7 @@ epc_publisher_server_get_handler (SoupServerContext *context,
 {
   EpcPublisher *self = data;
   EpcResource *resource = NULL;
-  EpcContent *content = NULL;
+  EpcContents *contents = NULL;
   const gchar *key = NULL;
 
   key = epc_publisher_get_key (context->path);
@@ -298,23 +314,21 @@ epc_publisher_server_get_handler (SoupServerContext *context,
   if (key)
     resource = g_hash_table_lookup (self->priv->resources, key);
   if (resource && resource->handler)
-    content = resource->handler (self, key, resource->user_data);
+    contents = resource->handler (self, key, resource->user_data);
 
-  if (content)
+  if (contents)
     {
-      const gchar *mime_type = content->type;
-
-      if (!mime_type)
-        mime_type = "application/octet-stream";
+      const gchar *mime_type = epc_contents_get_mime_type (contents);
 
       soup_message_set_response (message, mime_type,
                                  SOUP_BUFFER_USER_OWNED,
-                                 content->data, content->length);
+                                 contents->data,
+				 contents->length);
       soup_message_set_status (message, SOUP_STATUS_OK);
 
       g_signal_connect_swapped (message, "finished",
-                                G_CALLBACK (epc_content_unref),
-                                content);
+                                G_CALLBACK (epc_contents_unref),
+                                contents);
     }
   else
     soup_message_set_status (message, SOUP_STATUS_NOT_FOUND);
@@ -768,8 +782,8 @@ epc_publisher_add (EpcPublisher  *self,
 
   epc_publisher_add_handler (self, key,
                              epc_publisher_handle_static,
-                             epc_content_new (type, data, length),
-                             (GDestroyNotify) epc_content_unref);
+                             epc_contents_new (type, data, length),
+                             (GDestroyNotify) epc_contents_unref);
 }
 
 /**
@@ -800,12 +814,12 @@ epc_publisher_add_file (EpcPublisher  *self,
  * epc_publisher_add_handler:
  * @publisher: a #EpcPublisher
  * @key: the key for addressing the content
- * @handler: the #EpcContentHandler for handling this content
+ * @handler: the #EpcContentsHandler for handling this content
  * @user_data: data to pass on @handler calls
  * @destroy_data: a function for releasing @user_data
  *
- * Publishes content on the #EpcPublisher which is generated by a custom
- * #EpcContentHandler. This is the most flexible method for publishing
+ * Publishes contents on the #EpcPublisher which is generated by a custom
+ * #EpcContentsHandler. This is the most flexible method for publishing
  * information.
  *
  * The @handler is called on every request matching @key.
@@ -816,7 +830,7 @@ epc_publisher_add_file (EpcPublisher  *self,
 void
 epc_publisher_add_handler (EpcPublisher      *self,
                            const gchar       *key,
-                           EpcContentHandler  handler,
+                           EpcContentsHandler handler,
                            gpointer           user_data,
                            GDestroyNotify     destroy_data)
 {

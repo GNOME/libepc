@@ -34,28 +34,28 @@ G_BEGIN_DECLS
 #define EPC_PUBLISHER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), EPC_TYPE_PUBLISHER, EpcPublisherClass))
 
 typedef struct _EpcAuthContext                  EpcAuthContext;
-typedef struct _EpcContent                      EpcContent;
+typedef struct _EpcContents                     EpcContents;
 typedef struct _EpcPublisher                    EpcPublisher;
 typedef struct _EpcPublisherClass               EpcPublisherClass;
 typedef struct _EpcPublisherPrivate             EpcPublisherPrivate;
 
 /**
- * EpcContentHandler:
+ * EpcContentsHandler:
  * @publisher: the #EpcPublisher
  * @key: the unique key
  * @user_data: user data set when the signal handler was installed
  *
- * This callback is used to generate custom content published with the
+ * This callback is used to generate custom contents published with the
  * #epc_publisher_add_handler function. The arguments passed are the same as
  * passed to #epc_publisher_add_handler. The #EpcPublisher will decrease the
  * reference count of the returned buffer after deliving it. It's valid to
- * return %NULL in situations were no content can be generated.
+ * return %NULL in situations were no contents can be generated.
  *
- * Returns: The #EpcContent buffer for this publication, or %NULL.
+ * Returns: The #EpcContents buffer for this publication, or %NULL.
  */
-typedef EpcContent* (*EpcContentHandler) (EpcPublisher   *publisher,
-                                          const gchar    *key,
-                                          gpointer        user_data);
+typedef EpcContents* (*EpcContentsHandler) (EpcPublisher   *publisher,
+                                            const gchar    *key,
+                                            gpointer        user_data);
 
 /**
  * EpcAuthHandler:
@@ -133,7 +133,7 @@ void                  epc_publisher_add_file             (EpcPublisher      *pub
                                                           const gchar       *filename);
 void                  epc_publisher_add_handler          (EpcPublisher      *publisher,
                                                           const gchar       *key,
-                                                          EpcContentHandler  handler,
+                                                          EpcContentsHandler handler,
                                                           gpointer           user_data,
                                                           GDestroyNotify     destroy_data);
 
@@ -152,11 +152,11 @@ G_CONST_RETURN gchar* epc_auth_context_get_key           (EpcAuthContext    *con
 gboolean              epc_auth_context_check_password    (EpcAuthContext    *context,
                                                           const gchar       *password);
 
-EpcContent*           epc_content_new                    (const gchar       *type,
+EpcContents*          epc_contents_new                   (const gchar       *type,
                                                           gpointer           data,
                                                           gsize              length);
-EpcContent*           epc_content_ref                    (EpcContent        *content);
-void                  epc_content_unref                  (EpcContent        *content);
+EpcContents*          epc_contents_ref                   (EpcContents       *contents);
+void                  epc_contents_unref                 (EpcContents       *contents);
 
 G_END_DECLS
 
