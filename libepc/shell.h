@@ -28,6 +28,8 @@ G_BEGIN_DECLS
 
 void                        epc_shell_ref                 (void);
 void                        epc_shell_unref               (void);
+void                        epc_shell_leave               (void);
+void                        epc_shell_enter               (void);
 
 G_CONST_RETURN AvahiPoll*   epc_shell_get_avahi_poll_api  (void);
 AvahiClient*                epc_shell_create_avahi_client (AvahiClientFlags    flags,

@@ -13,7 +13,7 @@ AM_PROG_LIBTOOL
 GTK_DOC_CHECK([1.4])
 
 PKG_PROG_PKG_CONFIG([0.14])
-PKG_CHECK_MODULES(LIBEPC, [avahi-client avahi-glib libsoup-2.2])
+PKG_CHECK_MODULES(LIBEPC, [avahi-client avahi-glib gmodule-2.0 libsoup-2.2])
 PKG_CHECK_MODULES(LIBEPC_UI, [gtk+-2.0])
 PKG_CHECK_MODULES(AVAHIUI, [avahi-ui])
 

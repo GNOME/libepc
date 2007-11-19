@@ -25,28 +25,49 @@
 #include <avahi-glib/glib-malloc.h>
 #include <avahi-glib/glib-watch.h>
 
+#include <gmodule.h>
+
 typedef struct _EpcAvahiShell EpcAvahiShell;
 
 struct _EpcAvahiShell
 {
   volatile gint  ref_count;
   AvahiGLibPoll *poll;
+
+  void (*threads_enter) (void);
+  void (*threads_leave) (void);
 };
 
-static EpcAvahiShell epc_shell;
+static EpcAvahiShell epc_shell = { 0, NULL, NULL, NULL };
 
 void
 epc_shell_ref (void)
 {
   if (0 == g_atomic_int_exchange_and_add (&epc_shell.ref_count, 1))
     {
+      GModule *module;
+      gpointer symbol;
+
       avahi_set_allocator (avahi_glib_allocator ());
 
       g_assert (NULL == epc_shell.poll);
       epc_shell.poll = avahi_glib_poll_new (NULL, G_PRIORITY_DEFAULT);
-    }
 
-  g_debug ("%s: ref_count: %d", G_STRLOC, epc_shell.ref_count);
+      g_assert (NULL == epc_shell.threads_enter);
+      g_assert (NULL == epc_shell.threads_leave);
+
+      module = g_module_open (NULL, G_MODULE_BIND_LAZY);
+
+      symbol = NULL;
+      g_module_symbol (module, "gdk_threads_enter", &symbol);
+      epc_shell.threads_enter = symbol;
+
+      symbol = NULL;
+      g_module_symbol (module, "gdk_threads_leave", &symbol);
+      epc_shell.threads_leave = symbol;
+
+      g_module_close (module);
+    }
 }
 
 void
@@ -57,9 +78,24 @@ epc_shell_unref (void)
       g_assert (NULL != epc_shell.poll);
       avahi_glib_poll_free (epc_shell.poll);
       epc_shell.poll = NULL;
-    }
 
-  g_debug ("%s: ref_count: %d", G_STRLOC, epc_shell.ref_count);
+      epc_shell.threads_enter = NULL;
+      epc_shell.threads_leave = NULL;
+    }
+}
+
+void
+epc_shell_leave (void)
+{
+  if (epc_shell.threads_leave)
+    epc_shell.threads_leave ();
+}
+
+void
+epc_shell_enter (void)
+{
+  if (epc_shell.threads_enter)
+    epc_shell.threads_enter ();
 }
 
 G_CONST_RETURN AvahiPoll*

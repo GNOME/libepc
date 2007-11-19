@@ -50,6 +50,7 @@
 
 #include "consumer.h"
 #include "marshal.h"
+#include "shell.h"
 
 #include <libsoup/soup-session-sync.h>
 #include <string.h>
@@ -119,6 +120,7 @@ epc_consumer_init (EpcConsumer *self)
 {
   self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self, EPC_TYPE_CONSUMER, EpcConsumerPrivate);
   self->priv->session = soup_session_sync_new ();
+  epc_shell_ref ();
 
   g_signal_connect (self->priv->session, "authenticate",
                     G_CALLBACK (epc_consumer_authenticate_cb), self);
@@ -195,12 +197,20 @@ epc_consumer_dispose (GObject *object)
 }
 
 static void
+epc_consumer_finalize (GObject *object)
+{
+  epc_shell_unref ();
+  G_OBJECT_CLASS (epc_consumer_parent_class)->finalize (object);
+}
+
+static void
 epc_consumer_class_init (EpcConsumerClass *cls)
 {
   GObjectClass *oclass = G_OBJECT_CLASS (cls);
 
   oclass->set_property = epc_consumer_set_property;
   oclass->get_property = epc_consumer_get_property;
+  oclass->finalize = epc_consumer_finalize;
   oclass->dispose = epc_consumer_dispose;
 
   g_object_class_install_property (oclass, PROP_HOST,
@@ -348,14 +358,20 @@ epc_consumer_lookup (EpcConsumer *self,
   request = epc_consumer_create_request (self, path);
   g_free (path);
 
+  g_return_val_if_fail (NULL != request, NULL);
+
+  epc_shell_leave ();
   status = soup_session_send_message (self->priv->session, request);
+  epc_shell_enter ();
 
   if (SOUP_STATUS_OK == status)
     {
       if (length)
         *length = request->response.length;
 
-      contents = g_malloc (request->response.length);
+      contents = g_malloc (request->response.length + 1);
+      contents[request->response.length] = '\0';
+
       memcpy (contents, request->response.body,
               request->response.length);
     }

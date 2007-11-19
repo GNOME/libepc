@@ -1,5 +1,16 @@
 2007-11-06  Mathias Hasselmann  <mathias@openismus.com>
 
+	Try to prevent dead-locks with GDK when entering main loops.
+
+	* configure.in: Add gmodule-2.0 as dependency.
+	* libepc/shell.c, libepc/shell.h: Add epc_shell_leave and
+	epc_shell_enter which deal with GDK's big lock when needed.
+	* libepc/dispatcher.c: Call epc_shell_unref in finalize, not dispose.
+	* libepc/consumer.c: Unlock when calling soup_session_send_message.
+	* tests/framework.c: Unlock when calling g_main_loop_run.
+
+2007-11-06  Mathias Hasselmann  <mathias@openismus.com>
+
 	Also commit services when not adding any subtypes.
 
 	* libepc/dispatcher.c: Also schedule commmit from epc_service_publish.

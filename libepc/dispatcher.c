@@ -499,9 +499,14 @@ epc_dispatcher_dispose (GObject *object)
   g_free (self->priv->name);
   self->priv->name = NULL;
 
-  epc_shell_unref ();
-
   G_OBJECT_CLASS (epc_dispatcher_parent_class)->dispose (object);
+}
+
+static void
+epc_dispatcher_finalize (GObject *object)
+{
+  epc_shell_unref ();
+  G_OBJECT_CLASS (epc_dispatcher_parent_class)->finalize (object);
 }
 
 static void
@@ -514,6 +519,7 @@ epc_dispatcher_class_init (EpcDispatcherClass *cls)
 
   oclass->set_property = epc_dispatcher_set_property;
   oclass->get_property = epc_dispatcher_get_property;
+  oclass->finalize = epc_dispatcher_finalize;
   oclass->dispose = epc_dispatcher_dispose;
 
   g_object_class_install_property (oclass, PROP_INTERFACE,
