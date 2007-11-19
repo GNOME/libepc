@@ -193,8 +193,12 @@ epc_service_publish (EpcService *self)
                G_STRLOC, self->type, self->dispatcher->priv->name,
                avahi_strerror (result), result);
   else
-    for (iter = self->subtypes; iter; iter = iter->next)
-      epc_service_publish_subtype (self, iter->data);
+    {
+      for (iter = self->subtypes; iter; iter = iter->next)
+        epc_service_publish_subtype (self, iter->data);
+
+      epc_service_schedule_commit (self);
+    }
 }
 
 static void

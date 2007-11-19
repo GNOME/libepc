@@ -1,5 +1,11 @@
 2007-11-06  Mathias Hasselmann  <mathias@openismus.com>
 
+	Also commit services when not adding any subtypes.
+
+	* libepc/dispatcher.c: Also schedule commmit from epc_service_publish.
+
+2007-11-06  Mathias Hasselmann  <mathias@openismus.com>
+
 	Rename EpcAvahiShell to EpcShell.
 
 	* libepc/dispatcher.c, libepc/publisher.c, libepc/shell.c,
