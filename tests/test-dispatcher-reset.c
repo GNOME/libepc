@@ -24,12 +24,12 @@ service_browser_cb (AvahiServiceBrowser     *browser G_GNUC_UNUSED,
     {
       if (AVAHI_BROWSER_NEW == event)
         {
-          epc_test_pass (1);
+          epc_test_pass_once (1);
           epc_dispatcher_reset (dispatcher);
         }
 
       if (AVAHI_BROWSER_REMOVE == event)
-        epc_test_pass (2);
+        epc_test_pass_once (2);
     }
 }
 

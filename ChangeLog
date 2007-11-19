@@ -1,3 +1,17 @@
+2007-11-13  Mathias Hasselmann  <mathias@openismus.com>
+
+	Do more restrictive argument checks in epc_dispatcher_add_service to
+	work arround Avahi race conditions.
+
+	* libepc/dispatcher.c: Do more restrictive argument checks in
+	epc_dispatcher_add_service to work arround Avahi race conditions.
+	* libepc/publisher.c, tests/test-dispatcher-subtypes.c:
+	Use epc_dispatcher_add_service_subtype instead of
+	epc_dispatcher_add_service to publish subtypes.
+	* tests/framework.c, tests/framework.h:
+	Rename epc_test_pass to epc_test_pass_once. Add epc_test_pass_many.
+	* tests/*: Rename epc_test_pass to epc_test_pass_once.
+
 2007-11-12  Mathias Hasselmann  <mathias@openismus.com>
 
 	Fix several issues to make distcheck happy.

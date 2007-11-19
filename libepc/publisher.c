@@ -395,9 +395,14 @@ epc_publisher_announce (EpcPublisher *self)
   sockaddr = soup_address_get_sockaddr (address, &addrlen);
 
   epc_dispatcher_reset (self->priv->dispatcher);
+
   epc_dispatcher_add_service (self->priv->dispatcher, sockaddr->sa_family,
-                              service, self->priv->service_domain,
-                              host, port, NULL);
+                              epc_protocol_get_service_type (self->priv->protocol),
+                              self->priv->service_domain, host, port, NULL);
+
+  epc_dispatcher_add_service_subtype (self->priv->dispatcher,
+                                      epc_protocol_get_service_type (self->priv->protocol),
+                                      service);
 
   g_free (service);
 

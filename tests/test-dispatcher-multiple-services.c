@@ -25,7 +25,7 @@ service_browser_cb (AvahiServiceBrowser     *browser G_GNUC_UNUSED,
 
       for (i = 0; i < G_N_ELEMENTS (test_types); ++i)
         if (g_str_equal (type, test_types[i]))
-          epc_test_pass (1 << i);
+          epc_test_pass_once (1 << i);
     }
 }
 

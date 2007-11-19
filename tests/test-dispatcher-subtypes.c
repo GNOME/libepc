@@ -2,6 +2,8 @@
 
 #include "framework.h"
 #include "libepc/dispatcher.h"
+#include "libepc/service-type.h"
+
 #include <string.h>
 
 static gchar *test_types[6] = { NULL, NULL, NULL, NULL, NULL, NULL };
@@ -27,13 +29,13 @@ service_browser_cb (AvahiServiceBrowser     *browser G_GNUC_UNUSED,
           name && g_str_equal (name, test_name))
         {
           if (0 == strcmp (type, test_types[0] + 11))
-            epc_test_pass (1);
+            epc_test_pass_many (1);
         }
       else
         {
           for (i = 0; i < G_N_ELEMENTS (test_types); ++i)
             if (g_str_equal (type, test_types[i]))
-              epc_test_pass (2 << i);
+              epc_test_pass_once (2 << i);
         }
     }
 }
@@ -44,6 +46,7 @@ main (void)
   EpcDispatcher *dispatcher = NULL;
   gint result = EPC_TEST_MASK_ALL;
   gint hash = g_random_int ();
+  const gchar *base_type;
   unsigned i;
 
   g_type_init ();
@@ -67,9 +70,12 @@ main (void)
 
   dispatcher = epc_dispatcher_new (test_name);
 
+  base_type = epc_service_type_get_base (test_types[0]);
+  epc_dispatcher_add_service (dispatcher, EPC_ADDRESS_UNSPEC,
+                              base_type, NULL, NULL, 2007, NULL);
+
   for (i = 0; i < G_N_ELEMENTS (test_types); ++i)
-    epc_dispatcher_add_service (dispatcher, EPC_ADDRESS_UNSPEC,
-                                test_types[i], NULL, NULL, 2007, NULL);
+    epc_dispatcher_add_service_subtype (dispatcher, base_type, test_types[i]);
 
   result = epc_test_run ();
 

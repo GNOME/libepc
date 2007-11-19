@@ -26,9 +26,9 @@ service_browser_cb (AvahiServiceBrowser     *browser G_GNUC_UNUSED,
       type && g_str_equal (type, test_type) && name)
     {
       if (g_str_equal (name, preferred_name))
-        epc_test_pass (1);
+        epc_test_pass_once (1);
       if (g_str_equal (name, alternative_name))
-        epc_test_pass (2);
+        epc_test_pass_once (2);
     }
 }
 

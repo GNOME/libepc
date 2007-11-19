@@ -25,12 +25,12 @@ service_browser_cb (AvahiServiceBrowser     *browser G_GNUC_UNUSED,
     {
       if (g_str_equal (name, first_name))
         {
-          epc_test_pass (1);
+          epc_test_pass_once (1);
           epc_publisher_set_service_name (publisher, second_name);
         }
 
       if (g_str_equal (name, second_name))
-        epc_test_pass (2);
+        epc_test_pass_once (2);
     }
 }
 

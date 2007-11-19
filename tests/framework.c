@@ -106,6 +106,7 @@ epc_test_timeout_cb (gpointer data G_GNUC_UNUSED)
 
 void
 _epc_test_pass (const gchar *strloc,
+                gboolean     once,
                 gint         mask)
 {
   int i;
@@ -119,7 +120,9 @@ _epc_test_pass (const gchar *strloc,
     if (mask & (1 << i))
       {
         g_print ("%s: Test #%d passed\n", strloc, i + 1);
-        g_assert (epc_test_result & (1 << i));
+
+        if (once && !(epc_test_result & (1 << i)))
+          g_critical ("Test passed a second time, which was not expected");
       }
 
   epc_test_result &= ~mask;

@@ -22,7 +22,7 @@ service_browser_cb (AvahiServiceBrowser     *browser G_GNUC_UNUSED,
       name && g_str_equal (name, test_name) &&
       type && g_str_equal (type, test_type))
     {
-      epc_test_pass (1);
+      epc_test_pass_once (1);
 
       /* This epc_test_quit is not needed to reach the primary goal of this
        * test since epc_test_pass should call it, but it checks under real

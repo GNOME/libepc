@@ -28,27 +28,27 @@ service_browser_cb (AvahiServiceBrowser     *browser G_GNUC_UNUSED,
           case AVAHI_BROWSER_NEW:
             if (g_str_equal (name, first_name))
               {
-                epc_test_pass (1 << 0);
+                epc_test_pass_once (1 << 0);
                 epc_dispatcher_set_name (dispatcher, second_name);
               }
 
             if (g_str_equal (name, second_name))
               {
-                epc_test_pass (1 << 2);
+                epc_test_pass_once (1 << 2);
                 epc_dispatcher_set_name (dispatcher, third_name);
               }
 
             if (g_str_equal (name, third_name))
-              epc_test_pass (1 << 4);
+              epc_test_pass_once (1 << 4);
 
             break;
 
           case AVAHI_BROWSER_REMOVE:
             if (g_str_equal (name, first_name))
-              epc_test_pass (1 << 1);
+              epc_test_pass_once (1 << 1);
 
             if (g_str_equal (name, second_name))
-              epc_test_pass (1 << 3);
+              epc_test_pass_once (1 << 3);
 
             break;
 

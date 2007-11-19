@@ -596,12 +596,17 @@ epc_dispatcher_add_service (EpcDispatcher    *self,
   va_list args;
 
   g_return_if_fail (EPC_IS_DISPATCHER (self));
-  g_return_if_fail (NULL != type);
   g_return_if_fail (port > 0);
 
+  g_return_if_fail (NULL != type);
+  g_return_if_fail (type == epc_service_type_get_base (type));
+  g_return_if_fail (NULL == g_hash_table_lookup (self->priv->services, type));
+
   va_start (args, port);
+
   service = epc_service_new (self, avahi_af_to_proto (protocol),
                              type, domain, host, port, args);
+
   va_end (args);
 }
 

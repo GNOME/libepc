@@ -26,7 +26,8 @@
 
 G_BEGIN_DECLS
 
-#define epc_test_pass(mask) (_epc_test_pass (G_STRLOC, (mask)))
+#define epc_test_pass_many(mask) (_epc_test_pass (G_STRLOC, FALSE, (mask)))
+#define epc_test_pass_once(mask) (_epc_test_pass (G_STRLOC, TRUE, (mask)))
 
 enum
 {
@@ -43,6 +44,7 @@ gint     epc_test_run                  (void);
 void     epc_test_quit                 (void);
 
 void    _epc_test_pass                 (const gchar                 *strloc,
+                                        gboolean                     once,
                                         gint                         mask);
 
 G_END_DECLS
