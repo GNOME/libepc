@@ -5,14 +5,14 @@ html
 tmpl
 xml
 
-libepc-decl-list.txt
-libepc-decl.txt
-libepc-overrides.txt
-libepc-undocumented.txt
-libepc-unused.txt
-libepc.args
-libepc.hierarchy
-libepc.interfaces
-libepc.prerequisites
-libepc.signals
-libepc.types
+libepc-1.0-decl-list.txt
+libepc-1.0-decl.txt
+libepc-1.0-overrides.txt
+libepc-1.0-undocumented.txt
+libepc-1.0-unused.txt
+libepc-1.0.args
+libepc-1.0.hierarchy
+libepc-1.0.interfaces
+libepc-1.0.prerequisites
+libepc-1.0.signals
+libepc-1.0.types

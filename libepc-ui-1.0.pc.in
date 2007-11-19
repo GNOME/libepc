@@ -6,7 +6,7 @@ includedir=${prefix}/include
 Name: Easy Publish and Consume Widgets
 Description: widgets for the Easy Publish and Consume Library
 Version: @VERSION@
-Requires: gtk+-2.0
-Cflags: -I${includedir}/libepc-ui
-Libs: -L${libdir} -lepc-ui
+Requires: libepc-1.0 gtk+-2.0
+Cflags: -I${includedir}/libepc-ui-1.0
+Libs: -L${libdir} -lepc-ui-1.0
 

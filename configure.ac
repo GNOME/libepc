@@ -1,10 +1,11 @@
-AC_INIT([libepc], [0.1], [mathias@openismus.com])
+AC_INIT([libepc], [0.2], [mathias@openismus.com])
 AM_INIT_AUTOMAKE([-Wall dist-bzip2 subdir-objects])
 
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_FILES([
   Makefile docs/reference/libepc/Makefile
-  libepc.pc libepc-ui.pc])
+  libepc-1.0.pc libepc-ui-1.0.pc
+])
 
 AC_PROG_CC
 AM_PROG_CC_C_O

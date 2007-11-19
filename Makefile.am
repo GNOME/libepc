@@ -1,20 +1,29 @@
-if HAVE_AVAHI_UI_0_6_22
-AVAHI_UI_DEFINES = -DHAVE_AVAHI_UI_0_6_22=1
-else
-AVAHI_UI_DEFINES =
-endif
+# ===========================
+# -- CONFIGURATION OPTIONS --
+# ===========================
 
-LIBEPC_UI_CFLAGS += $(AVAHI_UI_DEFINES)
+DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
+TESTS_ENVIRONMENT = $(top_srcdir)/tests/test-runner.sh
 
-AM_CFLAGS = \
-	-Wall \
-	-DGTK_DISABLE_DEPRECATED=1 \
-	-DGDK_DISABLE_DEPRECATED=1 \
-	-DG_DISABLE_DEPRECATED=1
+# ============================
+# -- DIRECTORY DECLARATIONS --
+# ============================
+
+libepc_includedir = $(includedir)/libepc-1.0/libepc
+libepc_ui_includedir = $(includedir)/libepc-ui-1.0/libepc-ui
+pkgconfigdir = $(libdir)/pkgconfig
+
+gtkdoc_builddir=$(top_builddir)/docs/reference/libepc
+gtkdoc_distdir=$(top_distdir)/docs/reference/libepc
+gtkdoc_srcdir=$(top_srcdir)/docs/reference/libepc
+
+# =================
+# -- TARGET LIST --
+# =================
 
 lib_LTLIBRARIES = \
-	libepc/libepc.la \
-	libepc-ui/libepc-ui.la
+	libepc/libepc-1.0.la \
+	libepc-ui/libepc-ui-1.0.la
 noinst_LTLIBRARIES = \
 	tests/libepc-tests.la
 noinst_PROGRAMS = \
@@ -36,6 +45,10 @@ TESTS = \
 	tests/test-publisher-libsoup-494128 \
 	tests/test-service-type
 
+# ================
+# -- FILE LISTS --
+# ================
+
 libepc_headers = \
 	libepc/consumer.h \
 	libepc/dispatcher.h \
@@ -53,15 +66,20 @@ libepc_ui_include_HEADERS = \
 	libepc-ui/entropy-window.h \
 	libepc-ui/password-dialog.h
 pkgconfig_DATA = \
-	libepc.pc \
-	libepc-ui.pc
+	libepc-1.0.pc \
+	libepc-ui-1.0.pc
+EXTRA_DIST = \
+	gtk-doc.make \
+	$(gtkdoc_srcdir)/libepc-1.0-docs.xml \
+	$(gtkdoc_srcdir)/libepc-1.0-sections.txt \
+	tests/test-runner.sh
 
 BUILT_SOURCES = \
 	libepc/enums.c \
 	libepc/enums.h \
 	libepc/marshal.c \
 	libepc/marshal.h
-libepc_libepc_la_SOURCES = \
+libepc_libepc_1_0_la_SOURCES = \
 	$(libepc_include_HEADERS) \
 	libepc/consumer.c \
 	libepc/dispatcher.c \
@@ -75,7 +93,7 @@ libepc_libepc_la_SOURCES = \
 	libepc/service-type.c \
 	libepc/shell.c \
 	libepc/tls.c
-libepc_ui_libepc_ui_la_SOURCES = \
+libepc_ui_libepc_ui_1_0_la_SOURCES = \
 	$(libepc_ui_include_HEADERS) \
 	libepc-ui/entropy-window.c \
 	libepc-ui/password-dialog.c
@@ -83,63 +101,88 @@ tests_libepc_tests_la_SOURCES = \
 	tests/framework.c \
 	tests/framework.h
 
-EXTRA_DIST = \
-	gtk-doc.make \
-	$(gtkdoc_srcdir)/libepc-docs.xml \
-	$(gtkdoc_srcdir)/libepc-sections.txt \
-	tests/test-runner.sh
+# ====================
+# -- COMPILER FLAGS --
+# ====================
 
-libepc_libepc_la_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS) -DGETTEXT_PACKAGE=\"libepc\"
-libepc_libepc_la_LDFLAGS = $(LIBEPC_LIBS)
+AM_CFLAGS = \
+	-Wall \
+	-DGTK_DISABLE_DEPRECATED=1 \
+	-DGDK_DISABLE_DEPRECATED=1 \
+	-DG_DISABLE_DEPRECATED=1
 
-libepc_ui_libepc_ui_la_CFLAGS = $(AM_CFLAGS) $(LIBEPC_UI_CFLAGS) -DGETTEXT_PACKAGE=\"libepc-ui\"
-libepc_ui_libepc_ui_la_LDFLAGS = $(LIBEPC_UI_LIBS) libepc/libepc.la
+if HAVE_AVAHI_UI_0_6_22
+AVAHI_UI_DEFINES = -DHAVE_AVAHI_UI_0_6_22=1
+else
+AVAHI_UI_DEFINES =
+endif
+
+LIBEPC_UI_CFLAGS += $(AVAHI_UI_DEFINES)
+
+libepc_libepc_1_0_la_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS) -DGETTEXT_PACKAGE=\"libepc\"
+libepc_libepc_1_0_la_LDFLAGS			= $(LIBEPC_LIBS)
+
+libepc_ui_libepc_ui_1_0_la_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_UI_CFLAGS) -DGETTEXT_PACKAGE=\"libepc-ui\"
+libepc_ui_libepc_ui_1_0_la_LDFLAGS		= $(LIBEPC_UI_LIBS) libepc/libepc-1.0.la
 
 examples_list_resources_CFLAGS 			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-examples_list_resources_LDADD 			= libepc/libepc.la
+examples_list_resources_LDADD 			= libepc/libepc-1.0.la
 examples_lookup_resource_CFLAGS 		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-examples_lookup_resource_LDADD 			= libepc/libepc.la
+examples_lookup_resource_LDADD 			= libepc/libepc-1.0.la
 examples_simple_publisher_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-examples_simple_publisher_LDADD			= libepc/libepc.la
+examples_simple_publisher_LDADD			= libepc/libepc-1.0.la
 
 examples_consumer_ui_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS) $(AVAHI_UI_CFLAGS)
-examples_consumer_ui_LDADD			= libepc/libepc.la libepc-ui/libepc-ui.la $(AVAHI_UI_LIBS)
+examples_consumer_ui_LDADD			= libepc/libepc-1.0.la libepc-ui/libepc-ui-1.0.la $(AVAHI_UI_LIBS)
 examples_server_credentials_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS)
-examples_server_credentials_LDADD		= libepc/libepc.la libepc-ui/libepc-ui.la
+examples_server_credentials_LDADD		= libepc/libepc-1.0.la libepc-ui/libepc-ui-1.0.la
 
-tests_libepc_tests_la_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+tests_libepc_tests_la_CFLAGS 			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 
 tests_test_consumer_by_name_CFLAGS 		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_consumer_by_name_LDADD 		= libepc/libepc.la tests/libepc-tests.la
+tests_test_consumer_by_name_LDADD 		= libepc/libepc-1.0.la tests/libepc-tests.la
 tests_test_dispatcher_local_collision_CFLAGS	= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_dispatcher_local_collision_LDADD 	= libepc/libepc.la tests/libepc-tests.la
+tests_test_dispatcher_local_collision_LDADD 	= libepc/libepc-1.0.la tests/libepc-tests.la
 tests_test_dispatcher_multiple_services_CFLAGS 	= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_dispatcher_multiple_services_LDADD 	= libepc/libepc.la tests/libepc-tests.la
+tests_test_dispatcher_multiple_services_LDADD 	= libepc/libepc-1.0.la tests/libepc-tests.la
 tests_test_dispatcher_rename_CFLAGS 		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_dispatcher_rename_LDADD 		= libepc/libepc.la tests/libepc-tests.la
+tests_test_dispatcher_rename_LDADD 		= libepc/libepc-1.0.la tests/libepc-tests.la
 tests_test_dispatcher_reset_CFLAGS 		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_dispatcher_reset_LDADD 		= libepc/libepc.la tests/libepc-tests.la
+tests_test_dispatcher_reset_LDADD 		= libepc/libepc-1.0.la tests/libepc-tests.la
 tests_test_dispatcher_simple_service_CFLAGS 	= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_dispatcher_simple_service_LDADD 	= libepc/libepc.la tests/libepc-tests.la
+tests_test_dispatcher_simple_service_LDADD 	= libepc/libepc-1.0.la tests/libepc-tests.la
 tests_test_dispatcher_subtypes_CFLAGS 		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_dispatcher_subtypes_LDADD 		= libepc/libepc.la tests/libepc-tests.la
+tests_test_dispatcher_subtypes_LDADD 		= libepc/libepc-1.0.la tests/libepc-tests.la
 tests_test_publisher_change_name_CFLAGS      	= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_publisher_change_name_LDADD 		= libepc/libepc.la tests/libepc-tests.la
+tests_test_publisher_change_name_LDADD 		= libepc/libepc-1.0.la tests/libepc-tests.la
 tests_test_publisher_libsoup_494128_CFLAGS      = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_publisher_libsoup_494128_LDADD 	= libepc/libepc.la tests/libepc-tests.la
+tests_test_publisher_libsoup_494128_LDADD 	= libepc/libepc-1.0.la tests/libepc-tests.la
 tests_test_service_type_CFLAGS      		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_service_type_LDADD 			= libepc/libepc.la tests/libepc-tests.la
+tests_test_service_type_LDADD 			= libepc/libepc-1.0.la tests/libepc-tests.la
 
-libepc_includedir = $(includedir)/libepc/libepc
-libepc_ui_includedir = $(includedir)/libepc/libepc-ui
-pkgconfigdir = $(libdir)/pkgconfig
+# ==================
+# -- CUSTOM RULES --
+# ==================
 
-DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
-TESTS_ENVIRONMENT = $(top_srcdir)/tests/test-runner.sh
+libepc/marshal.h: libepc/marshal.list
+	$(GLIB_GENMARSHAL) $< --header --prefix=_epc_marshal > $@ || { rm -f $@; false; }
+libepc/marshal.c: libepc/marshal.list
+	( echo '#include "marshal.h"' && $(GLIB_GENMARSHAL) $< --body --prefix=_epc_marshal ) > $@ || { rm -f $@; false; }
+libepc/enums.h.tmp: libepc/enums.h.in $(libepc_headers)
+	(cd $(srcdir) && $(GLIB_MKENUMS) --template $< $(libepc_headers)) > $@ || { rm -f $@; false; }
+libepc/enums.h.stamp: libepc/enums.h.tmp
+	cmp -s $< libepc/enums.h || cp $< libepc/enums.h; touch $@
+libepc/enums.h: libepc/enums.h.stamp
 
-gtkdoc_builddir=$(top_builddir)/docs/reference/libepc
-gtkdoc_distdir=$(top_distdir)/docs/reference/libepc
-gtkdoc_srcdir=$(top_srcdir)/docs/reference/libepc
+libepc/enums.c.tmp: libepc/enums.c.in $(libepc_headers)
+	(cd $(srcdir) && $(GLIB_MKENUMS) --template $< $(libepc_headers)) > $@ || { rm -f $@; false; }
+libepc/enums.c.stamp: libepc/enums.c.tmp
+	cmp -s $< libepc/enums.c || cp $< libepc/enums.c; touch $@
+libepc/enums.c: libepc/enums.c.stamp
+
+# =========================
+# -- GTK-DOC INTEGRATION --
+# =========================
 
 all-local:
 	cd $(gtkdoc_builddir) && $(MAKE) $(AM_MAKEFLAGS) all
@@ -168,20 +211,10 @@ dist-hook:
           top_distdir="../../../$(top_distdir)" \
           dist-hook
 
-libepc/marshal.h: libepc/marshal.list
-	$(GLIB_GENMARSHAL) $< --header --prefix=_epc_marshal > $@ || { rm -f $@; false; }
-libepc/marshal.c: libepc/marshal.list
-	( echo '#include "marshal.h"' && $(GLIB_GENMARSHAL) $< --body --prefix=_epc_marshal ) > $@ || { rm -f $@; false; }
-libepc/enums.h.tmp: libepc/enums.h.in $(libepc_headers)
-	(cd $(srcdir) && $(GLIB_MKENUMS) --template $< $(libepc_headers)) > $@ || { rm -f $@; false; }
-libepc/enums.h.stamp: libepc/enums.h.tmp
-	cmp -s $< libepc/enums.h || cp $< libepc/enums.h; touch $@
-libepc/enums.h: libepc/enums.h.stamp
+.PHONY: docs
 
-libepc/enums.c.tmp: libepc/enums.c.in $(libepc_headers)
-	(cd $(srcdir) && $(GLIB_MKENUMS) --template $< $(libepc_headers)) > $@ || { rm -f $@; false; }
-libepc/enums.c.stamp: libepc/enums.c.tmp
-	cmp -s $< libepc/enums.c || cp $< libepc/enums.c; touch $@
-libepc/enums.c: libepc/enums.c.stamp
+# =====================
+# -- LOCAL OVERRIDES --
+# =====================
 
 -include Makefile.local

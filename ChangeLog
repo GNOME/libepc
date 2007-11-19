@@ -1,5 +1,15 @@
 2007-11-14  Mathias Hasselmann  <mathias@openismus.com>
 
+	Append "-1.0" suffix to package name.
+
+	* libepc-1.0.pc, libepc-ui-1.0.pc: Renamed.
+	* configure.ac, .gitignore: Rename *.pc files.
+	* Makefile.am: Append "-1.0" suffix. Sort statements. Add comments.
+	* docs/reference/libepc/Makefile.am: Change DOC_MODULE name.
+	* docs/reference/libepc/.gitignore: Update file names.
+
+2007-11-14  Mathias Hasselmann  <mathias@openismus.com>
+
 	Rename configure.in to configure.ac.
 
 2007-11-14  Mathias Hasselmann  <mathias@openismus.com>

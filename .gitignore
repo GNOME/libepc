@@ -15,8 +15,8 @@ config.sub
 configure
 depcomp
 install-sh
-libepc.pc
-libepc-ui.pc
+libepc-1.0.pc
+libepc-ui-1.0.pc
 libtool
 ltmain.sh
 missing
