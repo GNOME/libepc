@@ -43,7 +43,8 @@ libepc_headers = \
 	libepc/tls.h
 libepc_include_HEADERS = \
 	$(libepc_headers) \
-	libepc/enums.h
+	libepc/enums.h \
+	libepc/marshal.h
 libepc_ui_include_HEADERS = \
 	libepc-ui/entropy-window.h \
 	libepc-ui/password-dialog.h
@@ -51,26 +52,35 @@ pkgconfig_DATA = \
 	libepc.pc \
 	libepc-ui.pc
 
+BUILT_SOURCES = \
+	libepc/enums.c \
+	libepc/enums.h \
+	libepc/marshal.c \
+	libepc/marshal.h
 libepc_libepc_la_SOURCES = \
 	$(libepc_include_HEADERS) \
 	libepc/consumer.c \
 	libepc/dispatcher.c \
 	libepc/enums.c \
+	libepc/enums.c.in \
+	libepc/enums.h.in \
 	libepc/marshal.c \
+	libepc/marshal.list \
 	libepc/protocol.c \
 	libepc/publisher.c \
 	libepc/service-type.c \
 	libepc/shell.c \
 	libepc/tls.c
-
 libepc_ui_libepc_ui_la_SOURCES = \
 	$(libepc_ui_include_HEADERS) \
 	libepc-ui/entropy-window.c \
 	libepc-ui/password-dialog.c
-
 tests_libepc_tests_la_SOURCES = \
 	tests/framework.c \
 	tests/framework.h
+
+EXTRA_DIST = \
+	tests/test-runner.sh
 
 libepc_libepc_la_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS) -DGETTEXT_PACKAGE=\"libepc\"
 libepc_libepc_la_LDFLAGS = $(LIBEPC_LIBS)
@@ -113,35 +123,51 @@ libepc_ui_includedir = $(includedir)/libepc/libepc-ui
 pkgconfigdir = $(libdir)/pkgconfig
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
-TESTS_ENVIRONMENT = tests/test-runner.sh
+TESTS_ENVIRONMENT = $(top_srcdir)/tests/test-runner.sh
+
+gtkdoc_builddir=$(top_builddir)/docs/reference/libepc
+gtkdoc_distdir=$(top_distdir)/docs/reference/libepc
+gtkdoc_srcdir=$(top_srcdir)/docs/reference/libepc
 
 all-local:
-	cd docs/reference/libepc && $(MAKE) $(AM_MAKEFLAGS) all
+	cd $(gtkdoc_builddir) && $(MAKE) $(AM_MAKEFLAGS) all
 clean-local:
-	cd docs/reference/libepc && $(MAKE) $(AM_MAKEFLAGS) clean
-dist-hook:
-	cd docs/reference/libepc && $(MAKE) $(AM_MAKEFLAGS) dist
+	cd $(gtkdoc_builddir) && $(MAKE) $(AM_MAKEFLAGS) clean
+	rm -f $(BUILT_SOURCES) examples/.libs/*
+	rm -f libepc/*.stamp libepc/*.tmp
+	rm -f tests/*.err tests/*.out
+
+distclean-local:
+	cd $(gtkdoc_builddir) && $(MAKE) $(AM_MAKEFLAGS) distclean
 docs:
-	cd docs/reference/libepc && $(MAKE) $(AM_MAKEFLAGS) docs
+	cd $(gtkdoc_builddir) && $(MAKE) $(AM_MAKEFLAGS) docs
 install-data-local:
-	cd docs/reference/libepc && $(MAKE) $(AM_MAKEFLAGS) install-data
+	cd $(gtkdoc_builddir) && $(MAKE) $(AM_MAKEFLAGS) install-data
 maintainer-clean-local:
-	cd docs/reference/libepc && $(MAKE) $(AM_MAKEFLAGS) maintainer-clean
+	cd $(gtkdoc_builddir) && $(MAKE) $(AM_MAKEFLAGS) maintainer-clean
 uninstall-local:
-	cd docs/reference/libepc && $(MAKE) $(AM_MAKEFLAGS) uninstall
+	cd $(gtkdoc_builddir) && $(MAKE) $(AM_MAKEFLAGS) uninstall
+
+dist-hook:
+	mkdir -p $(gtkdoc_distdir)
+	cp $(gtkdoc_srcdir)/Makefile.am $(gtkdoc_srcdir)/Makefile.in $(gtkdoc_distdir)
+	cd $(gtkdoc_builddir) && $(MAKE) $(AM_MAKEFLAGS) \
+	  distdir="../../../$(gtkdoc_distdir)" \
+          top_distdir="../../../$(top_distdir)" \
+          dist-hook
 
 libepc/marshal.h: libepc/marshal.list
 	$(GLIB_GENMARSHAL) $< --header --prefix=_epc_marshal > $@ || { rm -f $@; false; }
 libepc/marshal.c: libepc/marshal.list
 	( echo '#include "marshal.h"' && $(GLIB_GENMARSHAL) $< --body --prefix=_epc_marshal ) > $@ || { rm -f $@; false; }
 libepc/enums.h.tmp: libepc/enums.h.in $(libepc_headers)
-	$(GLIB_MKENUMS) --template $< $(libepc_headers) > $@ || { rm -f $@; false; }
+	(cd $(srcdir) && $(GLIB_MKENUMS) --template $< $(libepc_headers)) > $@ || { rm -f $@; false; }
 libepc/enums.h.stamp: libepc/enums.h.tmp
 	cmp -s $< libepc/enums.h || cp $< libepc/enums.h; touch $@
 libepc/enums.h: libepc/enums.h.stamp
 
 libepc/enums.c.tmp: libepc/enums.c.in $(libepc_headers)
-	$(GLIB_MKENUMS) --template $< $(libepc_headers) > $@ || { rm -f $@; false; }
+	(cd $(srcdir) && $(GLIB_MKENUMS) --template $< $(libepc_headers)) > $@ || { rm -f $@; false; }
 libepc/enums.c.stamp: libepc/enums.c.tmp
 	cmp -s $< libepc/enums.c || cp $< libepc/enums.c; touch $@
 libepc/enums.c: libepc/enums.c.stamp

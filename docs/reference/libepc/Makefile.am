@@ -18,18 +18,18 @@ DOC_MAIN_SGML_FILE=$(DOC_MODULE)-docs.xml
 # gtk-doc will search all .c & .h files beneath here for inline comments
 # documenting the functions and macros.
 # e.g. DOC_SOURCE_DIR=../../../gtk
-DOC_SOURCE_DIR=$(top_srcdir)
+DOC_SOURCE_DIR=$(top_srcdir)/libepc
 
 # Extra options to pass to gtkdoc-scangobj. Not normally needed.
 SCANGOBJ_OPTIONS=
 
 # Extra options to supply to gtkdoc-scan.
 # e.g. SCAN_OPTIONS=--deprecated-guards="GTK_DISABLE_DEPRECATED"
-SCAN_OPTIONS=--rebuild-types
+SCAN_OPTIONS=--source-dir=$(top_srcdir)/libepc-ui --rebuild-types
 
 # Extra options to supply to gtkdoc-mkdb.
 # e.g. MKDB_OPTIONS=--sgml-mode --output-format=xml
-MKDB_OPTIONS=--sgml-mode --output-format=xml
+MKDB_OPTIONS=--source-dir=$(top_srcdir)/libepc-ui --sgml-mode --output-format=xml
 
 # Extra options to supply to gtkdoc-mktmpl
 # e.g. MKTMPL_OPTIONS=--only-section-tmpl
@@ -47,7 +47,7 @@ CFILE_GLOB=$(top_srcdir)/libepc/*.c $(top_srcdir)/libepc-ui/*.c
 
 # Header files to ignore when scanning.
 # e.g. IGNORE_HFILES=gtkdebug.h gtkintl.h
-IGNORE_HFILES=config.h framework.h
+IGNORE_HFILES=
 
 # Images to copy into HTML directory.
 # e.g. HTML_IMAGES=$(top_srcdir)/gtk/stock-icons/stock_about_24.png
@@ -68,9 +68,10 @@ expand_content_files=
 # e.g. INCLUDES=-I$(top_srcdir) -I$(top_builddir) $(GTK_DEBUG_FLAGS)
 # e.g. GTKDOC_LIBS=$(top_builddir)/gtk/$(gtktargetlib)
 AM_CFLAGS = $(LIBEPC_CFLAGS)
+
 GTKDOC_LIBS = \
-	$(top_srcdir)/libepc-ui/libepc-ui.la \
-	$(top_srcdir)/libepc/libepc.la
+	$(top_builddir)/libepc-ui/libepc-ui.la \
+	$(top_builddir)/libepc/libepc.la
 
 
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
@@ -78,11 +79,8 @@ include $(top_srcdir)/gtk-doc.make
 
 # Other files to distribute
 # e.g. EXTRA_DIST += version.xml.in
-EXTRA_DIST +=
+EXTRA_DIST += $(DOC_MODULE)-sections.txt
 
-tmpl.stamp tmpl-build.stamp sgml.stamp sgml-build.stamp: \
-	$(top_srcdir)/libepc-ui/libepc-ui.la \
-	$(DOC_MODULE)-sections.txt
-
+sgml.stamp: $(DOC_MODULE)-sections.txt
 $(DOC_MAIN_SGML_FILE): sgml.stamp
 

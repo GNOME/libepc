@@ -1,5 +1,15 @@
 2007-11-12  Mathias Hasselmann  <mathias@openismus.com>
 
+	Fix several issues to make distcheck happy.
+
+	* Makefile.am: Add BUILT_SOURCES and EXTRA_DIST files. Fix the
+	reference manual's dist-hook. Fix some build-dir != source-dir issues.
+	Properly clean up, and maybe work arround some automake bug.
+	* docs/reference/libepc/Makefile.am: Correctly pass the multiple
+	source dirs to gtk-doc.
+
+2007-11-12  Mathias Hasselmann  <mathias@openismus.com>
+
 	Add epc_password_dialog_attach for easy EpcPasswordDialog usage.
 
 	* libepc-ui/password-dialog.c, libepc-ui/password-dialog.h,
