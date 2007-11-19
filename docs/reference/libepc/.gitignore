@@ -8,6 +8,7 @@ xml
 libepc-1.0-decl-list.txt
 libepc-1.0-decl.txt
 libepc-1.0-overrides.txt
+libepc-1.0-undeclared.txt
 libepc-1.0-undocumented.txt
 libepc-1.0-unused.txt
 libepc-1.0.args

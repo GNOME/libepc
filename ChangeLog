@@ -1,5 +1,12 @@
 2007-11-14  Mathias Hasselmann  <mathias@openismus.com>
 
+	Update to gtk-doc trunk.
+
+	* gtk-doc.make: Update to trunk version.
+	* docs/reference/libepc/.gitignore: Add libepc-1.0-undeclared.txt.
+
+2007-11-14  Mathias Hasselmann  <mathias@openismus.com>
+
 	Append "-1.0" suffix to package name.
 
 	* libepc-1.0.pc, libepc-ui-1.0.pc: Renamed.
