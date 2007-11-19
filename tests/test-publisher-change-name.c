@@ -52,7 +52,7 @@ main (int   argc G_GNUC_UNUSED,
   first_name = g_strdup_printf ("%s-%08x-1", g_get_prgname (), g_random_int ());
   second_name = g_strdup_printf ("%s-%08x-2", g_get_prgname (), g_random_int ());
 
-  publisher = epc_publisher_new (first_name, NULL);
+  publisher = epc_publisher_new (first_name, NULL, NULL);
   epc_publisher_set_protocol (publisher, EPC_PROTOCOL_HTTP);
 
   if (epc_test_init (3) &&

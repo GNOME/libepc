@@ -39,14 +39,14 @@ main (int   argc G_GNUC_UNUSED,
 
   g_print ("1) CREATE, DESTROY\n");
 
-  publisher = epc_publisher_new (NULL, NULL);
+  publisher = epc_publisher_new (NULL, NULL, NULL);
   epc_publisher_set_protocol (publisher, EPC_PROTOCOL_HTTP);
   g_object_unref (publisher);
   g_usleep (250 * 1000);
 
   g_print ("2) RUN, QUIT\n");
 
-  publisher = epc_publisher_new (NULL, NULL);
+  publisher = epc_publisher_new (NULL, NULL, NULL);
   epc_publisher_set_protocol (publisher, EPC_PROTOCOL_HTTP);
   timeout = g_timeout_add (250, sync_timeout_cb, publisher);
 
@@ -58,7 +58,7 @@ main (int   argc G_GNUC_UNUSED,
 
   g_print ("3) RUN_ASYNC, QUIT\n");
 
-  publisher = epc_publisher_new (NULL, NULL);
+  publisher = epc_publisher_new (NULL, NULL, NULL);
   epc_publisher_set_protocol (publisher, EPC_PROTOCOL_HTTP);
   timeout = g_timeout_add (250, async_timeout_cb, loop);
 
@@ -71,7 +71,7 @@ main (int   argc G_GNUC_UNUSED,
 
   g_print ("4) RUN_ASYNC, RUN, QUIT\n");
 
-  publisher = epc_publisher_new (NULL, NULL);
+  publisher = epc_publisher_new (NULL, NULL, NULL);
   epc_publisher_set_protocol (publisher, EPC_PROTOCOL_HTTP);
   timeout = g_timeout_add (250, sync_timeout_cb, publisher);
 

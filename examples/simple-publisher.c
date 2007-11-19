@@ -127,7 +127,8 @@ main (int   argc,
 
   /* Create a new publisher. */
 
-  publisher = epc_publisher_new ("Easy Publisher Test", NULL);
+  publisher = epc_publisher_new ("Easy Publisher Test",
+                                 "test-publisher", NULL);
   epc_publisher_set_protocol (publisher, protocol);
 
   if (1 == argc)

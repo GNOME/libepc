@@ -23,7 +23,7 @@ main (void)
   g_thread_init (NULL);
   g_type_init ();
 
-  publisher = epc_publisher_new (NULL, NULL);
+  publisher = epc_publisher_new (NULL, NULL, NULL);
   epc_test_goto_if_fail (EPC_IS_PUBLISHER (publisher), out);
   epc_publisher_set_protocol (publisher, EPC_PROTOCOL_HTTP);
   epc_publisher_add (publisher, "maman", "bar", -1);

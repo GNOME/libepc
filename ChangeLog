@@ -1,5 +1,17 @@
 2007-11-14  Mathias Hasselmann  <mathias@openismus.com>
 
+	Add application argument to epc_publisher_new for controling DNS-SD
+	service type: As the examples demonstrate, automatically using
+	g_get_prgname only works in themost simplistic cases.
+
+	* libepc/publisher.c, libepc/publisher.h: Add application argument
+	and property of the same name to EpcPublisher.
+	* examples/simple-publisher.c, tests/test-publisher-libsoup-494128.c
+	tests/test-consumer-by-name.c, tests/test-publisher-change-name.c:
+	Pass application name to epc_publisher_new.
+
+2007-11-14  Mathias Hasselmann  <mathias@openismus.com>
+
 	Improve examples and give them better names.
 
 	* examples/consumer-ui.c: Rename examples/test-consumer.c.

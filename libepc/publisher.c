@@ -147,6 +147,7 @@ enum
   PROP_PROTOCOL,
   PROP_SERVICE_NAME,
   PROP_SERVICE_DOMAIN,
+  PROP_APPLICATION,
 
   PROP_CERTIFICATE_FILE,
   PROP_PRIVATE_KEY_FILE,
@@ -217,6 +218,7 @@ struct _EpcPublisherPrivate
   EpcProtocol            protocol;
   gchar                 *service_name;
   gchar                 *service_domain;
+  gchar                 *application;
 
   gchar                 *certificate_file;
   gchar                 *private_key_file;
@@ -602,7 +604,7 @@ epc_publisher_announce (EpcPublisher *self)
 
   g_return_if_fail (SOUP_IS_SERVER (self->priv->server));
 
-  service = epc_service_type_new (self->priv->protocol, NULL);
+  service = epc_service_type_new (self->priv->protocol, self->priv->application);
   listener = soup_server_get_listener (self->priv->server);
   address = soup_socket_get_local_address (listener);
   port = soup_server_get_port (self->priv->server);
@@ -757,6 +759,11 @@ epc_publisher_set_property (GObject      *object,
         self->priv->service_domain = g_value_dup_string (value);
         break;
 
+      case PROP_APPLICATION:
+        g_return_if_fail (!epc_publisher_is_server_created (self));
+        self->priv->application = g_value_dup_string (value);
+        break;
+
       case PROP_CERTIFICATE_FILE:
         g_return_if_fail (!epc_publisher_is_server_created (self));
 
@@ -797,6 +804,10 @@ epc_publisher_get_property (GObject    *object,
 
       case PROP_SERVICE_DOMAIN:
         g_value_set_string (value, self->priv->service_domain);
+        break;
+
+      case PROP_APPLICATION:
+        g_value_set_string (value, self->priv->application);
         break;
 
       case PROP_CERTIFICATE_FILE:
@@ -856,6 +867,9 @@ epc_publisher_dispose (GObject *object)
   g_free (self->priv->service_domain);
   self->priv->service_domain = NULL;
 
+  g_free (self->priv->application);
+  self->priv->application = NULL;
+
   G_OBJECT_CLASS (epc_publisher_parent_class)->dispose (object);
 }
 
@@ -900,6 +914,14 @@ epc_publisher_class_init (EpcPublisherClass *cls)
                                                         G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
 
+  g_object_class_install_property (oclass, PROP_APPLICATION,
+                                   g_param_spec_string ("application", "Application",
+                                                        "Program name for deriving the service type",
+                                                        NULL,
+                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
+                                                        G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
+
   g_object_class_install_property (oclass, PROP_CERTIFICATE_FILE,
                                    g_param_spec_string ("certificate-file", "Certificate File",
                                                         "File name for the PEM encoded server certificate",
@@ -922,27 +944,26 @@ epc_publisher_class_init (EpcPublisherClass *cls)
 /**
  * epc_publisher_new:
  * @name: the human friendly service name, or %NULL
+ * @application: application name used for DNS-SD service type, or %NULL
  * @domain: the DNS domain for announcing the service, or %NULL
  *
  * Creates a new #EpcPublisher object. The publisher announces its service
  * per DNS-SD to the DNS domain specified by @domain, using @name as service
- * name and @service as service type.
- *
- * You have to call <function>g_set_application_name</function>, when passing
- * %NULL for @name, as the result of <function>g_set_application_name</function>
- * will be used in that case. When %NULL is passed for @service,
- * #EPC_SERVICE_NAME_HTTP is used. Passing %NULL for @domain lets the DNS-DS
- * daemon choose.
+ * name. The service type is derived from @application. When %NULL is passed
+ * for @application the value returned by #g_get_prgname is used. See
+ * #epc_service_type_new for details.
  *
  * Returns: The newly created #EpcPublisher object.
  */
 EpcPublisher*
 epc_publisher_new (const gchar *name,
+                   const gchar *application,
                    const gchar *domain)
 {
   return g_object_new (EPC_TYPE_PUBLISHER,
                        "service-name", name,
                        "service-domain", domain,
+                       "application", application,
                        NULL);
 }
 

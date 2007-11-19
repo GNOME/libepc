@@ -108,6 +108,7 @@ struct _EpcPublisherClass
 GType                 epc_publisher_get_type             (void) G_GNUC_CONST;
 
 EpcPublisher*         epc_publisher_new                  (const gchar       *name,
+                                                          const gchar       *application,
                                                           const gchar       *domain);
 
 void                  epc_publisher_set_service_name     (EpcPublisher      *publisher,
