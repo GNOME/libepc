@@ -24,6 +24,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <string.h>
 #include <unistd.h>
 
 #include <glib/gi18n-lib.h>
@@ -316,6 +317,7 @@ epc_tls_certificate_new (const gchar            *hostname,
   epc_tls_check (rc = gnutls_x509_crt_set_activation_time (crt, now));
   epc_tls_check (rc = gnutls_x509_crt_set_expiration_time (crt, now + validity));
   epc_tls_check (rc = gnutls_x509_crt_set_subject_alternative_name (crt, GNUTLS_SAN_DNSNAME, hostname));
+  epc_tls_check (rc = gnutls_x509_crt_set_dn_by_oid (crt, GNUTLS_OID_X520_COMMON_NAME, 0, hostname, strlen (hostname)));
   epc_tls_check (rc = gnutls_x509_crt_sign (crt, crt, key));
 
 out:

@@ -1,5 +1,11 @@
 2007-11-08  Mathias Hasselmann  <mathias@openismus.com>
 
+	Set common name in generated certificates.
+
+	* libepc/tls.c: Set common name in generated certificates.
+
+2007-11-08  Mathias Hasselmann  <mathias@openismus.com>
+
 	Change epc_test_init to take initial result mask as argument.
 
 	* tests/framework.c, tests/framework.h, tests/*.c:
