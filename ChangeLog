@@ -1,5 +1,11 @@
 2007-11-01  Mathias Hasselmann  <mathias@openismus.com>
 
+	Start the consumer by merging the document-server's client test.
+
+	* tests/test-consumer.c: Just copy the document-server's client test.
+
+2007-11-01  Mathias Hasselmann  <mathias@openismus.com>
+
 	Implement EpcDispatcher, an easy to use ZeroConf dispatcher.
 
 	* configure.in, Makefile.am: Separatly checking for
