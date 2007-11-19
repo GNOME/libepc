@@ -21,7 +21,7 @@
 #ifndef __EPC_SERVICE_TYPE_H__
 #define __EPC_SERVICE_TYPE_H__
 
-#include <glib.h>
+#include "protocol.h"
 
 /**
  * EPC_SERVICE_TYPE_HTTP:
@@ -41,26 +41,10 @@
 
 G_BEGIN_DECLS
 
-typedef enum
-{
-  EPC_PROTOCOL_UNKNOWN,
-  EPC_PROTOCOL_HTTP,
-  EPC_PROTOCOL_HTTPS
-}
-EpcProtocol;
-
 gchar*                epc_service_type_new          (EpcProtocol  protocol,
                                                      const gchar *application);
-gchar*                epc_service_type_build_uri    (EpcProtocol  protocol,
-                                                     const gchar *hostname,
-                                                     guint16      port,
-                                                     const gchar *path);
-
-EpcProtocol           epc_service_type_get_protocol (const gchar *service_type) G_GNUC_PURE;
-G_CONST_RETURN gchar* epc_protocol_get_service_type (EpcProtocol  protocol) G_GNUC_CONST;
-G_CONST_RETURN gchar* epc_protocol_get_uri_scheme   (EpcProtocol  protocol) G_GNUC_CONST;
 G_CONST_RETURN gchar* epc_service_type_get_base     (const gchar *type) G_GNUC_PURE;
-
+EpcProtocol           epc_service_type_get_protocol (const gchar *service_type) G_GNUC_PURE;
 
 G_END_DECLS
 

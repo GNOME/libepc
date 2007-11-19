@@ -1,5 +1,16 @@
 2007-11-12  Mathias Hasselmann  <mathias@openismus.com>
 
+	Split service-type files into service-type and protocol files
+	for better documentation. Update documentation.
+
+	* libepc/protocol.c, libepc/protocol.h: Take over the EpcProtocol
+	related functions of the service-type files. Update documentation.
+	* libepc/service-type.c, libepc/service-type.h: Drop the EpcProtocol
+	related functions. Update documentation.
+	* Makefile.am: Add protocol.c and protocol.h
+
+2007-11-12  Mathias Hasselmann  <mathias@openismus.com>
+
 	Update documentation and add an error argument
 	to epc_shell_create_avahi_client.
 

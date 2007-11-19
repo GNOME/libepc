@@ -94,6 +94,31 @@ EPC_CONSUMER_GET_CLASS
 </SECTION>
 
 <SECTION>
+<FILE>protocol</FILE>
+<TITLE>EpcProtocol</TITLE>
+EpcProtocol
+epc_protocol_build_uri
+epc_protocol_get_service_type
+epc_protocol_get_uri_scheme
+<SUBSECTION Standard>
+EPC_TYPE_PROTOCOL
+epc_protocol_get_type
+</SECTION>
+
+<SECTION>
+<FILE>service-type</FILE>
+<TITLE>EpcServiceType</TITLE>
+EPC_SERVICE_TYPE_HTTP
+EPC_SERVICE_TYPE_HTTPS
+epc_service_type_get_base
+epc_service_type_get_protocol
+epc_service_type_new
+<SUBSECTION Standard>
+EPC_TYPE_PROTOCOL
+epc_protocol_get_type
+</SECTION>
+
+<SECTION>
 <FILE>shell</FILE>
 <TITLE>EpcShell</TITLE>
 EPC_AVAHI_ERROR
@@ -130,19 +155,4 @@ epc_tls_set_private_key_hooks
 epc_tls_error_quark
 </SECTION>
 
-<SECTION>
-<FILE>service-type</FILE>
-<TITLE>EpcServiceType</TITLE>
-EpcProtocol
-EPC_SERVICE_TYPE_HTTP
-EPC_SERVICE_TYPE_HTTPS
-epc_protocol_get_service_type
-epc_protocol_get_uri_scheme
-epc_service_type_build_uri
-epc_service_type_get_protocol
-epc_service_type_new
-epc_service_type_get_base
-<SUBSECTION Standard>
-EPC_TYPE_PROTOCOL
-epc_protocol_get_type
-</SECTION>
+

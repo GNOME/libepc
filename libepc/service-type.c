@@ -20,7 +20,6 @@
  */
 
 #include "service-type.h"
-
 #include <string.h>
 
 /**
@@ -86,6 +85,20 @@ epc_service_type_normalize_name (const gchar *name,
   return normalized;
 }
 
+/**
+ * epc_service_type_new:
+ * @protocol: a #EpcProtocol
+ * @application: the application name, or %NULL
+ *
+ * Builds the DNS-SD service type for the given transport @protocol and
+ * application. The application name is retrieved by calling #g_get_prgname
+ * name, when @application is %NULL. The function aborts when this fails.
+ *
+ * The string returned should be released when no longer needed.
+ *
+ * Returns: A newly allocated string holding the requested service-type,
+ * or %NULL when @application is %NULL and #g_get_prgname fails.
+ */
 gchar*
 epc_service_type_new (EpcProtocol  protocol,
                       const gchar *application)
@@ -121,11 +134,25 @@ epc_service_type_new (EpcProtocol  protocol,
   return service_type;
 }
 
+/**
+ * epc_service_type_get_base:
+ * @type: a DNS-SD service-type
+ *
+ * Extracts the base service-type of a DNS-SD service-type.
+ *
+ * DNS-SD service types may contain a sub service type, for instance the
+ * service-type "_anon._sub._ftp._tcp" contains the base-type "_ftp._tcp"
+ * and the sub-type "_anon". This function extracts extracts the base-type.
+ * The service type is returned unmodifed if it doesn't contain a sub-type.
+ *
+ * Returns: The base-service-type.
+ */
 G_CONST_RETURN gchar*
 epc_service_type_get_base (const gchar *type)
 {
   const gchar *base;
 
+  g_return_val_if_fail (NULL != type, NULL);
   base = type + strlen (type);
 
   while (base > type && '.' != *(--base));
@@ -138,27 +165,16 @@ epc_service_type_get_base (const gchar *type)
   return base;
 }
 
-gchar*
-epc_service_type_build_uri (EpcProtocol  protocol,
-                            const gchar *hostname,
-                            guint16      port,
-                            const gchar *path)
-{
-  const gchar *scheme;
-
-  if (NULL == path)
-    path = "/";
-
-  g_return_val_if_fail (NULL != hostname, NULL);
-  g_return_val_if_fail ('/' == path[0], NULL);
-  g_return_val_if_fail (port > 0, NULL);
-
-  scheme = epc_protocol_get_uri_scheme (protocol);
-  g_return_val_if_fail (NULL != scheme, NULL);
-
-  return g_strdup_printf ("%s://%s:%d/%s", scheme, hostname, port, path + 1);
-}
-
+/**
+ * epc_service_type_get_protocol:
+ * @service_type: a DNS-SD service type
+ *
+ * Queries the #EpcProtocol associated with a DNS-SD service type.
+ * See #EPC_SERVICE_TYPE_HTTP, #EPC_SERVICE_TYPE_HTTPS.
+ *
+ * Returns: Returns the #EpcProtocol associated with @service_type,
+ * for unknown #EPC_PROTOCOL_UNKNOWN service types.
+ */
 EpcProtocol
 epc_service_type_get_protocol (const gchar *service_type)
 {
@@ -174,40 +190,3 @@ epc_service_type_get_protocol (const gchar *service_type)
 
   return EPC_PROTOCOL_UNKNOWN;
 }
-
-G_CONST_RETURN gchar*
-epc_protocol_get_service_type (EpcProtocol  protocol)
-{
-  switch (protocol)
-    {
-      case EPC_PROTOCOL_HTTPS:
-        return EPC_SERVICE_TYPE_HTTPS;
-
-      case EPC_PROTOCOL_HTTP:
-        return EPC_SERVICE_TYPE_HTTP;
-
-      case EPC_PROTOCOL_UNKNOWN:
-        return NULL;
-    }
-
-  g_return_val_if_reached (NULL);
-}
-
-G_CONST_RETURN gchar*
-epc_protocol_get_uri_scheme (EpcProtocol  protocol)
-{
-  switch (protocol)
-    {
-      case EPC_PROTOCOL_HTTPS:
-        return "https";
-
-      case EPC_PROTOCOL_HTTP:
-        return "http";
-
-      case EPC_PROTOCOL_UNKNOWN:
-        return NULL;
-    }
-
-  g_return_val_if_reached (NULL);
-}
-
