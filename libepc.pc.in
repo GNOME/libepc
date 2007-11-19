@@ -1,0 +1,12 @@
+prefix=@prefix@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: Easy Publish and Consume Library
+Description: a library to easily publish and consume values on networks
+Version: @VERSION@
+Requires: avahi-client avahi-glib libsoup-2.2
+Libs: -L${libdir} -leasy-publish-consume
+Cflags: -I${includedir}
+

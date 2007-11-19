@@ -1,5 +1,13 @@
 2007-11-02  Mathias Hasselmann  <mathias@openismus.com>
 
+	Tell automake to install developer files.
+
+	* Makefile.am: Install header files and pkg-config information.
+	* configure.in, libepc.pc.in: Provide pkg-config information.
+	* .gitignore: Ignore libepc.pc.
+
+2007-11-02  Mathias Hasselmann  <mathias@openismus.com>
+
 	Add copyright headers.
 
 2007-11-02  Mathias Hasselmann  <mathias@openismus.com>
