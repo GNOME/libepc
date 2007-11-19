@@ -1,5 +1,11 @@
 2007-11-08  Mathias Hasselmann  <mathias@openismus.com>
 
+	Pass arguments to make when building API documentation.
+
+	* Makefile.am: Pass arguments to make when building API documentation.
+
+2007-11-08  Mathias Hasselmann  <mathias@openismus.com>
+
 	Restart the DNS-SD dispatcher when changing the publisher's name.
 
 	* libepc/publisher.c: Restart dispatcher on server-name change.

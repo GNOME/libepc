@@ -92,19 +92,19 @@ DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
 TESTS_ENVIRONMENT = tests/test-runner.sh
 
 all-local:
-	cd docs/reference/libepc && $(MAKE) all
+	cd docs/reference/libepc && $(MAKE) $(AM_MAKEFLAGS) all
 clean-local:
-	cd docs/reference/libepc && $(MAKE) clean
+	cd docs/reference/libepc && $(MAKE) $(AM_MAKEFLAGS) clean
 dist-hook:
-	cd docs/reference/libepc && $(MAKE) dist
+	cd docs/reference/libepc && $(MAKE) $(AM_MAKEFLAGS) dist
 docs:
-	cd docs/reference/libepc && $(MAKE) docs
+	cd docs/reference/libepc && $(MAKE) $(AM_MAKEFLAGS) docs
 install-data-local:
-	cd docs/reference/libepc && $(MAKE) install-data
+	cd docs/reference/libepc && $(MAKE) $(AM_MAKEFLAGS) install-data
 maintainer-clean-local:
-	cd docs/reference/libepc && $(MAKE) maintainer-clean
+	cd docs/reference/libepc && $(MAKE) $(AM_MAKEFLAGS) maintainer-clean
 uninstall-local:
-	cd docs/reference/libepc && $(MAKE) uninstall
+	cd docs/reference/libepc && $(MAKE) $(AM_MAKEFLAGS) uninstall
 
 libepc/marshal.h: libepc/marshal.list
 	$(GLIB_GENMARSHAL) $< --header --prefix=_epc_marshal > $@
