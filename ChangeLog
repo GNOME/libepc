@@ -1,5 +1,11 @@
 2007-11-19  Mathias Hasselmann  <mathias@openismus.com>
 
+	List download locations, code repository, bugzilla.
+
+	* README: List GNOME resources.
+
+2007-11-19  Mathias Hasselmann  <mathias@openismus.com>
+
 	Say "key/value store", instead of "hash table".
 
 	* docs/reference/libepc/libepc-1.0-docs.xml, README:

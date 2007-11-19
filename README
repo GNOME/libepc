@@ -35,6 +35,24 @@ And finally the examples need:
 
     * avahi-ui     >= 0.6
 
+SOURCE CODE
+===========
+
+    * Examples:   http://svn.gnome.org/viewvc/libepc/trunk/examples/
+    * Tarballs:   http://ftp.gnome.org/pub/gnome/sources/libepc/
+    * Subversion: http://svn.gnome.org/svn/libepc/trunk/
+
+BUG REPORTS
+===========
+
+    * http://bugzilla.gnome.org/enter_bug.cgi?product=libepc
+
+PROJECTS USING THE LIBRARY
+==========================
+
+ * Glom - http://www.glom.org/
+   Database designer and user interface 
+
 LICENSE
 =======
 
