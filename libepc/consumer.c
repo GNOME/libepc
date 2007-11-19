@@ -895,6 +895,8 @@ epc_consumer_set_http_error (GError     **error,
  *
  * The returned buffer should be freed when no longer needed.
  *
+ * See the description of #EpcPublisher for discussion of %NULL values.
+ *
  * Returns: A copy of the publisher's value for the the requested @key,
  * or %NULL when an error occurred.
  */

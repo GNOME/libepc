@@ -1,5 +1,14 @@
 2007-11-15  Mathias Hasselmann  <mathias@openismus.com>
 
+	Add epc_publisher_remove and discuss publishing NULL values.
+
+	* libepc/publisher.c: Add epc_publisher_remove. discuss NULL values.
+	* libepc/consumer.c: Reference NULL value discussion in EcpPublisher.
+	* docs/reference/libepc/libepc-1.0-sections.txt, libepc/publisher.h:
+	Add epc_publisher_remove.
+
+2007-11-15  Mathias Hasselmann  <mathias@openismus.com>
+
 	Add SUBSECTION tags to group function lists.
 
 	* docs/reference/libepc/libepc-1.0-sections.txt: Add grouping.

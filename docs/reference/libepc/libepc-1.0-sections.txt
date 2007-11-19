@@ -39,6 +39,7 @@ epc_publisher_new
 epc_publisher_add
 epc_publisher_add_file
 epc_publisher_add_handler
+epc_publisher_remove
 
 <SUBSECTION>
 epc_publisher_run

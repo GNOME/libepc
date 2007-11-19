@@ -136,6 +136,23 @@
  *   epc_publisher_run ();
  *  </programlisting>
  * </example>
+ *
+ * #EpcPublisher doesn't provide a way to explicitly publish %NULL values, as
+ * publishing %NULL values doesn't seem very valueable in our scenario: Usually
+ * you want to "publish" %NULL values to express, that your application doesn't
+ * have any meaningful information for the requested identifier. By "publishing"
+ * a %NULL value essentially you say "this information does not exist". So
+ * publishing %NULL values is not different from not publishing any value at
+ * all or rejected access to some values. Without explicitly inspecting the
+ * details for not receiving a value, a consumer calling #epc_consumer_lookup
+ * has no chance to distinguish between the cases "never published", "network
+ * problem", "authorization rejected", "no meaningful value available".
+ *
+ * So if  feel like publishing a %NULL value, just remove the key in question
+ * from the #EpcPublisher by calling #epc_publisher_remove. When using a
+ * custom #EpcContentsHandler an alternate approach is returning %NULL from
+ * that handler. In that case the #EpcPublisher will behave exactly the same,
+ * as if the value has been removed.
  */
 
 typedef struct _EpcListContext EpcListContext;
@@ -1082,6 +1099,25 @@ epc_publisher_add_handler (EpcPublisher      *self,
 
   resource = epc_resource_new (handler, user_data, destroy_data);
   g_hash_table_insert (self->priv->resources, g_strdup (key), resource);
+}
+
+/**
+ * epc_publisher_remove:
+ * @publisher: a #EpcPublisher
+ * @key: the key for addressing the content
+ *
+ * Removes a key and its associated content from a #EpcPublisher.
+ *
+ * Returns: %TRUE if the key was found and removed from the #EpcPublisher.
+ */
+gboolean
+epc_publisher_remove (EpcPublisher *self,
+                      const gchar  *key)
+{
+  g_return_val_if_fail (EPC_IS_PUBLISHER (self), FALSE);
+  g_return_val_if_fail (NULL != key, FALSE);
+
+  return g_hash_table_remove (self->priv->resources, key);
 }
 
 /**
