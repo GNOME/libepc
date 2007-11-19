@@ -564,6 +564,13 @@ epc_consumer_class_init (EpcConsumerClass *cls)
    * will be emmitted.
    *
    * The consumer takes ownership of the credential strings.
+   *
+   * <note><para>
+   *  The actual type of @username and @password is #gchar** not just #gpointer, but
+   *  currently the GObject signal system is not able to express this situation. See the
+   *  <ulink url="http://mail.gnome.org/archives/gtk-devel-list/2007-November/msg00106.html">
+   *  discussion on gtk-devel-list</ulink> for details.
+   * </para></note>
    */
   signals[SIGNAL_AUTHENTICATE] = g_signal_new ("authenticate", EPC_TYPE_CONSUMER, G_SIGNAL_RUN_FIRST,
                                                G_STRUCT_OFFSET (EpcConsumerClass, authenticate), NULL, NULL,
@@ -574,8 +581,8 @@ epc_consumer_class_init (EpcConsumerClass *cls)
    * EpcConsumer::reauthenticate:
    * @consumer: the #EpcConsumer emitting the signal
    * @realm: the realm being authenticated to
-   * @username: return location for the username (gchar*)
-   * @password: return location for the password (gchar*)
+   * @username: return location for the username
+   * @password: return location for the password
    *
    * Emitted when the credentials provided by the application to the #
    * authenticate signal have failed. This gives the application a second
@@ -597,6 +604,13 @@ epc_consumer_class_init (EpcConsumerClass *cls)
    * return only user-provided information from the reauthenticate handler.
    *
    * The consumer takes ownership of the credential strings.
+   *
+   * <note><para>
+   *  The actual type of @username and @password is #gchar** not just #gpointer, but
+   *  currently the GObject signal system is not able to express this situation. See the
+   *  <ulink url="http://mail.gnome.org/archives/gtk-devel-list/2007-November/msg00106.html">
+   *  discussion on gtk-devel-list</ulink> for details.
+   * </para></note>
    */
   signals[SIGNAL_REAUTHENTICATE] = g_signal_new ("reauthenticate", EPC_TYPE_CONSUMER, G_SIGNAL_RUN_FIRST,
                                                  G_STRUCT_OFFSET (EpcConsumerClass, reauthenticate), NULL, NULL,

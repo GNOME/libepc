@@ -1,5 +1,12 @@
 2007-11-15  Mathias Hasselmann  <mathias@openismus.com>
 
+	Add note regarding real argument types for the "authentication" and
+	"reauthenticate" signals of EpcConsumer.
+
+	* libepc/consumer.c: Update documentation.
+
+2007-11-15  Mathias Hasselmann  <mathias@openismus.com>
+
 	Move EPC_CONSUMER_DEFAULT_TIMEOUT to consumer.c
 	as it is some internal implementation detail.
 
