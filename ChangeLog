@@ -1,5 +1,12 @@
 2007-11-14  Mathias Hasselmann  <mathias@openismus.com>
 
+	Remove bogous description of a return value
+	for epc_password_dialog_set_anonymous_allowed.
+
+	* libepc-ui/password-dialog.c: Remove bogous description.
+
+2007-11-14  Mathias Hasselmann  <mathias@openismus.com>
+
 	Resolve authentication dead-lock.
 
 	* libepc/shell.c: Print debug information about big-lock handlers.

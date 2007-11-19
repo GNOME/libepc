@@ -359,8 +359,6 @@ epc_password_dialog_new (const gchar    *title,
  * shown. See #EpcPasswordDialog:anonymous-allowed for details.
  *
  * See also: #epc_password_dialog_set_anonymous
- *
- * Returns: %TRUE if anonymous authentication is supported.
  */
 void
 epc_password_dialog_set_anonymous_allowed (EpcPasswordDialog *self,
