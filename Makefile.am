@@ -12,6 +12,7 @@ noinst_LTLIBRARIES = \
 noinst_PROGRAMS = \
 	examples/test-publisher \
 	examples/test-consumer \
+	examples/server-credentials \
 	$(TESTS)
 TESTS = \
 	tests/test-consumer-by-name \
@@ -24,7 +25,8 @@ libepc_include_HEADERS = \
 	libepc/dispatcher.h \
 	libepc/marshal.h \
 	libepc/publisher.h \
-	libepc/shell.c
+	libepc/shell.h \
+	libepc/tls.h
 libepc_ui_include_HEADERS = \
 	libepc-ui/passworddialog.h
 pkgconfig_DATA = \
@@ -37,6 +39,7 @@ libepc_libepc_la_SOURCES = \
 	libepc/marshal.c \
 	libepc/publisher.c \
 	libepc/shell.c \
+	libepc/tls.c \
 	$(libepc_HEADERS)
 
 libepc_ui_libepc_ui_la_SOURCES = \
@@ -57,6 +60,8 @@ examples_test_publisher_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 examples_test_publisher_LDADD = libepc/libepc.la
 examples_test_consumer_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS) $(AVAHIUI_CFLAGS)
 examples_test_consumer_LDADD = libepc/libepc.la libepc-ui/libepc-ui.la $(AVAHIUI_LIBS)
+examples_server_credentials_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+examples_server_credentials_LDADD = libepc/libepc.la
 
 tests_libepc_tests_la_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 

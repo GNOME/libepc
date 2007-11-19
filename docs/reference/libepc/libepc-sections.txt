@@ -68,6 +68,8 @@ EpcConsumerClass
 <TITLE>EpcConsumer</TITLE>
 EpcConsumer
 epc_consumer_new
+epc_consumer_new_for_name
+epc_consumer_new_for_name_full
 epc_consumer_lookup
 <SUBSECTION Standard>
 EPC_CONSUMER
@@ -77,6 +79,37 @@ epc_consumer_get_type
 EPC_CONSUMER_CLASS
 EPC_IS_CONSUMER_CLASS
 EPC_CONSUMER_GET_CLASS
+</SECTION>
+
+<SECTION>
+<FILE>shell</FILE>
+<TITLE>Library Management</TITLE>
+epc_shell_create_avahi_client
+epc_shell_create_service_type
+epc_shell_enter
+epc_shell_get_avahi_poll_api
+epc_shell_leave
+epc_shell_ref
+epc_shell_unref
+</SECTION>
+
+<SECTION>
+<FILE>tls</FILE>
+<TITLE>TLS Support</TITLE>
+EPC_TLS_ERROR
+EPC_TLS_SECONDS_PER_DAY
+EPC_TLS_SECONDS_PER_HOUR
+EPC_TLS_SECONDS_PER_MINUTE
+epc_tls_certificate_get_filename
+epc_tls_certificate_load
+epc_tls_certificate_new
+epc_tls_certificate_save
+epc_tls_error_quark
+epc_tls_get_server_credentials
+epc_tls_privkey_get_filename
+epc_tls_privkey_load
+epc_tls_privkey_new
+epc_tls_privkey_save
 </SECTION>
 
 <SECTION>

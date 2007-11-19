@@ -1,3 +1,17 @@
+2007-11-07  Mathias Hasselmann  <mathias@openismus.com>
+
+	Create simple API for creating, storing and loading server keys.
+
+	* configure.in: Add gnutls package.
+	* libepc/tls.c, libepc/tls.h: Simple server key API.
+	* examples/.gitignore: Add server-credentials
+	* examples/server-credentials.c: Demonstrate how to
+	retreive self-signed SSL/TLS server credentials.
+	* docs/reference/libepc/libepc-docs.sgml: Add new chapters.
+	* docs/reference/libepc/libepc-sections.txt: Add new symbols.
+	* Makefile.am: Add libepc/tls.c, libepc/tls.h and
+	examples/server-credentials.c.
+
 2007-11-06  Mathias Hasselmann  <mathias@openismus.com>
 
 	Prevent that make tries to build API docs before building the library.
