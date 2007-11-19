@@ -1,5 +1,12 @@
 2007-11-09  Mathias Hasselmann  <mathias@openismus.com>
 
+	Use new avahi-ui API for overriding service type names (Avahi #180).
+
+	* configure.in, Makefile.am: Test for avahi-ui 0.6.22.
+	* examples/test-consumer.c: Use aui_service_dialog_set_service_type_name.
+
+2007-11-09  Mathias Hasselmann  <mathias@openismus.com>
+
 	Implement the HTTPS transport method.
 
 	* libepc/consumer.c, libepc/consumer.h: Support HTTPS transport

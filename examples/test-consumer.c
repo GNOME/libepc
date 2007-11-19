@@ -206,6 +206,15 @@ main (int   argc,
 					       EPC_SERVICE_TYPE_HTTP,
                                                NULL);
 
+#ifdef HAVE_AVAHI_UI_0_6_22
+  aui_service_dialog_set_service_type_name (AUI_SERVICE_DIALOG (dialog),
+                                            EPC_SERVICE_TYPE_HTTPS,
+                                            "Secure Transport");
+  aui_service_dialog_set_service_type_name (AUI_SERVICE_DIALOG (dialog),
+                                            EPC_SERVICE_TYPE_HTTP,
+                                            "Insecure Transport");
+#endif
+
   if (GTK_RESPONSE_ACCEPT == gtk_dialog_run (GTK_DIALOG (dialog)))
     {
       /* Retrieve contact information for the selected service.
