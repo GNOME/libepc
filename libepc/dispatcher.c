@@ -684,3 +684,24 @@ epc_dispatcher_set_service_details (EpcDispatcher *self,
 
   epc_service_publish_details (service, TRUE);
 }
+
+AvahiIfIndex
+epc_dispatcher_get_interface (EpcDispatcher *self)
+{
+  g_return_val_if_fail (EPC_IS_DISPATCHER (self), AVAHI_IF_UNSPEC);
+  return self->priv->interface;
+}
+
+AvahiProtocol
+epc_dispatcher_get_protocol (EpcDispatcher *self)
+{
+  g_return_val_if_fail (EPC_IS_DISPATCHER (self), AVAHI_PROTO_UNSPEC);
+  return self->priv->protocol;
+}
+
+const gchar*
+epc_dispatcher_get_name (EpcDispatcher *self)
+{
+  g_return_val_if_fail (EPC_IS_DISPATCHER (self), NULL);
+  return self->priv->name;
+}

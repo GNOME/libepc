@@ -1,3 +1,19 @@
+2007-11-04  Mathias Hasselmann  <mathias@openismus.com>
+
+	Implement regression tests for the EpcDispatcher.
+
+	* Makefile.am, tests/.gitignore: Add regression tests.
+	* tests/framework.c, tests/framework.h: Common test code.
+	* tests/test-runner.sh: Redirect output of regression tests.
+	* tests/test-dispatcher-simple-service.c: Test a single service.
+	* tests/test-dispatcher-multiple-services.c: Test registering
+	of multiple services on a single dispatcher.
+	* tests/test-dispatcher-subtypes.c: Test service subtypes.
+	* tests/test-dispatcher-local-collision.c: Test automatic handling
+	of local service name collisions.
+	* libepc/dispatcher.c, libepc/dispatcher.h:
+	Add getter methods for properties of the EpcDispatcher.
+
 2007-11-03  Mathias Hasselmann  <mathias@openismus.com>
 
 	Implement regression testing for EpcDispatcher.

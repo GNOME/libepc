@@ -82,6 +82,10 @@ void           epc_dispatcher_set_service_details (EpcDispatcher *dispatcher,
                                                                   ...)
                                                    G_GNUC_NULL_TERMINATED;
 
+AvahiIfIndex   epc_dispatcher_get_interface       (EpcDispatcher *dispatcher);
+AvahiProtocol  epc_dispatcher_get_protocol        (EpcDispatcher *dispatcher);
+const gchar*   epc_dispatcher_get_name            (EpcDispatcher *dispatcher);
+
 G_END_DECLS
 
 #endif /* __EPC_DISPATCHER_H__ */
