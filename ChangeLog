@@ -1,5 +1,11 @@
 2007-11-02  Mathias Hasselmann  <mathias@openismus.com>
 
+	Adjust indenting for consumer.h
+
+	* libepc/consumer.h: Adjust indenting.
+
+2007-11-02  Mathias Hasselmann  <mathias@openismus.com>
+
 	Improve API documentation and examples.
 
 	* libepc/consumer.c, libepc/dispatcher.c, libepc/publisher.c:

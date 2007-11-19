@@ -60,13 +60,13 @@ struct _EpcConsumerClass
   GObjectClass parent_class;
 };
 
-GType epc_consumer_get_type      (void) G_GNUC_CONST;
+GType        epc_consumer_get_type (void) G_GNUC_CONST;
 
-EpcConsumer* epc_consumer_new    (const gchar *host,
-                                  guint16      port);
-gchar*       epc_consumer_lookup (EpcConsumer *consumer,
-                                  const gchar *key,
-                                  gsize       *length);
+EpcConsumer* epc_consumer_new      (const gchar *host,
+                                    guint16      port);
+gchar*       epc_consumer_lookup   (EpcConsumer *consumer,
+                                    const gchar *key,
+                                    gsize       *length);
 
 G_END_DECLS
 
