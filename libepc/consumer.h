@@ -67,13 +67,18 @@ struct _EpcConsumerClass
                         gchar       **password);
 };
 
-GType        epc_consumer_get_type (void) G_GNUC_CONST;
+GType        epc_consumer_get_type          (void) G_GNUC_CONST;
 
-EpcConsumer* epc_consumer_new      (const gchar *host,
-                                    guint16      port);
-gchar*       epc_consumer_lookup   (EpcConsumer *consumer,
-                                    const gchar *key,
-                                    gsize       *length);
+EpcConsumer* epc_consumer_new               (const gchar *host,
+                                             guint16      port);
+EpcConsumer* epc_consumer_new_for_name      (const gchar *name);
+EpcConsumer* epc_consumer_new_for_name_full (const gchar *name,
+                                             const gchar *service,
+                                             const gchar *domain);
+
+gchar*       epc_consumer_lookup            (EpcConsumer *consumer,
+                                             const gchar *key,
+                                             gsize       *length);
 
 G_END_DECLS
 

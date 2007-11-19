@@ -39,6 +39,7 @@ struct _EpcAvahiShell
 };
 
 static EpcAvahiShell epc_shell = { 0, NULL, NULL, NULL };
+gboolean _epc_debug = FALSE;
 
 void
 epc_shell_ref (void)
@@ -47,6 +48,9 @@ epc_shell_ref (void)
     {
       GModule *module;
       gpointer symbol;
+
+      if (g_getenv ("EPC_DEBUG"))
+        _epc_debug = TRUE;
 
       avahi_set_allocator (avahi_glib_allocator ());
 

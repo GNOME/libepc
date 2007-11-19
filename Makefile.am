@@ -14,6 +14,7 @@ noinst_PROGRAMS = \
 	examples/test-consumer \
 	$(TESTS)
 TESTS = \
+	tests/test-consumer-by-name \
 	tests/test-dispatcher-simple-service \
 	tests/test-dispatcher-multiple-services \
 	tests/test-dispatcher-subtypes \
@@ -58,6 +59,9 @@ examples_test_consumer_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS
 examples_test_consumer_LDADD = libepc/libepc.la libepc-ui/libepc-ui.la $(AVAHIUI_LIBS)
 
 tests_libepc_tests_la_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+
+tests_test_consumer_by_name_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+tests_test_consumer_by_name_LDADD = libepc/libepc.la tests/libepc-tests.la
 tests_test_dispatcher_simple_service_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 tests_test_dispatcher_simple_service_LDADD = libepc/libepc.la tests/libepc-tests.la
 tests_test_dispatcher_multiple_services_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS)

@@ -30,9 +30,6 @@
  * To find a publisher, use DNS-SD (also known as ZeroConf) to
  * list #EPC_PUBLISHER_SERVICE_TYPE services.
  *
- * Currently neither encryption or authentication are implemented,
- * but it is planed to change this in the future.
- *
  * <example>
  *  <title>Lookup a value</title>
  *  <programlisting>
@@ -52,14 +49,19 @@
 #include "marshal.h"
 #include "shell.h"
 
-#include <libsoup/soup-session-sync.h>
+#include <avahi-client/lookup.h>
+#include <avahi-common/error.h>
+#include <libsoup/soup-session-async.h>
 #include <string.h>
 
 enum
 {
   PROP_NONE,
   PROP_HOST,
-  PROP_PORT
+  PROP_PORT,
+  PROP_NAME,
+  PROP_SERVICE,
+  PROP_DOMAIN
 };
 
 enum
@@ -76,12 +78,21 @@ enum
  */
 struct _EpcConsumerPrivate
 {
-  SoupSession *session;
+  AvahiClient         *service_client;
+  AvahiServiceBrowser *service_browser;
+  SoupSession         *session;
+  GMainLoop           *loop;
+
   guint16 port;
-  gchar *host;
+  gchar  *host;
+
+  gchar *service_name;
+  gchar *service_type;
+  gchar *service_domain;
 };
 
 static guint signals[SIGNAL_LAST];
+extern gboolean _epc_debug;
 
 G_DEFINE_TYPE (EpcConsumer, epc_consumer, G_TYPE_OBJECT);
 
@@ -118,9 +129,11 @@ epc_consumer_reauthenticate_cb (SoupSession  *session G_GNUC_UNUSED,
 static void
 epc_consumer_init (EpcConsumer *self)
 {
-  self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self, EPC_TYPE_CONSUMER, EpcConsumerPrivate);
-  self->priv->session = soup_session_sync_new ();
   epc_shell_ref ();
+
+  self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self, EPC_TYPE_CONSUMER, EpcConsumerPrivate);
+  self->priv->loop = g_main_loop_new (NULL, FALSE);
+  self->priv->session = soup_session_async_new ();
 
   g_signal_connect (self->priv->session, "authenticate",
                     G_CALLBACK (epc_consumer_authenticate_cb), self);
@@ -146,7 +159,21 @@ epc_consumer_set_property (GObject      *object,
       case PROP_PORT:
         g_assert (0 == self->priv->port);
         self->priv->port = g_value_get_int (value);
-        g_assert (self->priv->port > 0);
+        break;
+
+      case PROP_NAME:
+        g_assert (NULL == self->priv->service_name);
+        self->priv->service_name = g_value_dup_string (value);
+        break;
+
+      case PROP_SERVICE:
+        g_assert (NULL == self->priv->service_type);
+        self->priv->service_type = g_value_dup_string (value);
+        break;
+
+      case PROP_DOMAIN:
+        g_assert (NULL == self->priv->service_domain);
+        self->priv->service_domain = g_value_dup_string (value);
         break;
 
       default:
@@ -173,9 +200,118 @@ epc_consumer_get_property (GObject    *object,
         g_value_set_int (value, self->priv->port);
         break;
 
+      case PROP_NAME:
+        g_value_set_string (value, self->priv->service_name);
+        break;
+
+      case PROP_SERVICE:
+        g_value_set_string (value, self->priv->service_type);
+        break;
+
+      case PROP_DOMAIN:
+        g_value_set_string (value, self->priv->service_domain);
+        break;
+
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
         break;
+    }
+}
+
+static void
+epc_consumer_service_resolver_cb (AvahiServiceResolver   *resolver,
+                                  AvahiIfIndex            interface G_GNUC_UNUSED,
+                                  AvahiProtocol           protocol G_GNUC_UNUSED,
+                                  AvahiResolverEvent      event G_GNUC_UNUSED,
+                                  const char             *name G_GNUC_UNUSED,
+                                  const char             *type G_GNUC_UNUSED,
+                                  const char             *domain G_GNUC_UNUSED,
+                                  const char             *hostname,
+                                  const AvahiAddress     *a G_GNUC_UNUSED,
+                                  uint16_t                port,
+                                  AvahiStringList        *txt G_GNUC_UNUSED,
+                                  AvahiLookupResultFlags  flags G_GNUC_UNUSED,
+                                  void                   *data G_GNUC_UNUSED)
+{
+  EpcConsumer *self = data;
+
+  if (G_UNLIKELY (_epc_debug))
+    g_debug ("%s: service resolved: host-name=%s, port=%d",
+             G_STRLOC, hostname, port);
+
+  g_main_loop_quit (self->priv->loop);
+
+  g_free (self->priv->host);
+  self->priv->host = g_strdup (hostname);
+  self->priv->port = port;
+
+  avahi_service_resolver_free (resolver);
+}
+
+static void
+epc_consumer_service_brower_cb (AvahiServiceBrowser    *browser,
+                                AvahiIfIndex            interface,
+                                AvahiProtocol           protocol,
+                                AvahiBrowserEvent       event,
+                                const char             *name,
+                                const char             *type,
+                                const char             *domain,
+                                AvahiLookupResultFlags  flags G_GNUC_UNUSED,
+                                void                   *data)
+{
+  EpcConsumer *self = data;
+  gint error;
+
+  if (G_UNLIKELY (_epc_debug))
+    g_debug ("%s: event=%d, name=`%s', type=`%s', domain=`%s'",
+             G_STRLOC, event, name, type, domain);
+
+  switch (event)
+    {
+      case AVAHI_BROWSER_REMOVE:
+        break;
+
+      case AVAHI_BROWSER_FAILURE:
+        error = avahi_client_errno (avahi_service_browser_get_client (browser));
+        g_warning ("%s: %s (%d)", G_STRLOC, avahi_strerror (error), error);
+        break;
+
+      default:
+        if (name && g_str_equal (name, self->priv->service_name))
+          avahi_service_resolver_new (self->priv->service_client, interface,
+                                      protocol, name, type, domain, AVAHI_PROTO_UNSPEC,
+                                      0, epc_consumer_service_resolver_cb, self);
+
+        break;
+    }
+}
+
+static void
+epc_consumer_constructed (GObject *object)
+{
+  EpcConsumer *self = EPC_CONSUMER (object);
+
+  if (G_OBJECT_CLASS (epc_consumer_parent_class)->constructed)
+    G_OBJECT_CLASS (epc_consumer_parent_class)->constructed (object);
+
+  if (!self->priv->service_type)
+    self->priv->service_type = epc_shell_create_service_type (NULL);
+
+  if (!self->priv->host && self->priv->service_type)
+    {
+      self->priv->service_client =
+        epc_shell_create_avahi_client (AVAHI_CLIENT_NO_FAIL, NULL, NULL);
+
+      g_return_if_fail (NULL != self->priv->service_client);
+
+      self->priv->service_browser =
+        avahi_service_browser_new (self->priv->service_client,
+                                   AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC,
+                                   self->priv->service_type,
+                                   self->priv->service_domain, 0,
+                                   epc_consumer_service_brower_cb, self);
+
+      g_return_if_fail (NULL != self->priv->service_browser);
     }
 }
 
@@ -184,10 +320,28 @@ epc_consumer_dispose (GObject *object)
 {
   EpcConsumer *self = EPC_CONSUMER (object);
 
+  if (self->priv->service_browser)
+    {
+      avahi_service_browser_free (self->priv->service_browser);
+      self->priv->service_browser = NULL;
+    }
+
+  if (self->priv->service_client)
+    {
+      avahi_client_free (self->priv->service_client);
+      self->priv->service_client = NULL;
+    }
+
   if (self->priv->session)
     {
       g_object_unref (self->priv->session);
       self->priv->session = NULL;
+    }
+
+  if (self->priv->loop)
+    {
+      g_main_loop_unref (self->priv->loop);
+      self->priv->loop = NULL;
     }
 
   g_free (self->priv->host);
@@ -210,22 +364,42 @@ epc_consumer_class_init (EpcConsumerClass *cls)
 
   oclass->set_property = epc_consumer_set_property;
   oclass->get_property = epc_consumer_get_property;
+  oclass->constructed = epc_consumer_constructed;
   oclass->finalize = epc_consumer_finalize;
   oclass->dispose = epc_consumer_dispose;
 
   g_object_class_install_property (oclass, PROP_HOST,
                                    g_param_spec_string ("host", "Host",
-                                                        "Host name of the publisher", NULL,
+                                                        "Host name of the publisher to use", NULL,
                                                         G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
                                                         G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
   g_object_class_install_property (oclass, PROP_PORT,
                                    g_param_spec_int ("port", "Port",
-                                                     "TCP/IP port of the publisher",
-                                                     1, G_MAXUINT16, 80,
+                                                     "TCP/IP port of the publisher to use",
+                                                     0, G_MAXUINT16, 0,
                                                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
                                                      G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                      G_PARAM_STATIC_BLURB));
+
+  g_object_class_install_property (oclass, PROP_NAME,
+                                   g_param_spec_string ("name", "Name",
+                                                        "Service name of the publisher to use", NULL,
+                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+                                                        G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
+  g_object_class_install_property (oclass, PROP_SERVICE,
+                                   g_param_spec_string ("service", "Service",
+                                                        "Service type of the publisher to use", NULL,
+                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+                                                        G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
+  g_object_class_install_property (oclass, PROP_DOMAIN,
+                                   g_param_spec_string ("domain", "Domain",
+                                                        "DNS domain of the publisher to use", NULL,
+                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+                                                        G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
 
   /**
    * EpcConsumer::authenticate:
@@ -303,9 +477,44 @@ epc_consumer_new (const gchar *host,
   g_return_val_if_fail (NULL != host, NULL);
   g_return_val_if_fail (port > 0, NULL);
 
-  return g_object_new (EPC_TYPE_CONSUMER,
-                       "host", host, "port", port,
-                       NULL);
+  return g_object_new (EPC_TYPE_CONSUMER, "host", host, "port", port, NULL);
+}
+
+EpcConsumer*
+epc_consumer_new_for_name (const gchar *name)
+{
+  g_return_val_if_fail (NULL != name, NULL);
+
+  return g_object_new (EPC_TYPE_CONSUMER, "name", name, NULL);
+}
+
+EpcConsumer*
+epc_consumer_new_for_name_full (const gchar *name,
+                                const gchar *service,
+                                const gchar *domain)
+{
+  g_return_val_if_fail (NULL != name, NULL);
+
+  return g_object_new (EPC_TYPE_CONSUMER, "name", name,
+		       "service", service, "domain", domain, NULL);
+}
+
+gboolean
+epc_consumer_wait_cb (gpointer data)
+{
+  EpcConsumer *self = data;
+
+  g_warning ("%s: Timeout reached when waiting for publisher", G_STRLOC);
+  g_main_loop_quit (self->priv->loop);
+
+  return FALSE;
+}
+
+static void
+epc_consumer_wait (EpcConsumer *self)
+{
+  g_timeout_add_seconds (5, epc_consumer_wait_cb, self);
+  g_main_loop_run (self->priv->loop);
 }
 
 static SoupMessage*
@@ -320,8 +529,18 @@ epc_consumer_create_request (EpcConsumer *self,
 
   g_assert ('/' == path[0]);
 
+  if (NULL == self->priv->host)
+    epc_consumer_wait (self);
+
+  g_return_val_if_fail (NULL != self->priv->host, NULL);
+  g_return_val_if_fail (self->priv->port > 0, NULL);
+
   request_uri = g_strdup_printf ("http://%s:%d/%s", self->priv->host,
                                  self->priv->port, path + 1);
+
+  if (G_UNLIKELY (_epc_debug))
+    g_debug ("%s: connecting to `%s'", G_STRLOC, request_uri);
+
   request = soup_message_new ("GET", request_uri);
   g_free (request_uri);
 

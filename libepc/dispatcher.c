@@ -79,7 +79,7 @@ struct _EpcService
   AvahiStringList *details;
 };
 
-static gboolean epc_debug = FALSE;
+extern gboolean _epc_debug;
 
 /**
  * EpcDispatcherPrivate:
@@ -122,7 +122,7 @@ epc_service_publish_subtype (EpcService  *self,
 {
   gint result;
 
-  if (epc_debug)
+  if (G_UNLIKELY (_epc_debug))
     g_debug ("%s: Publishing sub-service `%s' for `%s'...",
              G_STRLOC, subtype, self->dispatcher->priv->name);
 
@@ -147,7 +147,7 @@ epc_service_publish_details (EpcService *self)
 {
   gint result;
 
-  if (epc_debug)
+  if (G_UNLIKELY (_epc_debug))
     g_debug ("%s: Publishing details for `%s'...",
              G_STRLOC, self->dispatcher->priv->name);
 
@@ -173,7 +173,7 @@ epc_service_publish (EpcService *self)
   gint result;
   GList *iter;
 
-  if (epc_debug)
+  if (G_UNLIKELY (_epc_debug))
     g_debug ("%s: Publishing service `%s' for `%s'...",
              G_STRLOC, self->type, self->dispatcher->priv->name);
 
@@ -340,21 +340,21 @@ epc_dispatcher_client_cb (AvahiClient      *client,
   switch (state)
     {
       case AVAHI_CLIENT_S_RUNNING:
-        if (epc_debug)
+	if (G_UNLIKELY (_epc_debug))
           g_debug ("%s: Avahi client is running...", G_STRLOC);
 
         g_hash_table_foreach (self->priv->services, epc_dispatcher_publish_cb, NULL);
         break;
 
       case AVAHI_CLIENT_S_REGISTERING:
-        if (epc_debug)
+	if (G_UNLIKELY (_epc_debug))
           g_debug ("%s: Avahi client is registering...", G_STRLOC);
 
         g_hash_table_foreach (self->priv->services, epc_dispatcher_reset_cb, self);
         break;
 
       case AVAHI_CLIENT_S_COLLISION:
-        if (epc_debug)
+	if (G_UNLIKELY (_epc_debug))
           g_debug ("%s: Collision detected...", G_STRLOC);
 
         g_hash_table_foreach (self->priv->services, epc_dispatcher_reset_cb, self);
@@ -369,7 +369,7 @@ epc_dispatcher_client_cb (AvahiClient      *client,
         break;
 
       case AVAHI_CLIENT_CONNECTING:
-        if (epc_debug)
+	if (G_UNLIKELY (_epc_debug))
           g_debug ("%s: Waiting for Avahi server...", G_STRLOC);
 
         break;
@@ -513,9 +513,6 @@ static void
 epc_dispatcher_class_init (EpcDispatcherClass *cls)
 {
   GObjectClass *oclass = G_OBJECT_CLASS (cls);
-
-  if (g_getenv ("EPC_DEBUG"))
-    epc_debug = TRUE;
 
   oclass->set_property = epc_dispatcher_set_property;
   oclass->get_property = epc_dispatcher_get_property;
