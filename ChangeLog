@@ -1,3 +1,14 @@
+2007-11-19  Mathias Hasselmann  <mathias@openismus.com>
+
+	Remove calls to g_timeout_add_seconds convenience function of glib-2.14,
+	as all other parts of the library are satisfied with glib-2.12.
+
+	* tests/framework.c: Remove g_timeout_add_seconds.
+
+2007-11-19  Mathias Hasselmann  <mathias@openismus.com>
+
+	* configure.ac: Bump version.
+
 2007-11-15  Mathias Hasselmann  <mathias@openismus.com>
 
 	=== Release 0.2 ===

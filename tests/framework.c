@@ -112,7 +112,7 @@ _epc_test_pass (const gchar *strloc,
   int i;
 
   g_source_remove (epc_test_timeout);
-  epc_test_timeout = g_timeout_add_seconds (5, epc_test_timeout_cb, NULL);
+  epc_test_timeout = g_timeout_add (5000, epc_test_timeout_cb, NULL);
 
   mask &= EPC_TEST_MASK_USER;
 
@@ -164,7 +164,7 @@ epc_test_run ()
   if (!epc_test_loop)
     epc_test_loop = g_main_loop_new (NULL, FALSE);
 
-  epc_test_timeout = g_timeout_add_seconds (5, epc_test_timeout_cb, NULL);
+  epc_test_timeout = g_timeout_add (5000, epc_test_timeout_cb, NULL);
 
   epc_shell_leave ();
   g_main_loop_run (epc_test_loop);
