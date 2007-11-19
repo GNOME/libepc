@@ -32,10 +32,14 @@ EpcPublisherClass
 <TITLE>EpcPublisher</TITLE>
 EpcPublisher
 epc_publisher_new
+epc_publisher_set_protocol
 epc_publisher_set_service_name
+epc_publisher_set_credentials
+epc_publisher_get_protocol
 epc_publisher_get_service_name
 epc_publisher_get_service_domain
-epc_publisher_get_service_type
+epc_publisher_get_certificate_file
+epc_publisher_get_private_key_file
 epc_publisher_add
 epc_publisher_add_file
 epc_publisher_add_handler
@@ -66,10 +70,14 @@ EPC_PUBLISHER_GET_CLASS
 EpcConsumerPrivate
 EpcConsumerClass
 <TITLE>EpcConsumer</TITLE>
+EPC_CONSUMER_DEFAULT_TIMEOUT
 EpcConsumer
 epc_consumer_new
 epc_consumer_new_for_name
 epc_consumer_new_for_name_full
+epc_consumer_get_protocol
+epc_consumer_set_protocol
+epc_consumer_resolve_publisher
 epc_consumer_lookup
 <SUBSECTION Standard>
 EPC_CONSUMER
@@ -85,9 +93,9 @@ EPC_CONSUMER_GET_CLASS
 <FILE>shell</FILE>
 <TITLE>Library Management</TITLE>
 epc_shell_create_avahi_client
-epc_shell_create_service_type
 epc_shell_enter
 epc_shell_get_avahi_poll_api
+epc_shell_get_host_name
 epc_shell_leave
 epc_shell_ref
 epc_shell_unref
@@ -116,9 +124,17 @@ epc_tls_set_private_key_hooks
 </SECTION>
 
 <SECTION>
-<FILE>service-names</FILE>
-<TITLE>Service Names</TITLE>
-EPC_SERVICE_NAME
-EPC_SERVICE_NAME_HTTP
-EPC_SERVICE_NAME_HTTPS
+<FILE>service-type</FILE>
+<TITLE>Service Types</TITLE>
+EPC_SERVICE_TYPE_HTTP
+EPC_SERVICE_TYPE_HTTPS
+EpcProtocol
+epc_protocol_get_service_type
+epc_protocol_get_type
+epc_protocol_get_uri_scheme
+epc_service_type_build_uri
+epc_service_type_get_protocol
+epc_service_type_new
+<SUBSECTION Standard>
+EPC_TYPE_PROTOCOL
 </SECTION>

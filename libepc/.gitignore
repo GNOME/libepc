@@ -1,5 +1,9 @@
 *.[ao]
 *.l[ao]
 *.l[ao]T
+*.stamp
+*.tmp
 .dirstamp
+
+enums.[ch]
 marshal.[ch]

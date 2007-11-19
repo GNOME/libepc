@@ -6,8 +6,6 @@
  * otherwise value for the key "source-code" is retieved.
  */
 #include "libepc/consumer.h"
-#include "libepc/publisher.h"
-#include "libepc/service-names.h"
 #include "libepc-ui/password-dialog.h"
 
 #include <avahi-ui/avahi-ui.h>
@@ -204,7 +202,9 @@ main (int   argc,
                                    NULL);
 
   aui_service_dialog_set_browse_service_types (AUI_SERVICE_DIALOG (dialog),
-					       EPC_SERVICE_NAME, NULL);
+					       EPC_SERVICE_TYPE_HTTPS,
+					       EPC_SERVICE_TYPE_HTTP,
+                                               NULL);
 
   if (GTK_RESPONSE_ACCEPT == gtk_dialog_run (GTK_DIALOG (dialog)))
     {
@@ -212,6 +212,7 @@ main (int   argc,
        */
       const gint port = aui_service_dialog_get_port (AUI_SERVICE_DIALOG (dialog));
       const gchar *host = aui_service_dialog_get_host_name (AUI_SERVICE_DIALOG (dialog));
+      const gchar *transport = aui_service_dialog_get_service_type (AUI_SERVICE_DIALOG (dialog));
 
       /* Retrieve the human readable name of the selected service,
        * just for the purpose of displaying it in the UI later.
@@ -220,7 +221,7 @@ main (int   argc,
 
       /* Create an EpcConsumer for the selected service.
        */
-      consumer = epc_consumer_new (host, port);
+      consumer = epc_consumer_new (epc_service_type_get_protocol (transport), host, port);
 
       /* Associate a password dialog */
 

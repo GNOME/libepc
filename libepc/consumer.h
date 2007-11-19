@@ -22,6 +22,7 @@
 #define __EPC_CONSUMER_H__
 
 #include <glib-object.h>
+#include <libepc/service-type.h>
 
 G_BEGIN_DECLS
 
@@ -31,6 +32,8 @@ G_BEGIN_DECLS
 #define EPC_IS_CONSUMER(obj)        (G_TYPE_CHECK_INSTANCE_TYPE(obj, EPC_TYPE_CONSUMER))
 #define EPC_IS_CONSUMER_CLASS(obj)  (G_TYPE_CHECK_CLASS_TYPE(obj, EPC_TYPE_CONSUMER))
 #define EPC_CONSUMER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), EPC_TYPE_CONSUMER, EpcConsumerClass))
+
+#define EPC_CONSUMER_DEFAULT_TIMEOUT 5000
 
 typedef struct _EpcConsumer        EpcConsumer;
 typedef struct _EpcConsumerClass   EpcConsumerClass;
@@ -61,24 +64,42 @@ struct _EpcConsumerClass
   GObjectClass parent_class;
 
   /*< public >*/
-  void (*authenticate) (EpcConsumer  *consumer,
-                        const gchar  *realm,
-                        gchar       **username,
-                        gchar       **password);
+  void (*authenticate)       (EpcConsumer  *consumer,
+                              const gchar  *realm,
+                              gchar       **username,
+                              gchar       **password);
+
+  void (*reauthenticate)     (EpcConsumer  *consumer,
+                              const gchar  *realm,
+                              gchar       **username,
+                              gchar       **password);
+
+  void (*publisher_resolved) (EpcConsumer  *consumer,
+                              EpcProtocol   protocol,
+                              const gchar  *host,
+                              guint         port);
 };
 
-GType        epc_consumer_get_type          (void) G_GNUC_CONST;
+GType                 epc_consumer_get_type          (void) G_GNUC_CONST;
 
-EpcConsumer* epc_consumer_new               (const gchar *host,
-                                             guint16      port);
-EpcConsumer* epc_consumer_new_for_name      (const gchar *name);
-EpcConsumer* epc_consumer_new_for_name_full (const gchar *name,
-                                             const gchar *service,
-                                             const gchar *domain);
+EpcConsumer*          epc_consumer_new               (EpcProtocol  protocol,
+                                                      const gchar *host,
+                                                      guint16      port);
+EpcConsumer*          epc_consumer_new_for_name      (const gchar *name);
+EpcConsumer*          epc_consumer_new_for_name_full (const gchar *name,
+                                                      const gchar *application,
+                                                      const gchar *domain);
 
-gchar*       epc_consumer_lookup            (EpcConsumer *consumer,
-                                             const gchar *key,
-                                             gsize       *length);
+void                  epc_consumer_set_protocol      (EpcConsumer *consumer,
+                                                      EpcProtocol  protocol);
+EpcProtocol           epc_consumer_get_protocol      (EpcConsumer *consumer);
+
+gboolean              epc_consumer_resolve_publisher (EpcConsumer *self,
+                                                      guint        timeout);
+
+gchar*                epc_consumer_lookup            (EpcConsumer *consumer,
+                                                      const gchar *key,
+                                                      gsize       *length);
 
 G_END_DECLS
 

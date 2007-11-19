@@ -12,9 +12,13 @@
  * use your login name as user name and the word "secret" as password.
  */
 #include "libepc/publisher.h"
+#include "libepc/enums.h"
 
+#include <glib/gi18n.h>
 #include <locale.h>
 #include <string.h>
+
+static EpcProtocol protocol = EPC_PROTOCOL_HTTPS;
 
 static EpcContent*
 timestamp_handler (EpcPublisher *publisher G_GNUC_UNUSED,
@@ -46,21 +50,76 @@ authentication_handler (EpcAuthContext *context,
     epc_auth_context_check_password (context, user_data);
 }
 
+static gboolean
+parse_protocol (const gchar *option G_GNUC_UNUSED,
+                const gchar *text,
+                gpointer     data G_GNUC_UNUSED,
+                GError     **error)
+{
+  static GEnumClass *cls = NULL;
+  GEnumValue *result;
+  gchar *lower;
+
+  if (G_UNLIKELY (NULL == cls))
+    cls = g_type_class_ref (EPC_TYPE_PROTOCOL);
+
+  lower = g_utf8_strdown (text, -1);
+  result = g_enum_get_value_by_nick (cls, lower);
+  g_free (lower);
+
+  if (NULL == result || EPC_PROTOCOL_UNKNOWN == result->value)
+    {
+      g_set_error (error,
+                   G_OPTION_ERROR_FAILED,
+                   G_OPTION_ERROR_BAD_VALUE,
+                   _("Invalid transport protocol: '%s'"),
+                   text);
+
+      return FALSE;
+    }
+
+  protocol = result->value;
+
+  return TRUE;
+}
+
 int
 main (int   argc,
       char *argv[])
 {
+  static GOptionEntry entries[] =
+    {
+      { "protocol", 'p', 0, G_OPTION_ARG_CALLBACK, parse_protocol, N_("Transport protocol"), N_("PROTOCOL") },
+      { NULL, 0, 0, 0, NULL, NULL, NULL }
+    };
+
   EpcPublisher *publisher;
+  GOptionContext *options;
+  GError *error = NULL;
 
   /* Initialize the toolkit.
    */
-  setlocale (LC_ALL, "");
   g_thread_init (NULL);
   g_type_init ();
 
+  /* Parse command line options.
+   */
+  options = g_option_context_new (NULL);
+  g_option_context_add_main_entries (options, entries, NULL);
+
+  if (!g_option_context_parse (options, &argc, &argv, &error))
+    {
+      g_print ("%s\n", error->message);
+      g_error_free (error);
+      return 2;
+    }
+
+  g_option_context_free (options);
+
   /* Create a new publisher.
    */
-  publisher = epc_publisher_new ("Easy Publisher Test", NULL, NULL);
+  publisher = epc_publisher_new ("Easy Publisher Test", NULL);
+  epc_publisher_set_protocol (publisher, protocol);
 
   if (1 == argc)
     {

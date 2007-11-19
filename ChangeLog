@@ -1,3 +1,30 @@
+2007-11-09  Mathias Hasselmann  <mathias@openismus.com>
+
+	Implement the HTTPS transport method.
+
+	* libepc/consumer.c, libepc/consumer.h: Support HTTPS transport
+	protocol. Add reauthenticate signal to vtable. New publisher-resolved
+	signal, epc_consumer_resolve_publisher method and protocol property.
+	Replace service-type property by application property.
+	* libepc/publisher.c, libepc/publisher.h: Implement HTTPS transport.
+	Add certificate-file, private-key-file and protocol property. Add
+	epc_publisher_set_credentials method. Remove service-type property.
+	* libepc/enums.c.in, libepc/enums.h.in: Templates for glib-mkenums.
+	* libepc/marshal.list: Update for EpcConsumer::publisher-resolved.
+	* libepc/service-type.c, libepc/service-type.h: Add EpcProtocol enum.
+	Add functions for service-type and protocol handling.
+	* libepc/shell.c, libepc/shell.h: Add epc_shell_get_host_name.
+	Remove epc_shell_create_service_type.
+	* libepc/.gitignore: Add libepc/enums.[ch] and artifacts.
+	* Makefile.am: Add libepc/enums.[ch] and artifacts.
+	Improve error handling when using glib-genmarshal.
+	* examples/test-consumer.c: Pass choosen protocol to epc_consumer_new.
+	* examples/test-publisher.c: Add --protocol command line switch.
+	* tests/test-consumer-by-name.c, tests/test-publisher-change-name.c,
+	tests/test-publisher-libsoup-494128.c: Create publishers in HTTP mode,
+	since generating HTTPS keys takes quite some time.
+	* docs/reference/libepc/libepc-sections.txt: Update symbols.
+
 2007-11-08  Mathias Hasselmann  <mathias@openismus.com>
 
 	Minor TLS cleanups.

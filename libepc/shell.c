@@ -19,26 +19,27 @@
  *      Mathias Hasselmann
  */
 #include "shell.h"
-#include "service-names.h"
 
 #include <avahi-common/error.h>
 #include <avahi-glib/glib-malloc.h>
 #include <avahi-glib/glib-watch.h>
 
 #include <gmodule.h>
+#include <gnutls/gnutls.h>
 
 typedef struct _EpcAvahiShell EpcAvahiShell;
 
 struct _EpcAvahiShell
 {
   volatile gint  ref_count;
+  AvahiClient   *client;
   AvahiGLibPoll *poll;
 
   void (*threads_enter) (void);
   void (*threads_leave) (void);
 };
 
-static EpcAvahiShell epc_shell = { 0, NULL, NULL, NULL };
+static EpcAvahiShell epc_shell = { 0, NULL, NULL, NULL, NULL };
 gboolean _epc_debug = FALSE;
 
 void
@@ -52,6 +53,7 @@ epc_shell_ref (void)
       if (g_getenv ("EPC_DEBUG"))
         _epc_debug = TRUE;
 
+      gnutls_global_init ();
       avahi_set_allocator (avahi_glib_allocator ());
 
       g_assert (NULL == epc_shell.poll);
@@ -85,6 +87,12 @@ epc_shell_unref (void)
 
   if (g_atomic_int_dec_and_test (&epc_shell.ref_count))
     {
+      if (epc_shell.client)
+        {
+          avahi_client_free (epc_shell.client);
+          epc_shell.client = NULL;
+        }
+
       g_assert (NULL != epc_shell.poll);
       avahi_glib_poll_free (epc_shell.poll);
       epc_shell.poll = NULL;
@@ -133,62 +141,12 @@ epc_shell_create_avahi_client (AvahiClientFlags    flags,
   return client;
 }
 
-static gchar*
-epc_shell_normalize_name (const gchar *name,
-                          gssize       length)
+G_CONST_RETURN gchar*
+epc_shell_get_host_name (void)
 {
-  GError *error = NULL;
-  gchar *normalized, *s;
+  if (!epc_shell.client)
+    epc_shell.client = epc_shell_create_avahi_client (AVAHI_CLIENT_NO_FAIL, NULL, NULL);
 
-  g_return_val_if_fail (NULL != name, NULL);
-
-  normalized = g_convert (name, length,
-                          "ASCII//TRANSLIT", "UTF-8",
-                          NULL, NULL, &error);
-
-  if (error)
-    {
-      g_warning ("%s: %s", G_STRLOC, error->message);
-      g_error_free (error);
-    }
-
-  if (normalized)
-    {
-      for (s = normalized; *s; ++s)
-        if (!g_ascii_isalnum (*s))
-          *s = '-';
-    }
-
-  return normalized;
+  return avahi_client_get_host_name (epc_shell.client);
 }
-
-gchar*
-epc_shell_create_service_type (const gchar *basename)
-{
-  gchar *service_type = NULL;
-  gchar *normalized = NULL;
-
-  if (!basename)
-    basename = g_get_prgname ();
-
-  if (!basename)
-    {
-      g_warning ("%s: Cannot derive the DNS-SD service type, as no basename "
-                 "was specified and g_get_prgname() returns NULL. Consider "
-                 "calling g_set_prgname().", G_STRLOC);
-
-      return NULL;
-    }
-
-  normalized = epc_shell_normalize_name (basename, -1);
-
-  if (normalized)
-    {
-      service_type = g_strconcat ("_", normalized, "-app._sub.", EPC_SERVICE_NAME, NULL);
-      g_free (normalized);
-    }
-
-  return service_type;
-}
-
 

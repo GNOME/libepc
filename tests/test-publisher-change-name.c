@@ -2,7 +2,6 @@
 
 #include "framework.h"
 #include "libepc/publisher.h"
-#include "libepc/service-names.h"
 
 static gchar *first_name = NULL;
 static gchar *second_name = NULL;
@@ -22,7 +21,7 @@ service_browser_cb (AvahiServiceBrowser     *browser G_GNUC_UNUSED,
 
   if (AVAHI_BROWSER_NEW == event &&
       0 != (flags & AVAHI_LOOKUP_RESULT_LOCAL) &&
-      type && g_str_equal (type, EPC_SERVICE_NAME) && name)
+      type && g_str_equal (type, EPC_SERVICE_TYPE_HTTP) && name)
     {
       if (g_str_equal (name, first_name))
         {
@@ -53,12 +52,14 @@ main (int   argc G_GNUC_UNUSED,
   first_name = g_strdup_printf ("%s-%08x-1", g_get_prgname (), g_random_int ());
   second_name = g_strdup_printf ("%s-%08x-2", g_get_prgname (), g_random_int ());
 
-  publisher = epc_publisher_new (first_name, NULL, NULL);
+  publisher = epc_publisher_new (first_name, NULL);
+  epc_publisher_set_protocol (publisher, EPC_PROTOCOL_HTTP);
 
   if (epc_test_init (3) &&
-      epc_test_init_service_browser (EPC_SERVICE_NAME, service_browser_cb, publisher))
+      epc_test_init_service_browser (EPC_SERVICE_TYPE_HTTP, service_browser_cb, publisher))
     {
       epc_publisher_run_async (publisher);
+
       result = epc_test_run ();
     }
 

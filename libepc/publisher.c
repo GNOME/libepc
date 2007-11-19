@@ -19,6 +19,20 @@
  *      Mathias Hasselmann
  */
 
+#include "publisher.h"
+#include "dispatcher.h"
+#include "enums.h"
+#include "shell.h"
+#include "tls.h"
+
+#include <libsoup/soup-address.h>
+#include <libsoup/soup-message.h>
+#include <libsoup/soup-server.h>
+#include <libsoup/soup-server-auth.h>
+#include <libsoup/soup-socket.h>
+
+#include <string.h>
+
 /**
  * SECTION:publisher
  * @short_description: easily publish values
@@ -44,27 +58,17 @@
  * </example>
  */
 
-#include "publisher.h"
-#include "shell.h"
-#include "dispatcher.h"
-#include "service-names.h"
-
-#include <libsoup/soup-address.h>
-#include <libsoup/soup-message.h>
-#include <libsoup/soup-server.h>
-#include <libsoup/soup-server-auth.h>
-#include <libsoup/soup-socket.h>
-
-#include <string.h>
-
 typedef struct _EpcResource EpcResource;
 
 enum
 {
   PROP_NONE,
+  PROP_PROTOCOL,
   PROP_SERVICE_NAME,
   PROP_SERVICE_DOMAIN,
-  PROP_SERVICE_TYPE
+
+  PROP_CERTIFICATE_FILE,
+  PROP_PRIVATE_KEY_FILE,
 };
 
 /**
@@ -123,9 +127,12 @@ struct _EpcPublisherPrivate
   SoupServerAuthContext  server_auth;
   SoupServer            *server;
 
+  EpcProtocol            protocol;
   gchar                 *service_name;
   gchar                 *service_domain;
-  gchar                 *service_type;
+
+  gchar                 *certificate_file;
+  gchar                 *private_key_file;
 };
 
 extern gboolean _epc_debug;
@@ -349,6 +356,9 @@ epc_publisher_init (EpcPublisher *self)
 {
   self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self, EPC_TYPE_PUBLISHER, EpcPublisherPrivate);
 
+  epc_shell_ref ();
+
+  self->priv->protocol = EPC_PROTOCOL_HTTPS;
   self->priv->server_auth.types = SOUP_AUTH_TYPE_DIGEST;
   self->priv->server_auth.callback = epc_publisher_server_auth_cb;
   self->priv->server_auth.user_data = self;
@@ -366,6 +376,9 @@ epc_publisher_restart_dispatcher (EpcPublisher *self)
 {
   SoupSocket *listener;
   SoupAddress *address;
+
+  gchar *service_type;
+  gchar *service_url;
 
   const gchar *name;
   const gchar *host;
@@ -395,14 +408,11 @@ epc_publisher_restart_dispatcher (EpcPublisher *self)
       g_warning ("%s: No service name set - using generated name (`%s'). "
                  "Consider passing a service name to the publisher's "
                  "constructor or call g_set_application_name().",
-                 G_STRLOC, name);
+                 G_STRFUNC, name);
     }
 
   if (!self->priv->service_name)
     self->priv->service_name = g_strdup (name);
-
-  if (!self->priv->service_type)
-    self->priv->service_type = epc_shell_create_service_type (NULL);
 
   listener = soup_server_get_listener (self->priv->server);
   port = soup_server_get_port (self->priv->server);
@@ -412,35 +422,75 @@ epc_publisher_restart_dispatcher (EpcPublisher *self)
   protocol = avahi_af_to_proto (sockaddr->sa_family);
   host = soup_address_get_name (address);
 
-  g_print ("listening on http://%s:%d/\n", host ? host : "localhost", port);
-
   if (self->priv->dispatcher)
     g_object_unref (self->priv->dispatcher);
 
   self->priv->dispatcher = epc_dispatcher_new (AVAHI_IF_UNSPEC, protocol, name);
+  service_type = epc_service_type_new (self->priv->protocol, NULL);
 
-  epc_dispatcher_add_service (self->priv->dispatcher, EPC_SERVICE_NAME_HTTP,
-                              self->priv->service_domain, host, port,
-                              NULL);
+  epc_dispatcher_add_service (self->priv->dispatcher,
+                              epc_protocol_get_service_type (self->priv->protocol),
+                              self->priv->service_domain, host, port, NULL);
+  epc_dispatcher_add_service_subtype (self->priv->dispatcher,
+                                      epc_protocol_get_service_type (self->priv->protocol),
+                                      service_type);
 
-  if (self->priv->service_type)
-    epc_dispatcher_add_service_subtype (self->priv->dispatcher,
-                                        EPC_SERVICE_NAME,
-                                        self->priv->service_type);
+  g_free (service_type);
+
+  if (!host)
+    host = epc_shell_get_host_name ();
+
+  service_url = epc_service_type_build_uri (self->priv->protocol, host, port, NULL);
+  g_print ("%s: listening on %s\n", G_STRFUNC, service_url);
+  g_free (service_url);
+}
+
+static gboolean
+epc_publisher_is_server_created (EpcPublisher *self)
+{
+  return (NULL != self->priv->server);
 }
 
 static void
-epc_publisher_constructed (GObject *object)
+epc_publisher_create_server (EpcPublisher *self)
 {
-  EpcPublisher *self = EPC_PUBLISHER (object);
+  g_return_if_fail (!epc_publisher_is_server_created (self));
 
-  if (G_OBJECT_CLASS (epc_publisher_parent_class)->constructed)
-    G_OBJECT_CLASS (epc_publisher_parent_class)->constructed (object);
+  if (EPC_PROTOCOL_UNKNOWN == self->priv->protocol)
+    self->priv->protocol = EPC_PROTOCOL_HTTPS;
 
-  self->priv->server = soup_server_new (SOUP_SERVER_PORT, SOUP_ADDRESS_ANY_PORT, NULL);
+  if (EPC_PROTOCOL_HTTPS == self->priv->protocol && (
+      NULL == self->priv->certificate_file ||
+      NULL == self->priv->private_key_file))
+    {
+      GError *error = NULL;
 
-  soup_server_add_handler (self->priv->server, "/get", &self->priv->server_auth,
-                           epc_publisher_server_get_handler, NULL, self);
+      g_free (self->priv->certificate_file);
+      g_free (self->priv->private_key_file);
+
+      if (!epc_tls_get_server_credentials (epc_shell_get_host_name (),
+                                           &self->priv->certificate_file,
+                                           &self->priv->private_key_file,
+                                           &error))
+        {
+          self->priv->protocol = EPC_PROTOCOL_HTTP;
+          g_warning ("%s: Cannot retrieve server credentials, using insecure transport protocol: %s",
+                     G_STRFUNC, error ? error->message : "No error details available.");
+          g_clear_error (&error);
+
+        }
+    }
+
+  self->priv->server =
+    soup_server_new (SOUP_SERVER_SSL_CERT_FILE, self->priv->certificate_file,
+                     SOUP_SERVER_SSL_KEY_FILE, self->priv->private_key_file,
+                     SOUP_SERVER_PORT, SOUP_ADDRESS_ANY_PORT,
+                     NULL);
+
+  soup_server_add_handler (self->priv->server, "/get",
+                           &self->priv->server_auth,
+                           epc_publisher_server_get_handler,
+                           NULL, self);
 
   epc_publisher_restart_dispatcher (self);
 }
@@ -455,6 +505,12 @@ epc_publisher_set_property (GObject      *object,
 
   switch (prop_id)
     {
+      case PROP_PROTOCOL:
+        g_return_if_fail (!epc_publisher_is_server_created (self));
+        g_return_if_fail (EPC_PROTOCOL_UNKNOWN != g_value_get_enum (value));
+        self->priv->protocol = g_value_get_enum (value);
+        break;
+
       case PROP_SERVICE_NAME:
         g_free (self->priv->service_name);
         self->priv->service_name = g_value_dup_string (value);
@@ -465,13 +521,24 @@ epc_publisher_set_property (GObject      *object,
         break;
 
       case PROP_SERVICE_DOMAIN:
-        g_return_if_fail (NULL == self->priv->service_domain);
+        g_return_if_fail (!epc_publisher_is_server_created (self));
+
+        g_free (self->priv->service_domain);
         self->priv->service_domain = g_value_dup_string (value);
         break;
 
-      case PROP_SERVICE_TYPE:
-        g_return_if_fail (NULL == self->priv->service_type);
-        self->priv->service_type = g_value_dup_string (value);
+      case PROP_CERTIFICATE_FILE:
+        g_return_if_fail (!epc_publisher_is_server_created (self));
+
+        g_free (self->priv->certificate_file);
+        self->priv->certificate_file = g_value_dup_string (value);
+        break;
+
+      case PROP_PRIVATE_KEY_FILE:
+        g_return_if_fail (!epc_publisher_is_server_created (self));
+
+        g_free (self->priv->private_key_file);
+        self->priv->private_key_file = g_value_dup_string (value);
         break;
 
       default:
@@ -490,6 +557,10 @@ epc_publisher_get_property (GObject    *object,
 
   switch (prop_id)
     {
+      case PROP_PROTOCOL:
+        g_value_set_enum (value, self->priv->protocol);
+        break;
+
       case PROP_SERVICE_NAME:
         g_value_set_string (value, self->priv->service_name);
         break;
@@ -498,8 +569,12 @@ epc_publisher_get_property (GObject    *object,
         g_value_set_string (value, self->priv->service_domain);
         break;
 
-      case PROP_SERVICE_TYPE:
-        g_value_set_string (value, self->priv->service_type);
+      case PROP_CERTIFICATE_FILE:
+        g_value_set_string (value, self->priv->certificate_file);
+        break;
+
+      case PROP_PRIVATE_KEY_FILE:
+        g_value_set_string (value, self->priv->private_key_file);
         break;
 
       default:
@@ -539,16 +614,26 @@ epc_publisher_dispose (GObject *object)
       self->priv->default_resource = NULL;
     }
 
+  g_free (self->priv->certificate_file);
+  self->priv->certificate_file = NULL;
+
+  g_free (self->priv->private_key_file);
+  self->priv->private_key_file = NULL;
+
   g_free (self->priv->service_name);
   self->priv->service_name = NULL;
 
   g_free (self->priv->service_domain);
   self->priv->service_domain = NULL;
 
-  g_free (self->priv->service_type);
-  self->priv->service_type = NULL;
-
   G_OBJECT_CLASS (epc_publisher_parent_class)->dispose (object);
+}
+
+static void
+epc_publisher_finalize (GObject *object)
+{
+  epc_shell_unref ();
+  G_OBJECT_CLASS (epc_publisher_parent_class)->finalize (object);
 }
 
 static void
@@ -556,27 +641,48 @@ epc_publisher_class_init (EpcPublisherClass *cls)
 {
   GObjectClass *oclass = G_OBJECT_CLASS (cls);
 
-  oclass->constructed = epc_publisher_constructed;
   oclass->set_property = epc_publisher_set_property;
   oclass->get_property = epc_publisher_get_property;
+  oclass->finalize = epc_publisher_finalize;
   oclass->dispose = epc_publisher_dispose;
+
+  g_object_class_install_property (oclass, PROP_PROTOCOL,
+                                   g_param_spec_enum ("protocol", "Protocol",
+                                                      "The transport protocol the publisher uses",
+                                                      EPC_TYPE_PROTOCOL, EPC_PROTOCOL_HTTPS,
+                                                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
+                                                      G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
+                                                      G_PARAM_STATIC_BLURB));
 
   g_object_class_install_property (oclass, PROP_SERVICE_NAME,
                                    g_param_spec_string ("service-name", "Service Name",
-                                                        "User friendly name for the service", NULL,
+                                                        "User friendly name for the service",
+                                                        NULL,
                                                         G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
                                                         G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
+
   g_object_class_install_property (oclass, PROP_SERVICE_DOMAIN,
                                    g_param_spec_string ("service-domain", "Service Domain",
-                                                        "Internet domain for publishing the service", NULL,
-                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+                                                        "Internet domain for publishing the service",
+                                                        NULL,
+                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
                                                         G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
-  g_object_class_install_property (oclass, PROP_SERVICE_TYPE,
-                                   g_param_spec_string ("service-type", "Service Type",
-                                                        "Wellknown DNS-SD name the service", NULL,
-                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+
+  g_object_class_install_property (oclass, PROP_CERTIFICATE_FILE,
+                                   g_param_spec_string ("certificate-file", "Certificate File",
+                                                        "Filename for the PEM encoded server certificate",
+                                                        NULL,
+                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
+                                                        G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
+
+  g_object_class_install_property (oclass, PROP_PRIVATE_KEY_FILE,
+                                   g_param_spec_string ("private-key-file", "Private Key File",
+                                                        "Filename for the PEM encoded private server key",
+                                                        NULL,
+                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
                                                         G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
 
@@ -585,9 +691,8 @@ epc_publisher_class_init (EpcPublisherClass *cls)
 
 /**
  * epc_publisher_new:
- * @service_name: the human friendly service name, or %NULL
- * @service_type: the DNS-SD service name, or %NULL
- * @service_domain: the DNS domain for announcing the service, or %NULL
+ * @name: the human friendly service name, or %NULL
+ * @domain: the DNS domain for announcing the service, or %NULL
  *
  * Creates a new #EpcPublisher object. The publisher announces its service
  * per DNS-SD to the DNS domain specified by @domain, using @name as service
@@ -602,14 +707,12 @@ epc_publisher_class_init (EpcPublisherClass *cls)
  * Returns: The newly created #EpcPublisher object.
  */
 EpcPublisher*
-epc_publisher_new (const gchar *service_name,
-                   const gchar *service_type,
-                   const gchar *service_domain)
+epc_publisher_new (const gchar *name,
+                   const gchar *domain)
 {
   return g_object_new (EPC_TYPE_PUBLISHER,
-                       "service-name", service_name,
-                       "service-type", service_type,
-                       "service-domain", service_domain,
+                       "service-name", name,
+                       "service-domain", domain,
                        NULL);
 }
 
@@ -756,7 +859,7 @@ epc_publisher_set_auth_handler (EpcPublisher   *self,
 
       if (NULL == resource)
         {
-          g_warning ("%s: No resource handler found for key `%s'", G_STRLOC, key);
+          g_warning ("%s: No resource handler found for key `%s'", G_STRFUNC, key);
           return;
         }
     }
@@ -774,17 +877,37 @@ epc_publisher_set_auth_handler (EpcPublisher   *self,
 /**
  * epc_publisher_set_name:
  * @publisher: a #EpcPublisher
- * @service_name: the new name of this #EpcPublisher
+ * @name: the new name of this #EpcPublisher
  *
- * Changes the human friendly name this #EpcPublisher uses
- * to announce its service. See #EpcPublisher:name for details.
+ * Changes the human friendly name this #EpcPublisher uses to announce its
+ * service. See #EpcPublisher:service-name for details.
  */
 void
 epc_publisher_set_service_name (EpcPublisher *self,
-                                const gchar  *service_name)
+                                const gchar  *name)
 {
   g_return_if_fail (EPC_IS_PUBLISHER (self));
-  g_object_set (self, "service-name", service_name, NULL);
+  g_object_set (self, "service-name", name, NULL);
+}
+
+void
+epc_publisher_set_credentials (EpcPublisher *self,
+                               const gchar  *certfile,
+                               const gchar  *keyfile)
+{
+  g_return_if_fail (EPC_IS_PUBLISHER (self));
+
+  g_object_set (self, "certificate-file", certfile,
+                      "private-key-file", keyfile,
+                      NULL);
+}
+
+void
+epc_publisher_set_protocol (EpcPublisher *self,
+                            EpcProtocol   protocol)
+{
+  g_return_if_fail (EPC_IS_PUBLISHER (self));
+  g_object_set (self, "protocol", protocol, NULL);
 }
 
 /**
@@ -796,27 +919,11 @@ epc_publisher_set_service_name (EpcPublisher *self,
  *
  * Returns: The human friendly name of this #EpcPublisher.
  */
-G_CONST_RETURN char*
+G_CONST_RETURN gchar*
 epc_publisher_get_service_name (EpcPublisher *self)
 {
   g_return_val_if_fail (EPC_IS_PUBLISHER (self), NULL);
   return self->priv->service_name;
-}
-
-/**
- * epc_publisher_get_service_type:
- * @publisher: a #EpcPublisher
- *
- * Queries the DNS-SD service name of this #EpcPublisher.
- * See #EpcPublisher:service for details.
- *
- * Returns: The DNS-SD service name of this #EpcPublisher.
- */
-G_CONST_RETURN char*
-epc_publisher_get_service_type (EpcPublisher *self)
-{
-  g_return_val_if_fail (EPC_IS_PUBLISHER (self), NULL);
-  return self->priv->service_type;
 }
 
 /**
@@ -828,11 +935,32 @@ epc_publisher_get_service_type (EpcPublisher *self)
  *
  * Returns: The DNS-SD domain of this #EpcPublisher, or %NULL.
  */
-G_CONST_RETURN char*
+G_CONST_RETURN gchar*
 epc_publisher_get_service_domain (EpcPublisher *self)
 {
   g_return_val_if_fail (EPC_IS_PUBLISHER (self), NULL);
   return self->priv->service_domain;
+}
+
+G_CONST_RETURN gchar*
+epc_publisher_get_certificate_file (EpcPublisher *self)
+{
+  g_return_val_if_fail (EPC_IS_PUBLISHER (self), NULL);
+  return self->priv->certificate_file;
+}
+
+G_CONST_RETURN gchar*
+epc_publisher_get_private_key_file (EpcPublisher *self)
+{
+  g_return_val_if_fail (EPC_IS_PUBLISHER (self), NULL);
+  return self->priv->private_key_file;
+}
+
+EpcProtocol
+epc_publisher_get_protocol (EpcPublisher *self)
+{
+  g_return_val_if_fail (EPC_IS_PUBLISHER (self), EPC_PROTOCOL_UNKNOWN);
+  return self->priv->protocol;
 }
 
 /**
@@ -874,6 +1002,9 @@ void
 epc_publisher_run_async (EpcPublisher *self)
 {
   g_return_if_fail (EPC_IS_PUBLISHER (self));
+
+  if (!epc_publisher_is_server_created (self))
+    epc_publisher_create_server (self);
 
   if (!self->priv->server_started)
     {

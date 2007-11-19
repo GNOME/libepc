@@ -22,13 +22,18 @@ TESTS = \
 	tests/test-dispatcher-local-collision \
 	tests/test-publisher-change-name \
 	tests/test-publisher-libsoup-494128
-libepc_include_HEADERS = \
+
+libepc_headers = \
 	libepc/consumer.h \
 	libepc/dispatcher.h \
 	libepc/marshal.h \
 	libepc/publisher.h \
+	libepc/service-type.h \
 	libepc/shell.h \
 	libepc/tls.h
+libepc_include_HEADERS = \
+	$(libepc_headers) \
+	libepc/enums.h
 libepc_ui_include_HEADERS = \
 	libepc-ui/entropy-progress.h \
 	libepc-ui/password-dialog.h
@@ -37,18 +42,20 @@ pkgconfig_DATA = \
 	libepc-ui.pc
 
 libepc_libepc_la_SOURCES = \
+	$(libepc_include_HEADERS) \
 	libepc/consumer.c \
 	libepc/dispatcher.c \
+	libepc/enums.c \
 	libepc/marshal.c \
 	libepc/publisher.c \
+	libepc/service-type.c \
 	libepc/shell.c \
-	libepc/tls.c \
-	$(libepc_HEADERS)
+	libepc/tls.c
 
 libepc_ui_libepc_ui_la_SOURCES = \
+	$(libepc_ui_include_HEADERS) \
 	libepc-ui/entropy-progress.c \
-	libepc-ui/password-dialog.c \
-	$(libepc_ui_HEADERS)
+	libepc-ui/password-dialog.c
 
 tests_libepc_tests_la_SOURCES = \
 	tests/framework.c \
@@ -107,8 +114,19 @@ uninstall-local:
 	cd docs/reference/libepc && $(MAKE) $(AM_MAKEFLAGS) uninstall
 
 libepc/marshal.h: libepc/marshal.list
-	$(GLIB_GENMARSHAL) $< --header --prefix=_epc_marshal > $@
+	$(GLIB_GENMARSHAL) $< --header --prefix=_epc_marshal > $@ || { rm -f $@; false; }
 libepc/marshal.c: libepc/marshal.list
-	$(GLIB_GENMARSHAL) $< --body --prefix=_epc_marshal > $@
+	( echo '#include "marshal.h"' && $(GLIB_GENMARSHAL) $< --body --prefix=_epc_marshal ) > $@ || { rm -f $@; false; }
+libepc/enums.h.tmp: libepc/enums.h.in $(libepc_headers)
+	$(GLIB_MKENUMS) --template $< $(libepc_headers) > $@ || { rm -f $@; false; }
+libepc/enums.h.stamp: libepc/enums.h.tmp
+	cmp -s $< libepc/enums.h || cp $< libepc/enums.h; touch $@
+libepc/enums.h: libepc/enums.h.stamp
+
+libepc/enums.c.tmp: libepc/enums.c.in $(libepc_headers)
+	$(GLIB_MKENUMS) --template $< $(libepc_headers) > $@ || { rm -f $@; false; }
+libepc/enums.c.stamp: libepc/enums.c.tmp
+	cmp -s $< libepc/enums.c || cp $< libepc/enums.c; touch $@
+libepc/enums.c: libepc/enums.c.stamp
 
 -include Makefile.local
