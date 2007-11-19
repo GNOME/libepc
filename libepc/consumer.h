@@ -118,6 +118,9 @@ gchar*                epc_consumer_lookup            (EpcConsumer  *consumer,
                                                       const gchar  *key,
                                                       gsize        *length,
                                                       GError      **error);
+GList*                epc_consumer_list              (EpcConsumer  *consumer,
+                                                      const gchar  *pattern,
+                                                      GError      **error);
 
 GQuark                epc_http_error_quark           (void) G_GNUC_CONST;
 

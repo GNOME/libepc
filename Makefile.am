@@ -18,6 +18,7 @@ noinst_LTLIBRARIES = \
 noinst_PROGRAMS = \
 	examples/test-publisher \
 	examples/test-consumer \
+	examples/list-resources \
 	examples/server-credentials \
 	$(TESTS)
 TESTS = \
@@ -97,6 +98,8 @@ examples_test_consumer_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS
 examples_test_consumer_LDADD = libepc/libepc.la libepc-ui/libepc-ui.la $(AVAHI_UI_LIBS)
 examples_server_credentials_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS)
 examples_server_credentials_LDADD = libepc/libepc.la libepc-ui/libepc-ui.la
+examples_list_resources_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+examples_list_resources_LDADD = libepc/libepc.la
 
 tests_libepc_tests_la_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 

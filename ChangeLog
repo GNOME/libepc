@@ -1,5 +1,15 @@
 2007-11-14  Mathias Hasselmann  <mathias@openismus.com>
 
+	Add capability for listing publisher resources.
+
+	* libepc/publisher.c: Implement URL handler for '/list/' and '/' path.
+	* libepc/consumer.c, libepc/consumer.h: Implement epc_consumer_list.
+	* examples/list-resources.c: New example for listing resources.
+	* Makefile.am, examples/.gitignore: Add examples/list-resources.
+	* docs/reference/libepc/libepc-sections.txt: Add epc_consumer_list.
+
+2007-11-14  Mathias Hasselmann  <mathias@openismus.com>
+
 	Give EpcConsumer and EpcPublisher separate sections.
 	Give separete files for EpcPublisher helper structures.
 

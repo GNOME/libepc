@@ -95,6 +95,7 @@ epc_consumer_get_protocol
 epc_consumer_set_protocol
 epc_consumer_resolve_publisher
 epc_consumer_lookup
+epc_consumer_list
 <SUBSECTION Standard>
 EPC_CONSUMER
 EPC_CONSUMER_CLASS

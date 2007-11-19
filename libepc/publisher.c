@@ -138,7 +138,8 @@
  * </example>
  */
 
-typedef struct _EpcResource EpcResource;
+typedef struct _EpcListContext EpcListContext;
+typedef struct _EpcResource    EpcResource;
 
 enum
 {
@@ -177,6 +178,12 @@ struct _EpcContents
   gsize         length;
   gpointer      data;
   gchar        *type;
+};
+
+struct _EpcListContext
+{
+  GPatternSpec *pattern;
+  GString *buffer;
 };
 
 struct _EpcResource
@@ -379,9 +386,9 @@ epc_publisher_get_key (const gchar *path)
 }
 
 static void
-epc_publisher_server_get_handler (SoupServerContext *context,
-                                  SoupMessage       *message,
-                                  gpointer           data)
+epc_publisher_handle_get_path (SoupServerContext *context,
+                               SoupMessage       *message,
+                               gpointer           data)
 {
   EpcPublisher *self = data;
   EpcResource *resource = NULL;
@@ -413,11 +420,127 @@ epc_publisher_server_get_handler (SoupServerContext *context,
     soup_message_set_status (message, SOUP_STATUS_NOT_FOUND);
 }
 
+static void
+epc_publisher_list_resource_item_xml (gpointer key,
+                                      gpointer value G_GNUC_UNUSED,
+                                      gpointer data)
+{
+  EpcListContext *context = data;
+
+  if (NULL == context->pattern ||
+      g_pattern_match_string (context->pattern, key))
+    {
+      gchar *markup = g_markup_escape_text (key, -1);
+
+      g_string_append (context->buffer, "<item><name>");
+      g_string_append (context->buffer, markup);
+      g_string_append (context->buffer, "</name></item>");
+
+      g_free (markup);
+    }
+}
+
+static void
+epc_publisher_handle_list_path (SoupServerContext *context,
+                                SoupMessage       *message,
+                                gpointer           data)
+{
+  EpcListContext list_context;
+  EpcPublisher *self = data;
+
+  list_context.buffer = g_string_new ("<list>");
+  list_context.pattern = NULL;
+
+  if (g_str_has_prefix (context->path, "/list/") && '\0' != context->path[6])
+    list_context.pattern = g_pattern_spec_new (context->path + 6);
+
+  g_hash_table_foreach (self->priv->resources,
+                        epc_publisher_list_resource_item_xml,
+                        &list_context);
+
+  g_string_append (list_context.buffer, "</list>");
+
+  soup_message_set_response (message, "text/xml",
+                             SOUP_BUFFER_USER_OWNED,
+                             list_context.buffer->str,
+                             list_context.buffer->len);
+  soup_message_set_status (message, SOUP_STATUS_OK);
+
+  g_signal_connect_swapped (message, "finished",
+                            G_CALLBACK (g_free),
+                            list_context.buffer->str);
+
+  if (list_context.pattern)
+    g_pattern_spec_free (list_context.pattern);
+
+  g_string_free (list_context.buffer, FALSE);
+}
+
+static void
+epc_publisher_list_resource_item_html (gpointer key,
+                                       gpointer value G_GNUC_UNUSED,
+                                       gpointer data)
+{
+  gchar *markup = g_markup_escape_text (key, -1);
+  GString *contents = data;
+
+  g_string_append (contents, "<li><a href=\"/get/");
+  g_string_append (contents, markup);
+  g_string_append (contents, "\">");
+  g_string_append (contents, markup);
+  g_string_append (contents, "</a></li>");
+
+  g_free (markup);
+}
+
+static void
+epc_publisher_handle_root (SoupServerContext *context,
+                           SoupMessage       *message,
+                           gpointer           data)
+{
+  EpcPublisher *self = data;
+
+  if (g_str_equal (context->path, "/"))
+    {
+      GString *contents;
+      gchar *title;
+
+      title = g_markup_escape_text (self->priv->service_name, -1);
+      contents = g_string_new (NULL);
+
+      g_string_append (contents, "<html><head><title>");
+      g_string_append (contents, title);
+      g_string_append (contents, "</title></head><body><h1>");
+      g_string_append (contents, title);
+      g_string_append (contents, "</h1><ul>");
+
+      g_hash_table_foreach (self->priv->resources,
+                            epc_publisher_list_resource_item_html,
+                            contents);
+
+      g_string_append (contents, "</ul></body></html>");
+
+      soup_message_set_response (message, "text/html",
+                                 SOUP_BUFFER_USER_OWNED,
+                                 contents->str, contents->len);
+      soup_message_set_status (message, SOUP_STATUS_OK);
+
+      g_signal_connect_swapped (message, "finished",
+                                G_CALLBACK (g_free),
+                                contents->str);
+
+      g_string_free (contents, FALSE);
+      g_free (title);
+    }
+  else
+    soup_message_set_status (message, SOUP_STATUS_NOT_FOUND);
+}
+
 static gboolean
 epc_publisher_server_auth_cb (SoupServerAuthContext *auth_ctx G_GNUC_UNUSED,
-		              SoupServerAuth        *auth,
-		              SoupMessage           *message,
-		              gpointer               data)
+                              SoupServerAuth        *auth,
+                              SoupMessage           *message,
+                              gpointer               data)
 {
   EpcResource *resource = NULL;
   const char *user = NULL;
@@ -587,7 +710,15 @@ epc_publisher_create_server (EpcPublisher *self)
 
   soup_server_add_handler (self->priv->server, "/get",
                            &self->priv->server_auth,
-                           epc_publisher_server_get_handler,
+                           epc_publisher_handle_get_path,
+                           NULL, self);
+  soup_server_add_handler (self->priv->server, "/list",
+                           &self->priv->server_auth,
+                           epc_publisher_handle_list_path,
+                           NULL, self);
+  soup_server_add_handler (self->priv->server, "/",
+                           &self->priv->server_auth,
+                           epc_publisher_handle_root,
                            NULL, self);
 
   epc_publisher_announce (self);

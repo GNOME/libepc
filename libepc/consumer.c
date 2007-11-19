@@ -93,6 +93,17 @@
  * </example>
  */
 
+typedef struct _EpcListingState EpcListingState;
+
+typedef enum
+{
+  EPC_LISTING_ELEMENT_NONE,
+  EPC_LISTING_ELEMENT_LIST,
+  EPC_LISTING_ELEMENT_ITEM,
+  EPC_LISTING_ELEMENT_NAME
+}
+EpcListingElementType;
+
 enum
 {
   PROP_NONE,
@@ -131,6 +142,13 @@ struct _EpcConsumerPrivate
 
   gchar        *service_name;
   gchar        *service_domain;
+};
+
+struct _EpcListingState
+{
+  EpcListingElementType element;
+  GString              *name;
+  GList                *items;
 };
 
 static guint signals[SIGNAL_LAST];
@@ -759,33 +777,52 @@ static SoupMessage*
 epc_consumer_create_request (EpcConsumer *self,
                              const gchar *path)
 {
-  SoupMessage *request;
-  char *request_uri;
+  SoupMessage *request = NULL;
 
   if (NULL == path)
     path = "/";
 
   g_assert ('/' == path[0]);
 
-  epc_consumer_resolve_publisher (self, EPC_CONSUMER_DEFAULT_TIMEOUT);
+  if (epc_consumer_resolve_publisher (self, EPC_CONSUMER_DEFAULT_TIMEOUT))
+    {
+      char *request_uri;
 
-  g_return_val_if_fail (NULL != self->priv->hostname, NULL);
-  g_return_val_if_fail (self->priv->port > 0, NULL);
+      g_return_val_if_fail (NULL != self->priv->hostname, NULL);
+      g_return_val_if_fail (self->priv->port > 0, NULL);
 
-  request_uri = epc_protocol_build_uri (self->priv->protocol,
-                                        self->priv->hostname,
-                                        self->priv->port,
-                                        path);
+      request_uri = epc_protocol_build_uri (self->priv->protocol,
+                                            self->priv->hostname,
+                                            self->priv->port,
+                                            path);
 
-  g_return_val_if_fail (NULL != request_uri, NULL);
+      g_return_val_if_fail (NULL != request_uri, NULL);
 
-  if (G_UNLIKELY (_epc_debug))
-    g_debug ("%s: Connecting to `%s'", G_STRLOC, request_uri);
+      if (G_UNLIKELY (_epc_debug))
+        g_debug ("%s: Connecting to `%s'", G_STRLOC, request_uri);
 
-  request = soup_message_new ("GET", request_uri);
-  g_free (request_uri);
+      request = soup_message_new ("GET", request_uri);
+      g_free (request_uri);
+    }
 
   return request;
+}
+
+static void
+epc_consumer_set_http_error (GError     **error,
+                             SoupMessage *request,
+                             guint        status)
+{
+  const gchar *details = NULL;
+
+  if (request)
+    details = request->reason_phrase;
+  if (!details)
+    details = soup_status_get_phrase (status);
+
+  g_set_error (error, EPC_HTTP_ERROR, status,
+               "HTTP library error %d: %s.",
+               status, details);
 }
 
 /**
@@ -824,11 +861,14 @@ epc_consumer_lookup (EpcConsumer  *self,
   request = epc_consumer_create_request (self, path);
   g_free (path);
 
-  g_return_val_if_fail (NULL != request, NULL);
-
-  epc_shell_leave ();
-  status = soup_session_send_message (self->priv->session, request);
-  epc_shell_enter ();
+  if (request)
+    {
+      epc_shell_leave ();
+      status = soup_session_send_message (self->priv->session, request);
+      epc_shell_enter ();
+    }
+  else
+    status = SOUP_STATUS_CANT_RESOLVE;
 
   if (SOUP_STATUS_IS_SUCCESSFUL (status))
     {
@@ -838,23 +878,189 @@ epc_consumer_lookup (EpcConsumer  *self,
       contents = g_malloc (request->response.length + 1);
       contents[request->response.length] = '\0';
 
-      memcpy (contents, request->response.body,
+      memcpy (contents,
+              request->response.body,
               request->response.length);
     }
   else
-    {
-      const gchar *details = request->reason_phrase;
-
-      if (!details)
-        details = soup_status_get_phrase (status);
-
-      g_set_error (error, EPC_HTTP_ERROR, status,
-                   "HTTP library error %d: %s.",
-                   status, details);
-    }
+    epc_consumer_set_http_error (error, request, status);
 
   g_object_unref (request);
   return contents;
+}
+
+static void
+epc_consumer_list_parser_start_element (GMarkupParseContext *context G_GNUC_UNUSED,
+                                        const gchar         *element_name,
+                                        const gchar        **attribute_names G_GNUC_UNUSED,
+                                        const gchar        **attribute_values G_GNUC_UNUSED,
+                                        gpointer             data,
+                                        GError             **error)
+{
+  EpcListingElementType element = EPC_LISTING_ELEMENT_NONE;
+  EpcListingState *state = data;
+
+  switch (state->element)
+    {
+      case EPC_LISTING_ELEMENT_NONE:
+        if (g_str_equal (element_name, "list"))
+          element = EPC_LISTING_ELEMENT_LIST;
+
+        break;
+
+      case EPC_LISTING_ELEMENT_LIST:
+        if (g_str_equal (element_name, "item"))
+          element = EPC_LISTING_ELEMENT_ITEM;
+
+        break;
+
+      case EPC_LISTING_ELEMENT_ITEM:
+        if (g_str_equal (element_name, "name"))
+          element = EPC_LISTING_ELEMENT_NAME;
+
+        break;
+
+      case EPC_LISTING_ELEMENT_NAME:
+        break;
+    }
+
+  if (element)
+    state->element = element;
+  else
+    g_set_error (error, G_MARKUP_ERROR,
+                 G_MARKUP_ERROR_INVALID_CONTENT,
+                 _("Unexpected element: `%s'"),
+                element_name);
+}
+
+static void
+epc_consumer_list_parser_end_element (GMarkupParseContext *context G_GNUC_UNUSED,
+                                      const gchar         *element_name G_GNUC_UNUSED,
+                                      gpointer             data,
+                                      GError             **error G_GNUC_UNUSED)
+{
+  EpcListingState *state = data;
+
+  switch (state->element)
+    {
+      case EPC_LISTING_ELEMENT_NAME:
+        state->element = EPC_LISTING_ELEMENT_ITEM;
+        break;
+
+      case EPC_LISTING_ELEMENT_ITEM:
+        state->element = EPC_LISTING_ELEMENT_LIST;
+        state->items = g_list_prepend (state->items, g_string_free (state->name, FALSE));
+        state->name = NULL;
+        break;
+
+      case EPC_LISTING_ELEMENT_LIST:
+        state->element = EPC_LISTING_ELEMENT_NONE;
+        break;
+
+      case EPC_LISTING_ELEMENT_NONE:
+        break;
+    }
+}
+
+static void
+epc_consumer_list_parser_text (GMarkupParseContext *context G_GNUC_UNUSED,
+                               const gchar         *text,
+                               gsize                text_len,
+                               gpointer             data,
+                               GError             **error G_GNUC_UNUSED)
+{
+  EpcListingState *state = data;
+
+  switch (state->element)
+    {
+      case EPC_LISTING_ELEMENT_NAME:
+        if (!state->name)
+          state->name = g_string_new (NULL);
+
+        g_string_append_len (state->name, text, text_len);
+        break;
+
+      case EPC_LISTING_ELEMENT_ITEM:
+      case EPC_LISTING_ELEMENT_LIST:
+      case EPC_LISTING_ELEMENT_NONE:
+        break;
+    }
+}
+
+/**
+ * epc_consumer_list:
+ * @consumer: a #EpcConsumer
+ * @pattern: a file globbing pattern
+ * @error: return location for a #GError, or %NULL
+ *
+ * If the call was successful, a list of keys matching @pattern is returned.
+ * If the call was not successful, it returns %NULL and sets @error. The error
+ * domain is #EPC_HTTP_ERROR. Error codes are taken from the
+ * #SoupKnownStatusCode enumeration.
+ *
+ * The returned list should be freed when no longer needed:
+ *
+ * <programlisting>
+ *  g_list_foreach (keys, (GFunc) g_free, NULL);
+ *  g_list_free (keys);
+ * </programlisting>
+ *
+ * Returns: A newly allocated list of keys, or %NULL when an error occurred.
+ */
+GList*
+epc_consumer_list (EpcConsumer  *self,
+                   const gchar  *pattern G_GNUC_UNUSED,
+                   GError      **error G_GNUC_UNUSED)
+{
+  EpcListingState state;
+  SoupMessage *request = NULL;
+  gchar *path = NULL;
+  gint status = 0;
+
+  g_return_val_if_fail (EPC_IS_CONSUMER (self), NULL);
+  g_return_val_if_fail (NULL == pattern || *pattern, NULL);
+
+  path = g_strconcat ("/list/", pattern, NULL);
+  request = epc_consumer_create_request (self, path);
+  g_free (path);
+
+  if (request)
+    {
+      epc_shell_leave ();
+      status = soup_session_send_message (self->priv->session, request);
+      epc_shell_enter ();
+    }
+  else
+    status = SOUP_STATUS_CANT_RESOLVE;
+
+  memset (&state, 0, sizeof state);
+
+  if (SOUP_STATUS_IS_SUCCESSFUL (status))
+    {
+      GMarkupParseContext *context;
+      GMarkupParser parser;
+
+      memset (&parser, 0, sizeof parser);
+
+      parser.start_element = epc_consumer_list_parser_start_element;
+      parser.end_element = epc_consumer_list_parser_end_element;
+      parser.text = epc_consumer_list_parser_text;
+
+      context = g_markup_parse_context_new (&parser,
+                                            G_MARKUP_TREAT_CDATA_AS_TEXT,
+                                            &state, NULL);
+
+      g_markup_parse_context_parse (context,
+                                    request->response.body,
+                                    request->response.length,
+                                    error);
+
+      g_markup_parse_context_free (context);
+    }
+  else
+    epc_consumer_set_http_error (error, request, status);
+
+  return state.items;
 }
 
 GQuark
