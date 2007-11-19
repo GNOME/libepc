@@ -68,7 +68,7 @@ expand_content_files=
 # e.g. INCLUDES=-I$(top_srcdir) -I$(top_builddir) $(GTK_DEBUG_FLAGS)
 # e.g. GTKDOC_LIBS=$(top_builddir)/gtk/$(gtktargetlib)
 AM_CFLAGS=$(LIBEPC_CFLAGS)
-GTKDOC_LIBS=$(LIBEPC_LIBS) $(top_srcdir)/libepc/libeasy-publish-consume.la
+GTKDOC_LIBS=$(LIBEPC_LIBS) $(top_srcdir)/libepc/libepc.la
 
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
 include $(top_srcdir)/gtk-doc.make
@@ -78,4 +78,4 @@ include $(top_srcdir)/gtk-doc.make
 EXTRA_DIST +=
 
 tmpl.stamp tmpl-build.stamp sgml.stamp sgml-build.stamp: \
-	$(top_srcdir)/libepc/libeasy-publish-consume.la
+	$(top_srcdir)/libepc/libepc.la

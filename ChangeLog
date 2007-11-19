@@ -1,5 +1,12 @@
 2007-11-02  Mathias Hasselmann  <mathias@openismus.com>
 
+	Change library name to libepc.
+
+	* docs/reference/libepc/Makefile.am, libepc.pc.in,
+	Makefile.am: Change library name to libepc.
+
+2007-11-02  Mathias Hasselmann  <mathias@openismus.com>
+
 	Tell automake to install developer files.
 
 	* Makefile.am: Install header files and pkg-config information.

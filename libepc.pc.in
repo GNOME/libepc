@@ -7,6 +7,6 @@ Name: Easy Publish and Consume Library
 Description: a library to easily publish and consume values on networks
 Version: @VERSION@
 Requires: avahi-client avahi-glib libsoup-2.2
-Libs: -L${libdir} -leasy-publish-consume
+Libs: -L${libdir} -lepc
 Cflags: -I${includedir}
 
