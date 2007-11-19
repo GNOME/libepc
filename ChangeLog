@@ -1,5 +1,9 @@
 2007-11-14  Mathias Hasselmann  <mathias@openismus.com>
 
+	Rename configure.in to configure.ac.
+
+2007-11-14  Mathias Hasselmann  <mathias@openismus.com>
+
 	Add application argument to epc_publisher_new for controling DNS-SD
 	service type: As the examples demonstrate, automatically using
 	g_get_prgname only works in themost simplistic cases.
