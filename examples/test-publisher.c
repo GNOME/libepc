@@ -10,6 +10,28 @@
  */
 #include "libepc/publisher.h"
 
+#include <locale.h>
+#include <string.h>
+
+static EpcContent*
+timestamp_handler (EpcPublisher *publisher G_GNUC_UNUSED,
+                   const gchar  *key G_GNUC_UNUSED,
+                   gpointer      data)
+{
+  const gchar *format = data;
+  gsize bufsize = 60;
+  gchar *buffer;
+  struct tm *tm;
+  time_t now;
+
+  now = time (NULL);
+  tm = localtime (&now);
+  buffer = g_malloc (bufsize);
+  strftime (buffer, bufsize, format, tm);
+
+  return epc_content_new ("text/plain", buffer, strlen (buffer));
+}
+
 int
 main (int   argc,
       char *argv[])
@@ -18,6 +40,7 @@ main (int   argc,
 
   /* Initialize the toolkit.
    */
+  setlocale (LC_ALL, "");
   g_thread_init (NULL);
   g_type_init ();
 
@@ -28,10 +51,13 @@ main (int   argc,
   if (1 == argc)
     {
       /* Publish some default values,
-       * when no arguments are passed on the command line.
+       * as no arguments are passed on the command line.
        */
       epc_publisher_add (publisher, "test", "value", -1);
       epc_publisher_add_file (publisher, "source-code", __FILE__);
+      epc_publisher_add_handler (publisher, "date", timestamp_handler, "%x", NULL);
+      epc_publisher_add_handler (publisher, "time", timestamp_handler, "%X", NULL);
+      epc_publisher_add_handler (publisher, "date-time", timestamp_handler, "%x %X", NULL);
     }
   else
     {

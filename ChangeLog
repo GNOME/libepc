@@ -1,5 +1,11 @@
 2007-11-05  Mathias Hasselmann  <mathias@openismus.com>
 
+	Demonstrate epc_publisher_add_handler.
+
+	* examples/test-publisher.c: Demonstrate epc_publisher_add_handler.
+
+2007-11-05  Mathias Hasselmann  <mathias@openismus.com>
+
 	Move examples into separate folder.
 
 	* examples/.gitignore, Makefile.am, tests/.gitignore:
