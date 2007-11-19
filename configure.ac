@@ -1,4 +1,4 @@
-AC_INIT([libepc], [0.2], [mathias@openismus.com])
+AC_INIT([libepc], [0.2.1], [mathias@openismus.com])
 AM_INIT_AUTOMAKE([-Wall dist-bzip2 subdir-objects])
 
 AC_CONFIG_HEADER([config.h])

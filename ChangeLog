@@ -1,5 +1,9 @@
 2007-11-15  Mathias Hasselmann  <mathias@openismus.com>
 
+	=== Release 0.2 ===
+
+2007-11-15  Mathias Hasselmann  <mathias@openismus.com>
+
 	Simplify authentication by using an approach similiar to the one
 	Alex Larsson uses for gvfs: The consumer just emits an signal that
 	authentication credentials are required, and the signal handler
