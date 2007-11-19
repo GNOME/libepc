@@ -1,3 +1,28 @@
+/**
+ * SECTION:dispatcher
+ * @short_description: publish DNS-SD services
+ * @include: libepc/dispatcher.h
+ *
+ * The #EpcDispatcher object provides an easy method or publishing
+ * DNS-SD services. In opposition to established APIs like Avahi
+ * or HOWL the #EpcDispatcher doesn't expose any state changes
+ * reported by the DNS-SD daemon, but tries to correctly handle
+ * them automatically.
+ *
+ * <example>
+ *  <title>Publish a printing service</title>
+ *  <programlisting>
+ *   dispatcher = epc_dispatcher_new (AVAHI_IF_UNSPEC,
+ *                                    AVAHI_PROTO_UNSPEC,
+ *                                    "Dead Tree Desecrator");
+ *   epc_dispatcher_add_service (dispatcher, "_ipp._tcp",
+ *                               NULL, NULL, 651, "path=/printers", NULL);
+ *   epc_dispatcher_add_service (dispatcher, "_duplex._sub._printer._tcp",
+ *                               NULL, NULL, 515, NULL);
+ *  </programlisting>
+ * </example>
+ */
+
 #include "dispatcher.h"
 
 #include <avahi-client/publish.h>
@@ -32,6 +57,11 @@ struct _EpcService
   AvahiStringList *details;
 };
 
+/**
+ * EpcDispatcherPrivate:
+ *
+ * Private fields of the #EpcDispatcher class.
+ */
 struct _EpcDispatcherPrivate
 {
   gchar *name;
@@ -463,6 +493,20 @@ epc_dispatcher_class_init (EpcDispatcherClass *cls)
   g_type_class_add_private (cls, sizeof (EpcDispatcherPrivate));
 }
 
+/**
+ * epc_dispatcher_new:
+ * @interface: index of the network interface to use
+ * @protocol: the network protocol to use (IPv4, IPv6)
+ * @name: the human friendly name of the service
+ *
+ * Creates a new #EpcDispatcher object for announcing a DNS-SD service.
+ * The service is announced on all network interfaces, when AVAHI_IF_UNSPEC
+ * is passed for @interface.
+ *
+ * Call #epc_dispatcher_add_service to actually announce a service.
+ *
+ * Returns: the newly created #EpcDispatcher object.
+ */
 EpcDispatcher*
 epc_dispatcher_new (AvahiIfIndex   interface,
                     AvahiProtocol  protocol,
@@ -474,6 +518,26 @@ epc_dispatcher_new (AvahiIfIndex   interface,
                        "name", name, NULL);
 }
 
+/**
+ * epc_dispatcher_add_service:
+ * @dispatcher: the #EpcDispatcher
+ * @type: the machine friendly name of the service
+ * @domain: the DNS domain for the announcement, or %NULL
+ * @host: the host name of the service, or %NULL
+ * @port: the TCP/IP port of the service
+ * @...: an optional list of TXT records, terminated by %NULL
+ *
+ * Announces a TCP/IP service via DNS-SD.
+ *
+ * The service @type shall be a well-known DNS-SD service type as listed on
+ * http://www.dns-sd.org/ServiceTypes.html. This function tries to announce
+ * both the base service type and the sub service type, when the service name
+ * contains more than just one dot: Passing "_anon._sub._ftp._tcp" for @type
+ * will announce the services "_ftp._tcp" and "_anon._sub._ftp._tcp".
+ *
+ * Passing %NULL for @domain or @host allows the DNS-DS damon to choose the
+ * DNS domain, respectivly the host name.
+ */
 void
 epc_dispatcher_add_service (EpcDispatcher *self,
                             const gchar   *type,
@@ -495,6 +559,19 @@ epc_dispatcher_add_service (EpcDispatcher *self,
   va_end (args);
 }
 
+/**
+ * epc_dispatcher_add_service_subtype:
+ * @dispatcher: the #EpcDispatcher
+ * @type: the base service type
+ * @subtype: the sub service type
+ *
+ * Announces an additional sub service for a registered DNS-SD service.
+ *
+ * <note><para>
+ * This function will fail silently, when the service specified by
+ * @type hasn't been registered yet.
+ * </para></note>
+ */
 void
 epc_dispatcher_add_service_subtype (EpcDispatcher *self,
                                     const gchar   *type,
@@ -514,6 +591,25 @@ epc_dispatcher_add_service_subtype (EpcDispatcher *self,
   epc_service_publish_subtype (service, subtype, TRUE);
 }
 
+/**
+ * epc_dispatcher_set_service_details:
+ * @dispatcher: the #EpcDispatcher
+ * @type: the service type
+ * @...: a list of TXT records, terminated by %NULL
+ *
+ * Updates the list of TXT records for a registered DNS-SD service.
+ * The TXT records are specified by the service type and usually
+ * have the form of key-value pairs:
+ *
+ * <informalexample><programlisting>
+ *  path=/dwarf-blog/
+ * </programlisting></informalexample>
+ *
+ * <note><para>
+ * This function will fail silently, when the service specified by
+ * @type hasn't been registered yet.
+ * </para></note>
+ */
 void
 epc_dispatcher_set_service_details (EpcDispatcher *self,
                                     const gchar   *type,

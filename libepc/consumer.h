@@ -16,6 +16,11 @@ typedef struct _EpcConsumer        EpcConsumer;
 typedef struct _EpcConsumerClass   EpcConsumerClass;
 typedef struct _EpcConsumerPrivate EpcConsumerPrivate;
 
+/**
+ * EpcConsumer:
+ *
+ * Public fields of the #EpcConsumer class.
+ */
 struct _EpcConsumer
 {
   /*< private >*/
@@ -23,8 +28,15 @@ struct _EpcConsumer
   EpcConsumerPrivate *priv;
 };
 
+/**
+ * EpcConsumerClass:
+ * @parent_class: virtual methods of the base class
+ *
+ * Virtual methods of the #EpcConsumer class.
+ */
 struct _EpcConsumerClass
 {
+  /*< private >*/
   GObjectClass parent_class;
 };
 

@@ -1,5 +1,16 @@
 2007-11-02  Mathias Hasselmann  <mathias@openismus.com>
 
+	Document EpcDispatcher and provide examples.
+
+	* docs/reference/libepc/.gitignore: Remove libepc-sections.txt.
+	* docs/reference/libepc/libepc-sections.txt: Add *Class
+	structures as requested by the gtk-doc tool.
+	* libepc/consumer.c, libepc/consumer.h, libepc/publisher.c,
+	libepc/publisher.h: Add examples and document *Class structures.
+	* libepc/dispatcher.c, libepc/dispatcher.h: Document EpcDispatcher.
+
+2007-11-02  Mathias Hasselmann  <mathias@openismus.com>
+
 	Provide some initial API documentation.
 
 	* docs/reference/libepc/Makefile.am: Force rebuilding

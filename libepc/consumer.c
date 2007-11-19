@@ -1,11 +1,6 @@
-#include "consumer.h"
-
-#include <libsoup/soup-session-sync.h>
-#include <string.h>
-
 /**
  * SECTION:consumer
- * @short_description: this object is used to lookup published values
+ * @short_description: lookup published values
  * @see_also: #EpcPublisher
  * @include: libepc/consumer.h
  *
@@ -16,7 +11,26 @@
  *
  * Currently neither encryption or autentication are implemented,
  * but it is planed to change this in the future.
+ *
+ * <example>
+ *  <title>Lookup a value</title>
+ *  <programlisting>
+ *   your_app_discover_server (&host, &port);
+ *   consumer = epc_consumer_new (host, port);
+ *
+ *   value = epc_consumer_lookup (consumer, "database.glom", NULL);
+ *   g_object_unref (consumer);
+ *
+ *   your_app_consume_value (value);
+ *   g_free (value);
+ *  </programlisting>
+ * </example>
  */
+
+#include "consumer.h"
+
+#include <libsoup/soup-session-sync.h>
+#include <string.h>
 
 enum
 {
@@ -25,6 +39,11 @@ enum
   PROP_PORT
 };
 
+/**
+ * EpcConsumerPrivate:
+ *
+ * Private fields of the #EpcConsumer class.
+ */
 struct _EpcConsumerPrivate
 {
   SoupSession *session;

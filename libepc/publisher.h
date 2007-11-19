@@ -14,8 +14,10 @@ G_BEGIN_DECLS
 
 /**
  * EPC_PUBLISHER_SERVICE_NAME:
+ *
  * The well-known DNS-SD service name of #EpcPublisher servers.
  */
+
 #define EPC_PUBLISHER_SERVICE_NAME   "_http._sub._easy-publish._tcp"
 
 /*< skip >*/
@@ -24,6 +26,11 @@ typedef struct _EpcPublisher        EpcPublisher;
 typedef struct _EpcPublisherClass   EpcPublisherClass;
 typedef struct _EpcPublisherPrivate EpcPublisherPrivate;
 
+/**
+ * EpcPublisher:
+ *
+ * Public fields of the #EpcPublisher class.
+ */
 struct _EpcPublisher
 {
   /*< private >*/
@@ -31,8 +38,15 @@ struct _EpcPublisher
   EpcPublisherPrivate *priv;
 };
 
+/**
+ * EpcPublisherClass:
+ * @parent_class: virtual methods of the base class
+ *
+ * Virtual methods of the #EpcPublisher class.
+ */
 struct _EpcPublisherClass
 {
+  /*< private >*/
   GObjectClass parent_class;
 };
 

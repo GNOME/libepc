@@ -17,14 +17,27 @@ typedef struct _EpcDispatcher        EpcDispatcher;
 typedef struct _EpcDispatcherClass   EpcDispatcherClass;
 typedef struct _EpcDispatcherPrivate EpcDispatcherPrivate;
 
+/**
+ * EpcDispatcher:
+ *
+ * Public fields of the #EpcDispatcher class.
+ */
 struct _EpcDispatcher
 {
+  /*< private >*/
   GObject parent_instance;
   EpcDispatcherPrivate *priv;
 };
 
+/**
+ * EpcDispatcherClass:
+ * @parent_class: virtual methods of the base class
+ *
+ * Virtual methods of the #EpcDispatcher class.
+ */
 struct _EpcDispatcherClass
 {
+  /*< private >*/
   GObjectClass parent_class;
 };
 

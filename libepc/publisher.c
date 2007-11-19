@@ -1,16 +1,6 @@
-#include "publisher.h"
-#include "dispatcher.h"
-
-#include <libsoup/soup-address.h>
-#include <libsoup/soup-message.h>
-#include <libsoup/soup-server.h>
-#include <libsoup/soup-socket.h>
-
-#include <string.h>
-
 /**
  * SECTION:publisher
- * @short_description: this object is used to publish values
+ * @short_description: easily publish values
  * @see_also: #EpcConsumer
  * @include: libepc/publish.h
  *
@@ -22,7 +12,31 @@
  * but it is planed to change this in the future.
  *
  * Also there are some ideas on using DNS-DS to notify #EpcConsumer on changes.
+ *
+ * <example>
+ *  <title>Publish a value</title>
+ *  <programlisting>
+ *   publisher = epc_publisher_new ("Easy Publisher Example", NULL, NULL);
+ *
+ *   epc_publisher_add (publisher, "maman", "bar", -1);
+ *
+ *   if (!epc_publisher_add_file (publisher, "source-code", __FILE__, &error))
+ *     your_app_handle_error ("source-code", error);
+ *
+ *   epc_publisher_run ();
+ *  </programlisting>
+ * </example>
  */
+
+#include "publisher.h"
+#include "dispatcher.h"
+
+#include <libsoup/soup-address.h>
+#include <libsoup/soup-message.h>
+#include <libsoup/soup-server.h>
+#include <libsoup/soup-socket.h>
+
+#include <string.h>
 
 typedef struct _EpcRecord EpcRecord;
 
@@ -41,6 +55,11 @@ struct _EpcRecord
   gsize  length;
 };
 
+/**
+ * EpcPublisherPrivate:
+ *
+ * Private fields of the #EpcPublisher class.
+ */
 struct _EpcPublisherPrivate
 {
   EpcDispatcher *dispatcher;
@@ -313,7 +332,7 @@ epc_publisher_class_init (EpcPublisherClass *cls)
 
 /**
  * epc_publisher_new:
- * @name: the humany friendly service name
+ * @name: the humany friendly service name, or %NULL
  * @service: the DNS-SD service name, or %NULL
  * @domain: the DNS domain, or %NULL
  *
@@ -321,8 +340,11 @@ epc_publisher_class_init (EpcPublisherClass *cls)
  * per DNS-SD to the DNS domain specified by @domain, using @name as service
  * name and @service as service type.
  *
- * When %NULL is passed for @service or @domain reasonable
- * default values are used.
+ * You have to call <function>g_set_application_name</function>, when passing
+ * %NULL for @name, as the result of <function>g_set_application_name</function>
+ * will be used in that case. When %NULL is passed for @service,
+ * #EPC_PUBLISHER_SERVICE_NAME is used. Passing %NULL for @domain lets
+ * the DNS-DS daemon choose.
  *
  * Returns: The newly created #EpcPublisher object.
  */
@@ -345,7 +367,7 @@ epc_publisher_new (const gchar *name,
  * Publishes a new @value on the #EpcPublisher using the unique @key for
  * addressing. When -1 is passed or @length, @value is expected to be a
  * null-terminated string and its length is determinated automatically
- * using #strlen.
+ * using <function>strlen</function>.
  */
 void
 epc_publisher_add (EpcPublisher  *self,
