@@ -173,15 +173,19 @@ epc_service_publish (EpcService *self)
                                           self->host, self->port,
                                           self->details);
 
-  if (AVAHI_OK != result)
+  if (AVAHI_ERR_COLLISION == result)
+    epc_dispatcher_handle_collision (self->dispatcher);
+  else if (AVAHI_OK != result)
     g_warning ("%s: Failed to publish service `%s' for `%s': %s (%d)",
                G_STRLOC, self->type, self->dispatcher->priv->name,
                avahi_strerror (result), result);
+  else
+    {
+      for (iter = self->subtypes; iter; iter = iter->next)
+        epc_service_publish_subtype (self, iter->data, FALSE);
 
-  for (iter = self->subtypes; iter; iter = iter->next)
-    epc_service_publish_subtype (self, iter->data, FALSE);
-
-  avahi_entry_group_commit (self->group);
+      avahi_entry_group_commit (self->group);
+    }
 }
 
 static void
@@ -263,16 +267,10 @@ epc_service_new (EpcDispatcher *dispatcher,
   if (service > type)
     epc_service_add_subtype (self, type);
 
+  g_hash_table_insert (dispatcher->priv->services, self->type, self);
+
   self->group = avahi_entry_group_new (dispatcher->priv->client,
                                        epc_service_group_cb, self);
-
-#if 0
-  if (AVAHI_ERR_COLLISION == result)
-    handle_collision (self);
-  else if (result)
-    g_warning ("%s: Failed to register %s service: %s (%d)\n",
-               G_STRLOC, service, avahi_strerror(result), result);
-#endif
 
   return self;
 }
@@ -330,12 +328,19 @@ epc_dispatcher_client_cb (AvahiClient      *client,
         g_hash_table_foreach (self->priv->services, epc_dispatcher_publish_cb, NULL);
         break;
 
-      case AVAHI_CLIENT_S_COLLISION:
       case AVAHI_CLIENT_S_REGISTERING:
         if (epc_debug)
-          g_debug ("%s: Avahi client collision/registering...", G_STRLOC);
+          g_debug ("%s: Avahi client is registering...", G_STRLOC);
 
         g_hash_table_foreach (self->priv->services, epc_dispatcher_reset_cb, self);
+        break;
+
+      case AVAHI_CLIENT_S_COLLISION:
+        if (epc_debug)
+          g_debug ("%s: Collision detected...", G_STRLOC);
+
+        g_hash_table_foreach (self->priv->services, epc_dispatcher_reset_cb, self);
+        epc_dispatcher_handle_collision (self);
         break;
 
       case AVAHI_CLIENT_FAILURE:
@@ -603,7 +608,6 @@ epc_dispatcher_add_service (EpcDispatcher *self,
 
   va_start (args, port);
   service = epc_service_new (self, type, domain, host, port, args);
-  g_hash_table_insert (self->priv->services, service->type, service);
   va_end (args);
 }
 
