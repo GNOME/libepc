@@ -26,6 +26,8 @@
 
 G_BEGIN_DECLS
 
+#define epc_test_pass(mask) (_epc_test_pass (G_STRLOC, (mask)))
+
 enum
 {
   EPC_TEST_MASK_INIT = 128,
@@ -37,9 +39,11 @@ gboolean epc_test_init                 (gint                         tests);
 gboolean epc_test_init_service_browser (const gchar                 *service,
                                         AvahiServiceBrowserCallback  callback,
                                         gpointer                     data);
-void     epc_test_pass                 (gint                         mask);
 gint     epc_test_run                  (void);
 void     epc_test_quit                 (void);
+
+void    _epc_test_pass                 (const gchar                 *strloc,
+                                        gint                         mask);
 
 G_END_DECLS
 

@@ -355,34 +355,30 @@ epc_publisher_server_auth_cb (SoupServerAuthContext *auth_ctx G_GNUC_UNUSED,
 static void
 epc_publisher_init (EpcPublisher *self)
 {
-  self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self, EPC_TYPE_PUBLISHER, EpcPublisherPrivate);
-
   epc_shell_ref ();
+
+  self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self, EPC_TYPE_PUBLISHER, EpcPublisherPrivate);
 
   self->priv->protocol = EPC_PROTOCOL_HTTPS;
   self->priv->server_auth.types = SOUP_AUTH_TYPE_DIGEST;
   self->priv->server_auth.callback = epc_publisher_server_auth_cb;
   self->priv->server_auth.user_data = self;
 
-  self->priv->server_auth.digest_info.allow_algorithms = SOUP_ALGORITHM_MD5;
-  self->priv->server_auth.digest_info.force_integrity = FALSE;
   /* TODO: Figure out why force_integrity doesn't work. */
+  self->priv->server_auth.digest_info.force_integrity = FALSE;
+  self->priv->server_auth.digest_info.allow_algorithms = SOUP_ALGORITHM_MD5;
 
   self->priv->resources = g_hash_table_new_full (g_str_hash, g_str_equal,
                                                  g_free, epc_resource_free);
 }
 
 static void
-epc_publisher_restart_dispatcher (EpcPublisher *self)
+epc_publisher_announce (EpcPublisher *self)
 {
   SoupSocket *listener;
   SoupAddress *address;
-
-  gchar *service_type;
-  gchar *service_url;
-
-  const gchar *name;
   const gchar *host;
+  gchar *service;
   gint port;
 
   struct sockaddr *sockaddr;
@@ -390,7 +386,39 @@ epc_publisher_restart_dispatcher (EpcPublisher *self)
 
   g_return_if_fail (SOUP_IS_SERVER (self->priv->server));
 
-  name = self->priv->service_name;
+  service = epc_service_type_new (self->priv->protocol, NULL);
+  listener = soup_server_get_listener (self->priv->server);
+  address = soup_socket_get_local_address (listener);
+  port = soup_server_get_port (self->priv->server);
+  host = soup_address_get_name (address);
+
+  sockaddr = soup_address_get_sockaddr (address, &addrlen);
+
+  epc_dispatcher_reset (self->priv->dispatcher);
+  epc_dispatcher_add_service (self->priv->dispatcher, sockaddr->sa_family,
+                              service, self->priv->service_domain,
+                              host, port, NULL);
+
+  g_free (service);
+
+  if (!host)
+    host = epc_dispatcher_get_host_name (self->priv->dispatcher);
+
+  service = epc_service_type_build_uri (self->priv->protocol, host, port, NULL);
+  g_print ("%s: listening on %s\n", G_STRFUNC, service);
+  g_free (service);
+}
+
+static gboolean
+epc_publisher_is_server_created (EpcPublisher *self)
+{
+  return (NULL != self->priv->server);
+}
+
+static G_CONST_RETURN gchar*
+epc_publisher_find_name (EpcPublisher *self)
+{
+  const gchar *name = self->priv->service_name;
 
   if (!name)
     name = g_get_application_name ();
@@ -414,46 +442,16 @@ epc_publisher_restart_dispatcher (EpcPublisher *self)
   if (!self->priv->service_name)
     self->priv->service_name = g_strdup (name);
 
-  listener = soup_server_get_listener (self->priv->server);
-  port = soup_server_get_port (self->priv->server);
-
-  address = soup_socket_get_local_address (listener);
-  sockaddr = soup_address_get_sockaddr (address, &addrlen);
-  host = soup_address_get_name (address);
-
-  if (self->priv->dispatcher)
-    g_object_unref (self->priv->dispatcher);
-
-  self->priv->dispatcher = epc_dispatcher_new (name);
-  service_type = epc_service_type_new (self->priv->protocol, NULL);
-
-  epc_dispatcher_add_service (self->priv->dispatcher, sockaddr->sa_family,
-                              epc_protocol_get_service_type (self->priv->protocol),
-                              self->priv->service_domain, host, port, NULL);
-  epc_dispatcher_add_service_subtype (self->priv->dispatcher,
-                                      epc_protocol_get_service_type (self->priv->protocol),
-                                      service_type);
-
-  g_free (service_type);
-
-  if (!host)
-    host = epc_shell_get_host_name ();
-
-  service_url = epc_service_type_build_uri (self->priv->protocol, host, port, NULL);
-  g_print ("%s: listening on %s\n", G_STRFUNC, service_url);
-  g_free (service_url);
-}
-
-static gboolean
-epc_publisher_is_server_created (EpcPublisher *self)
-{
-  return (NULL != self->priv->server);
+  return name;
 }
 
 static void
 epc_publisher_create_server (EpcPublisher *self)
 {
   g_return_if_fail (!epc_publisher_is_server_created (self));
+  g_return_if_fail (NULL == self->priv->dispatcher);
+
+  self->priv->dispatcher = epc_dispatcher_new (epc_publisher_find_name (self));
 
   if (EPC_PROTOCOL_UNKNOWN == self->priv->protocol)
     self->priv->protocol = EPC_PROTOCOL_HTTPS;
@@ -463,11 +461,14 @@ epc_publisher_create_server (EpcPublisher *self)
       NULL == self->priv->private_key_file))
     {
       GError *error = NULL;
+      const gchar *host;
 
       g_free (self->priv->certificate_file);
       g_free (self->priv->private_key_file);
 
-      if (!epc_tls_get_server_credentials (epc_shell_get_host_name (),
+      host = epc_dispatcher_get_host_name (self->priv->dispatcher);
+
+      if (!epc_tls_get_server_credentials (host,
                                            &self->priv->certificate_file,
                                            &self->priv->private_key_file,
                                            &error))
@@ -491,7 +492,7 @@ epc_publisher_create_server (EpcPublisher *self)
                            epc_publisher_server_get_handler,
                            NULL, self);
 
-  epc_publisher_restart_dispatcher (self);
+  epc_publisher_announce (self);
 }
 
 static void
@@ -515,7 +516,8 @@ epc_publisher_set_property (GObject      *object,
         self->priv->service_name = g_value_dup_string (value);
 
         if (self->priv->dispatcher)
-          epc_publisher_restart_dispatcher (self);
+          epc_dispatcher_set_name (self->priv->dispatcher,
+                                   epc_publisher_find_name (self));
 
         break;
 
@@ -631,8 +633,8 @@ epc_publisher_dispose (GObject *object)
 static void
 epc_publisher_finalize (GObject *object)
 {
-  epc_shell_unref ();
   G_OBJECT_CLASS (epc_publisher_parent_class)->finalize (object);
+  epc_shell_unref ();
 }
 
 static void

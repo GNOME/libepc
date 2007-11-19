@@ -41,14 +41,13 @@ typedef struct _EpcAvahiShell EpcAvahiShell;
 struct _EpcAvahiShell
 {
   volatile gint  ref_count;
-  AvahiClient   *client;
   AvahiGLibPoll *poll;
 
   void (*threads_enter) (void);
   void (*threads_leave) (void);
 };
 
-static EpcAvahiShell epc_shell = { 0, NULL, NULL, NULL, NULL };
+static EpcAvahiShell epc_shell = { 0, NULL, NULL, NULL };
 gboolean _epc_debug = FALSE;
 
 void
@@ -96,12 +95,6 @@ epc_shell_unref (void)
 
   if (g_atomic_int_dec_and_test (&epc_shell.ref_count))
     {
-      if (epc_shell.client)
-        {
-          avahi_client_free (epc_shell.client);
-          epc_shell.client = NULL;
-        }
-
       g_assert (NULL != epc_shell.poll);
       avahi_glib_poll_free (epc_shell.poll);
       epc_shell.poll = NULL;
@@ -149,13 +142,3 @@ epc_shell_create_avahi_client (AvahiClientFlags    flags,
 
   return client;
 }
-
-G_CONST_RETURN gchar*
-epc_shell_get_host_name (void)
-{
-  if (!epc_shell.client)
-    epc_shell.client = epc_shell_create_avahi_client (AVAHI_CLIENT_NO_FAIL, NULL, NULL);
-
-  return avahi_client_get_host_name (epc_shell.client);
-}
-

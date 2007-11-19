@@ -36,8 +36,6 @@ AvahiClient*                epc_shell_create_avahi_client (AvahiClientFlags    f
                                                            AvahiClientCallback callback,
                                                            gpointer            user_data);
 
-G_CONST_RETURN gchar*       epc_shell_get_host_name       (void);
-
 G_END_DECLS
 
 #endif /* __EPC_SHELL_H__ */

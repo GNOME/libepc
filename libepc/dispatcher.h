@@ -69,27 +69,32 @@ struct _EpcDispatcherClass
   GObjectClass parent_class;
 };
 
-GType          epc_dispatcher_get_type            (void) G_GNUC_CONST;
+GType                 epc_dispatcher_get_type            (void) G_GNUC_CONST;
 
-EpcDispatcher* epc_dispatcher_new                 (const gchar      *name);
+EpcDispatcher*        epc_dispatcher_new                 (const gchar      *name);
+void                  epc_dispatcher_reset               (EpcDispatcher    *dispatcher);
 
-void           epc_dispatcher_add_service         (EpcDispatcher    *dispatcher,
-						   EpcAddressFamily  protocol,
-                                                   const gchar      *type,
-                                                   const gchar      *domain,
-                                                   const gchar      *host,
-                                                   guint16           port,
-                                                                     ...)
-                                                   G_GNUC_NULL_TERMINATED;
-void           epc_dispatcher_add_service_subtype (EpcDispatcher    *dispatcher,
-                                                   const gchar       *type,
-                                                   const gchar       *subtype);
-void           epc_dispatcher_set_service_details (EpcDispatcher     *dispatcher,
-                                                   const gchar       *type,
-                                                                      ...)
-                                                   G_GNUC_NULL_TERMINATED;
+void                  epc_dispatcher_add_service         (EpcDispatcher    *dispatcher,
+                                                          EpcAddressFamily  protocol,
+                                                          const gchar      *type,
+                                                          const gchar      *domain,
+                                                          const gchar      *host,
+                                                          guint16           port,
+                                                                            ...)
+                                                          G_GNUC_NULL_TERMINATED;
+void                  epc_dispatcher_add_service_subtype (EpcDispatcher    *dispatcher,
+                                                          const gchar       *type,
+                                                          const gchar       *subtype);
+void                  epc_dispatcher_set_service_details (EpcDispatcher     *dispatcher,
+                                                          const gchar       *type,
+                                                                             ...)
+                                                          G_GNUC_NULL_TERMINATED;
 
-const gchar*   epc_dispatcher_get_name            (EpcDispatcher     *dispatcher);
+void                  epc_dispatcher_set_name            (EpcDispatcher     *dispatcher,
+                                                          const gchar       *name);
+
+G_CONST_RETURN gchar* epc_dispatcher_get_host_name       (EpcDispatcher     *dispatcher);
+G_CONST_RETURN gchar* epc_dispatcher_get_name            (EpcDispatcher     *dispatcher);
 
 G_END_DECLS
 

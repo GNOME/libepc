@@ -25,8 +25,8 @@ service_browser_cb (AvahiServiceBrowser     *browser G_GNUC_UNUSED,
     {
       if (g_str_equal (name, first_name))
         {
-          epc_publisher_set_service_name (publisher, second_name);
           epc_test_pass (1);
+          epc_publisher_set_service_name (publisher, second_name);
         }
 
       if (g_str_equal (name, second_name))
@@ -59,7 +59,6 @@ main (int   argc G_GNUC_UNUSED,
       epc_test_init_service_browser (EPC_SERVICE_TYPE_HTTP, service_browser_cb, publisher))
     {
       epc_publisher_run_async (publisher);
-
       result = epc_test_run ();
     }
 

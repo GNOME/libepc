@@ -59,7 +59,6 @@ typedef struct _EpcService EpcService;
 enum
 {
   PROP_NONE,
-  PROP_PROTOCOL,
   PROP_NAME
 };
 
@@ -198,6 +197,10 @@ epc_service_publish (EpcService *self)
 static void
 epc_service_reset (EpcService *self)
 {
+  if (G_UNLIKELY (_epc_debug))
+    g_debug ("%s: Resetting `%s' for `%s'...",
+             G_STRLOC, self->type, self->dispatcher->priv->name);
+
   avahi_entry_group_reset (self->group);
 }
 
@@ -345,7 +348,6 @@ epc_dispatcher_client_cb (AvahiClient      *client,
         if (G_UNLIKELY (_epc_debug))
           g_debug ("%s: Collision detected...", G_STRLOC);
 
-        g_hash_table_foreach (self->priv->services, epc_dispatcher_reset_cb, self);
         epc_dispatcher_handle_collision (self);
         break;
 
@@ -367,16 +369,20 @@ epc_dispatcher_client_cb (AvahiClient      *client,
 static void
 epc_dispatcher_handle_collision (EpcDispatcher *self)
 {
-  gchar *alternate = avahi_alternative_service_name (self->priv->name);
+  gchar *alternative;
+
+  alternative = avahi_alternative_service_name (self->priv->name);
 
   g_warning ("%s: Service name collision for `%s', renaming to `%s'.",
-             G_STRLOC, self->priv->name, alternate);
+             G_STRLOC, self->priv->name, alternative);
+
+  g_hash_table_foreach (self->priv->services, epc_dispatcher_reset_cb, self);
 
   g_free (self->priv->name);
-  self->priv->name = alternate;
+  self->priv->name = alternative;
 
   g_object_notify (G_OBJECT (self), "name");
-  g_hash_table_foreach (self->priv->services, epc_dispatcher_publish_cb, NULL);
+  g_hash_table_foreach (self->priv->services, epc_dispatcher_publish_cb, self);
 }
 
 static void
@@ -420,9 +426,15 @@ epc_dispatcher_set_property (GObject      *object,
   switch (prop_id)
     {
       case PROP_NAME:
-        g_assert (NULL == self->priv->name);
+        g_return_if_fail (NULL != g_value_get_string (value));
+
+        g_free (self->priv->name);
         self->priv->name = g_value_dup_string (value);
-        /* TODO: re-publish */
+
+        /* The reset also causes a transition into the UNCOMMITED state,
+         * which causes re-publication of the services.
+         */
+        g_hash_table_foreach (self->priv->services, epc_dispatcher_reset_cb, self);
         break;
 
       default:
@@ -477,8 +489,8 @@ epc_dispatcher_dispose (GObject *object)
 static void
 epc_dispatcher_finalize (GObject *object)
 {
-  epc_shell_unref ();
   G_OBJECT_CLASS (epc_dispatcher_parent_class)->finalize (object);
+  epc_shell_unref ();
 }
 
 static void
@@ -494,7 +506,7 @@ epc_dispatcher_class_init (EpcDispatcherClass *cls)
   g_object_class_install_property (oclass, PROP_NAME,
                                    g_param_spec_string ("name", "Name",
                                                         "User friendly name of the service", NULL,
-                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
                                                         G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
 
@@ -516,9 +528,16 @@ epc_dispatcher_class_init (EpcDispatcherClass *cls)
  * Returns: the newly created #EpcDispatcher object.
  */
 EpcDispatcher*
-epc_dispatcher_new (const gchar   *name)
+epc_dispatcher_new (const gchar *name)
 {
   return g_object_new (EPC_TYPE_DISPATCHER, "name", name, NULL);
+}
+
+void
+epc_dispatcher_reset (EpcDispatcher *self)
+{
+  g_return_if_fail (EPC_IS_DISPATCHER (self));
+  g_hash_table_remove_all (self->priv->services);
 }
 
 /**
@@ -649,6 +668,14 @@ epc_dispatcher_set_service_details (EpcDispatcher *self,
   epc_service_publish_details (service);
 }
 
+void
+epc_dispatcher_set_name (EpcDispatcher *self,
+                         const gchar   *name)
+{
+  g_return_if_fail (EPC_IS_DISPATCHER (self));
+  g_object_set (self, "name", name, NULL);
+}
+
 /**
  * epc_dispatcher_get_name:
  * @dispatcher: the #EpcDispatcher
@@ -658,9 +685,19 @@ epc_dispatcher_set_service_details (EpcDispatcher *self,
  *
  * Returns: The user friendly name of the service.
  */
-const gchar*
+G_CONST_RETURN gchar*
 epc_dispatcher_get_name (EpcDispatcher *self)
 {
   g_return_val_if_fail (EPC_IS_DISPATCHER (self), NULL);
   return self->priv->name;
 }
+
+
+G_CONST_RETURN gchar*
+epc_dispatcher_get_host_name (EpcDispatcher *self)
+{
+  g_return_val_if_fail (EPC_IS_DISPATCHER (self), NULL);
+  g_return_val_if_fail (NULL != self->priv->client, NULL);
+  return avahi_client_get_host_name (self->priv->client);
+}
+

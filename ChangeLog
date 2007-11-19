@@ -1,5 +1,27 @@
 2007-11-12  Mathias Hasselmann  <mathias@openismus.com>
 
+	Drop the shell's artificial Avahi client by keep the publisher's
+	dispatcher arround. Implement name changes for the dispatcher.
+
+	* libepc/dispatcher.c, libepc/dispatcher.h:
+	Allow changing of name property.
+	* libepc/publisher.c: Keep dispatcher arround and use its
+	Avahi client ot lookup the host's official hostname.
+	* libepc/shell.c, libepc/shell.h: Remove epc_shell_get_host_name.
+	* Makefile.am, tests/.gitignore: Add test-dispatcher-rename and
+	test-dispatcher-reset.
+	* tests/framework.c, tests/framework.h: Print invokation location
+	for epc_test_pass. Assert tests are passed only once. Restart the
+	timeout when a test passes.
+	* tests/test-publisher-change-name.c: First call epc_test_pass,
+	then change the name by calling epc_publisher_set_service_name.
+	* tests/test-dispatcher-rename.c: Verify that epc_dispatcher_set_name
+	removes the old mame.
+	* tests/test-dispatcher-reset.c: Verify that epc_dispatcher_set_reset
+	removes the old mame.
+
+2007-11-12  Mathias Hasselmann  <mathias@openismus.com>
+
 	Move protocol property from EpcDispatcher to its internal service
 	class, as protocols (aka. address families) are a property of the
 	service address. Entirely drop the interface property as I see no

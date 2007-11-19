@@ -27,7 +27,7 @@
 static AvahiClient *epc_test_client = NULL;
 static GSList *epc_test_service_browsers = NULL;
 static GMainLoop *epc_test_loop = NULL;
-
+static guint epc_test_timeout = 0;
 static gint epc_test_result = 1;
 
 gboolean
@@ -75,17 +75,46 @@ epc_test_quit (void)
     }
 }
 
+static gboolean
+epc_test_timeout_cb (gpointer data G_GNUC_UNUSED)
+{
+  GString *message = g_string_new (NULL);
+  gint i;
+
+  g_string_printf (message, "%s: Timeout reached. Aborting. Unsatisfied tests:", G_STRLOC);
+
+  for (i = 0; (1 << i) < EPC_TEST_MASK_USER; ++i)
+    if (epc_test_result & (1 << i))
+      g_string_append_printf (message, " %d", i + 1);
+
+  g_print ("%s\n", message->str);
+  g_string_free (message, TRUE);
+
+  g_return_val_if_fail (NULL != epc_test_loop, FALSE);
+  g_main_loop_quit (epc_test_loop);
+
+  return FALSE;
+}
+
 void
-epc_test_pass (gint mask)
+_epc_test_pass (const gchar *strloc,
+                gint         mask)
 {
   int i;
 
+  g_source_remove (epc_test_timeout);
+  epc_test_timeout = g_timeout_add_seconds (5, epc_test_timeout_cb, NULL);
+
   mask &= EPC_TEST_MASK_USER;
-  epc_test_result &= ~mask;
 
   for (i = 0; (1 << i) < EPC_TEST_MASK_USER; ++i)
     if (mask & (1 << i))
-      g_print ("%s: Test #%d passed\n", G_STRLOC, i + 1);
+      {
+        g_print ("%s: Test #%d passed\n", strloc, i + 1);
+        g_assert (epc_test_result & (1 << i));
+      }
+
+  epc_test_result &= ~mask;
 
   if (0 == epc_test_result)
     epc_test_quit ();
@@ -116,17 +145,6 @@ epc_test_init_service_browser (const gchar                 *service,
   return TRUE;
 }
 
-static gboolean
-epc_test_timeout_cb (gpointer data G_GNUC_UNUSED)
-{
-  g_print ("%s: Timeout reached. Aborting.\n", G_STRLOC);
-  g_return_val_if_fail (NULL != epc_test_loop, FALSE);
-
-  g_main_loop_quit (epc_test_loop);
-
-  return FALSE;
-}
-
 gint
 epc_test_run ()
 {
@@ -135,7 +153,7 @@ epc_test_run ()
   if (!epc_test_loop)
     epc_test_loop = g_main_loop_new (NULL, FALSE);
 
-  g_timeout_add_seconds (5, epc_test_timeout_cb, NULL);
+  epc_test_timeout = g_timeout_add_seconds (5, epc_test_timeout_cb, NULL);
 
   epc_shell_leave ();
   g_main_loop_run (epc_test_loop);
