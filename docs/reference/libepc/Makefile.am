@@ -79,7 +79,7 @@ include $(top_srcdir)/gtk-doc.make
 
 # Other files to distribute
 # e.g. EXTRA_DIST += version.xml.in
-EXTRA_DIST += $(DOC_MODULE)-sections.txt
+EXTRA_DIST +=
 
 sgml.stamp: $(DOC_MODULE)-sections.txt
 $(DOC_MAIN_SGML_FILE): sgml.stamp

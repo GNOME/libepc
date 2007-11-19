@@ -80,6 +80,9 @@ tests_libepc_tests_la_SOURCES = \
 	tests/framework.h
 
 EXTRA_DIST = \
+	gtk-doc.make \
+	$(gtkdoc_srcdir)/libepc-docs.xml \
+	$(gtkdoc_srcdir)/libepc-sections.txt \
 	tests/test-runner.sh
 
 libepc_libepc_la_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS) -DGETTEXT_PACKAGE=\"libepc\"

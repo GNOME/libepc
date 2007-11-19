@@ -1,5 +1,11 @@
 2007-11-13  Mathias Hasselmann  <mathias@openismus.com>
 
+	Distribute gtk-doc.make, libepc-docs.xml and libepc-sections.txt.
+
+	* Makefile.am, docs/reference/libepc/Makefile.am: Update EXTRA_DIST.
+
+2007-11-13  Mathias Hasselmann  <mathias@openismus.com>
+
 	Add error handling to epc_consumer_lookup.
 
 	* examples/test-consumer.c, tests/test-consumer-by-name.c:
