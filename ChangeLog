@@ -1,5 +1,12 @@
 2007-11-02  Mathias Hasselmann  <mathias@openismus.com>
 
+	Guard g_debug statements by epc_debug flag, which can by enabled
+	by setting the EPC_DEBUG environment variable.
+
+	* libepc/dispatcher.c: Guard g_debug statements.
+
+2007-11-02  Mathias Hasselmann  <mathias@openismus.com>
+
 	Adjust indenting for consumer.h
 
 	* libepc/consumer.h: Adjust indenting.

@@ -79,6 +79,8 @@ struct _EpcService
   AvahiStringList *details;
 };
 
+static gboolean epc_debug = FALSE;
+
 /**
  * EpcDispatcherPrivate:
  *
@@ -104,8 +106,9 @@ epc_service_publish_subtype (EpcService  *self,
 {
   gint result;
 
-  g_debug ("%s: Publishing sub-service `%s' for `%s'...",
-           G_STRLOC, subtype, self->dispatcher->priv->name);
+  if (epc_debug)
+    g_debug ("%s: Publishing sub-service `%s' for `%s'...",
+             G_STRLOC, subtype, self->dispatcher->priv->name);
 
   result =
     avahi_entry_group_add_service_subtype (self->group,
@@ -130,8 +133,9 @@ epc_service_publish_details (EpcService *self,
 {
   gint result;
 
-  g_debug ("%s: Publishing details for `%s'...",
-           G_STRLOC, self->dispatcher->priv->name);
+  if (epc_debug)
+    g_debug ("%s: Publishing details for `%s'...",
+             G_STRLOC, self->dispatcher->priv->name);
 
   result =
     avahi_entry_group_update_service_txt_strlst (self->group,
@@ -156,8 +160,9 @@ epc_service_publish (EpcService *self)
   gint result;
   GList *iter;
 
-  g_debug ("%s: Publishing service `%s' for `%s'...",
-           G_STRLOC, self->type, self->dispatcher->priv->name);
+  if (epc_debug)
+    g_debug ("%s: Publishing service `%s' for `%s'...",
+             G_STRLOC, self->type, self->dispatcher->priv->name);
 
   result =
     avahi_entry_group_add_service_strlst (self->group,
@@ -319,13 +324,17 @@ epc_dispatcher_client_cb (AvahiClient      *client,
   switch (state)
     {
       case AVAHI_CLIENT_S_RUNNING:
-        g_debug ("%s: Avahi client is running...", G_STRLOC);
+        if (epc_debug)
+          g_debug ("%s: Avahi client is running...", G_STRLOC);
+
         g_hash_table_foreach (self->priv->services, epc_dispatcher_publish_cb, NULL);
         break;
 
       case AVAHI_CLIENT_S_COLLISION:
       case AVAHI_CLIENT_S_REGISTERING:
-        g_debug ("%s: Avahi client collision/registering...", G_STRLOC);
+        if (epc_debug)
+          g_debug ("%s: Avahi client collision/registering...", G_STRLOC);
+
         g_hash_table_foreach (self->priv->services, epc_dispatcher_reset_cb, self);
         break;
 
@@ -337,7 +346,9 @@ epc_dispatcher_client_cb (AvahiClient      *client,
         break;
 
       case AVAHI_CLIENT_CONNECTING:
-        g_debug ("%s: Waiting for Avahi server...", G_STRLOC);
+        if (epc_debug)
+          g_debug ("%s: Waiting for Avahi server...", G_STRLOC);
+
         break;
     }
 }
@@ -486,6 +497,9 @@ static void
 epc_dispatcher_class_init (EpcDispatcherClass *cls)
 {
   GObjectClass *oclass = G_OBJECT_CLASS (cls);
+
+  if (g_getenv ("EPC_DEBUG"))
+    epc_debug = TRUE;
 
   oclass->set_property = epc_dispatcher_set_property;
   oclass->get_property = epc_dispatcher_get_property;
