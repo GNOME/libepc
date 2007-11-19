@@ -19,6 +19,7 @@
  *      Mathias Hasselmann
  */
 #include "avahi-shell.h"
+#include "service-names.h"
 
 #include <avahi-common/error.h>
 #include <avahi-glib/glib-malloc.h>
@@ -81,3 +82,63 @@ epc_avahi_shell_create_client (AvahiClientFlags    flags,
 
   return client;
 }
+
+gchar*
+epc_avahi_shell_normalize_name (const gchar *name,
+                                gssize       length)
+{
+  GError *error = NULL;
+  gchar *normalized, *s;
+
+  g_return_val_if_fail (NULL != name, NULL);
+
+  normalized = g_convert (name, length,
+                          "ASCII//TRANSLIT", "UTF-8",
+                          NULL, NULL, &error);
+
+  if (error)
+    {
+      g_warning ("%s: %s", G_STRLOC, error->message);
+      g_error_free (error);
+    }
+
+  if (normalized)
+    {
+      for (s = normalized; *s; ++s)
+        if (!g_ascii_isalnum (*s))
+          *s = '-';
+    }
+
+  return normalized;
+}
+
+gchar*
+epc_avahi_shell_create_service_type (const gchar *basename)
+{
+  gchar *service_type = NULL;
+  gchar *normalized = NULL;
+
+  if (!basename)
+    basename = g_get_prgname ();
+
+  if (!basename)
+    {
+      g_warning ("%s: Cannot derive the DNS-SD service type, as no basename "
+                 "was specified and g_get_prgname() returns NULL. Consider "
+                 "calling g_set_prgname().", G_STRLOC);
+
+      return NULL;
+    }
+
+  normalized = epc_avahi_shell_normalize_name (basename, -1);
+
+  if (normalized)
+    {
+      service_type = g_strconcat ("_", normalized, "-app._sub.", EPC_SERVICE_NAME, NULL);
+      g_free (normalized);
+    }
+
+  return service_type;
+}
+
+

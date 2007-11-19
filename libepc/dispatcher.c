@@ -68,6 +68,7 @@ struct _EpcService
 {
   EpcDispatcher *dispatcher;
   AvahiEntryGroup *group;
+  guint commit_handler;
 
   gchar *type;
   gchar *domain;
@@ -87,20 +88,37 @@ static gboolean epc_debug = FALSE;
  */
 struct _EpcDispatcherPrivate
 {
-  gchar *name;
-  AvahiClient *client;
-  AvahiIfIndex interface;
+  gchar        *name;
+  AvahiClient  *client;
+  AvahiIfIndex  interface;
   AvahiProtocol protocol;
-  GHashTable *services;
+  GHashTable   *services;
 };
 
 static void epc_dispatcher_handle_collision (EpcDispatcher *self);
 static void epc_dispatcher_reset_client     (EpcDispatcher *self);
 
+static gboolean
+epc_service_commit_cb (gpointer data)
+{
+  EpcService *self = data;
+
+  self->commit_handler = 0;
+  avahi_entry_group_commit (self->group);
+
+  return FALSE;
+}
+
+static void
+epc_service_schedule_commit (EpcService *self)
+{
+  if (!self->commit_handler)
+    self->commit_handler = g_idle_add (epc_service_commit_cb, self);
+}
+
 static void
 epc_service_publish_subtype (EpcService  *self,
-                             const gchar *subtype,
-                             gboolean     commit)
+                             const gchar *subtype)
 {
   gint result;
 
@@ -121,13 +139,11 @@ epc_service_publish_subtype (EpcService  *self,
                G_STRLOC, subtype, self->dispatcher->priv->name,
                avahi_strerror (result), result);
 
-  if (commit)
-    avahi_entry_group_commit (self->group);
+  epc_service_schedule_commit (self);
 }
 
 static void
-epc_service_publish_details (EpcService *self,
-                             gboolean    commit)
+epc_service_publish_details (EpcService *self)
 {
   gint result;
 
@@ -148,8 +164,7 @@ epc_service_publish_details (EpcService *self,
                G_STRLOC, self->dispatcher->priv->name,
                avahi_strerror (result), result);
 
-  if (commit)
-    avahi_entry_group_commit (self->group);
+  epc_service_schedule_commit (self);
 }
 
 static void
@@ -178,12 +193,8 @@ epc_service_publish (EpcService *self)
                G_STRLOC, self->type, self->dispatcher->priv->name,
                avahi_strerror (result), result);
   else
-    {
-      for (iter = self->subtypes; iter; iter = iter->next)
-        epc_service_publish_subtype (self, iter->data, FALSE);
-
-      avahi_entry_group_commit (self->group);
-    }
+    for (iter = self->subtypes; iter; iter = iter->next)
+      epc_service_publish_subtype (self, iter->data);
 }
 
 static void
@@ -287,6 +298,9 @@ epc_service_free (gpointer data)
   g_free (self->type);
   g_free (self->domain);
   g_free (self->host);
+
+  if (self->commit_handler)
+    g_source_remove (self->commit_handler);
 
   g_slice_free (EpcService, self);
 }
@@ -629,7 +643,7 @@ epc_dispatcher_add_service_subtype (EpcDispatcher *self,
   g_return_if_fail (NULL != service);
 
   epc_service_add_subtype (service, subtype);
-  epc_service_publish_subtype (service, subtype, TRUE);
+  epc_service_publish_subtype (service, subtype);
 }
 
 /**
@@ -671,7 +685,7 @@ epc_dispatcher_set_service_details (EpcDispatcher *self,
   service->details = avahi_string_list_new_va (args);
   va_end (args);
 
-  epc_service_publish_details (service, TRUE);
+  epc_service_publish_details (service);
 }
 
 /**

@@ -29,9 +29,6 @@
  * To allow #EpcConsumer to find it, it automatically publishes
  * its contact information (host name, TCP/IP port) per DNS-SD.
  *
- * Currently neither encryption or authentication are implemented,
- * but it is planed to change this in the future.
- *
  * Also there are some ideas on using DNS-DS to notify #EpcConsumer on changes.
  *
  * <example>
@@ -48,6 +45,7 @@
  */
 
 #include "publisher.h"
+#include "avahi-shell.h"
 #include "dispatcher.h"
 #include "service-names.h"
 
@@ -120,6 +118,7 @@ struct _EpcPublisherPrivate
   EpcPublication        *default_publication;
   SoupServerAuthContext  server_auth;
   SoupServer            *server;
+  gboolean               running;
 
   gchar *name;
   gchar *domain;
@@ -354,6 +353,8 @@ epc_publisher_init (EpcPublisher *self)
   /* TODO: Figure out why force_integrity doesn't work. */
 
   self->priv->server = soup_server_new (SOUP_SERVER_PORT, SOUP_ADDRESS_ANY_PORT, NULL);
+  g_object_ref (self->priv->server); /* work arround bug #494128. */
+
   soup_server_add_handler (self->priv->server, "/get", &self->priv->server_auth,
                            epc_publisher_server_get_handler, NULL, self);
 
@@ -370,8 +371,6 @@ epc_publisher_constructed (GObject *object)
   SoupAddress *address;
 
   const gchar *name;
-  const gchar *domain;
-  const gchar *service;
   const gchar *host;
   gint port;
 
@@ -384,15 +383,31 @@ epc_publisher_constructed (GObject *object)
 
   self = EPC_PUBLISHER (object);
   name = self->priv->name;
-  domain = self->priv->domain;
-  service = self->priv->service;
 
   if (!name)
     name = g_get_application_name ();
   if (!name)
     name = g_get_prgname ();
-  if (!service)
-    service = EPC_SERVICE_NAME_HTTP;
+
+  if (!name)
+    {
+      gint hash = g_random_int ();
+
+      name = G_OBJECT_TYPE_NAME (self);
+      self->priv->name = g_strdup_printf ("%s-%08x", name, hash);
+      name = self->priv->name;
+
+      g_warning ("%s: No service name set - using generated name (`%s'). "
+                 "Consider passing a service name to the publisher's "
+                 "constructor or call g_set_application_name().",
+                 G_STRLOC, name);
+    }
+
+  if (!self->priv->name)
+    self->priv->name = g_strdup (name);
+
+  if (!self->priv->service)
+    self->priv->service = epc_avahi_shell_create_service_type (NULL);
 
   listener = soup_server_get_listener (self->priv->server);
   port = soup_server_get_port (self->priv->server);
@@ -405,9 +420,14 @@ epc_publisher_constructed (GObject *object)
   g_print ("listening on http://%s:%d/\n", host ? host : "localhost", port);
   self->priv->dispatcher = epc_dispatcher_new (AVAHI_IF_UNSPEC, protocol, name);
 
-  epc_dispatcher_add_service (self->priv->dispatcher, service,
+  epc_dispatcher_add_service (self->priv->dispatcher, EPC_SERVICE_NAME_HTTP,
                               self->priv->domain, host, port,
                               NULL);
+
+  if (self->priv->service)
+    epc_dispatcher_add_service_subtype (self->priv->dispatcher,
+                                        EPC_SERVICE_NAME,
+                                        self->priv->service);
 }
 
 static void
@@ -482,7 +502,9 @@ epc_publisher_dispose (GObject *object)
 
   if (self->priv->server)
     {
-      soup_server_quit (self->priv->server);
+      if (self->priv->running)
+        soup_server_quit (self->priv->server);
+
       g_object_unref (self->priv->server);
       self->priv->server = NULL;
     }
@@ -821,6 +843,7 @@ epc_publisher_run_async (EpcPublisher *self)
 {
   g_return_if_fail (EPC_IS_PUBLISHER (self));
   soup_server_run_async (self->priv->server);
+  self->priv->running = TRUE;
 }
 
 /**
@@ -835,6 +858,7 @@ epc_publisher_quit (EpcPublisher *self)
 {
   g_return_if_fail (EPC_IS_PUBLISHER (self));
   soup_server_quit (self->priv->server);
+  self->priv->running = FALSE;
 }
 
 /**

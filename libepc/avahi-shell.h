@@ -26,13 +26,15 @@
 
 G_BEGIN_DECLS
 
-void                        epc_avahi_shell_ref           (void);
-void                        epc_avahi_shell_unref         (void);
+void                        epc_avahi_shell_ref                 (void);
+void                        epc_avahi_shell_unref               (void);
 
-G_CONST_RETURN AvahiPoll*   epc_avahi_shell_get_poll_api  (void);
-AvahiClient*                epc_avahi_shell_create_client (AvahiClientFlags    flags,
-                                                           AvahiClientCallback callback,
-                                                           gpointer            user_data);
+G_CONST_RETURN AvahiPoll*   epc_avahi_shell_get_poll_api        (void);
+AvahiClient*                epc_avahi_shell_create_client       (AvahiClientFlags     flags,
+                                                                 AvahiClientCallback  callback,
+                                                                 gpointer             user_data);
+
+gchar*                      epc_avahi_shell_create_service_type (const gchar         *basename);
 
 G_END_DECLS
 

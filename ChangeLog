@@ -1,5 +1,15 @@
 2007-11-06  Mathias Hasselmann  <mathias@openismus.com>
 
+	Announce program name based service type.
+
+	* libepc/publisher.c: Announce program name based service type.
+	* libepc/dispatcher.c: Move commit step into idle function.
+	* libepc/avahi-shell.c, libepc/avahi-shell.h:
+	Provide epc_avahi_shell_create_service_type for creating
+	program name based service types.
+
+2007-11-06  Mathias Hasselmann  <mathias@openismus.com>
+
 	Introduce common API for managing basic, shareable Avahi infrastructure.
 
 	* libepc/avahi-shell.c, libepc/avahi-shell.h: Introduce EpcAvahiShell.
