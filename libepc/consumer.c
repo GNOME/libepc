@@ -167,8 +167,10 @@ epc_consumer_authenticate_cb (SoupSession  *session G_GNUC_UNUSED,
 {
   EpcConsumer *self = EPC_CONSUMER (data);
 
+  epc_shell_enter ();
   g_signal_emit (self, signals[SIGNAL_AUTHENTICATE], 0,
                  auth_realm, username, password);
+  epc_shell_leave ();
 }
 
 static void
@@ -182,8 +184,10 @@ epc_consumer_reauthenticate_cb (SoupSession  *session G_GNUC_UNUSED,
 {
   EpcConsumer *self = EPC_CONSUMER (data);
 
+  epc_shell_enter ();
   g_signal_emit (self, signals[SIGNAL_REAUTHENTICATE], 0,
                  auth_realm, username, password);
+  epc_shell_leave ();
 }
 
 static void

@@ -88,6 +88,10 @@ epc_shell_ref (void)
       g_module_symbol (module, "gdk_threads_leave", &symbol);
       epc_shell.threads_leave = symbol;
 
+      if (_epc_debug)
+        g_debug ("%s: threads_enter=%p, threads_leave=%p", G_STRLOC,
+                 epc_shell.threads_enter, epc_shell.threads_leave);
+
       g_module_close (module);
     }
 

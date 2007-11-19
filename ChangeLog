@@ -1,5 +1,13 @@
 2007-11-14  Mathias Hasselmann  <mathias@openismus.com>
 
+	Resolve authentication dead-lock.
+
+	* libepc/shell.c: Print debug information about big-lock handlers.
+	* libepc/consumer.c: Aquire GDK big-lock before emitting
+	authenticate and reauthenticate signals.
+
+2007-11-14  Mathias Hasselmann  <mathias@openismus.com>
+
 	Add capability for listing publisher resources.
 
 	* libepc/publisher.c: Implement URL handler for '/list/' and '/' path.
