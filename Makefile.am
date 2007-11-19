@@ -19,7 +19,8 @@ TESTS = \
 	tests/test-dispatcher-simple-service \
 	tests/test-dispatcher-multiple-services \
 	tests/test-dispatcher-subtypes \
-	tests/test-dispatcher-local-collision
+	tests/test-dispatcher-local-collision \
+	tests/test-publisher-libsoup-494128
 libepc_include_HEADERS = \
 	libepc/consumer.h \
 	libepc/dispatcher.h \
@@ -67,16 +68,18 @@ examples_server_credentials_LDADD = libepc/libepc.la libepc-ui/libepc-ui.la
 
 tests_libepc_tests_la_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 
-tests_test_consumer_by_name_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_consumer_by_name_LDADD = libepc/libepc.la tests/libepc-tests.la
-tests_test_dispatcher_simple_service_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_dispatcher_simple_service_LDADD = libepc/libepc.la tests/libepc-tests.la
-tests_test_dispatcher_multiple_services_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_dispatcher_multiple_services_LDADD = libepc/libepc.la tests/libepc-tests.la
-tests_test_dispatcher_subtypes_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_dispatcher_subtypes_LDADD = libepc/libepc.la tests/libepc-tests.la
-tests_test_dispatcher_local_collision_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_dispatcher_local_collision_LDADD = libepc/libepc.la tests/libepc-tests.la
+tests_test_consumer_by_name_CFLAGS 		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+tests_test_consumer_by_name_LDADD 		= libepc/libepc.la tests/libepc-tests.la
+tests_test_dispatcher_simple_service_CFLAGS 	= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+tests_test_dispatcher_simple_service_LDADD 	= libepc/libepc.la tests/libepc-tests.la
+tests_test_dispatcher_multiple_services_CFLAGS 	= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+tests_test_dispatcher_multiple_services_LDADD 	= libepc/libepc.la tests/libepc-tests.la
+tests_test_dispatcher_subtypes_CFLAGS 		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+tests_test_dispatcher_subtypes_LDADD 		= libepc/libepc.la tests/libepc-tests.la
+tests_test_dispatcher_local_collision_CFLAGS	= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+tests_test_dispatcher_local_collision_LDADD 	= libepc/libepc.la tests/libepc-tests.la
+tests_test_publisher_libsoup_494128_CFLAGS      = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+tests_test_publisher_libsoup_494128_LDADD 	= libepc/libepc.la tests/libepc-tests.la
 
 libepc_includedir = $(includedir)/libepc/libepc
 libepc_ui_includedir = $(includedir)/libepc/libepc-ui

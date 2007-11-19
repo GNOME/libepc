@@ -10,3 +10,4 @@ test-dispatcher-local-collision
 test-dispatcher-multiple-services
 test-dispatcher-simple-service
 test-dispatcher-subtypes
+test-publisher-libsoup-494128

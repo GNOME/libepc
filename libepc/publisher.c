@@ -118,7 +118,8 @@ struct _EpcPublisherPrivate
   EpcResource           *default_resource;
   GHashTable            *resources;
 
-  gboolean               server_running;
+  gboolean               server_started;
+  GMainLoop             *server_loop;
   SoupServerAuthContext  server_auth;
   SoupServer            *server;
 
@@ -126,6 +127,8 @@ struct _EpcPublisherPrivate
   gchar                 *service_domain;
   gchar                 *service_type;
 };
+
+extern gboolean _epc_debug;
 
 /**
  * epc_content_new:
@@ -355,7 +358,6 @@ epc_publisher_init (EpcPublisher *self)
   /* TODO: Figure out why force_integrity doesn't work. */
 
   self->priv->server = soup_server_new (SOUP_SERVER_PORT, SOUP_ADDRESS_ANY_PORT, NULL);
-  g_object_ref (self->priv->server); /* work arround bug #494128. */
 
   soup_server_add_handler (self->priv->server, "/get", &self->priv->server_auth,
                            epc_publisher_server_get_handler, NULL, self);
@@ -496,6 +498,8 @@ epc_publisher_dispose (GObject *object)
 {
   EpcPublisher *self = EPC_PUBLISHER (object);
 
+  epc_publisher_quit (self);
+
   if (self->priv->dispatcher)
     {
       g_object_unref (self->priv->dispatcher);
@@ -504,9 +508,6 @@ epc_publisher_dispose (GObject *object)
 
   if (self->priv->server)
     {
-      if (self->priv->server_running)
-        soup_server_quit (self->priv->server);
-
       g_object_unref (self->priv->server);
       self->priv->server = NULL;
     }
@@ -833,10 +834,17 @@ epc_publisher_run (EpcPublisher *self)
 {
   g_return_if_fail (EPC_IS_PUBLISHER (self));
 
-  soup_server_run (self->priv->server);
+  epc_publisher_run_async (self);
 
-  /* try to deal with bug #494128 by tracking server state */
-  self->priv->server_running = FALSE;
+  if (NULL == self->priv->server_loop)
+    {
+      self->priv->server_loop = g_main_loop_new (NULL, FALSE);
+
+      g_main_loop_run (self->priv->server_loop);
+
+      g_main_loop_unref (self->priv->server_loop);
+      self->priv->server_loop = NULL;
+    }
 }
 
 /**
@@ -851,12 +859,13 @@ void
 epc_publisher_run_async (EpcPublisher *self)
 {
   g_return_if_fail (EPC_IS_PUBLISHER (self));
-  g_return_if_fail (self->priv->server_running);
 
-  soup_server_run_async (self->priv->server);
-
-  /* try to deal with bug #494128 by tracking server state */
-  self->priv->server_running = TRUE;
+  if (!self->priv->server_started)
+    {
+      soup_server_run_async (self->priv->server);
+      g_object_unref (self->priv->server); /* work arround bug #494128 */
+      self->priv->server_started = TRUE;
+    }
 }
 
 /**
@@ -871,11 +880,8 @@ epc_publisher_quit (EpcPublisher *self)
 {
   g_return_if_fail (EPC_IS_PUBLISHER (self));
 
-  if (self->priv->server_running)
-    soup_server_quit (self->priv->server);
-
-  /* try to deal with bug #494128 by tracking server state */
-  self->priv->server_running = FALSE;
+  if (self->priv->server_loop)
+    g_main_loop_quit (self->priv->server_loop);
 }
 
 /**

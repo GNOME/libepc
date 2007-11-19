@@ -1,5 +1,18 @@
 2007-11-08  Mathias Hasselmann  <mathias@openismus.com>
 
+	Try to deal with libsoup bug #494128. Seems there is no way to force
+	SoupServer to close all pending HTTP connections. So it seems we have
+	to accept leaking the SoupServer on shutdown, as each HTTP connection
+	increases the server's reference count. Well, but at least we can try
+	not to add additional leaking references. That's what this changes
+	try to achive.
+
+	* libepc/publisher.c: Try to deal with libsoup bug #494128
+	* tests/test-publisher-libsoup-494128.c: Test run/quit variants
+	* Makefile.am, tests/.gitignore: Add test-publisher-libsoup-494128.c
+
+2007-11-08  Mathias Hasselmann  <mathias@openismus.com>
+
 	Use more descriptive property names for EpcPublisher.
 
 	* docs/reference/libepc/libepc-sections.txt,
