@@ -1,5 +1,12 @@
 2007-11-01  Mathias Hasselmann  <mathias@openismus.com>
 
+	Implement the consumer.
+
+	* libepc/consumer.c, libepc/consumer.h: Really implement the consumer.
+	* tests/test-consumer.c: Use the consumer API.
+
+2007-11-01  Mathias Hasselmann  <mathias@openismus.com>
+
 	Start the consumer by merging the document-server's client test.
 
 	* tests/test-consumer.c: Just copy the document-server's client test.
