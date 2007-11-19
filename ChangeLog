@@ -1,5 +1,15 @@
 2007-11-08  Mathias Hasselmann  <mathias@openismus.com>
 
+	Rename epc_tls_privkey_* functions to epc_tls_private_key_*,
+	which results in same symbol length for private key and
+	equivalent certificate functions.
+
+	* docs/reference/libepc/libepc-sections.txt: Updating symbols.
+	* libepc/tls.c, libepc/tls.h, libepc-ui/entropy-progress.c:
+	Rename epc_tls_privkey_* functions to epc_tls_private_key_*.
+
+2007-11-08  Mathias Hasselmann  <mathias@openismus.com>
+
 	Rename EpcPublication to EpcResource in EpcPublisher.
 
 	* libepc/publisher.c: Rename EpcPublication to EpcResource.

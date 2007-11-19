@@ -156,6 +156,6 @@ epc_entropy_progress_leave (gpointer data)
 void
 epc_entropy_progress_install (void)
 {
-  epc_tls_privkey_set_hooks (epc_entropy_progress_enter,
-                             epc_entropy_progress_leave);
+  epc_tls_set_private_key_hooks (epc_entropy_progress_enter,
+                                 epc_entropy_progress_leave);
 }

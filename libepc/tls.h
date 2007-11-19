@@ -37,29 +37,28 @@ G_BEGIN_DECLS
 
 GQuark                epc_tls_error_quark              (void);
 
-gchar*                epc_tls_privkey_get_filename     (const gchar            *basename);
-gchar*                epc_tls_certificate_get_filename (const gchar            *basename);
-
-void                  epc_tls_privkey_set_hooks        (EpcTlsPrivkeyEnterHook  enter,
-                                                        EpcTlsPrivkeyLeaveHook  leave);
-
-gnutls_x509_privkey_t epc_tls_privkey_new              (GError                **error);
-gnutls_x509_privkey_t epc_tls_privkey_load             (const gchar            *filename,
-                                                        GError                **error);
-gboolean              epc_tls_privkey_save             (gnutls_x509_privkey_t   key,
-                                                        const gchar            *filename,
-                                                        GError                **error);
-
 gnutls_x509_crt_t     epc_tls_certificate_new          (const gchar            *hostname,
                                                         guint                   validity,
                                                         gnutls_x509_privkey_t   key,
                                                         GError                **error);
 gnutls_x509_crt_t     epc_tls_certificate_load         (const gchar            *filename,
                                                         GError                **error);
-gboolean              epc_tls_certificate_save         (gnutls_x509_crt_t       key,
+gboolean              epc_tls_certificate_save         (gnutls_x509_crt_t       certificate,
                                                         const gchar            *filename,
                                                         GError                **error);
 
+gnutls_x509_privkey_t epc_tls_private_key_new          (GError                **error);
+gnutls_x509_privkey_t epc_tls_private_key_load         (const gchar            *filename,
+                                                        GError                **error);
+gboolean              epc_tls_private_key_save         (gnutls_x509_privkey_t   key,
+                                                        const gchar            *filename,
+                                                        GError                **error);
+
+void                  epc_tls_set_private_key_hooks    (EpcTlsPrivkeyEnterHook  enter,
+                                                        EpcTlsPrivkeyLeaveHook  leave);
+
+gchar*                epc_tls_get_certificate_filename (const gchar            *basename);
+gchar*                epc_tls_get_private_key_filename (const gchar            *basename);
 gboolean              epc_tls_get_server_credentials   (const gchar            *hostname,
                                                         gchar                 **crtfile,
                                                         gchar                 **keyfile,

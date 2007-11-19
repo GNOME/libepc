@@ -96,20 +96,23 @@ epc_shell_unref
 <SECTION>
 <FILE>tls</FILE>
 <TITLE>TLS Support</TITLE>
+EpcTlsPrivkeyEnterHook
+EpcTlsPrivkeyLeaveHook
 EPC_TLS_ERROR
 EPC_TLS_SECONDS_PER_DAY
 EPC_TLS_SECONDS_PER_HOUR
 EPC_TLS_SECONDS_PER_MINUTE
-epc_tls_certificate_get_filename
+epc_tls_error_quark
 epc_tls_certificate_load
 epc_tls_certificate_new
 epc_tls_certificate_save
-epc_tls_error_quark
+epc_tls_private_key_load
+epc_tls_private_key_new
+epc_tls_private_key_save
+epc_tls_get_private_key_filename
+epc_tls_get_certificate_filename
 epc_tls_get_server_credentials
-epc_tls_privkey_get_filename
-epc_tls_privkey_load
-epc_tls_privkey_new
-epc_tls_privkey_save
+epc_tls_set_private_key_hooks
 </SECTION>
 
 <SECTION>

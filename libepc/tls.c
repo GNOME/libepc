@@ -43,10 +43,10 @@ struct _EcpTlsKeyContext
   gint rc;
 };
 
-static gpointer epc_tls_privkey_enter_default (void);
+static gpointer epc_tls_private_key_enter_default (void);
 
-static EpcTlsPrivkeyEnterHook epc_tls_privkey_enter = epc_tls_privkey_enter_default;
-static EpcTlsPrivkeyLeaveHook epc_tls_privkey_leave = NULL;
+static EpcTlsPrivkeyEnterHook epc_tls_private_key_enter = epc_tls_private_key_enter_default;
+static EpcTlsPrivkeyLeaveHook epc_tls_private_key_leave = NULL;
 
 extern gboolean _epc_debug;
 
@@ -79,19 +79,19 @@ epc_tls_get_filename (const gchar *basename,
 }
 
 gchar*
-epc_tls_privkey_get_filename (const gchar *basename)
+epc_tls_get_private_key_filename (const gchar *basename)
 {
   return epc_tls_get_filename (basename, "keys");
 }
 
 gchar*
-epc_tls_certificate_get_filename (const gchar *basename)
+epc_tls_get_certificate_filename (const gchar *basename)
 {
   return epc_tls_get_filename (basename, "certs");
 }
 
 static gpointer
-epc_tls_privkey_enter_default (void)
+epc_tls_private_key_enter_default (void)
 {
   g_print (_("Generating server key. This may take some time. "
              "Type on the keyboard, move your mouse or "
@@ -101,15 +101,15 @@ epc_tls_privkey_enter_default (void)
 }
 
 void
-epc_tls_privkey_set_hooks (EpcTlsPrivkeyEnterHook enter,
-                           EpcTlsPrivkeyLeaveHook leave)
+epc_tls_set_private_key_hooks (EpcTlsPrivkeyEnterHook enter,
+                               EpcTlsPrivkeyLeaveHook leave)
 {
-  epc_tls_privkey_enter = enter;
-  epc_tls_privkey_leave = leave;
+  epc_tls_private_key_enter = enter;
+  epc_tls_private_key_leave = leave;
 }
 
 static gpointer
-epc_tls_privkey_thread (gpointer data)
+epc_tls_private_key_thread (gpointer data)
 {
   EcpTlsKeyContext *context = data;
 
@@ -120,13 +120,13 @@ epc_tls_privkey_thread (gpointer data)
 }
 
 gnutls_x509_privkey_t
-epc_tls_privkey_new (GError **error)
+epc_tls_private_key_new (GError **error)
 {
   EcpTlsKeyContext context = { NULL, NULL, GNUTLS_E_SUCCESS };
-  gpointer hook_data = NULL;
+  gpointer private_key_data = NULL;
 
-  if (epc_tls_privkey_enter)
-    hook_data = epc_tls_privkey_enter ();
+  if (epc_tls_private_key_enter)
+    private_key_data = epc_tls_private_key_enter ();
 
   context.rc = gnutls_x509_privkey_init (&context.key);
   epc_tls_check (context.rc);
@@ -134,18 +134,18 @@ epc_tls_privkey_new (GError **error)
   if (g_thread_supported ())
     {
       context.loop = g_main_loop_new (NULL, FALSE);
-      g_thread_create (epc_tls_privkey_thread, &context, FALSE, NULL);
+      g_thread_create (epc_tls_private_key_thread, &context, FALSE, NULL);
       g_main_loop_run (context.loop);
       g_main_loop_unref (context.loop);
     }
   else
-    epc_tls_privkey_thread (&context);
+    epc_tls_private_key_thread (&context);
 
   epc_tls_check (context.rc);
 
 out:
-  if (epc_tls_privkey_leave)
-    epc_tls_privkey_leave (hook_data);
+  if (epc_tls_private_key_leave)
+    epc_tls_private_key_leave (private_key_data);
 
   if (GNUTLS_E_SUCCESS != context.rc)
     {
@@ -163,8 +163,8 @@ out:
 }
 
 gnutls_x509_privkey_t
-epc_tls_privkey_load (const gchar *filename,
-                      GError     **error)
+epc_tls_private_key_load (const gchar *filename,
+                          GError     **error)
 {
   gnutls_x509_privkey_t key = NULL;
   gint rc = GNUTLS_E_SUCCESS;
@@ -203,9 +203,9 @@ out:
 }
 
 gboolean
-epc_tls_privkey_save (gnutls_x509_privkey_t  key,
-                      const gchar           *filename,
-                      GError               **error)
+epc_tls_private_key_save (gnutls_x509_privkey_t  key,
+                          const gchar           *filename,
+                          GError               **error)
 {
   gint rc = GNUTLS_E_SUCCESS;
   gchar *display_name = NULL;
@@ -451,13 +451,13 @@ epc_tls_get_server_credentials (const gchar  *hostname,
   g_return_val_if_fail (NULL != crtfile, FALSE);
   g_return_val_if_fail (NULL != keyfile, FALSE);
 
-  _crtfile = epc_tls_certificate_get_filename (hostname);
-  _keyfile = epc_tls_privkey_get_filename (hostname);
+  _crtfile = epc_tls_get_certificate_filename (hostname);
+  _keyfile = epc_tls_get_private_key_filename (hostname);
 
-  if (NULL == (key = epc_tls_privkey_load (_keyfile, NULL)))
+  if (NULL == (key = epc_tls_private_key_load (_keyfile, NULL)))
     {
-      if (!(key = epc_tls_privkey_new (error)) ||
-          !(epc_tls_privkey_save (key, _keyfile, error)))
+      if (!(key = epc_tls_private_key_new (error)) ||
+          !(epc_tls_private_key_save (key, _keyfile, error)))
         goto out;
     }
 
