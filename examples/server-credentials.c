@@ -1,23 +1,34 @@
 /* This example demonstrates how to retreive SSL/TLS server credentials.
  */
 #include "libepc/tls.h"
+#include "libepc-ui/entropy-progress.h"
+#include <gtk/gtk.h>
 
 int
-main (void)
+main (int   argc,
+      char *argv[])
 {
+  const gchar *hostname = (argc > 1 ? argv[1] : "localhost");
+
   gchar *contents = NULL;
   gchar *keyfile = NULL;
   gchar *crtfile = NULL;
   GError *error = NULL;
 
-  /* Initialize glib and gnutls
+  /* Initialize GTK+ and gnutls
    */
-  g_set_prgname ("server-credentials");
   gnutls_global_init ();
+  g_thread_init (NULL);
+  gdk_threads_init ();
+  gtk_init (&argc, &argv);
 
-  /* Retreive and show filenames of server credentials.
+  /* Show a progress window when generating new keys.
    */
-  if (epc_tls_get_server_credentials ("localhost", &crtfile, &keyfile, &error))
+  epc_entropy_progress_install ();
+
+  /* Retreive and display of server credentials.
+   */
+  if (epc_tls_get_server_credentials (hostname, &crtfile, &keyfile, &error))
     {
       g_print ("private key file: %s\n", keyfile);
 
@@ -39,6 +50,8 @@ main (void)
     }
 
 out:
+  /* Cleanup.
+   */
   if (error)
     {
       g_warning ("%s", error->message);

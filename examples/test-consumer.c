@@ -8,7 +8,7 @@
 #include "libepc/consumer.h"
 #include "libepc/publisher.h"
 #include "libepc/service-names.h"
-#include "libepc-ui/passworddialog.h"
+#include "libepc-ui/password-dialog.h"
 
 #include <avahi-ui/avahi-ui.h>
 #include <glib/gi18n.h>

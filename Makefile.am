@@ -28,7 +28,8 @@ libepc_include_HEADERS = \
 	libepc/shell.h \
 	libepc/tls.h
 libepc_ui_include_HEADERS = \
-	libepc-ui/passworddialog.h
+	libepc-ui/entropy-progress.h \
+	libepc-ui/password-dialog.h
 pkgconfig_DATA = \
 	libepc.pc \
 	libepc-ui.pc
@@ -43,7 +44,8 @@ libepc_libepc_la_SOURCES = \
 	$(libepc_HEADERS)
 
 libepc_ui_libepc_ui_la_SOURCES = \
-	libepc-ui/passworddialog.c \
+	libepc-ui/entropy-progress.c \
+	libepc-ui/password-dialog.c \
 	$(libepc_ui_HEADERS)
 
 tests_libepc_tests_la_SOURCES = \
@@ -60,8 +62,8 @@ examples_test_publisher_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 examples_test_publisher_LDADD = libepc/libepc.la
 examples_test_consumer_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS) $(AVAHIUI_CFLAGS)
 examples_test_consumer_LDADD = libepc/libepc.la libepc-ui/libepc-ui.la $(AVAHIUI_LIBS)
-examples_server_credentials_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-examples_server_credentials_LDADD = libepc/libepc.la
+examples_server_credentials_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS)
+examples_server_credentials_LDADD = libepc/libepc.la libepc-ui/libepc-ui.la
 
 tests_libepc_tests_la_CFLAGS = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 

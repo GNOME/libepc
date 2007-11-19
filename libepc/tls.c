@@ -34,6 +34,20 @@
     goto out;                                   \
 }G_STMT_END
 
+typedef struct _EcpTlsKeyContext EcpTlsKeyContext;
+
+struct _EcpTlsKeyContext
+{
+  gnutls_x509_privkey_t key;
+  GMainLoop *loop;
+  gint rc;
+};
+
+static gpointer epc_tls_privkey_enter_default (void);
+
+static EpcTlsPrivkeyEnterHook epc_tls_privkey_enter = epc_tls_privkey_enter_default;
+static EpcTlsPrivkeyLeaveHook epc_tls_privkey_leave = NULL;
+
 extern gboolean _epc_debug;
 
 GQuark
@@ -76,33 +90,76 @@ epc_tls_certificate_get_filename (const gchar *basename)
   return epc_tls_get_filename (basename, "certs");
 }
 
-gnutls_x509_privkey_t
-epc_tls_privkey_new (GError **error)
+static gpointer
+epc_tls_privkey_enter_default (void)
 {
-  gnutls_x509_privkey_t key = NULL;
-  gint rc = GNUTLS_E_SUCCESS;
-
   g_print (_("Generating server key. This may take some time. "
              "Type on the keyboard, move your mouse or "
              "browse the web to generate some entropy.\n"));
 
-  epc_tls_check (rc = gnutls_x509_privkey_init (&key));
-  epc_tls_check (rc = gnutls_x509_privkey_generate (key, GNUTLS_PK_RSA, 1024, 0));
+  return NULL;
+}
+
+void
+epc_tls_privkey_set_hooks (EpcTlsPrivkeyEnterHook enter,
+                           EpcTlsPrivkeyLeaveHook leave)
+{
+  epc_tls_privkey_enter = enter;
+  epc_tls_privkey_leave = leave;
+}
+
+static gpointer
+epc_tls_privkey_thread (gpointer data)
+{
+  EcpTlsKeyContext *context = data;
+
+  context->rc = gnutls_x509_privkey_generate (context->key, GNUTLS_PK_RSA, 1024, 0);
+  g_main_loop_quit (context->loop);
+
+  return NULL;
+}
+
+gnutls_x509_privkey_t
+epc_tls_privkey_new (GError **error)
+{
+  EcpTlsKeyContext context = { NULL, NULL, GNUTLS_E_SUCCESS };
+  gpointer hook_data = NULL;
+
+  if (epc_tls_privkey_enter)
+    hook_data = epc_tls_privkey_enter ();
+
+  context.rc = gnutls_x509_privkey_init (&context.key);
+  epc_tls_check (context.rc);
+
+  if (g_thread_supported ())
+    {
+      context.loop = g_main_loop_new (NULL, FALSE);
+      g_thread_create (epc_tls_privkey_thread, &context, FALSE, NULL);
+      g_main_loop_run (context.loop);
+      g_main_loop_unref (context.loop);
+    }
+  else
+    epc_tls_privkey_thread (&context);
+
+  epc_tls_check (context.rc);
 
 out:
-  if (GNUTLS_E_SUCCESS != rc)
+  if (epc_tls_privkey_leave)
+    epc_tls_privkey_leave (hook_data);
+
+  if (GNUTLS_E_SUCCESS != context.rc)
     {
-      g_set_error (error, EPC_TLS_ERROR, rc,
+      g_set_error (error, EPC_TLS_ERROR, context.rc,
                    _("Cannot create private server key: %s"),
-                   gnutls_strerror (rc));
+                   gnutls_strerror (context.rc));
 
-      if (key)
-        gnutls_x509_privkey_deinit (key);
+      if (context.key)
+        gnutls_x509_privkey_deinit (context.key);
 
-      key = NULL;
+      context.key = NULL;
     }
 
-  return key;
+  return context.key;
 }
 
 gnutls_x509_privkey_t

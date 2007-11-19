@@ -1,3 +1,16 @@
+2007-11-08  Mathias Hasselmann  <mathias@openismus.com>
+
+	Show a progress window when generating new keys.
+
+	* examples/server-credentials.c: Use EpcEntropyProgress.
+	* libepc-ui/passworddialog.c, libepc-ui/passworddialog.h,
+	examples/test-consumer.c: Rename files to password-dialog.
+	* libepc/tls.c, libepc/tls.h: Add epc_tls_privkey_set_hooks which
+	allows showing of a progress window when generating private keys.
+	* libepc-ui/entropy-progress.c, libepc-ui/entropy-progress.h,
+	Makefile.am: Add EpcEntropyProgress, which can be shown when
+	generating keys.
+
 2007-11-07  Mathias Hasselmann  <mathias@openismus.com>
 
 	Create simple API for creating, storing and loading server keys.

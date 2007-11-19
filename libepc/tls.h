@@ -21,14 +21,17 @@
 #ifndef __EPC_TLS_H__
 #define __EPC_TLS_H__
 
-#include <glib.h>
+#include <glib-object.h>
 #include <gnutls/x509.h>
 
 #define EPC_TLS_ERROR (epc_tls_error_quark ())
+
 #define EPC_TLS_SECONDS_PER_MINUTE  (60)
 #define EPC_TLS_SECONDS_PER_HOUR    (60 * EPC_TLS_SECONDS_PER_MINUTE)
 #define EPC_TLS_SECONDS_PER_DAY     (24 * EPC_TLS_SECONDS_PER_HOUR)
 
+typedef gpointer (*EpcTlsPrivkeyEnterHook) (void);
+typedef void     (*EpcTlsPrivkeyLeaveHook) (gpointer data);
 
 G_BEGIN_DECLS
 
@@ -36,6 +39,9 @@ GQuark                epc_tls_error_quark              (void);
 
 gchar*                epc_tls_privkey_get_filename     (const gchar            *basename);
 gchar*                epc_tls_certificate_get_filename (const gchar            *basename);
+
+void                  epc_tls_privkey_set_hooks        (EpcTlsPrivkeyEnterHook  enter,
+                                                        EpcTlsPrivkeyLeaveHook  leave);
 
 gnutls_x509_privkey_t epc_tls_privkey_new              (GError                **error);
 gnutls_x509_privkey_t epc_tls_privkey_load             (const gchar            *filename,
