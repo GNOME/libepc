@@ -133,6 +133,18 @@ lookup_value (EpcConsumer *consumer,
   g_free (value);
 }
 
+static void
+authenticate_cb (EpcConsumer  *consumer G_GNUC_UNUSED,
+                 const gchar  *realm,
+                 gchar       **username,
+                 gchar       **password,
+                 gpointer      data     G_GNUC_UNUSED)
+{
+  g_print ("Sending authentication tokens for `%s'\n", realm);
+  *username = g_strdup (g_get_user_name ());
+  *password = g_strdup ("secret");
+}
+
 int
 main (int   argc,
       char *argv[])
@@ -168,6 +180,7 @@ main (int   argc,
       /* Create an EpcConsumer for the selected service.
        */
       consumer = epc_consumer_new (host, port);
+      g_signal_connect (consumer, "authenticate", G_CALLBACK (authenticate_cb), NULL);
 
       /* Retrieve the human readable name of the selected service,
        * just for the purpose of displaying it in the UI later.

@@ -21,6 +21,7 @@ TESTS = \
 libepc_include_HEADERS = \
 	libepc/consumer.h \
 	libepc/dispatcher.h \
+	libepc/marshal.h \
 	libepc/publisher.h
 pkgconfig_DATA = \
 	libepc.pc
@@ -28,6 +29,7 @@ pkgconfig_DATA = \
 libepc_libepc_la_SOURCES = \
 	libepc/consumer.c \
 	libepc/dispatcher.c \
+	libepc/marshal.c \
 	libepc/publisher.c \
 	$(libepc_HEADERS)
 tests_libepc_test_la_SOURCES = \
@@ -51,4 +53,9 @@ pkgconfigdir = $(libdir)/pkgconfig
 TESTS_ENVIRONMENT = tests/test-runner.sh
 DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
 SUBDIRS = docs/reference/libepc
+
+libepc/marshal.h: libepc/marshal.list
+	$(GLIB_GENMARSHAL) $< --header --prefix=_epc_marshal > $@
+libepc/marshal.c: libepc/marshal.list
+	$(GLIB_GENMARSHAL) $< --body --prefix=_epc_marshal > $@
 

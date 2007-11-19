@@ -7,6 +7,9 @@
  *
  * When no arguments are passed some default values are published,
  * including the contents of this file by the key "source-code".
+ *
+ * To access the default resource called "sensitive"
+ * use your login name as user name and the word "secret" as password.
  */
 #include "libepc/publisher.h"
 
@@ -30,6 +33,17 @@ timestamp_handler (EpcPublisher *publisher G_GNUC_UNUSED,
   strftime (buffer, bufsize, format, tm);
 
   return epc_content_new ("text/plain", buffer, strlen (buffer));
+}
+
+static gboolean
+authentication_handler (EpcAuthContext *context,
+                        const gchar    *user_name,
+                        gpointer        user_data)
+{
+  return
+    NULL != user_name &&
+    g_str_equal (user_name, g_get_user_name ()) &&
+    epc_auth_context_check_password (context, user_data);
 }
 
 int
@@ -58,6 +72,12 @@ main (int   argc,
       epc_publisher_add_handler (publisher, "date", timestamp_handler, "%x", NULL);
       epc_publisher_add_handler (publisher, "time", timestamp_handler, "%X", NULL);
       epc_publisher_add_handler (publisher, "date-time", timestamp_handler, "%x %X", NULL);
+
+      epc_publisher_add (publisher, "sensitive",
+                         "This value is top secret.", -1);
+      epc_publisher_set_auth_handler (publisher, "sensitive",
+                                      authentication_handler,
+                                      "secret", NULL);
     }
   else
     {

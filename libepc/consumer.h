@@ -51,6 +51,7 @@ struct _EpcConsumer
 /**
  * EpcConsumerClass:
  * @parent_class: virtual methods of the base class
+ * @authenticate: virtual method of the "authenticate" signal
  *
  * Virtual methods of the #EpcConsumer class.
  */
@@ -58,6 +59,12 @@ struct _EpcConsumerClass
 {
   /*< private >*/
   GObjectClass parent_class;
+
+  /*< public >*/
+  void (*authenticate) (EpcConsumer  *consumer,
+                        const gchar  *realm,
+                        gchar       **username,
+                        gchar       **password);
 };
 
 GType        epc_consumer_get_type (void) G_GNUC_CONST;

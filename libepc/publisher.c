@@ -54,6 +54,7 @@
 #include <libsoup/soup-address.h>
 #include <libsoup/soup-message.h>
 #include <libsoup/soup-server.h>
+#include <libsoup/soup-server-auth.h>
 #include <libsoup/soup-socket.h>
 
 #include <string.h>
@@ -66,6 +67,13 @@ enum
   PROP_NAME,
   PROP_DOMAIN,
   PROP_SERVICE
+};
+
+struct _EpcAuthContext
+{
+  SoupServerAuth *auth;
+  EpcPublisher   *publisher;
+  const gchar    *key;
 };
 
 /**
@@ -87,6 +95,10 @@ struct _EpcPublication
   EpcContentHandler handler;
   gpointer          user_data;
   GDestroyNotify    destroy_data;
+
+  EpcAuthHandler    auth_handler;
+  gpointer          auth_user_data;
+  GDestroyNotify    auth_destroy_data;
 };
 
 /**
@@ -96,9 +108,11 @@ struct _EpcPublication
  */
 struct _EpcPublisherPrivate
 {
-  EpcDispatcher *dispatcher;
-  GHashTable    *publications;
-  SoupServer    *server;
+  EpcDispatcher         *dispatcher;
+  GHashTable            *publications;
+  EpcPublication        *default_publication;
+  SoupServerAuthContext  server_auth;
+  SoupServer            *server;
 
   gchar *name;
   gchar *domain;
@@ -172,24 +186,39 @@ epc_publication_new (EpcContentHandler handler,
                      gpointer          user_data,
                      GDestroyNotify    destroy_data)
 {
-  EpcPublication *publication = g_slice_new0 (EpcPublication);
+  EpcPublication *self = g_slice_new0 (EpcPublication);
 
-  publication->handler = handler;
-  publication->user_data = user_data;
-  publication->destroy_data = destroy_data;
+  self->handler = handler;
+  self->user_data = user_data;
+  self->destroy_data = destroy_data;
 
-  return publication;
+  return self;
 }
 
 static void
 epc_publication_free (gpointer data)
 {
-  EpcPublication *publication = data;
+  EpcPublication *self = data;
 
-  if (publication->destroy_data)
-    publication->destroy_data (publication->user_data);
+  if (self->destroy_data)
+    self->destroy_data (self->user_data);
 
-  g_slice_free (EpcPublication, publication);
+  g_slice_free (EpcPublication, self);
+}
+
+static void
+epc_publication_set_auth_handler (EpcPublication *self,
+                                  EpcAuthHandler  handler,
+                                  gpointer        user_data,
+                                  GDestroyNotify  destroy_data)
+
+{
+  if (self->auth_destroy_data)
+    self->auth_destroy_data (self->auth_user_data);
+
+  self->auth_handler = handler;
+  self->auth_user_data = user_data;
+  self->auth_destroy_data = destroy_data;
 }
 
 static EpcContent*
@@ -219,27 +248,37 @@ epc_publisher_handle_file (EpcPublisher *publisher G_GNUC_UNUSED,
 
 G_DEFINE_TYPE (EpcPublisher, epc_publisher, G_TYPE_OBJECT);
 
+static G_CONST_RETURN gchar*
+epc_publisher_get_key (const gchar *path)
+{
+  const gchar *key;
+
+  g_return_val_if_fail (NULL != path, NULL);
+  g_return_val_if_fail ('/' == *path, NULL);
+
+  key = strchr (path + 1, '/');
+
+  if (key)
+    key += 1;
+
+  return key;
+}
+
 static void
-epc_publisher_get_handler (SoupServerContext *context,
-                           SoupMessage       *message,
-                           gpointer           data)
+epc_publisher_server_get_handler (SoupServerContext *context,
+                                  SoupMessage       *message,
+                                  gpointer           data)
 {
   EpcPublisher *self = data;
   EpcPublication *publication = NULL;
   EpcContent *content = NULL;
   const gchar *key = NULL;
 
-  if ('/' == *context->path)
-    key = context->path + 1;
-  if (key)
-    key = strchr (key, '/');
-  if (key)
-    key += 1;
+  key = epc_publisher_get_key (context->path);
 
   if (key)
     publication = g_hash_table_lookup (self->priv->publications, key);
-
-  if (publication)
+  if (publication && publication->handler)
     content = publication->handler (self, key, publication->user_data);
 
   if (content)
@@ -262,13 +301,54 @@ epc_publisher_get_handler (SoupServerContext *context,
     soup_message_set_status (message, SOUP_STATUS_NOT_FOUND);
 }
 
+static gboolean
+epc_publisher_server_auth_cb (SoupServerAuthContext *auth_ctx G_GNUC_UNUSED,
+		              SoupServerAuth        *auth,
+		              SoupMessage           *message,
+		              gpointer               data)
+{
+  EpcPublication *publication = NULL;
+  const char *user = NULL;
+  EpcAuthContext context;
+  const SoupUri *uri;
+
+  uri = soup_message_get_uri (message);
+
+  context.auth = auth;
+  context.publisher = EPC_PUBLISHER (data);
+  context.key = epc_publisher_get_key (uri->path);
+
+  if (NULL != auth)
+    user = soup_server_auth_get_user (auth);
+  if (NULL == user)
+    auth_ctx->digest_info.realm = context.publisher->priv->name;
+  if (NULL != context.key)
+    publication = g_hash_table_lookup (context.publisher->priv->publications, context.key);
+  if (NULL == publication)
+    publication = context.publisher->priv->default_publication;
+
+  if (publication && publication->auth_handler)
+    return publication->auth_handler (&context, user, publication->auth_user_data);
+
+  return FALSE;
+}
+
 static void
 epc_publisher_init (EpcPublisher *self)
 {
   self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self, EPC_TYPE_PUBLISHER, EpcPublisherPrivate);
 
+  self->priv->server_auth.types = SOUP_AUTH_TYPE_DIGEST;
+  self->priv->server_auth.callback = epc_publisher_server_auth_cb;
+  self->priv->server_auth.user_data = self;
+
+  self->priv->server_auth.digest_info.allow_algorithms = SOUP_ALGORITHM_MD5;
+  self->priv->server_auth.digest_info.force_integrity = FALSE;
+  /* TODO: Figure out why force_integrity doesn't work. */
+
   self->priv->server = soup_server_new (SOUP_SERVER_PORT, SOUP_ADDRESS_ANY_PORT, NULL);
-  soup_server_add_handler (self->priv->server, "/get", NULL, epc_publisher_get_handler, NULL, self);
+  soup_server_add_handler (self->priv->server, "/get", &self->priv->server_auth,
+                           epc_publisher_server_get_handler, NULL, self);
 
   self->priv->publications = g_hash_table_new_full (g_str_hash, g_str_equal,
                                                     g_free, epc_publication_free);
@@ -404,6 +484,12 @@ epc_publisher_dispose (GObject *object)
     {
       g_hash_table_unref (self->priv->publications);
       self->priv->publications = NULL;
+    }
+
+  if (self->priv->default_publication)
+    {
+      epc_publication_free (self->priv->default_publication);
+      self->priv->default_publication = NULL;
     }
 
   g_free (self->priv->name);
@@ -583,6 +669,39 @@ epc_publisher_add_handler (EpcPublisher      *self,
   g_hash_table_insert (self->priv->publications, g_strdup (key), publication);
 }
 
+void
+epc_publisher_set_auth_handler (EpcPublisher   *self,
+                                const gchar    *key,
+                                EpcAuthHandler  handler,
+                                gpointer        user_data,
+                                GDestroyNotify  destroy_data)
+{
+  EpcPublication *publication;
+
+  g_return_if_fail (EPC_IS_PUBLISHER (self));
+  g_return_if_fail (NULL != handler);
+
+  if (NULL != key)
+    {
+      publication = g_hash_table_lookup (self->priv->publications, key);
+
+      if (NULL == publication)
+        {
+          g_warning ("%s: No publication found for key `%s'", G_STRLOC, key);
+          return;
+        }
+    }
+  else
+    {
+      if (NULL == self->priv->default_publication)
+        self->priv->default_publication = epc_publication_new (NULL, NULL, NULL);
+
+      publication = self->priv->default_publication;
+    }
+
+  epc_publication_set_auth_handler (publication, handler, user_data, destroy_data);
+}
+
 /**
  * epc_publisher_set_name:
  * @publisher: a #EpcPublisher
@@ -690,6 +809,33 @@ epc_publisher_quit (EpcPublisher *self)
 {
   g_return_if_fail (EPC_IS_PUBLISHER (self));
   soup_server_quit (self->priv->server);
+}
+
+EpcPublisher*
+epc_auth_context_get_publisher (EpcAuthContext *context)
+{
+  g_return_val_if_fail (NULL != context, NULL);
+  return context->publisher;
+}
+
+G_CONST_RETURN gchar*
+epc_auth_context_get_key (EpcAuthContext *context)
+{
+  g_return_val_if_fail (NULL != context, NULL);
+  return context->key;
+}
+
+gboolean
+epc_auth_context_check_password (EpcAuthContext *context,
+                                 const gchar    *password)
+{
+  g_return_val_if_fail (NULL != context, FALSE);
+  g_return_val_if_fail (NULL != password, FALSE);
+
+  return
+    NULL != context->auth &&
+    soup_server_auth_check_passwd (context->auth, (gchar*) password);
+    /* TODO: libsoup bug #493686 */
 }
 
 /* vim: set sw=2 sta et spl=en spell: */

@@ -49,6 +49,7 @@
  */
 
 #include "consumer.h"
+#include "marshal.h"
 
 #include <libsoup/soup-session-sync.h>
 #include <string.h>
@@ -58,6 +59,12 @@ enum
   PROP_NONE,
   PROP_HOST,
   PROP_PORT
+};
+
+enum
+{
+  SIGNAL_AUTHENTICATE,
+  SIGNAL_LAST
 };
 
 /**
@@ -72,13 +79,33 @@ struct _EpcConsumerPrivate
   gchar *host;
 };
 
+static guint signals[SIGNAL_LAST];
+
 G_DEFINE_TYPE (EpcConsumer, epc_consumer, G_TYPE_OBJECT);
+
+static void
+epc_consumer_authenticate_cb (SoupSession  *session G_GNUC_UNUSED,
+                              SoupMessage  *message G_GNUC_UNUSED,
+                              gchar        *auth_type G_GNUC_UNUSED,
+                              gchar        *auth_realm,
+                              gchar       **username,
+                              gchar       **password,
+                              gpointer      data)
+{
+  EpcConsumer *self = EPC_CONSUMER (data);
+
+  g_signal_emit (self, signals[SIGNAL_AUTHENTICATE], 0,
+                 auth_realm, username, password);
+}
 
 static void
 epc_consumer_init (EpcConsumer *self)
 {
   self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self, EPC_TYPE_CONSUMER, EpcConsumerPrivate);
   self->priv->session = soup_session_sync_new ();
+
+  g_signal_connect (self->priv->session, "authenticate",
+                    G_CALLBACK (epc_consumer_authenticate_cb), self);
 }
 
 static void
@@ -171,6 +198,11 @@ epc_consumer_class_init (EpcConsumerClass *cls)
                                                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
                                                      G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                      G_PARAM_STATIC_BLURB));
+
+  signals[SIGNAL_AUTHENTICATE] = g_signal_new ("authenticate", EPC_TYPE_CONSUMER, G_SIGNAL_RUN_FIRST,
+                                               G_STRUCT_OFFSET (EpcConsumerClass, authenticate), NULL, NULL,
+                                               _epc_marshal_VOID__STRING_POINTER_POINTER, G_TYPE_NONE,
+                                               3, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_POINTER);
 
   g_type_class_add_private (cls, sizeof (EpcConsumerPrivate));
 }

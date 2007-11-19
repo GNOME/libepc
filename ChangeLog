@@ -1,5 +1,18 @@
 2007-11-05  Mathias Hasselmann  <mathias@openismus.com>
 
+	Implement authentication for EpcPublisher and EpcConsumer.
+
+	* examples/test-consumer.c: Demonstrate authentication callback.
+	* examples/test-publisher.c: Demonstrate publishing of sensitive data.
+	* libepc/consumer.c, libepc/consumer.h: Add "authenticate" signal.
+	* libepc/marshal.list: Add marshaller for "authenticate" signal.
+	* libepc/.gitignore: Add generated files marshal.c and marshal.h.
+	* Makefile.am: Add marshal.c, marshal.h and code to generate them.
+	* libepc/publisher.c, libepc/publisher.h: Implement authentication
+	by adding epc_publisher_set_auth_handler and EpcAuthContext.
+
+2007-11-05  Mathias Hasselmann  <mathias@openismus.com>
+
 	Demonstrate epc_publisher_add_handler.
 
 	* examples/test-publisher.c: Demonstrate epc_publisher_add_handler.
