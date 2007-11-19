@@ -1,5 +1,19 @@
 2007-11-15  Mathias Hasselmann  <mathias@openismus.com>
 
+	Simplify authentication by using an approach similiar to the one
+	Alex Larsson uses for gvfs: The consumer just emits an signal that
+	authentication credentials are required, and the signal handler
+	changes some consumer properties when being able to provide them.
+
+	* docs/reference/libepc/libepc-1.0-sections.txt: Update symbols.
+	* libepc/consumer.c, libepc/consumer.h: Remove reauthenticate signal.
+	Modify authentication signal. Add username and password properties.
+	* libepc/marshal.list: Update the authentication marshaller.
+	* libepc/publisher.c: Dump debug messages during authentication.
+	* libepc-ui/password-dialog.c: Use the new authentication scheme.
+
+2007-11-15  Mathias Hasselmann  <mathias@openismus.com>
+
 	Remove a bogous hash sign from API documentation.
 
 2007-11-15  Mathias Hasselmann  <mathias@openismus.com>

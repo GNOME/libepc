@@ -529,27 +529,27 @@ epc_password_dialog_get_realm (EpcPasswordDialog *self)
   return self->priv->realm;
 }
 
-static void
-epc_password_dialog_authenticate_cb (EpcConsumer  *consumer G_GNUC_UNUSED,
+static gboolean
+epc_password_dialog_authenticate_cb (EpcConsumer  *consumer,
                                      const gchar  *realm,
-                                     gchar       **username,
-                                     gchar       **password,
                                      gpointer      data)
 {
   EpcPasswordDialog *dialog = EPC_PASSWORD_DIALOG (data);
+  gboolean handled = FALSE;
 
   epc_password_dialog_set_realm (dialog, realm);
 
   if (GTK_RESPONSE_ACCEPT == gtk_dialog_run (GTK_DIALOG (dialog)))
     {
-      g_free (*username);
-      g_free (*password);
+      epc_consumer_set_username (consumer, epc_password_dialog_get_username (dialog));
+      epc_consumer_set_password (consumer, epc_password_dialog_get_password (dialog));
 
-      *username = g_strdup (epc_password_dialog_get_username (dialog));
-      *password = g_strdup (epc_password_dialog_get_password (dialog));
+      handled = TRUE;
     }
 
   gtk_widget_hide (GTK_WIDGET (dialog));
+
+  return handled;
 }
 
 /**
@@ -568,8 +568,7 @@ epc_password_dialog_attach (EpcPasswordDialog *self,
   g_return_if_fail (EPC_IS_PASSWORD_DIALOG (self));
   g_return_if_fail (EPC_IS_CONSUMER (consumer));
 
-  g_object_connect (consumer,
-    "signal::authenticate", epc_password_dialog_authenticate_cb, self,
-    "signal::reauthenticate", epc_password_dialog_authenticate_cb, self,
-    NULL);
+  g_signal_connect (consumer, "authenticate",
+                    G_CALLBACK (epc_password_dialog_authenticate_cb),
+                    self);
 }

@@ -104,7 +104,13 @@ epc_consumer_new_for_name_full
 
 <SUBSECTION>
 epc_consumer_get_protocol
+epc_consumer_get_password
+epc_consumer_get_username
+
+<SUBSECTION>
 epc_consumer_set_protocol
+epc_consumer_set_password
+epc_consumer_set_username
 
 <SUBSECTION>
 epc_consumer_resolve_publisher

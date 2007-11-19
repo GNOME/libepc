@@ -570,6 +570,7 @@ epc_publisher_server_auth_cb (SoupServerAuthContext *auth_ctx G_GNUC_UNUSED,
                               gpointer               data)
 {
   EpcResource *resource = NULL;
+  gboolean authorized = TRUE;
   const char *user = NULL;
   EpcAuthContext context;
   const SoupUri *uri;
@@ -590,9 +591,13 @@ epc_publisher_server_auth_cb (SoupServerAuthContext *auth_ctx G_GNUC_UNUSED,
     resource = context.publisher->priv->default_resource;
 
   if (resource && resource->auth_handler)
-    return resource->auth_handler (&context, user, resource->auth_user_data);
+    authorized = resource->auth_handler (&context, user, resource->auth_user_data);
 
-  return TRUE;
+  if (G_UNLIKELY (_epc_debug))
+    g_debug ("%s: path=%s, resource=%p, auth_handler=%p, authorized=%d", G_STRLOC,
+             uri->path, resource, resource ? resource->auth_handler : NULL, authorized);
+
+  return authorized;
 }
 
 static void

@@ -75,14 +75,7 @@ struct _EpcConsumerClass
 
   /*< public >*/
   void (*authenticate)       (EpcConsumer  *consumer,
-                              const gchar  *realm,
-                              gchar       **username,
-                              gchar       **password);
-
-  void (*reauthenticate)     (EpcConsumer  *consumer,
-                              const gchar  *realm,
-                              gchar       **username,
-                              gchar       **password);
+                              const gchar  *realm);
 
   void (*publisher_resolved) (EpcConsumer  *consumer,
                               EpcProtocol   protocol,
@@ -102,7 +95,14 @@ EpcConsumer*          epc_consumer_new_for_name_full     (const gchar  *name,
 
 void                  epc_consumer_set_protocol          (EpcConsumer  *consumer,
                                                           EpcProtocol   protocol);
+void                  epc_consumer_set_username          (EpcConsumer  *consumer,
+                                                          const gchar  *username);
+void                  epc_consumer_set_password          (EpcConsumer  *consumer,
+                                                          const gchar  *password);
+
 EpcProtocol           epc_consumer_get_protocol          (EpcConsumer  *consumer);
+G_CONST_RETURN gchar* epc_consumer_get_username          (EpcConsumer  *consumer);
+G_CONST_RETURN gchar* epc_consumer_get_password          (EpcConsumer  *consumer);
 
 gboolean              epc_consumer_resolve_publisher     (EpcConsumer  *consumer,
                                                           guint         timeout);

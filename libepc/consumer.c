@@ -28,6 +28,7 @@
 #include <avahi-common/error.h>
 #include <glib/gi18n-lib.h>
 #include <libsoup/soup-session-async.h>
+#include <libsoup/soup-uri.h>
 #include <string.h>
 
 /**
@@ -109,18 +110,19 @@ EpcListingElementType;
 enum
 {
   PROP_NONE,
+  PROP_NAME,
+  PROP_DOMAIN,
   PROP_APPLICATION,
   PROP_PROTOCOL,
   PROP_HOSTNAME,
   PROP_PORT,
-  PROP_NAME,
-  PROP_DOMAIN
+  PROP_USERNAME,
+  PROP_PASSWORD
 };
 
 enum
 {
   SIGNAL_AUTHENTICATE,
-  SIGNAL_REAUTHENTICATE,
   SIGNAL_PUBLISHER_RESOLVED,
   SIGNAL_LAST
 };
@@ -137,13 +139,14 @@ struct _EpcConsumerPrivate
   SoupSession  *session;
   GMainLoop    *loop;
 
+  gchar        *name;
+  gchar        *domain;
   gchar        *application;
   EpcProtocol   protocol;
   gchar        *hostname;
   guint16       port;
-
-  gchar        *service_name;
-  gchar        *service_domain;
+  gchar        *username;
+  gchar        *password;
 };
 
 struct _EpcListingState
@@ -160,7 +163,7 @@ G_DEFINE_TYPE (EpcConsumer, epc_consumer, G_TYPE_OBJECT);
 
 static void
 epc_consumer_authenticate_cb (SoupSession  *session G_GNUC_UNUSED,
-                              SoupMessage  *message G_GNUC_UNUSED,
+                              SoupMessage  *message,
                               gchar        *auth_type G_GNUC_UNUSED,
                               gchar        *auth_realm,
                               gchar       **username,
@@ -169,27 +172,53 @@ epc_consumer_authenticate_cb (SoupSession  *session G_GNUC_UNUSED,
 {
   EpcConsumer *self = EPC_CONSUMER (data);
 
-  epc_shell_enter ();
-  g_signal_emit (self, signals[SIGNAL_AUTHENTICATE], 0,
-                 auth_realm, username, password);
-  epc_shell_leave ();
+  if (G_UNLIKELY (_epc_debug))
+    g_debug ("%s: path=%s, realm=%s, username=%s, password=%s",
+             G_STRLOC, soup_message_get_uri (message)->path,
+             auth_realm, *username, *password);
+
+  g_free (*username);
+  g_free (*password);
+
+  *username = g_strdup (self->priv->username ? self->priv->username : "");
+  *password = g_strdup (self->priv->password ? self->priv->password : "");
+
+  if (G_UNLIKELY (_epc_debug))
+    g_debug ("%s: path=%s, realm=%s, username=%s, password=%s",
+             G_STRLOC, soup_message_get_uri (message)->path,
+             auth_realm, *username, *password);
 }
 
 static void
-epc_consumer_reauthenticate_cb (SoupSession  *session G_GNUC_UNUSED,
-                                SoupMessage  *message G_GNUC_UNUSED,
-                                gchar        *auth_type G_GNUC_UNUSED,
+epc_consumer_reauthenticate_cb (SoupSession  *session,
+                                SoupMessage  *message,
+                                gchar        *auth_type,
                                 gchar        *auth_realm,
                                 gchar       **username,
                                 gchar       **password,
                                 gpointer      data)
 {
   EpcConsumer *self = EPC_CONSUMER (data);
+  gboolean handled = FALSE;
+
+  if (G_UNLIKELY (_epc_debug))
+    g_debug ("%s: path=%s, realm=%s, username=%s, password=%s, handled=%d",
+             G_STRLOC, soup_message_get_uri (message)->path,
+             auth_realm, *username, *password, handled);
 
   epc_shell_enter ();
-  g_signal_emit (self, signals[SIGNAL_REAUTHENTICATE], 0,
-                 auth_realm, username, password);
+  g_signal_emit (self, signals[SIGNAL_AUTHENTICATE],
+                 0, auth_realm, &handled);
   epc_shell_leave ();
+
+  if (G_UNLIKELY (_epc_debug))
+    g_debug ("%s: path=%s, realm=%s, username=%s, password=%s, handled=%d",
+             G_STRLOC, soup_message_get_uri (message)->path,
+             auth_realm, *username, *password, handled);
+
+  if (handled)
+    epc_consumer_authenticate_cb (session, message, auth_realm,
+                                  auth_type, username, password, data);
 }
 
 static void
@@ -217,6 +246,16 @@ epc_consumer_set_property (GObject      *object,
 
   switch (prop_id)
     {
+      case PROP_NAME:
+        g_assert (NULL == self->priv->name);
+        self->priv->name = g_value_dup_string (value);
+        break;
+
+      case PROP_DOMAIN:
+        g_assert (NULL == self->priv->domain);
+        self->priv->domain = g_value_dup_string (value);
+        break;
+
       case PROP_APPLICATION:
         g_assert (NULL == self->priv->application);
         self->priv->application = g_value_dup_string (value);
@@ -238,14 +277,14 @@ epc_consumer_set_property (GObject      *object,
         self->priv->port = g_value_get_int (value);
         break;
 
-      case PROP_NAME:
-        g_assert (NULL == self->priv->service_name);
-        self->priv->service_name = g_value_dup_string (value);
+      case PROP_USERNAME:
+        g_free (self->priv->username);
+        self->priv->username = g_value_dup_string (value);
         break;
 
-      case PROP_DOMAIN:
-        g_assert (NULL == self->priv->service_domain);
-        self->priv->service_domain = g_value_dup_string (value);
+      case PROP_PASSWORD:
+        g_free (self->priv->password);
+        self->priv->password = g_value_dup_string (value);
         break;
 
       default:
@@ -264,6 +303,14 @@ epc_consumer_get_property (GObject    *object,
 
   switch (prop_id)
     {
+      case PROP_NAME:
+        g_value_set_string (value, self->priv->name);
+        break;
+
+      case PROP_DOMAIN:
+        g_value_set_string (value, self->priv->domain);
+        break;
+
       case PROP_APPLICATION:
         g_value_set_string (value, self->priv->application);
         break;
@@ -280,12 +327,12 @@ epc_consumer_get_property (GObject    *object,
         g_value_set_int (value, self->priv->port);
         break;
 
-      case PROP_NAME:
-        g_value_set_string (value, self->priv->service_name);
+      case PROP_USERNAME:
+        g_value_set_string (value, self->priv->username);
         break;
 
-      case PROP_DOMAIN:
-        g_value_set_string (value, self->priv->service_domain);
+      case PROP_PASSWORD:
+        g_value_set_string (value, self->priv->password);
         break;
 
       default:
@@ -371,7 +418,7 @@ epc_consumer_service_brower_cb (AvahiServiceBrowser    *browser,
         break;
 
       default:
-        if (name && g_str_equal (name, self->priv->service_name))
+        if (name && g_str_equal (name, self->priv->name))
           avahi_service_resolver_new (self->priv->client, interface,
                                       protocol, name, type, domain, AVAHI_PROTO_UNSPEC,
                                       0, epc_consumer_service_resolver_cb, self);
@@ -402,7 +449,7 @@ epc_consumer_create_service_browsers (EpcConsumer *self,
 
       browser = avahi_service_browser_new (self->priv->client,
                                            AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC,
-                                           service_type, self->priv->service_domain,
+                                           service_type, self->priv->domain,
                                            0, epc_consumer_service_brower_cb, self);
 
       if (NULL == browser)
@@ -479,8 +526,23 @@ epc_consumer_dispose (GObject *object)
       self->priv->loop = NULL;
     }
 
+  g_free (self->priv->name);
+  self->priv->name = NULL;
+
+  g_free (self->priv->domain);
+  self->priv->domain = NULL;
+
+  g_free (self->priv->application);
+  self->priv->application = NULL;
+
   g_free (self->priv->hostname);
   self->priv->hostname = NULL;
+
+  g_free (self->priv->username);
+  self->priv->username = NULL;
+
+  g_free (self->priv->password);
+  self->priv->password = NULL;
 
   G_OBJECT_CLASS (epc_consumer_parent_class)->dispose (object);
 }
@@ -488,8 +550,8 @@ epc_consumer_dispose (GObject *object)
 static void
 epc_consumer_finalize (GObject *object)
 {
-  epc_shell_unref ();
   G_OBJECT_CLASS (epc_consumer_parent_class)->finalize (object);
+  epc_shell_unref ();
 }
 
 static void
@@ -502,6 +564,20 @@ epc_consumer_class_init (EpcConsumerClass *cls)
   oclass->constructed = epc_consumer_constructed;
   oclass->finalize = epc_consumer_finalize;
   oclass->dispose = epc_consumer_dispose;
+
+  g_object_class_install_property (oclass, PROP_NAME,
+                                   g_param_spec_string ("name", "Name",
+                                                        "Service name of the publisher to use", NULL,
+                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+                                                        G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
+
+  g_object_class_install_property (oclass, PROP_DOMAIN,
+                                   g_param_spec_string ("domain", "Domain",
+                                                        "DNS domain of the publisher to use", NULL,
+                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+                                                        G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
 
   g_object_class_install_property (oclass, PROP_APPLICATION,
                                    g_param_spec_string ("application", "Application",
@@ -533,17 +609,19 @@ epc_consumer_class_init (EpcConsumerClass *cls)
                                                      G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                      G_PARAM_STATIC_BLURB));
 
-  g_object_class_install_property (oclass, PROP_NAME,
-                                   g_param_spec_string ("name", "Name",
-                                                        "Service name of the publisher to use", NULL,
-                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+  g_object_class_install_property (oclass, PROP_USERNAME,
+                                   g_param_spec_string ("username", "User Name",
+                                                        "The user name to use for authentication",
+                                                        NULL,
+                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
                                                         G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
 
-  g_object_class_install_property (oclass, PROP_DOMAIN,
-                                   g_param_spec_string ("domain", "Domain",
-                                                        "DNS domain of the publisher to use", NULL,
-                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+  g_object_class_install_property (oclass, PROP_PASSWORD,
+                                   g_param_spec_string ("password", "Password",
+                                                        "The password to use for authentication",
+                                                        NULL,
+                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
                                                         G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
 
@@ -551,71 +629,24 @@ epc_consumer_class_init (EpcConsumerClass *cls)
    * EpcConsumer::authenticate:
    * @consumer: the #EpcConsumer emitting the signal
    * @realm: the realm being authenticated to
-   * @username: return location for the username (gchar*)
-   * @password: return location for the password (gchar*)
    *
    * Emitted when the #EpcConsumer requires authentication. The signal
    * handler should provide these credentials, which may come from the
-   * user or from cached information. If no credentials are available
-   * then the signal handler should leave @username and @password
-   * unchanged.
+   * user or from cached information by setting the #EpcConsumer:username
+   * and #EpcConsumer:password properties. When providing credentials
+   * the signal handler also has to return %TRUE to stop signal emission.
    *
-   * If the provided credentials fail then the reauthenticate signal
-   * will be emmitted.
+   * If the provided credentials fail then the signal will be emmitted again.
    *
-   * The consumer takes ownership of the credential strings.
-   *
-   * <note><para>
-   *  The actual type of @username and @password is #gchar** not just #gpointer, but
-   *  currently the GObject signal system is not able to express this situation. See the
-   *  <ulink url="http://mail.gnome.org/archives/gtk-devel-list/2007-November/msg00106.html">
-   *  discussion on gtk-devel-list</ulink> for details.
-   * </para></note>
+   * Returns: %TRUE when the signal handler handled the authentication request,
+   * and %FALSE otherwise.
    */
-  signals[SIGNAL_AUTHENTICATE] = g_signal_new ("authenticate", EPC_TYPE_CONSUMER, G_SIGNAL_RUN_FIRST,
-                                               G_STRUCT_OFFSET (EpcConsumerClass, authenticate), NULL, NULL,
-                                               _epc_marshal_VOID__STRING_POINTER_POINTER, G_TYPE_NONE,
-                                               3, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_POINTER);
-
-  /**
-   * EpcConsumer::reauthenticate:
-   * @consumer: the #EpcConsumer emitting the signal
-   * @realm: the realm being authenticated to
-   * @username: return location for the username
-   * @password: return location for the password
-   *
-   * Emitted when the credentials provided by the application to the
-   * authenticate signal have failed. This gives the application a second
-   * chance to provide authentication credentials. If the new credentials
-   * also fail, #EpcConsumer will emit reauthenticate again, and will
-   * continue doing so until the provided credentials work, or the signal
-   * emission "fails" because the handler left @username and @password
-   * unchanged.
-   *
-   * If your application only uses cached passwords it should only connect
-   * to authenticate but not to reauthenticate.
-   *
-   * If your application always prompts the user for a password, and never
-   * uses cached information, then you can connect the same handler to
-   * authenticate and reauthenticate.
-   *
-   * To get ideal behaviour return either cached information or user-provided
-   * credentials (whichever are available) from the authenticate handler, but
-   * return only user-provided information from the reauthenticate handler.
-   *
-   * The consumer takes ownership of the credential strings.
-   *
-   * <note><para>
-   *  The actual type of @username and @password is #gchar** not just #gpointer, but
-   *  currently the GObject signal system is not able to express this situation. See the
-   *  <ulink url="http://mail.gnome.org/archives/gtk-devel-list/2007-November/msg00106.html">
-   *  discussion on gtk-devel-list</ulink> for details.
-   * </para></note>
-   */
-  signals[SIGNAL_REAUTHENTICATE] = g_signal_new ("reauthenticate", EPC_TYPE_CONSUMER, G_SIGNAL_RUN_FIRST,
-                                                 G_STRUCT_OFFSET (EpcConsumerClass, reauthenticate), NULL, NULL,
-                                                 _epc_marshal_VOID__STRING_POINTER_POINTER, G_TYPE_NONE,
-                                                 3, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_POINTER);
+  signals[SIGNAL_AUTHENTICATE] = g_signal_new ("authenticate",
+                                               EPC_TYPE_CONSUMER, G_SIGNAL_RUN_LAST,
+                                               G_STRUCT_OFFSET (EpcConsumerClass, authenticate),
+                                               g_signal_accumulator_true_handled, NULL,
+                                               _epc_marshal_BOOLEAN__STRING,
+                                               G_TYPE_BOOLEAN, 1, G_TYPE_STRING);
 
   /**
    * EpcConsumer::publisher-resolved:
@@ -749,7 +780,7 @@ epc_consumer_new_for_name_full (const gchar *name,
  * @protocol: the new transport protocol
  *
  * Changes the transport protocol to use for contacting the publisher.
- * See #EpcConsumer:protocol.
+ * See #EpcConsumer:protocol for details.
  */
 void
 epc_consumer_set_protocol (EpcConsumer *self,
@@ -760,11 +791,43 @@ epc_consumer_set_protocol (EpcConsumer *self,
 }
 
 /**
+ * epc_consumer_set_username:
+ * @consumer: a #EpcConsumer
+ * @username: the new user name, or %NULL
+ *
+ * Changes the user name used for authentication.
+ * See #EpcConsumer:username for details.
+ */
+void
+epc_consumer_set_username (EpcConsumer *self,
+                           const gchar *username)
+{
+  g_return_if_fail (EPC_IS_CONSUMER (self));
+  g_object_set (self, "username", username, NULL);
+}
+
+/**
+ * epc_consumer_set_password:
+ * @consumer: a #EpcConsumer
+ * @password: the new password, or %NULL
+ *
+ * Changes the password used for authentication.
+ * See #EpcConsumer:password for details.
+ */
+void
+epc_consumer_set_password (EpcConsumer *self,
+                           const gchar *password)
+{
+  g_return_if_fail (EPC_IS_CONSUMER (self));
+  g_object_set (self, "password", password, NULL);
+}
+
+/**
  * epc_consumer_get_protocol:
  * @consumer: a #EpcConsumer
  *
  * Queries the transport protocol to use for contacting the publisher.
- * See #EpcConsumer:protocol.
+ * See #EpcConsumer:protocol for details.
  *
  * Returns: The transport protocol this consumer uses.
  */
@@ -773,6 +836,38 @@ epc_consumer_get_protocol (EpcConsumer *self)
 {
   g_return_val_if_fail (EPC_IS_CONSUMER (self), EPC_PROTOCOL_UNKNOWN);
   return self->priv->protocol;
+}
+
+/**
+ * epc_consumer_get_username:
+ * @consumer: a #EpcConsumer
+ *
+ * Queries the user name used for authentication.
+ * See #EpcConsumer:username for details.
+ *
+ * Returns: The user name this consumer uses.
+ */
+G_CONST_RETURN gchar*
+epc_consumer_get_username (EpcConsumer *self)
+{
+  g_return_val_if_fail (EPC_IS_CONSUMER (self), NULL);
+  return self->priv->username;
+}
+
+/**
+ * epc_consumer_get_password:
+ * @consumer: a #EpcConsumer
+ *
+ * Queries the password used for authentication.
+ * See #EpcConsumer:password for details.
+ *
+ * Returns: The password this consumer uses.
+ */
+G_CONST_RETURN gchar*
+epc_consumer_get_password (EpcConsumer *self)
+{
+  g_return_val_if_fail (EPC_IS_CONSUMER (self), NULL);
+  return self->priv->password;
 }
 
 static gboolean
