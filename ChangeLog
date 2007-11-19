@@ -1,5 +1,13 @@
 2007-11-01  Mathias Hasselmann  <mathias@openismus.com>
 
+	Handle construct-only properties more stricly.
+
+	* libepc/dispatcher.c, libepc/publisher.c: Assert fields are NULL
+	instead of releasing their data, when setting construct-only
+	properties.
+
+2007-11-01  Mathias Hasselmann  <mathias@openismus.com>
+
 	Implement the consumer.
 
 	* libepc/consumer.c, libepc/consumer.h: Really implement the consumer.

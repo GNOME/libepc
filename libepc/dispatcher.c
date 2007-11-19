@@ -362,7 +362,7 @@ epc_dispatcher_set_property (GObject      *object,
         break;
 
       case PROP_NAME:
-        g_free (self->priv->name);
+        g_assert (NULL == self->priv->name);
         self->priv->name = g_value_dup_string (value);
         /* TODO: re-publish */
         break;

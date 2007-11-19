@@ -184,12 +184,12 @@ epc_publisher_set_property (GObject      *object,
         break;
 
       case PROP_DOMAIN:
-        g_free (self->priv->domain);
+        g_return_if_fail (NULL != self->priv->domain);
         self->priv->domain = g_value_dup_string (value);
         break;
 
       case PROP_SERVICE:
-        g_free (self->priv->service);
+        g_return_if_fail (NULL != self->priv->service);
         self->priv->service = g_value_dup_string (value);
         break;
 
