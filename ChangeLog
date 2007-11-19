@@ -1,5 +1,11 @@
 2007-11-06  Mathias Hasselmann  <mathias@openismus.com>
 
+	Add gdk_threads hooks to inspect #494173.
+
+	* examples/test-consumer.c: Add gdk_threads hooks to inspect #494173.
+
+2007-11-06  Mathias Hasselmann  <mathias@openismus.com>
+
 	* libepc/consumer.c, libepc/consumer.h: Add epc_consumer_new_for_name
 	and epc_consumer_new_for_name_full for connecting by service name.
 	* libepc/dispatcher.c: Use external _epc_debug variable.

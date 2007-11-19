@@ -154,6 +154,26 @@ authenticate_cb (EpcConsumer  *consumer G_GNUC_UNUSED,
   gtk_widget_hide (GTK_WIDGET (dialog));
 }
 
+#ifdef EPC_DEBUG_LOCKING
+
+static volatile gint lock_level = 1;
+
+static
+void noop_lock ()
+{
+  g_atomic_int_inc (&lock_level);
+  g_debug ("%s: %d", G_STRFUNC, lock_level);
+}
+
+static
+void noop_unlock ()
+{
+  (void) g_atomic_int_dec_and_test (&lock_level);
+  g_debug ("%s: %d", G_STRFUNC, lock_level);
+}
+
+#endif
+
 int
 main (int   argc,
       char *argv[])
@@ -168,7 +188,12 @@ main (int   argc,
   /* Initialize the toolkit */
 
   g_thread_init (NULL);
+
+#ifdef EPC_DEBUG_LOCKING
+  gdk_threads_set_lock_functions (noop_lock, noop_unlock);
+#endif
   gdk_threads_init ();
+
   gtk_init (&argc, &argv);
 
   /* Show Avahi's stock dialog for choosing a publisher service.
