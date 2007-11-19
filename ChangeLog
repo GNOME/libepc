@@ -1,5 +1,12 @@
 2007-11-19  Mathias Hasselmann  <mathias@openismus.com>
 
+	Say "key/value store", instead of "hash table".
+
+	* docs/reference/libepc/libepc-1.0-docs.xml, README:
+	Say "key/value store", instead of "hash table".
+
+2007-11-19  Mathias Hasselmann  <mathias@openismus.com>
+
 	Add missing documentation and update package dependencies.
 
 	* NEWS, README: Add missing documentation.

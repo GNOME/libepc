@@ -49,10 +49,10 @@
           <listitem>and finally <emphasis>consume</emphasis> it</listitem>
         </itemizedlist>
 
-        You can use this library as hash table published to the network, using
-        <ulink url="http://tools.ietf.org/html/rfc2818">encryption</ulink>,
-        <ulink url="http://tools.ietf.org/html/rfc2617#section-3">authentication</ulink> and
-        <ulink url="http://www.dns-sd.org/">service discovery</ulink>.
+        You can use this library as key/value store published to the network,
+        using <ulink url="http://tools.ietf.org/html/rfc2818">encryption</ulink>,
+        <ulink url="http://tools.ietf.org/html/rfc2617#section-3">authentication</ulink>
+        and <ulink url="http://www.dns-sd.org/">service discovery</ulink>.
       </para>
     </abstract>
   </bookinfo>
