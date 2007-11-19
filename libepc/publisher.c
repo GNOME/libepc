@@ -357,20 +357,13 @@ epc_publisher_init (EpcPublisher *self)
   self->priv->server_auth.digest_info.force_integrity = FALSE;
   /* TODO: Figure out why force_integrity doesn't work. */
 
-  self->priv->server = soup_server_new (SOUP_SERVER_PORT, SOUP_ADDRESS_ANY_PORT, NULL);
-
-  soup_server_add_handler (self->priv->server, "/get", &self->priv->server_auth,
-                           epc_publisher_server_get_handler, NULL, self);
-
   self->priv->resources = g_hash_table_new_full (g_str_hash, g_str_equal,
                                                  g_free, epc_resource_free);
 }
 
 static void
-epc_publisher_constructed (GObject *object)
+epc_publisher_restart_dispatcher (EpcPublisher *self)
 {
-  EpcPublisher *self;
-
   SoupSocket *listener;
   SoupAddress *address;
 
@@ -382,10 +375,8 @@ epc_publisher_constructed (GObject *object)
   struct sockaddr *sockaddr;
   gint addrlen;
 
-  if (G_OBJECT_CLASS (epc_publisher_parent_class)->constructed)
-    G_OBJECT_CLASS (epc_publisher_parent_class)->constructed (object);
+  g_return_if_fail (SOUP_IS_SERVER (self->priv->server));
 
-  self = EPC_PUBLISHER (object);
   name = self->priv->service_name;
 
   if (!name)
@@ -422,6 +413,10 @@ epc_publisher_constructed (GObject *object)
   host = soup_address_get_name (address);
 
   g_print ("listening on http://%s:%d/\n", host ? host : "localhost", port);
+
+  if (self->priv->dispatcher)
+    g_object_unref (self->priv->dispatcher);
+
   self->priv->dispatcher = epc_dispatcher_new (AVAHI_IF_UNSPEC, protocol, name);
 
   epc_dispatcher_add_service (self->priv->dispatcher, EPC_SERVICE_NAME_HTTP,
@@ -432,6 +427,22 @@ epc_publisher_constructed (GObject *object)
     epc_dispatcher_add_service_subtype (self->priv->dispatcher,
                                         EPC_SERVICE_NAME,
                                         self->priv->service_type);
+}
+
+static void
+epc_publisher_constructed (GObject *object)
+{
+  EpcPublisher *self = EPC_PUBLISHER (object);
+
+  if (G_OBJECT_CLASS (epc_publisher_parent_class)->constructed)
+    G_OBJECT_CLASS (epc_publisher_parent_class)->constructed (object);
+
+  self->priv->server = soup_server_new (SOUP_SERVER_PORT, SOUP_ADDRESS_ANY_PORT, NULL);
+
+  soup_server_add_handler (self->priv->server, "/get", &self->priv->server_auth,
+                           epc_publisher_server_get_handler, NULL, self);
+
+  epc_publisher_restart_dispatcher (self);
 }
 
 static void
@@ -447,6 +458,10 @@ epc_publisher_set_property (GObject      *object,
       case PROP_SERVICE_NAME:
         g_free (self->priv->service_name);
         self->priv->service_name = g_value_dup_string (value);
+
+        if (self->priv->dispatcher)
+          epc_publisher_restart_dispatcher (self);
+
         break;
 
       case PROP_SERVICE_DOMAIN:

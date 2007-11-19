@@ -1,5 +1,16 @@
 2007-11-08  Mathias Hasselmann  <mathias@openismus.com>
 
+	Restart the DNS-SD dispatcher when changing the publisher's name.
+
+	* libepc/publisher.c: Restart dispatcher on server-name change.
+	* Makefile.am, tests/.gitignore: Add tests/test-publisher-change-name.c
+	* tests/test-dispatcher-local-collision.c: Remove some G_GNUC_UNUSED
+	* tests/test-publisher-change-name.c: Verify name changes are working.
+	* tests/test-publisher-libsoup-494128.c: Add description.
+	* tests/framework.c: Print message when tests pass.
+
+2007-11-08  Mathias Hasselmann  <mathias@openismus.com>
+
 	Try to deal with libsoup bug #494128. Seems there is no way to force
 	SoupServer to close all pending HTTP connections. So it seems we have
 	to accept leaking the SoupServer on shutdown, as each HTTP connection

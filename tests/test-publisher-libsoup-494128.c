@@ -1,3 +1,5 @@
+/* Test handling of libsoup bug #494128 */
+
 #include "libepc/publisher.h"
 
 static gboolean

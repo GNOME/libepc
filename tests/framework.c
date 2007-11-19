@@ -77,8 +77,14 @@ epc_test_quit (void)
 void
 epc_test_pass (gint mask)
 {
+  int i;
+
   mask &= EPC_TEST_MASK_USER;
   epc_test_result &= ~mask;
+
+  for (i = 0; (1 << i) < EPC_TEST_MASK_USER; ++i)
+    if (mask & (1 << i))
+      g_print ("%s: Test #%d passed\n", G_STRLOC, i + 1);
 
   if (0 == epc_test_result)
     epc_test_quit ();

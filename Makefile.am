@@ -20,6 +20,7 @@ TESTS = \
 	tests/test-dispatcher-multiple-services \
 	tests/test-dispatcher-subtypes \
 	tests/test-dispatcher-local-collision \
+	tests/test-publisher-change-name \
 	tests/test-publisher-libsoup-494128
 libepc_include_HEADERS = \
 	libepc/consumer.h \
@@ -78,6 +79,8 @@ tests_test_dispatcher_subtypes_CFLAGS 		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 tests_test_dispatcher_subtypes_LDADD 		= libepc/libepc.la tests/libepc-tests.la
 tests_test_dispatcher_local_collision_CFLAGS	= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 tests_test_dispatcher_local_collision_LDADD 	= libepc/libepc.la tests/libepc-tests.la
+tests_test_publisher_change_name_CFLAGS      	= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+tests_test_publisher_change_name_LDADD 		= libepc/libepc.la tests/libepc-tests.la
 tests_test_publisher_libsoup_494128_CFLAGS      = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 tests_test_publisher_libsoup_494128_LDADD 	= libepc/libepc.la tests/libepc-tests.la
 
