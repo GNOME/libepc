@@ -35,7 +35,7 @@ typedef void     (*EpcTlsPrivkeyLeaveHook) (gpointer data);
 
 G_BEGIN_DECLS
 
-GQuark                epc_tls_error_quark              (void);
+GQuark                epc_tls_error_quark              (void) G_GNUC_CONST;
 
 gnutls_x509_crt_t     epc_tls_certificate_new          (const gchar            *hostname,
                                                         guint                   validity,

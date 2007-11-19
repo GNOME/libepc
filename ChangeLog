@@ -1,5 +1,13 @@
 2007-11-08  Mathias Hasselmann  <mathias@openismus.com>
 
+	Minor TLS cleanups.
+
+	* libepc/tls.c: Check that the variables crtfile and keyfile point
+	to NULL to prevent memory leaks in in epc_tls_get_server_credentials.
+	* libepc/tls.h: Add G_GNUC_CONST attribute to epc_tls_error_quark.
+
+2007-11-08  Mathias Hasselmann  <mathias@openismus.com>
+
 	Set common name in generated certificates.
 
 	* libepc/tls.c: Set common name in generated certificates.

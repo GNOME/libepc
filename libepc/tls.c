@@ -450,8 +450,12 @@ epc_tls_get_server_credentials (const gchar  *hostname,
   gchar *_crtfile = NULL;
 
   g_return_val_if_fail (NULL != hostname, FALSE);
+
   g_return_val_if_fail (NULL != crtfile, FALSE);
   g_return_val_if_fail (NULL != keyfile, FALSE);
+
+  g_return_val_if_fail (NULL == *crtfile, FALSE);
+  g_return_val_if_fail (NULL == *keyfile, FALSE);
 
   _crtfile = epc_tls_get_certificate_filename (hostname);
   _keyfile = epc_tls_get_private_key_filename (hostname);
