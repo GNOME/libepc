@@ -1,5 +1,17 @@
 2007-11-05  Mathias Hasselmann  <mathias@openismus.com>
 
+	Merge password dialog from the libank experiment.
+
+	* libepc-ui/passworddialog.c, libepc-ui/passworddialog.h:
+	Merge password dialog from the libank experiment.
+	* examples/test-consumer.c: Use EpcPasswordDialog.
+	* configure.in, Makefile.am, libepc-ui.pc.in, libepc-ui/.gitignore:
+	Add shared libepc-ui library containing libepc specific widgets.
+	* libepc.pc.in: Correct the cflags property.
+	* tests/.gitignore: Add *.loT
+
+2007-11-05  Mathias Hasselmann  <mathias@openismus.com>
+
 	Document authentication mechanism and add "reauthenticate" signal.
 
 	* docs/reference/libepc/libepc-sections.txt, libepc/publisher.c,

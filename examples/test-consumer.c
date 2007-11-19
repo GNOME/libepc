@@ -8,6 +8,7 @@
 #include "libepc/consumer.h"
 #include "libepc/publisher.h"
 #include "libepc/service-names.h"
+#include "libepc-ui/passworddialog.h"
 
 #include <avahi-ui/avahi-ui.h>
 #include <glib/gi18n.h>
@@ -138,11 +139,19 @@ authenticate_cb (EpcConsumer  *consumer G_GNUC_UNUSED,
                  const gchar  *realm,
                  gchar       **username,
                  gchar       **password,
-                 gpointer      data     G_GNUC_UNUSED)
+                 gpointer      data)
 {
-  g_print ("Sending authentication tokens for `%s'\n", realm);
-  *username = g_strdup (g_get_user_name ());
-  *password = g_strdup ("secret");
+  EpcPasswordDialog *dialog = EPC_PASSWORD_DIALOG (data);
+
+  epc_password_dialog_set_realm (dialog, realm);
+
+  if (GTK_RESPONSE_ACCEPT == gtk_dialog_run (GTK_DIALOG (dialog)))
+    {
+      *username = g_strdup (epc_password_dialog_get_username (dialog));
+      *password = g_strdup (epc_password_dialog_get_password (dialog));
+    }
+
+  gtk_widget_hide (GTK_WIDGET (dialog));
 }
 
 int
@@ -151,8 +160,10 @@ main (int   argc,
 {
   EpcConsumer *consumer = NULL;
   gchar *publisher_name = NULL;
-  GtkWidget *dialog;
   int i;
+
+  GtkWidget *password_dialog = NULL;
+  GtkWidget *dialog;
 
   /* Initialize the toolkit */
 
@@ -177,15 +188,29 @@ main (int   argc,
       const gint port = aui_service_dialog_get_port (AUI_SERVICE_DIALOG (dialog));
       const gchar *host = aui_service_dialog_get_host_name (AUI_SERVICE_DIALOG (dialog));
 
-      /* Create an EpcConsumer for the selected service.
-       */
-      consumer = epc_consumer_new (host, port);
-      g_signal_connect (consumer, "authenticate", G_CALLBACK (authenticate_cb), NULL);
-
       /* Retrieve the human readable name of the selected service,
        * just for the purpose of displaying it in the UI later.
        */
       publisher_name = g_strdup (aui_service_dialog_get_service_name (AUI_SERVICE_DIALOG (dialog)));
+
+      /* Create an EpcConsumer for the selected service.
+       */
+      consumer = epc_consumer_new (host, port);
+
+      /* Associate a password dialog */
+
+      password_dialog = epc_password_dialog_new ("Easy Consumer Test", NULL, NULL,
+                                                 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                                                 GTK_STOCK_CONNECT, GTK_RESPONSE_ACCEPT,
+                                                 NULL);
+      epc_password_dialog_set_anonymous_allowed (EPC_PASSWORD_DIALOG (password_dialog), FALSE);
+
+      g_signal_connect (consumer, "authenticate",
+                        G_CALLBACK (authenticate_cb),
+                        password_dialog);
+      g_signal_connect (consumer, "reauthenticate",
+                        G_CALLBACK (authenticate_cb),
+                        password_dialog);
     }
 
   gtk_widget_destroy (dialog);
@@ -203,6 +228,9 @@ main (int   argc,
 
       g_object_unref (consumer);
     }
+
+  if (password_dialog)
+    gtk_widget_destroy (password_dialog);
 
   g_free (publisher_name);
 

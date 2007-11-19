@@ -1,5 +1,6 @@
 *.o
 *.l[ao]
+*.l[ao]T
 *.err
 *.out
 .dirstamp
