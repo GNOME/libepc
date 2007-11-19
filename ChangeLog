@@ -1,5 +1,11 @@
 2007-11-06  Mathias Hasselmann  <mathias@openismus.com>
 
+	Remove g_debug calls in test-consumer-by-name.
+
+	* tests/test-consumer-by-name.c: Remove g_debug calls.
+
+2007-11-06  Mathias Hasselmann  <mathias@openismus.com>
+
 	Add gdk_threads hooks to inspect #494173.
 
 	* examples/test-consumer.c: Add gdk_threads hooks to inspect #494173.

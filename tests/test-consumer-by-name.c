@@ -39,23 +39,16 @@ main (void)
   result = 0;
 
 out:
-  if (value)
-    g_debug ("%s: value=%s\n", G_STRLOC, value);
-
   g_free (value);
 
-g_debug (G_STRLOC);
   if (consumer)
     g_object_unref (consumer);
 
-g_debug (G_STRLOC);
   if (publisher)
     {
       epc_publisher_quit (publisher);
-g_debug (G_STRLOC);
       g_object_unref (publisher);
     }
 
-g_debug (G_STRLOC);
   return result;
 }
