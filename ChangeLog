@@ -1,5 +1,11 @@
 2007-11-15  Mathias Hasselmann  <mathias@openismus.com>
 
+	Fix memory leak in the authenticate signal handler.
+
+	* libepc-ui/password-dialog.c: Fix memory leak.
+
+2007-11-15  Mathias Hasselmann  <mathias@openismus.com>
+
 	Add note regarding real argument types for the "authentication" and
 	"reauthenticate" signals of EpcConsumer.
 

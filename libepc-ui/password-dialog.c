@@ -542,6 +542,9 @@ epc_password_dialog_authenticate_cb (EpcConsumer  *consumer G_GNUC_UNUSED,
 
   if (GTK_RESPONSE_ACCEPT == gtk_dialog_run (GTK_DIALOG (dialog)))
     {
+      g_free (*username);
+      g_free (*password);
+
       *username = g_strdup (epc_password_dialog_get_username (dialog));
       *password = g_strdup (epc_password_dialog_get_password (dialog));
     }
