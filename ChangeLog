@@ -1,5 +1,11 @@
 2007-11-08  Mathias Hasselmann  <mathias@openismus.com>
 
+	Rename EpcPublication to EpcResource in EpcPublisher.
+
+	* libepc/publisher.c: Rename EpcPublication to EpcResource.
+
+2007-11-08  Mathias Hasselmann  <mathias@openismus.com>
+
 	Show a progress window when generating new keys.
 
 	* examples/server-credentials.c: Use EpcEntropyProgress.

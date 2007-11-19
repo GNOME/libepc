@@ -57,7 +57,7 @@
 
 #include <string.h>
 
-typedef struct _EpcPublication        EpcPublication;
+typedef struct _EpcResource EpcResource;
 
 enum
 {
@@ -95,7 +95,7 @@ struct _EpcContent
   gchar        *type;
 };
 
-struct _EpcPublication
+struct _EpcResource
 {
   EpcContentHandler handler;
   gpointer          user_data;
@@ -114,8 +114,8 @@ struct _EpcPublication
 struct _EpcPublisherPrivate
 {
   EpcDispatcher         *dispatcher;
-  GHashTable            *publications;
-  EpcPublication        *default_publication;
+  GHashTable            *resources;
+  EpcResource           *default_resource;
   SoupServerAuthContext  server_auth;
   SoupServer            *server;
   gboolean               running;
@@ -187,12 +187,12 @@ epc_content_unref (EpcContent *content)
     g_slice_free (EpcContent, content);
 }
 
-static EpcPublication*
-epc_publication_new (EpcContentHandler handler,
-                     gpointer          user_data,
-                     GDestroyNotify    destroy_data)
+static EpcResource*
+epc_resource_new (EpcContentHandler handler,
+                  gpointer          user_data,
+                  GDestroyNotify    destroy_data)
 {
-  EpcPublication *self = g_slice_new0 (EpcPublication);
+  EpcResource *self = g_slice_new0 (EpcResource);
 
   self->handler = handler;
   self->user_data = user_data;
@@ -202,18 +202,18 @@ epc_publication_new (EpcContentHandler handler,
 }
 
 static void
-epc_publication_free (gpointer data)
+epc_resource_free (gpointer data)
 {
-  EpcPublication *self = data;
+  EpcResource *self = data;
 
   if (self->destroy_data)
     self->destroy_data (self->user_data);
 
-  g_slice_free (EpcPublication, self);
+  g_slice_free (EpcResource, self);
 }
 
 static void
-epc_publication_set_auth_handler (EpcPublication *self,
+epc_resource_set_auth_handler (EpcResource    *self,
                                   EpcAuthHandler  handler,
                                   gpointer        user_data,
                                   GDestroyNotify  destroy_data)
@@ -276,16 +276,16 @@ epc_publisher_server_get_handler (SoupServerContext *context,
                                   gpointer           data)
 {
   EpcPublisher *self = data;
-  EpcPublication *publication = NULL;
+  EpcResource *resource = NULL;
   EpcContent *content = NULL;
   const gchar *key = NULL;
 
   key = epc_publisher_get_key (context->path);
 
   if (key)
-    publication = g_hash_table_lookup (self->priv->publications, key);
-  if (publication && publication->handler)
-    content = publication->handler (self, key, publication->user_data);
+    resource = g_hash_table_lookup (self->priv->resources, key);
+  if (resource && resource->handler)
+    content = resource->handler (self, key, resource->user_data);
 
   if (content)
     {
@@ -313,7 +313,7 @@ epc_publisher_server_auth_cb (SoupServerAuthContext *auth_ctx G_GNUC_UNUSED,
 		              SoupMessage           *message,
 		              gpointer               data)
 {
-  EpcPublication *publication = NULL;
+  EpcResource *resource = NULL;
   const char *user = NULL;
   EpcAuthContext context;
   const SoupUri *uri;
@@ -329,12 +329,12 @@ epc_publisher_server_auth_cb (SoupServerAuthContext *auth_ctx G_GNUC_UNUSED,
   if (NULL == user)
     auth_ctx->digest_info.realm = context.publisher->priv->name;
   if (NULL != context.key)
-    publication = g_hash_table_lookup (context.publisher->priv->publications, context.key);
-  if (NULL == publication)
-    publication = context.publisher->priv->default_publication;
+    resource = g_hash_table_lookup (context.publisher->priv->resources, context.key);
+  if (NULL == resource)
+    resource = context.publisher->priv->default_resource;
 
-  if (publication && publication->auth_handler)
-    return publication->auth_handler (&context, user, publication->auth_user_data);
+  if (resource && resource->auth_handler)
+    return resource->auth_handler (&context, user, resource->auth_user_data);
 
   return TRUE;
 }
@@ -358,8 +358,8 @@ epc_publisher_init (EpcPublisher *self)
   soup_server_add_handler (self->priv->server, "/get", &self->priv->server_auth,
                            epc_publisher_server_get_handler, NULL, self);
 
-  self->priv->publications = g_hash_table_new_full (g_str_hash, g_str_equal,
-                                                    g_free, epc_publication_free);
+  self->priv->resources = g_hash_table_new_full (g_str_hash, g_str_equal,
+                                                 g_free, epc_resource_free);
 }
 
 static void
@@ -509,16 +509,16 @@ epc_publisher_dispose (GObject *object)
       self->priv->server = NULL;
     }
 
-  if (self->priv->publications)
+  if (self->priv->resources)
     {
-      g_hash_table_unref (self->priv->publications);
-      self->priv->publications = NULL;
+      g_hash_table_unref (self->priv->resources);
+      self->priv->resources = NULL;
     }
 
-  if (self->priv->default_publication)
+  if (self->priv->default_resource)
     {
-      epc_publication_free (self->priv->default_publication);
-      self->priv->default_publication = NULL;
+      epc_resource_free (self->priv->default_resource);
+      self->priv->default_resource = NULL;
     }
 
   g_free (self->priv->name);
@@ -690,14 +690,14 @@ epc_publisher_add_handler (EpcPublisher      *self,
                            gpointer           user_data,
                            GDestroyNotify     destroy_data)
 {
-  EpcPublication *publication;
+  EpcResource *resource;
 
   g_return_if_fail (EPC_IS_PUBLISHER (self));
   g_return_if_fail (NULL != handler);
   g_return_if_fail (NULL != key);
 
-  publication = epc_publication_new (handler, user_data, destroy_data);
-  g_hash_table_insert (self->priv->publications, g_strdup (key), publication);
+  resource = epc_resource_new (handler, user_data, destroy_data);
+  g_hash_table_insert (self->priv->resources, g_strdup (key), resource);
 }
 
 /**
@@ -724,30 +724,30 @@ epc_publisher_set_auth_handler (EpcPublisher   *self,
                                 gpointer        user_data,
                                 GDestroyNotify  destroy_data)
 {
-  EpcPublication *publication;
+  EpcResource *resource;
 
   g_return_if_fail (EPC_IS_PUBLISHER (self));
   g_return_if_fail (NULL != handler);
 
   if (NULL != key)
     {
-      publication = g_hash_table_lookup (self->priv->publications, key);
+      resource = g_hash_table_lookup (self->priv->resources, key);
 
-      if (NULL == publication)
+      if (NULL == resource)
         {
-          g_warning ("%s: No publication found for key `%s'", G_STRLOC, key);
+          g_warning ("%s: No resource handler found for key `%s'", G_STRLOC, key);
           return;
         }
     }
   else
     {
-      if (NULL == self->priv->default_publication)
-        self->priv->default_publication = epc_publication_new (NULL, NULL, NULL);
+      if (NULL == self->priv->default_resource)
+        self->priv->default_resource = epc_resource_new (NULL, NULL, NULL);
 
-      publication = self->priv->default_publication;
+      resource = self->priv->default_resource;
     }
 
-  epc_publication_set_auth_handler (publication, handler, user_data, destroy_data);
+  epc_resource_set_auth_handler (resource, handler, user_data, destroy_data);
 }
 
 /**
