@@ -1,5 +1,12 @@
 2007-11-06  Mathias Hasselmann  <mathias@openismus.com>
 
+	Permit access when no authentication handler is installed.
+
+	* libepc/publisher.c: Let epc_publisher_server_auth_cb return TRUE,
+	when no authentication handler is found to permit access in that case.
+
+2007-11-06  Mathias Hasselmann  <mathias@openismus.com>
+
 	Announce program name based service type.
 
 	* libepc/publisher.c: Announce program name based service type.

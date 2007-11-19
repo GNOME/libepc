@@ -336,7 +336,7 @@ epc_publisher_server_auth_cb (SoupServerAuthContext *auth_ctx G_GNUC_UNUSED,
   if (publication && publication->auth_handler)
     return publication->auth_handler (&context, user, publication->auth_user_data);
 
-  return FALSE;
+  return TRUE;
 }
 
 static void
