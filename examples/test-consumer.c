@@ -132,46 +132,6 @@ lookup_value (EpcConsumer *consumer,
   g_free (value);
 }
 
-static void
-authenticate_cb (EpcConsumer  *consumer G_GNUC_UNUSED,
-                 const gchar  *realm,
-                 gchar       **username,
-                 gchar       **password,
-                 gpointer      data)
-{
-  EpcPasswordDialog *dialog = EPC_PASSWORD_DIALOG (data);
-
-  epc_password_dialog_set_realm (dialog, realm);
-
-  if (GTK_RESPONSE_ACCEPT == gtk_dialog_run (GTK_DIALOG (dialog)))
-    {
-      *username = g_strdup (epc_password_dialog_get_username (dialog));
-      *password = g_strdup (epc_password_dialog_get_password (dialog));
-    }
-
-  gtk_widget_hide (GTK_WIDGET (dialog));
-}
-
-#ifdef EPC_DEBUG_LOCKING
-
-static volatile gint lock_level = 1;
-
-static
-void noop_lock ()
-{
-  g_atomic_int_inc (&lock_level);
-  g_debug ("%s: %d", G_STRFUNC, lock_level);
-}
-
-static
-void noop_unlock ()
-{
-  (void) g_atomic_int_dec_and_test (&lock_level);
-  g_debug ("%s: %d", G_STRFUNC, lock_level);
-}
-
-#endif
-
 int
 main (int   argc,
       char *argv[])
@@ -186,12 +146,7 @@ main (int   argc,
   /* Initialize the toolkit */
 
   g_thread_init (NULL);
-
-#ifdef EPC_DEBUG_LOCKING
-  gdk_threads_set_lock_functions (noop_lock, noop_unlock);
-#endif
   gdk_threads_init ();
-
   gtk_init (&argc, &argv);
 
   /* Show Avahi's stock dialog for choosing a publisher service.
@@ -234,18 +189,14 @@ main (int   argc,
 
       /* Associate a password dialog */
 
-      password_dialog = epc_password_dialog_new ("Easy Consumer Test", NULL, NULL,
-                                                 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                                 GTK_STOCK_CONNECT, GTK_RESPONSE_ACCEPT,
-                                                 NULL);
-      epc_password_dialog_set_anonymous_allowed (EPC_PASSWORD_DIALOG (password_dialog), FALSE);
+      password_dialog =
+        epc_password_dialog_new ("Easy Consumer Test", NULL, NULL,
+                                 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                                 GTK_STOCK_CONNECT, GTK_RESPONSE_ACCEPT,
+                                 NULL);
 
-      g_signal_connect (consumer, "authenticate",
-                        G_CALLBACK (authenticate_cb),
-                        password_dialog);
-      g_signal_connect (consumer, "reauthenticate",
-                        G_CALLBACK (authenticate_cb),
-                        password_dialog);
+      epc_password_dialog_set_anonymous_allowed (EPC_PASSWORD_DIALOG (password_dialog), FALSE);
+      epc_password_dialog_attach (EPC_PASSWORD_DIALOG (password_dialog), consumer);
     }
 
   gtk_widget_destroy (dialog);

@@ -22,6 +22,7 @@
 #define __EPC_PASSWORD_DIALOG_H__
 
 #include <gtk/gtkdialog.h>
+#include <libepc/consumer.h>
 
 G_BEGIN_DECLS
 
@@ -90,6 +91,8 @@ void                  epc_password_dialog_set_realm             (EpcPasswordDial
 								 const gchar       *realm);
 G_CONST_RETURN gchar* epc_password_dialog_get_realm             (EpcPasswordDialog *dialog);
 
+void                  epc_password_dialog_attach                (EpcPasswordDialog *dialog,
+                                                                 EpcConsumer       *consumer);
 G_END_DECLS
 
 #endif /* __EPC_PASSWORD_DIALOG_H__ */

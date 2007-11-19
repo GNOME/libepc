@@ -1,5 +1,13 @@
 2007-11-12  Mathias Hasselmann  <mathias@openismus.com>
 
+	Add epc_password_dialog_attach for easy EpcPasswordDialog usage.
+
+	* libepc-ui/password-dialog.c, libepc-ui/password-dialog.h,
+	examples/test-consumer.c, docs/reference/libepc/libepc-sections.txt:
+	Add and use epc_password_dialog_attach.
+
+2007-11-12  Mathias Hasselmann  <mathias@openismus.com>
+
 	Document libepc-ui widgets.
 
 	* docs/reference/libepc/libepc-docs.xml: Add libepc-ui sections.

@@ -530,3 +530,45 @@ epc_password_dialog_get_realm (EpcPasswordDialog *self)
   g_return_val_if_fail (EPC_IS_PASSWORD_DIALOG (self), NULL);
   return self->priv->realm;
 }
+
+static void
+epc_password_dialog_authenticate_cb (EpcConsumer  *consumer G_GNUC_UNUSED,
+                                     const gchar  *realm,
+                                     gchar       **username,
+                                     gchar       **password,
+                                     gpointer      data)
+{
+  EpcPasswordDialog *dialog = EPC_PASSWORD_DIALOG (data);
+
+  epc_password_dialog_set_realm (dialog, realm);
+
+  if (GTK_RESPONSE_ACCEPT == gtk_dialog_run (GTK_DIALOG (dialog)))
+    {
+      *username = g_strdup (epc_password_dialog_get_username (dialog));
+      *password = g_strdup (epc_password_dialog_get_password (dialog));
+    }
+
+  gtk_widget_hide (GTK_WIDGET (dialog));
+}
+
+/**
+ * epc_password_dialog_attach:
+ * @dialog: a #EpcPasswordDialog
+ * @consumer: the #EpcConsumer
+ *
+ * Installs a #EpcPasswordDialog as authentication handler for some
+ * #EpcConsumer by connecting to its #EpcConsumer::authenticate and
+ * #EpcConsumer::reauthenticate signals.
+ */
+void
+epc_password_dialog_attach (EpcPasswordDialog *self,
+                            EpcConsumer       *consumer)
+{
+  g_return_if_fail (EPC_IS_PASSWORD_DIALOG (self));
+  g_return_if_fail (EPC_IS_CONSUMER (consumer));
+
+  g_object_connect (consumer,
+    "signal::authenticate", epc_password_dialog_authenticate_cb, self,
+    "signal::reauthenticate", epc_password_dialog_authenticate_cb, self,
+    NULL);
+}

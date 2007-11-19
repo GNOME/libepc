@@ -172,6 +172,7 @@ epc_password_dialog_set_password
 epc_password_dialog_get_password
 epc_password_dialog_set_realm
 epc_password_dialog_get_realm
+epc_password_dialog_attach
 <SUBSECTION Standard>
 EPC_PASSWORD_DIALOG
 EPC_IS_PASSWORD_DIALOG
