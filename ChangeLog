@@ -1,5 +1,11 @@
 2007-11-02  Mathias Hasselmann  <mathias@openismus.com>
 
+	Fix property assertions in EpcPublisher.
+
+	* libepc/publisher.c: Fix property assertions
+
+2007-11-02  Mathias Hasselmann  <mathias@openismus.com>
+
 	Guard g_debug statements by epc_debug flag, which can by enabled
 	by setting the EPC_DEBUG environment variable.
 
