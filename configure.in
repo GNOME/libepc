@@ -1,14 +1,16 @@
 AC_INIT([libepc], [0.1], [mathias@openismus.com])
 AM_INIT_AUTOMAKE([-Wall dist-bzip2 subdir-objects])
 
+AC_CONFIG_HEADER([config.h])
+AC_CONFIG_FILES([Makefile docs/reference/libepc/Makefile])
+
 AC_PROG_CC
 AM_PROG_CC_C_O
 AM_PROG_LIBTOOL
+
+GTK_DOC_CHECK([1.4])
+
 PKG_PROG_PKG_CONFIG([0.14])
-
-AC_CONFIG_HEADER([config.h])
-AC_CONFIG_FILES([Makefile])
-
 PKG_CHECK_MODULES(LIBEPC, [avahi-client avahi-glib libsoup-2.2])
 PKG_CHECK_MODULES(AVAHIUI, [avahi-ui])
 

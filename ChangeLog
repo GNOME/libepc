@@ -1,5 +1,12 @@
 2007-11-01  Mathias Hasselmann  <mathias@openismus.com>
 
+	Integrate gtk-doc for API documentation.
+
+	* configure.in, Makefile.am: Integrate gtk-doc for API documentation.
+	* gtk-doc.make, docs/reference/libepc/*: Setup gtk-doc infrastructure.
+
+2007-11-01  Mathias Hasselmann  <mathias@openismus.com>
+
 	Handle construct-only properties more stricly.
 
 	* libepc/dispatcher.c, libepc/publisher.c: Assert fields are NULL

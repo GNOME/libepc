@@ -26,3 +26,6 @@ tests_test_consumer_CFLAGS = $(AM_CFLAGS) $(AVAHIUI_CFLAGS)
 tests_test_consumer_LDADD = libepc/libeasy-publish-consume.la $(AVAHIUI_LIBS)
 
 -include Makefile.local
+
+DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
+SUBDIRS = docs/reference/libepc
