@@ -21,6 +21,8 @@
 
 #include "service-type.h"
 
+#include <string.h>
+
 /**
  * SECTION:service-type
  * @short_description: service type handling
@@ -119,6 +121,23 @@ epc_service_type_new (EpcProtocol  protocol,
   return service_type;
 }
 
+G_CONST_RETURN gchar*
+epc_service_type_get_base (const gchar *type)
+{
+  const gchar *base;
+
+  base = type + strlen (type);
+
+  while (base > type && '.' != *(--base));
+  while (base > type && '.' != *(--base));
+
+
+  if (base > type)
+    base += 1;
+
+  return base;
+}
+
 gchar*
 epc_service_type_build_uri (EpcProtocol  protocol,
                             const gchar *hostname,
@@ -144,6 +163,9 @@ EpcProtocol
 epc_service_type_get_protocol (const gchar *service_type)
 {
   g_return_val_if_fail (NULL != service_type, EPC_PROTOCOL_UNKNOWN);
+
+  service_type = epc_service_type_get_base (service_type);
+  g_assert (NULL != service_type);
 
   if (g_str_equal (service_type, EPC_SERVICE_TYPE_HTTPS))
     return EPC_PROTOCOL_HTTPS;

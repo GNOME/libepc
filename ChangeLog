@@ -1,3 +1,14 @@
+2007-11-11  Mathias Hasselmann  <mathias@openismus.com>
+
+	Create epc_service_type_get_base from existing EpcDispatcher code and
+	use it in epc_service_type_get_protocol.
+
+	* libepc/dispatcher.c: Use epc_service_type_get_base.
+	* libepc/service-type.c, libepc/service-type.h: Add
+	epc_service_type_get_base and use it in epc_service_type_get_protocol.
+	* Makefile.am, tests/.gitignore: Add tests/test-service-type.c.
+	* tests/test-service-type.c: Test epc_service_type_get_base.
+
 2007-11-10  Mathias Hasselmann  <mathias@openismus.com>
 
 	Update API documentation.

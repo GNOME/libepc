@@ -27,7 +27,8 @@ TESTS = \
 	tests/test-dispatcher-subtypes \
 	tests/test-dispatcher-local-collision \
 	tests/test-publisher-change-name \
-	tests/test-publisher-libsoup-494128
+	tests/test-publisher-libsoup-494128 \
+	tests/test-service-type
 
 libepc_headers = \
 	libepc/consumer.h \
@@ -96,6 +97,8 @@ tests_test_publisher_change_name_CFLAGS      	= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 tests_test_publisher_change_name_LDADD 		= libepc/libepc.la tests/libepc-tests.la
 tests_test_publisher_libsoup_494128_CFLAGS      = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 tests_test_publisher_libsoup_494128_LDADD 	= libepc/libepc.la tests/libepc-tests.la
+tests_test_service_type_CFLAGS      		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+tests_test_service_type_LDADD 			= libepc/libepc.la tests/libepc-tests.la
 
 libepc_includedir = $(includedir)/libepc/libepc
 libepc_ui_includedir = $(includedir)/libepc/libepc-ui

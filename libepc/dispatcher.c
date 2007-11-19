@@ -20,13 +20,12 @@
  */
 
 #include "dispatcher.h"
+#include "service-type.h"
 #include "shell.h"
 
 #include <avahi-client/publish.h>
 #include <avahi-common/alternative.h>
 #include <avahi-common/error.h>
-
-#include <string.h>
 
 /**
  * SECTION:dispatcher
@@ -258,16 +257,8 @@ epc_service_new (EpcDispatcher *dispatcher,
                  guint16        port,
                  va_list        args)
 {
+  const gchar *service = epc_service_type_get_base (type);
   EpcService *self = g_slice_new0 (EpcService);
-  const gchar *service;
-
-  service = type + strlen (type);
-
-  while (service > type && '.' != *(--service));
-  while (service > type && '.' != *(--service));
-
-  if (service > type)
-    service += 1;
 
   self->dispatcher = dispatcher;
   self->details = avahi_string_list_new_va (args);

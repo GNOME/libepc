@@ -12,3 +12,4 @@ test-dispatcher-simple-service
 test-dispatcher-subtypes
 test-publisher-change-name
 test-publisher-libsoup-494128
+test-service-type
