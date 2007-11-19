@@ -43,12 +43,12 @@
  * <example id="publish-printing-service">
  *  <title>Publish a printing service</title>
  *  <programlisting>
- *   dispatcher = epc_dispatcher_new (AVAHI_IF_UNSPEC,
- *                                    AVAHI_PROTO_UNSPEC,
- *                                    "Dead Tree Desecrator");
- *   epc_dispatcher_add_service (dispatcher, "_ipp._tcp",
+ *   dispatcher = epc_dispatcher_new ("Dead Tree Desecrator");
+ *
+ *   epc_dispatcher_add_service (dispatcher, EPC_ADDRESS_IPV4, "_ipp._tcp",
  *                               NULL, NULL, 651, "path=/printers", NULL);
- *   epc_dispatcher_add_service (dispatcher, "_duplex._sub._printer._tcp",
+ *   epc_dispatcher_add_service (dispatcher, EPC_ADDRESS_UNSPEC,
+ *                               "_duplex._sub._printer._tcp",
  *                               NULL, NULL, 515, NULL);
  *  </programlisting>
  * </example>
@@ -59,7 +59,6 @@ typedef struct _EpcService EpcService;
 enum
 {
   PROP_NONE,
-  PROP_INTERFACE,
   PROP_PROTOCOL,
   PROP_NAME
 };
@@ -68,6 +67,7 @@ struct _EpcService
 {
   EpcDispatcher *dispatcher;
   AvahiEntryGroup *group;
+  AvahiProtocol protocol;
   guint commit_handler;
 
   gchar *type;
@@ -91,7 +91,6 @@ struct _EpcDispatcherPrivate
   gchar        *name;
   AvahiClient  *client;
   AvahiIfIndex  interface;
-  AvahiProtocol protocol;
   GHashTable   *services;
 };
 
@@ -126,13 +125,12 @@ epc_service_publish_subtype (EpcService  *self,
     g_debug ("%s: Publishing sub-service `%s' for `%s'...",
              G_STRLOC, subtype, self->dispatcher->priv->name);
 
-  result =
-    avahi_entry_group_add_service_subtype (self->group,
-                                           self->dispatcher->priv->interface,
-                                           self->dispatcher->priv->protocol, 0,
-                                           self->dispatcher->priv->name,
-                                           self->type, self->domain,
-                                           subtype);
+  result = avahi_entry_group_add_service_subtype (self->group,
+                                                  AVAHI_IF_UNSPEC,
+                                                  self->protocol, 0,
+                                                  self->dispatcher->priv->name,
+                                                  self->type, self->domain,
+                                                  subtype);
 
   if (AVAHI_OK != result)
     g_warning ("%s: Failed to publish sub-service `%s' for `%s': %s (%d)",
@@ -151,13 +149,11 @@ epc_service_publish_details (EpcService *self)
     g_debug ("%s: Publishing details for `%s'...",
              G_STRLOC, self->dispatcher->priv->name);
 
-  result =
-    avahi_entry_group_update_service_txt_strlst (self->group,
-                                                 self->dispatcher->priv->interface,
-                                                 self->dispatcher->priv->protocol, 0,
-                                                 self->dispatcher->priv->name,
-                                                 self->type, self->domain,
-                                                 self->details);
+  result = avahi_entry_group_update_service_txt_strlst (self->group,
+                                                        AVAHI_IF_UNSPEC, self->protocol, 0,
+                                                        self->dispatcher->priv->name,
+                                                        self->type, self->domain,
+                                                        self->details);
 
   if (AVAHI_OK != result)
     g_warning ("%s: Failed publish details for `%s': %s (%d)",
@@ -177,14 +173,12 @@ epc_service_publish (EpcService *self)
     g_debug ("%s: Publishing service `%s' for `%s'...",
              G_STRLOC, self->type, self->dispatcher->priv->name);
 
-  result =
-    avahi_entry_group_add_service_strlst (self->group,
-                                          self->dispatcher->priv->interface,
-                                          self->dispatcher->priv->protocol, 0,
-                                          self->dispatcher->priv->name,
-                                          self->type, self->domain,
-                                          self->host, self->port,
-                                          self->details);
+  result = avahi_entry_group_add_service_strlst (self->group,
+                                                 AVAHI_IF_UNSPEC, self->protocol, 0,
+                                                 self->dispatcher->priv->name,
+                                                 self->type, self->domain,
+                                                 self->host, self->port,
+                                                 self->details);
 
   if (AVAHI_ERR_COLLISION == result)
     epc_dispatcher_handle_collision (self->dispatcher);
@@ -251,6 +245,7 @@ epc_service_add_subtype (EpcService  *service,
 
 static EpcService*
 epc_service_new (EpcDispatcher *dispatcher,
+                 AvahiProtocol  protocol,
                  const gchar   *type,
                  const gchar   *domain,
                  const gchar   *host,
@@ -263,6 +258,7 @@ epc_service_new (EpcDispatcher *dispatcher,
   self->dispatcher = dispatcher;
   self->details = avahi_string_list_new_va (args);
   self->type = g_strdup (service);
+  self->protocol = protocol;
   self->port = port;
 
   if (domain)
@@ -332,21 +328,21 @@ epc_dispatcher_client_cb (AvahiClient      *client,
   switch (state)
     {
       case AVAHI_CLIENT_S_RUNNING:
-	if (G_UNLIKELY (_epc_debug))
+        if (G_UNLIKELY (_epc_debug))
           g_debug ("%s: Avahi client is running...", G_STRLOC);
 
         g_hash_table_foreach (self->priv->services, epc_dispatcher_publish_cb, NULL);
         break;
 
       case AVAHI_CLIENT_S_REGISTERING:
-	if (G_UNLIKELY (_epc_debug))
+        if (G_UNLIKELY (_epc_debug))
           g_debug ("%s: Avahi client is registering...", G_STRLOC);
 
         g_hash_table_foreach (self->priv->services, epc_dispatcher_reset_cb, self);
         break;
 
       case AVAHI_CLIENT_S_COLLISION:
-	if (G_UNLIKELY (_epc_debug))
+        if (G_UNLIKELY (_epc_debug))
           g_debug ("%s: Collision detected...", G_STRLOC);
 
         g_hash_table_foreach (self->priv->services, epc_dispatcher_reset_cb, self);
@@ -361,7 +357,7 @@ epc_dispatcher_client_cb (AvahiClient      *client,
         break;
 
       case AVAHI_CLIENT_CONNECTING:
-	if (G_UNLIKELY (_epc_debug))
+        if (G_UNLIKELY (_epc_debug))
           g_debug ("%s: Waiting for Avahi server...", G_STRLOC);
 
         break;
@@ -423,14 +419,6 @@ epc_dispatcher_set_property (GObject      *object,
 
   switch (prop_id)
     {
-      case PROP_INTERFACE:
-        self->priv->interface = g_value_get_int (value);
-        break;
-
-      case PROP_PROTOCOL:
-        self->priv->protocol = g_value_get_int (value);
-        break;
-
       case PROP_NAME:
         g_assert (NULL == self->priv->name);
         self->priv->name = g_value_dup_string (value);
@@ -453,14 +441,6 @@ epc_dispatcher_get_property (GObject    *object,
 
   switch (prop_id)
     {
-      case PROP_INTERFACE:
-        g_value_set_int (value, self->priv->interface);
-        break;
-
-      case PROP_PROTOCOL:
-        g_value_set_int (value, self->priv->protocol);
-        break;
-
       case PROP_NAME:
         g_value_set_string (value, self->priv->name);
         break;
@@ -511,21 +491,6 @@ epc_dispatcher_class_init (EpcDispatcherClass *cls)
   oclass->finalize = epc_dispatcher_finalize;
   oclass->dispose = epc_dispatcher_dispose;
 
-  g_object_class_install_property (oclass, PROP_INTERFACE,
-                                   g_param_spec_int ("interface", "Interface Index",
-                                                     "The index of the network interface "
-						     "this service is announced on",
-                                                     AVAHI_IF_UNSPEC, G_MAXINT, AVAHI_IF_UNSPEC,
-                                                     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
-                                                     G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
-                                                     G_PARAM_STATIC_BLURB));
-  g_object_class_install_property (oclass, PROP_PROTOCOL,
-                                   g_param_spec_int ("protocol", "Protocol",
-                                                     "The network protocol this service is announced for",
-                                                     AVAHI_PROTO_UNSPEC, G_MAXINT, AVAHI_PROTO_UNSPEC,
-                                                     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
-                                                     G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
-                                                     G_PARAM_STATIC_BLURB));
   g_object_class_install_property (oclass, PROP_NAME,
                                    g_param_spec_string ("name", "Name",
                                                         "User friendly name of the service", NULL,
@@ -551,14 +516,9 @@ epc_dispatcher_class_init (EpcDispatcherClass *cls)
  * Returns: the newly created #EpcDispatcher object.
  */
 EpcDispatcher*
-epc_dispatcher_new (AvahiIfIndex   interface,
-                    AvahiProtocol  protocol,
-                    const gchar   *name)
+epc_dispatcher_new (const gchar   *name)
 {
-  return g_object_new (EPC_TYPE_DISPATCHER,
-                       "interface", interface,
-                       "protocol", protocol,
-                       "name", name, NULL);
+  return g_object_new (EPC_TYPE_DISPATCHER, "name", name, NULL);
 }
 
 /**
@@ -594,12 +554,13 @@ epc_dispatcher_new (AvahiIfIndex   interface,
  * choose a fully qualified DNS name to announce the service.
  */
 void
-epc_dispatcher_add_service (EpcDispatcher *self,
-                            const gchar   *type,
-                            const gchar   *domain,
-                            const gchar   *host,
-                            guint16        port,
-                                           ...)
+epc_dispatcher_add_service (EpcDispatcher    *self,
+                            EpcAddressFamily  protocol,
+                            const gchar      *type,
+                            const gchar      *domain,
+                            const gchar      *host,
+                            guint16           port,
+                                              ...)
 {
   EpcService *service;
   va_list args;
@@ -609,7 +570,8 @@ epc_dispatcher_add_service (EpcDispatcher *self,
   g_return_if_fail (port > 0);
 
   va_start (args, port);
-  service = epc_service_new (self, type, domain, host, port, args);
+  service = epc_service_new (self, avahi_af_to_proto (protocol),
+                             type, domain, host, port, args);
   va_end (args);
 }
 
@@ -685,38 +647,6 @@ epc_dispatcher_set_service_details (EpcDispatcher *self,
   va_end (args);
 
   epc_service_publish_details (service);
-}
-
-/**
- * epc_dispatcher_get_interface:
- * @dispatcher: the #EpcDispatcher
- *
- * Queries the index of the network interface this service is announced on.
- * See #EpcDispatcher:interface.
- *
- * Returns: The network interface index of this service.
- */
-AvahiIfIndex
-epc_dispatcher_get_interface (EpcDispatcher *self)
-{
-  g_return_val_if_fail (EPC_IS_DISPATCHER (self), AVAHI_IF_UNSPEC);
-  return self->priv->interface;
-}
-
-/**
- * epc_dispatcher_get_protocol:
- * @dispatcher: the #EpcDispatcher
- *
- * Queries the network protocol this service is announced for.
- * See #EpcDispatcher:protocol.
- *
- * Returns: The network protocol of this service.
- */
-AvahiProtocol
-epc_dispatcher_get_protocol (EpcDispatcher *self)
-{
-  g_return_val_if_fail (EPC_IS_DISPATCHER (self), AVAHI_PROTO_UNSPEC);
-  return self->priv->protocol;
 }
 
 /**

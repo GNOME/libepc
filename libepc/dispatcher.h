@@ -22,7 +22,7 @@
 #define __EPC_DISPATCHER_H__
 
 #include <glib-object.h>
-#include <avahi-common/address.h>
+#include <sys/socket.h>
 
 G_BEGIN_DECLS
 
@@ -36,6 +36,14 @@ G_BEGIN_DECLS
 typedef struct _EpcDispatcher        EpcDispatcher;
 typedef struct _EpcDispatcherClass   EpcDispatcherClass;
 typedef struct _EpcDispatcherPrivate EpcDispatcherPrivate;
+
+typedef enum
+{
+  EPC_ADDRESS_UNSPEC = AF_UNSPEC,
+  EPC_ADDRESS_IPV4 = AF_INET,
+  EPC_ADDRESS_IPV6 = AF_INET6
+}
+EpcAddressFamily;
 
 /**
  * EpcDispatcher:
@@ -63,28 +71,25 @@ struct _EpcDispatcherClass
 
 GType          epc_dispatcher_get_type            (void) G_GNUC_CONST;
 
-EpcDispatcher* epc_dispatcher_new                 (AvahiIfIndex   interface,
-                                                   AvahiProtocol  protocol,
-                                                   const gchar   *name);
+EpcDispatcher* epc_dispatcher_new                 (const gchar      *name);
 
-void           epc_dispatcher_add_service         (EpcDispatcher *dispatcher,
-                                                   const gchar   *type,
-                                                   const gchar   *domain,
-                                                   const gchar   *host,
-                                                   guint16        port,
-                                                                  ...)
+void           epc_dispatcher_add_service         (EpcDispatcher    *dispatcher,
+						   EpcAddressFamily  protocol,
+                                                   const gchar      *type,
+                                                   const gchar      *domain,
+                                                   const gchar      *host,
+                                                   guint16           port,
+                                                                     ...)
                                                    G_GNUC_NULL_TERMINATED;
-void           epc_dispatcher_add_service_subtype (EpcDispatcher *dispatcher,
-                                                   const gchar   *type,
-                                                   const gchar   *subtype);
-void           epc_dispatcher_set_service_details (EpcDispatcher *dispatcher,
-                                                   const gchar   *type,
-                                                                  ...)
+void           epc_dispatcher_add_service_subtype (EpcDispatcher    *dispatcher,
+                                                   const gchar       *type,
+                                                   const gchar       *subtype);
+void           epc_dispatcher_set_service_details (EpcDispatcher     *dispatcher,
+                                                   const gchar       *type,
+                                                                      ...)
                                                    G_GNUC_NULL_TERMINATED;
 
-AvahiIfIndex   epc_dispatcher_get_interface       (EpcDispatcher *dispatcher);
-AvahiProtocol  epc_dispatcher_get_protocol        (EpcDispatcher *dispatcher);
-const gchar*   epc_dispatcher_get_name            (EpcDispatcher *dispatcher);
+const gchar*   epc_dispatcher_get_name            (EpcDispatcher     *dispatcher);
 
 G_END_DECLS
 

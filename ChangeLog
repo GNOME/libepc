@@ -1,3 +1,18 @@
+2007-11-12  Mathias Hasselmann  <mathias@openismus.com>
+
+	Move protocol property from EpcDispatcher to its internal service
+	class, as protocols (aka. address families) are a property of the
+	service address. Entirely drop the interface property as I see no
+	way to map them onto interface names (eth0, ppp0, ...). Also I
+	see no masures in Avahi to keep them valid when interfaces are
+	created or shutdown.
+
+	* libepc/dispatcher.c, libepc/dispatcher.h: Add EpcAddressFamily
+	enumeration. Add protocol argument to epc_dispatcher_add_service.
+	Remove interface and interface property from EpcDispatcher.
+	* libepc/publisher.c, tests/*: Pass address family to
+	epc_dispatcher_add_service instead of epc_dispatcher_new.
+
 2007-11-11  Mathias Hasselmann  <mathias@openismus.com>
 
 	Create epc_service_type_get_base from existing EpcDispatcher code and

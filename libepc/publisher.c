@@ -385,7 +385,6 @@ epc_publisher_restart_dispatcher (EpcPublisher *self)
   const gchar *host;
   gint port;
 
-  AvahiProtocol protocol;
   struct sockaddr *sockaddr;
   gint addrlen;
 
@@ -420,16 +419,15 @@ epc_publisher_restart_dispatcher (EpcPublisher *self)
 
   address = soup_socket_get_local_address (listener);
   sockaddr = soup_address_get_sockaddr (address, &addrlen);
-  protocol = avahi_af_to_proto (sockaddr->sa_family);
   host = soup_address_get_name (address);
 
   if (self->priv->dispatcher)
     g_object_unref (self->priv->dispatcher);
 
-  self->priv->dispatcher = epc_dispatcher_new (AVAHI_IF_UNSPEC, protocol, name);
+  self->priv->dispatcher = epc_dispatcher_new (name);
   service_type = epc_service_type_new (self->priv->protocol, NULL);
 
-  epc_dispatcher_add_service (self->priv->dispatcher,
+  epc_dispatcher_add_service (self->priv->dispatcher, sockaddr->sa_family,
                               epc_protocol_get_service_type (self->priv->protocol),
                               self->priv->service_domain, host, port, NULL);
   epc_dispatcher_add_service_subtype (self->priv->dispatcher,

@@ -50,11 +50,13 @@ main (void)
   if (epc_test_init (3) &&
       epc_test_init_service_browser (test_type, service_browser_cb, NULL))
     {
-      dispatcher1 = epc_dispatcher_new (AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC, preferred_name);
-      epc_dispatcher_add_service (dispatcher1, test_type, NULL, NULL, 2007, NULL);
+      dispatcher1 = epc_dispatcher_new (preferred_name);
+      epc_dispatcher_add_service (dispatcher1, EPC_ADDRESS_UNSPEC,
+                                  test_type, NULL, NULL, 2007, NULL);
 
-      dispatcher2 = epc_dispatcher_new (AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC, preferred_name);
-      epc_dispatcher_add_service (dispatcher2, test_type, NULL, NULL, 2007, NULL);
+      dispatcher2 = epc_dispatcher_new (preferred_name);
+      epc_dispatcher_add_service (dispatcher2, EPC_ADDRESS_UNSPEC,
+                                  test_type, NULL, NULL, 2007, NULL);
 
       result = epc_test_run ();
 

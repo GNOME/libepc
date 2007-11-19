@@ -65,10 +65,11 @@ main (void)
     }
 
 
-  dispatcher = epc_dispatcher_new (AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC, test_name);
+  dispatcher = epc_dispatcher_new (test_name);
 
   for (i = 0; i < G_N_ELEMENTS (test_types); ++i)
-    epc_dispatcher_add_service (dispatcher, test_types[i], NULL, NULL, 2007, NULL);
+    epc_dispatcher_add_service (dispatcher, EPC_ADDRESS_UNSPEC,
+                                test_types[i], NULL, NULL, 2007, NULL);
 
   result = epc_test_run ();
 

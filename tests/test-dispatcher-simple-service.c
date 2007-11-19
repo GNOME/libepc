@@ -47,8 +47,9 @@ main (void)
   if (epc_test_init (1) &&
       epc_test_init_service_browser (test_type, service_browser_cb, NULL))
     {
-      dispatcher = epc_dispatcher_new (AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC, test_name);
-      epc_dispatcher_add_service (dispatcher, test_type, NULL, NULL, 2007, NULL);
+      dispatcher = epc_dispatcher_new (test_name);
+      epc_dispatcher_add_service (dispatcher, EPC_ADDRESS_UNSPEC,
+                                  test_type, NULL, NULL, 2007, NULL);
       result = epc_test_run ();
     }
 
