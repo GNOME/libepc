@@ -388,17 +388,22 @@ epc_dispatcher_handle_collision (EpcDispatcher *self)
 static void
 epc_dispatcher_reset_client (EpcDispatcher *self)
 {
+  GError *error = NULL;
+
   if (self->priv->client)
     {
       avahi_client_free (self->priv->client);
       self->priv->client = NULL;
     }
 
-  self->priv->client =
-    epc_shell_create_avahi_client (AVAHI_CLIENT_NO_FAIL,
-                                   epc_dispatcher_client_cb, self);
+  self->priv->client = epc_shell_create_avahi_client (AVAHI_CLIENT_NO_FAIL,
+                                                      epc_dispatcher_client_cb,
+                                                      self, &error);
 
-  g_return_if_fail (NULL != self->priv->client);
+  if (NULL == self->priv->client)
+    g_warning ("%s: %s", G_STRFUNC, error->message);
+
+  g_clear_error (&error);
 }
 
 static void
@@ -515,13 +520,10 @@ epc_dispatcher_class_init (EpcDispatcherClass *cls)
 
 /**
  * epc_dispatcher_new:
- * @interface: index of the network interface to use
- * @protocol: the network protocol to use (IPv4, IPv6)
  * @name: the human friendly name of the service
  *
  * Creates a new #EpcDispatcher object for announcing a DNS-SD service.
- * The service is announced on all network interfaces, when AVAHI_IF_UNSPEC
- * is passed for @interface.
+ * The service is announced on all network interfaces.
  *
  * Call #epc_dispatcher_add_service to actually announce a service.
  *

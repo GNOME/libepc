@@ -33,6 +33,8 @@ static gint epc_test_result = 1;
 gboolean
 epc_test_init (gint tests)
 {
+  GError *error = NULL;
+
   tests &= EPC_TEST_MASK_USER;
   epc_test_result = EPC_TEST_MASK_INIT | tests;
   epc_shell_ref ();
@@ -44,9 +46,15 @@ epc_test_init (gint tests)
 
   if (NULL == epc_test_client)
     epc_test_client = epc_shell_create_avahi_client (AVAHI_CLIENT_IGNORE_USER_CONFIG |
-                                                     AVAHI_CLIENT_NO_FAIL, NULL, NULL);
+                                                     AVAHI_CLIENT_NO_FAIL,
+                                                     NULL, NULL, &error);
 
-  g_return_val_if_fail (NULL != epc_test_client, FALSE);
+  if (!epc_test_client)
+    {
+      g_warning ("%s: %s", G_STRFUNC, error->message);
+      g_error_free (error);
+      return FALSE;
+    }
 
   return TRUE;
 }

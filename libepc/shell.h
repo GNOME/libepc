@@ -24,6 +24,15 @@
 #include <glib.h>
 #include <avahi-client/client.h>
 
+/**
+ * EPC_AVAHI_ERROR:
+ *
+ * Error domain for <citetitle>Avahi</citetitle> operations. Errors in this
+ * domain will be <citetitle>Avahi</citetitle> error codes. See GError
+ * for information on error domains.
+ */
+#define EPC_AVAHI_ERROR (epc_avahi_error_quark ())
+
 G_BEGIN_DECLS
 
 void                        epc_shell_ref                 (void);
@@ -32,9 +41,12 @@ void                        epc_shell_leave               (void);
 void                        epc_shell_enter               (void);
 
 G_CONST_RETURN AvahiPoll*   epc_shell_get_avahi_poll_api  (void);
-AvahiClient*                epc_shell_create_avahi_client (AvahiClientFlags    flags,
-                                                           AvahiClientCallback callback,
-                                                           gpointer            user_data);
+AvahiClient*                epc_shell_create_avahi_client (AvahiClientFlags      flags,
+                                                           AvahiClientCallback   callback,
+                                                           gpointer              user_data,
+                                                           GError              **error);
+
+GQuark                      epc_avahi_error_quark         (void) G_GNUC_CONST;
 
 G_END_DECLS
 

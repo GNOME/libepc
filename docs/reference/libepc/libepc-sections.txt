@@ -1,17 +1,21 @@
 <SECTION>
 <FILE>dispatcher</FILE>
+EpcAddressFamily
 EpcDispatcherPrivate
 EpcDispatcherClass
 <TITLE>EpcDispatcher</TITLE>
 EpcDispatcher
 epc_dispatcher_new
+epc_dispatcher_reset
 epc_dispatcher_add_service
 epc_dispatcher_add_service_subtype
 epc_dispatcher_set_service_details
-epc_dispatcher_get_interface
-epc_dispatcher_get_protocol
+epc_dispatcher_set_name
 epc_dispatcher_get_name
+epc_dispatcher_get_host_name
 <SUBSECTION Standard>
+EPC_TYPE_ADDRESS_FAMILY
+epc_address_family_get_type
 EPC_DISPATCHER
 EPC_IS_DISPATCHER
 EPC_TYPE_DISPATCHER
@@ -92,13 +96,15 @@ EPC_CONSUMER_GET_CLASS
 <SECTION>
 <FILE>shell</FILE>
 <TITLE>EpcShell</TITLE>
+EPC_AVAHI_ERROR
 epc_shell_create_avahi_client
 epc_shell_enter
 epc_shell_get_avahi_poll_api
-epc_shell_get_host_name
 epc_shell_leave
 epc_shell_ref
 epc_shell_unref
+<SUBSECTION Standard>
+epc_avahi_error_quark
 </SECTION>
 
 <SECTION>
@@ -135,6 +141,7 @@ epc_protocol_get_uri_scheme
 epc_service_type_build_uri
 epc_service_type_get_protocol
 epc_service_type_new
+epc_service_type_get_base
 <SUBSECTION Standard>
 EPC_TYPE_PROTOCOL
 epc_protocol_get_type

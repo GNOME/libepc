@@ -24,6 +24,7 @@
 #include <avahi-glib/glib-malloc.h>
 #include <avahi-glib/glib-watch.h>
 
+#include <glib/gi18n-lib.h>
 #include <gmodule.h>
 #include <gnutls/gnutls.h>
 
@@ -50,6 +51,13 @@ struct _EpcAvahiShell
 static EpcAvahiShell epc_shell = { 0, NULL, NULL, NULL };
 gboolean _epc_debug = FALSE;
 
+/**
+ * epc_shell_ref:
+ *
+ * Increases the reference count for this library. When called for the first
+ * time essential resources are allocated. Each call to this function has to
+ * be paired with a call to #epc_shell_unref.
+ */
 void
 epc_shell_ref (void)
 {
@@ -87,6 +95,12 @@ epc_shell_ref (void)
     g_debug ("%s: %d", G_STRFUNC, epc_shell.ref_count);
 }
 
+/**
+ * epc_shell_unref:
+ *
+ * Decreases the reference count for this library. When the reference count
+ * reaches zero, global resources allocated by the library are released.
+ */
 void
 epc_shell_unref (void)
 {
@@ -104,6 +118,13 @@ epc_shell_unref (void)
     }
 }
 
+/**
+ * epc_shell_leave:
+ *
+ * Releases the big GDK lock when running unter GDK/GTK+.
+ * It has to be called before entering GLib main loops to avoid race
+ * conditions. See #gdk_threads_leave for details.
+ */
 void
 epc_shell_leave (void)
 {
@@ -111,6 +132,13 @@ epc_shell_leave (void)
     epc_shell.threads_leave ();
 }
 
+/**
+ * epc_shell_enter:
+ *
+ * Acquires the big GDK lock when running unter GDK/GTK+.
+ * It has to be called after leaving GLib main loops to avoid race
+ * conditions. See #gdk_threads_enter for details.
+ */
 void
 epc_shell_enter (void)
 {
@@ -118,6 +146,17 @@ epc_shell_enter (void)
     epc_shell.threads_enter ();
 }
 
+/**
+ * epc_shell_get_avahi_poll_api:
+ *
+ * Returns the <citetitle>Avahi</citetitle> polling API object used for
+ * integrating the <citetitle>Avahi</citetitle> library with the
+ * <citetitle>GLib</citetitle> main loop.
+ *
+ * You have to call #epc_shell_ref before using this function.
+ *
+ * Returns: The Avahi polling API used.
+ */
 G_CONST_RETURN AvahiPoll*
 epc_shell_get_avahi_poll_api (void)
 {
@@ -125,20 +164,58 @@ epc_shell_get_avahi_poll_api (void)
   return avahi_glib_poll_get (epc_shell.poll);
 }
 
+/**
+ * epc_shell_create_avahi_client:
+ * @flags: options for creating the client
+ * @callback: the function to call on status changes, or %NULL
+ * @user_data: data to passed to @callback
+ * @error: return location for a #GError, or %NULL
+ *
+ * Creates a new Avahi client with the behavior described by @flags. Whenever
+ * the state of the client changes @callback is called. This callback may be
+ * %NULL. If the call was not successful, it returns %FALSE. The error domain
+ * is EPC_AVAHI_ERROR. Possible error codes are those of the
+ * <citetitle>Avahi</citetitle> library.
+ *
+ * You have to call #epc_shell_ref before using this function.
+ *
+ * <note><para>
+ *  Please note that this function is called for the first time from within the
+ *  #epc_shell_create_avahi_client context! Thus, in the callback you should
+ *  not make use of global variables that are initialized only after your
+ *  call to #epc_shell_create_avahi_client. A common mistake is to store the
+ *  AvahiClient pointer returned by #epc_shell_create_avahi_client in a global
+ *  variable and assume that this global variable already contains the valid
+ *  pointer when the callback is called for the first time. A work-around for
+ *  this is to always use the AvahiClient pointer passed to the callback
+ *  function instead of the global pointer.
+ * </para></note>
+ *
+ * Returns: The newly created Avahi client instance, or %NULL on error.
+ */
 AvahiClient*
-epc_shell_create_avahi_client (AvahiClientFlags    flags,
-                               AvahiClientCallback callback,
-                               gpointer            user_data)
+epc_shell_create_avahi_client (AvahiClientFlags      flags,
+                               AvahiClientCallback   callback,
+                               gpointer              user_data,
+			       GError	           **error)
 {
-  gint error = AVAHI_OK;
+  gint error_code = AVAHI_OK;
   AvahiClient *client;
 
   client = avahi_client_new (epc_shell_get_avahi_poll_api (),
-                             flags, callback, user_data, &error);
+                             flags, callback, user_data,
+                             &error_code);
 
   if (!client)
-    g_warning ("%s: Failed to create Avahi client: %s (%d)\n",
-               G_STRLOC, avahi_strerror (error), error);
+    g_set_error (error, EPC_AVAHI_ERROR, error_code,
+                 _("Cannot create Avahi client: %s"),
+                 avahi_strerror (error_code));
 
   return client;
+}
+
+GQuark
+epc_avahi_error_quark (void)
+{
+  return g_quark_from_static_string ("epc-avahi-error-quark");
 }

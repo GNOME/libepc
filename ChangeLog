@@ -1,5 +1,16 @@
 2007-11-12  Mathias Hasselmann  <mathias@openismus.com>
 
+	Update documentation and add an error argument
+	to epc_shell_create_avahi_client.
+
+	* docs/reference/libepc/libepc-sections.txt: Updated symbols.
+	* libepc/shell.c, libepc/shell.h: Document functions. Add error
+	argument to epc_shell_create_avahi_client.
+	* libepc/consumer.c, libepc/dispatcher.c, tests/framework.c:
+	Pass error argument to epc_shell_create_avahi_client.
+
+2007-11-12  Mathias Hasselmann  <mathias@openismus.com>
+
 	Drop the shell's artificial Avahi client by keep the publisher's
 	dispatcher arround. Implement name changes for the dispatcher.
 

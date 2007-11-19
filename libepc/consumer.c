@@ -405,8 +405,17 @@ epc_consumer_constructed (GObject *object)
 
   if (!self->priv->hostname)
     {
-      self->priv->client = epc_shell_create_avahi_client (AVAHI_CLIENT_NO_FAIL, NULL, NULL);
-      g_return_if_fail (NULL != self->priv->client);
+      GError *error = NULL;
+
+      self->priv->client = epc_shell_create_avahi_client (AVAHI_CLIENT_NO_FAIL,
+                                                          NULL, NULL, &error);
+
+      if (NULL == self->priv->client)
+        {
+          g_warning ("%s: %s", G_STRFUNC, error->message);
+          g_error_free (error);
+          return;
+        }
 
       if (EPC_PROTOCOL_UNKNOWN != self->priv->protocol)
         epc_consumer_create_service_browsers (self, self->priv->protocol, 0);
