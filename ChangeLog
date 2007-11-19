@@ -1,3 +1,15 @@
+2007-11-01  Mathias Hasselmann  <mathias@openismus.com>
+
+	Implement EpcDispatcher, an easy to use ZeroConf dispatcher.
+
+	* configure.in, Makefile.am: Separatly checking for
+	avahi-ui which is used by tests/test-consumer only.
+	* libepc/dispatcher.c, libepc/dispatcher.h: Implement an
+	easy to use ZeroConf service dispatcher on top of Avahi.
+	* libepc/publisher.c, libepc/publisher.h: Use the new dispatcher.
+	* tests/test-publisher.c: Use the new dispatcher.
+	Change key-name for the source-code record.
+
 2007-10-31  Mathias Hasselmann  <mathias@openismus.com>
 
 	Initial commit of the Easy Publish and Consume library.

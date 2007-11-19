@@ -9,10 +9,14 @@ PKG_PROG_PKG_CONFIG([0.14])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_FILES([Makefile])
 
-PKG_CHECK_MODULES(LIBEPC, [avahi-glib avahi-client avahi-ui libsoup-2.2])
+PKG_CHECK_MODULES(LIBEPC, [avahi-client avahi-glib libsoup-2.2])
+PKG_CHECK_MODULES(AVAHIUI, [avahi-ui])
 
 GLIB_GENMARSHAL=`$PKG_CONFIG --variable=glib_genmarshal glib-2.0`
 GLIB_MKENUMS=`$PKG_CONFIG --variable=glib_mkenums glib-2.0`
+
+AC_SUBST(AVAHIUI_CFLAGS)
+AC_SUBST(AVAHIUI_LIBS)
 
 AC_SUBST(LIBEPC_CFLAGS)
 AC_SUBST(LIBEPC_LIBS)

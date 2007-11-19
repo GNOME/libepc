@@ -1,30 +1,330 @@
 #include "dispatcher.h"
 
-#include <avahi-client/client.h>
 #include <avahi-client/publish.h>
+#include <avahi-common/alternative.h>
+#include <avahi-common/error.h>
+#include <avahi-glib/glib-malloc.h>
 #include <avahi-glib/glib-watch.h>
+
+#include <string.h>
+
+typedef struct _EpcService EpcService;
 
 enum
 {
   PROP_NONE,
-  PROP_NAME,
-  PROP_DOMAIN,
-  PROP_SERVICE
+  PROP_INTERFACE,
+  PROP_PROTOCOL,
+  PROP_NAME
+};
+
+struct _EpcService
+{
+  EpcDispatcher *dispatcher;
+  AvahiEntryGroup *group;
+
+  gchar *type;
+  gchar *domain;
+  gchar *host;
+  guint16 port;
+
+  GList *subtypes;
+  AvahiStringList *details;
 };
 
 struct _EpcDispatcherPrivate
 {
+  gchar *name;
   AvahiGLibPoll *poll;
   AvahiClient *client;
-  AvahiEntryGroup *group;
-  guint startup_handler;
-
-  gchar *name;
-  gchar *domain;
-  gchar *service;
+  AvahiIfIndex interface;
+  AvahiProtocol protocol;
+  GHashTable *services;
 };
 
+static void epc_dispatcher_handle_collision (EpcDispatcher *self);
+static void epc_dispatcher_reset_client     (EpcDispatcher *self);
+
+static void
+epc_service_publish_subtype (EpcService  *self,
+                             const gchar *subtype,
+                             gboolean     commit)
+{
+  gint result;
+
+  g_debug ("%s: Publishing sub-service `%s' for `%s'...",
+           G_STRLOC, subtype, self->dispatcher->priv->name);
+
+  result =
+    avahi_entry_group_add_service_subtype (self->group,
+                                           self->dispatcher->priv->interface,
+                                           self->dispatcher->priv->protocol, 0,
+                                           self->dispatcher->priv->name,
+                                           self->type, self->domain,
+                                           subtype);
+
+  if (AVAHI_OK != result)
+    g_warning ("%s: Failed to publish sub-service `%s' for `%s': %s (%d)",
+               G_STRLOC, subtype, self->dispatcher->priv->name,
+               avahi_strerror (result), result);
+
+  if (commit)
+    avahi_entry_group_commit (self->group);
+}
+
+static void
+epc_service_publish_details (EpcService *self,
+                             gboolean    commit)
+{
+  gint result;
+
+  g_debug ("%s: Publishing details for `%s'...",
+           G_STRLOC, self->dispatcher->priv->name);
+
+  result =
+    avahi_entry_group_update_service_txt_strlst (self->group,
+                                                 self->dispatcher->priv->interface,
+                                                 self->dispatcher->priv->protocol, 0,
+                                                 self->dispatcher->priv->name,
+                                                 self->type, self->domain,
+                                                 self->details);
+
+  if (AVAHI_OK != result)
+    g_warning ("%s: Failed publish details for `%s': %s (%d)",
+               G_STRLOC, self->dispatcher->priv->name,
+               avahi_strerror (result), result);
+
+  if (commit)
+    avahi_entry_group_commit (self->group);
+}
+
+static void
+epc_service_publish (EpcService *self)
+{
+  gint result;
+  GList *iter;
+
+  g_debug ("%s: Publishing service `%s' for `%s'...",
+           G_STRLOC, self->type, self->dispatcher->priv->name);
+
+  result =
+    avahi_entry_group_add_service_strlst (self->group,
+                                          self->dispatcher->priv->interface,
+                                          self->dispatcher->priv->protocol, 0,
+                                          self->dispatcher->priv->name,
+                                          self->type, self->domain,
+                                          self->host, self->port,
+                                          self->details);
+
+  if (AVAHI_OK != result)
+    g_warning ("%s: Failed to publish service `%s' for `%s': %s (%d)",
+               G_STRLOC, self->type, self->dispatcher->priv->name,
+               avahi_strerror (result), result);
+
+  for (iter = self->subtypes; iter; iter = iter->next)
+    epc_service_publish_subtype (self, iter->data, FALSE);
+
+  avahi_entry_group_commit (self->group);
+}
+
+static void
+epc_service_reset (EpcService *self)
+{
+  avahi_entry_group_reset (self->group);
+}
+
+static void
+epc_service_group_cb (AvahiEntryGroup      *group,
+                      AvahiEntryGroupState  state,
+                      gpointer              data)
+{
+  AvahiClient *client = avahi_entry_group_get_client (group);
+  EpcService *self = data;
+
+  g_assert (NULL == self->group || group == self->group);
+
+  switch (state)
+    {
+      case AVAHI_ENTRY_GROUP_REGISTERING:
+      case AVAHI_ENTRY_GROUP_ESTABLISHED:
+        break;
+
+      case AVAHI_ENTRY_GROUP_UNCOMMITED:
+        self->group = group;
+        epc_service_publish (self);
+        break;
+
+      case AVAHI_ENTRY_GROUP_COLLISION:
+        self->group = group;
+        epc_dispatcher_handle_collision (self->dispatcher);
+        break;
+
+      case AVAHI_ENTRY_GROUP_FAILURE:
+        g_warning ("%s: Avahi group failure: %s (%d)\n", G_STRLOC,
+                   avahi_strerror (avahi_client_errno (client)),
+                   avahi_client_errno (client));
+        epc_dispatcher_reset_client (self->dispatcher);
+        break;
+    }
+}
+
+static void
+epc_service_add_subtype (EpcService  *service,
+                         const gchar *subtype)
+{
+  service->subtypes = g_list_prepend (service->subtypes, g_strdup (subtype));
+}
+
+static EpcService*
+epc_service_new (EpcDispatcher *dispatcher,
+                 const gchar   *type,
+                 const gchar   *domain,
+                 const gchar   *host,
+                 guint16        port,
+                 va_list        args)
+{
+  EpcService *self = g_slice_new0 (EpcService);
+  const gchar *service;
+
+  service = type + strlen (type);
+
+  while (service > type && '.' != *(--service));
+  while (service > type && '.' != *(--service));
+
+  if (service > type)
+    service += 1;
+
+  self->dispatcher = dispatcher;
+  self->details = avahi_string_list_new_va (args);
+  self->type = g_strdup (service);
+  self->port = port;
+
+  if (domain)
+    self->domain = g_strdup (domain);
+  if (host)
+    self->host = g_strdup (host);
+  if (service > type)
+    epc_service_add_subtype (self, type);
+
+  self->group = avahi_entry_group_new (dispatcher->priv->client,
+                                       epc_service_group_cb, self);
+
+#if 0
+  if (AVAHI_ERR_COLLISION == result)
+    handle_collision (self);
+  else if (result)
+    g_warning ("%s: Failed to register %s service: %s (%d)\n",
+               G_STRLOC, service, avahi_strerror(result), result);
+#endif
+
+  return self;
+}
+
+static void
+epc_service_free (EpcService *self)
+{
+  avahi_entry_group_free (self->group);
+  avahi_string_list_free (self->details);
+
+  g_list_foreach (self->subtypes, (GFunc)g_free, NULL);
+  g_list_free (self->subtypes);
+
+  g_free (self->type);
+  g_free (self->domain);
+  g_free (self->host);
+
+  g_slice_free (EpcService, self);
+}
+
 G_DEFINE_TYPE (EpcDispatcher, epc_dispatcher, G_TYPE_OBJECT);
+
+static void
+epc_dispatcher_publish_cb (gpointer key G_GNUC_UNUSED,
+                           gpointer value,
+                           gpointer data G_GNUC_UNUSED)
+{
+  epc_service_publish (value);
+}
+
+static void
+epc_dispatcher_reset_cb (gpointer key G_GNUC_UNUSED,
+                         gpointer value,
+                         gpointer data G_GNUC_UNUSED)
+{
+  epc_service_reset (value);
+}
+
+static void
+epc_dispatcher_client_cb (AvahiClient      *client,
+                          AvahiClientState  state,
+                          gpointer          data)
+{
+  EpcDispatcher *self = data;
+
+  g_assert (NULL == self->priv->client ||
+            client == self->priv->client);
+
+  switch (state)
+    {
+      case AVAHI_CLIENT_S_RUNNING:
+        g_debug ("%s: Avahi client is running...", G_STRLOC);
+        g_hash_table_foreach (self->priv->services, epc_dispatcher_publish_cb, NULL);
+        break;
+
+      case AVAHI_CLIENT_S_COLLISION:
+      case AVAHI_CLIENT_S_REGISTERING:
+        g_debug ("%s: Avahi client collision/registering...", G_STRLOC);
+        g_hash_table_foreach (self->priv->services, epc_dispatcher_reset_cb, self);
+        break;
+
+      case AVAHI_CLIENT_FAILURE:
+        g_warning ("%s: Avahi client failure: %s (%d)\n", G_STRLOC,
+                   avahi_strerror (avahi_client_errno (client)),
+                   avahi_client_errno (client));
+        epc_dispatcher_reset_client (self);
+        break;
+
+      case AVAHI_CLIENT_CONNECTING:
+        g_debug ("%s: Waiting for Avahi server...", G_STRLOC);
+        break;
+    }
+}
+
+static void
+epc_dispatcher_handle_collision (EpcDispatcher *self)
+{
+  gchar *alternate = avahi_alternative_service_name (self->priv->name);
+
+  g_warning ("%s: Service name collision for `%s', renaming to `%s'.",
+             G_STRLOC, self->priv->name, alternate);
+
+  g_free (self->priv->name);
+  self->priv->name = alternate;
+
+  g_object_notify (G_OBJECT (self), "name");
+  g_hash_table_foreach (self->priv->services, epc_dispatcher_publish_cb, NULL);
+}
+
+static void
+epc_dispatcher_reset_client (EpcDispatcher *self)
+{
+  int error = 0;
+
+  if (self->priv->client)
+    {
+      avahi_client_free (self->priv->client);
+      self->priv->client = NULL;
+    }
+
+  self->priv->client =
+    avahi_client_new (avahi_glib_poll_get (self->priv->poll),
+                      AVAHI_CLIENT_NO_FAIL, epc_dispatcher_client_cb,
+                      self, &error);
+
+  if (!self->priv->client)
+    g_warning ("%s: Failed to setup Avahi client: %s (%d)\n",
+               G_STRLOC, avahi_strerror (error), error);
+}
 
 static void
 epc_dispatcher_init (EpcDispatcher *self)
@@ -32,6 +332,15 @@ epc_dispatcher_init (EpcDispatcher *self)
   self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self,
                                             EPC_TYPE_DISPATCHER,
                                             EpcDispatcherPrivate);
+
+  self->priv->services =
+    g_hash_table_new_full (g_str_hash, g_str_equal, NULL,
+                           (GDestroyNotify) epc_service_free);
+
+  avahi_set_allocator (avahi_glib_allocator ());
+
+  self->priv->poll = avahi_glib_poll_new (NULL, G_PRIORITY_DEFAULT);
+  epc_dispatcher_reset_client (self);
 }
 
 static void
@@ -44,19 +353,18 @@ epc_dispatcher_set_property (GObject      *object,
 
   switch (prop_id)
     {
+      case PROP_INTERFACE:
+        self->priv->interface = g_value_get_int (value);
+        break;
+
+      case PROP_PROTOCOL:
+        self->priv->protocol = g_value_get_int (value);
+        break;
+
       case PROP_NAME:
         g_free (self->priv->name);
         self->priv->name = g_value_dup_string (value);
-        break;
-
-      case PROP_DOMAIN:
-        g_free (self->priv->domain);
-        self->priv->domain = g_value_dup_string (value);
-        break;
-
-      case PROP_SERVICE:
-        g_free (self->priv->service);
-        self->priv->service = g_value_dup_string (value);
+        /* TODO: re-publish */
         break;
 
       default:
@@ -75,16 +383,16 @@ epc_dispatcher_get_property (GObject    *object,
 
   switch (prop_id)
     {
+      case PROP_INTERFACE:
+        g_value_set_int (value, self->priv->interface);
+        break;
+
+      case PROP_PROTOCOL:
+        g_value_set_int (value, self->priv->protocol);
+        break;
+
       case PROP_NAME:
         g_value_set_string (value, self->priv->name);
-        break;
-
-      case PROP_DOMAIN:
-        g_value_set_string (value, self->priv->domain);
-        break;
-
-      case PROP_SERVICE:
-        g_value_set_string (value, self->priv->service);
         break;
 
       default:
@@ -98,7 +406,17 @@ epc_dispatcher_dispose (GObject *object)
 {
   EpcDispatcher *self = EPC_DISPATCHER (object);
 
-  epc_dispatcher_quit (self);
+  if (self->priv->services)
+    {
+      g_hash_table_unref (self->priv->services);
+      self->priv->services = NULL;
+    }
+
+  if (self->priv->client)
+    {
+      avahi_client_free (self->priv->client);
+      self->priv->client = NULL;
+    }
 
   if (self->priv->poll)
     {
@@ -108,12 +426,6 @@ epc_dispatcher_dispose (GObject *object)
 
   g_free (self->priv->name);
   self->priv->name = NULL;
-
-  g_free (self->priv->domain);
-  self->priv->domain = NULL;
-
-  g_free (self->priv->service);
-  self->priv->service = NULL;
 
   G_OBJECT_CLASS (epc_dispatcher_parent_class)->dispose (object);
 }
@@ -127,22 +439,24 @@ epc_dispatcher_class_init (EpcDispatcherClass *cls)
   oclass->get_property = epc_dispatcher_get_property;
   oclass->dispose = epc_dispatcher_dispose;
 
+  g_object_class_install_property (oclass, PROP_INTERFACE,
+                                   g_param_spec_int ("interface", "Interface Index",
+                                                     "The interface this service shall be announced on",
+                                                     AVAHI_IF_UNSPEC, G_MAXINT, AVAHI_IF_UNSPEC,
+                                                     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+                                                     G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
+                                                     G_PARAM_STATIC_BLURB));
+  g_object_class_install_property (oclass, PROP_PROTOCOL,
+                                   g_param_spec_int ("protocol", "Protocol",
+                                                     "The protocol this service shall be announced on",
+                                                     AVAHI_PROTO_UNSPEC, G_MAXINT, AVAHI_PROTO_UNSPEC,
+                                                     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+                                                     G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
+                                                     G_PARAM_STATIC_BLURB));
   g_object_class_install_property (oclass, PROP_NAME,
                                    g_param_spec_string ("name", "Name",
-                                                        "User friendly name for this service", NULL,
-                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
-                                                        G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
-                                                        G_PARAM_STATIC_BLURB));
-  g_object_class_install_property (oclass, PROP_DOMAIN,
-                                   g_param_spec_string ("domain", "Domain",
-                                                        "Internet domain for publishing this service", NULL,
-                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
-                                                        G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
-                                                        G_PARAM_STATIC_BLURB));
-  g_object_class_install_property (oclass, PROP_SERVICE,
-                                   g_param_spec_string ("service", "Service",
-                                                        "Wellknown DNS-SD name this service", NULL,
-                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
+                                                        "User friendly name for the service", NULL,
+                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
                                                         G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
 
@@ -150,83 +464,75 @@ epc_dispatcher_class_init (EpcDispatcherClass *cls)
 }
 
 EpcDispatcher*
-epc_dispatcher_new (const gchar *name,
-                    const gchar *domain,
-                    const gchar *service)
+epc_dispatcher_new (AvahiIfIndex   interface,
+                    AvahiProtocol  protocol,
+                    const gchar   *name)
 {
-  g_return_val_if_fail (NULL != name, NULL);
-  g_return_val_if_fail (NULL != service, NULL);
-
-  return g_object_new (EPC_TYPE_DISPATCHER, "name", name,
-                       "domain", domain, "service", service,
-                       NULL);
+  return g_object_new (EPC_TYPE_DISPATCHER,
+                       "interface", interface,
+                       "protocol", protocol,
+                       "name", name, NULL);
 }
 
 void
-epc_dispatcher_set_name (EpcDispatcher *self,
-                         const gchar   *name)
+epc_dispatcher_add_service (EpcDispatcher *self,
+                            const gchar   *type,
+                            const gchar   *domain,
+                            const gchar   *host,
+                            guint16        port,
+                                           ...)
 {
-  g_return_if_fail (EPC_IS_DISPATCHER (self));
-  g_object_set (self, "name", name, NULL);
-}
+  EpcService *service;
+  va_list args;
 
-G_CONST_RETURN char*
-epc_dispatcher_get_name (EpcDispatcher *self)
-{
-  g_return_val_if_fail (EPC_IS_DISPATCHER (self), NULL);
-  return self->priv->name;
+  g_return_if_fail (EPC_IS_DISPATCHER (self));
+  g_return_if_fail (NULL != type);
+  g_return_if_fail (port > 0);
+
+  va_start (args, port);
+  service = epc_service_new (self, type, domain, host, port, args);
+  g_hash_table_insert (self->priv->services, service->type, service);
+  va_end (args);
 }
 
 void
-epc_dispatcher_set_domain (EpcDispatcher *self,
-                           const gchar   *domain)
+epc_dispatcher_add_service_subtype (EpcDispatcher *self,
+                                    const gchar   *type,
+                                    const gchar   *subtype)
 {
-  g_return_if_fail (EPC_IS_DISPATCHER (self));
-  g_object_set (self, "domain", domain, NULL);
-}
+  EpcService *service;
 
-G_CONST_RETURN char*
-epc_dispatcher_get_domain (EpcDispatcher *self)
-{
-  g_return_val_if_fail (EPC_IS_DISPATCHER (self), NULL);
-  return self->priv->domain;
+  g_return_if_fail (EPC_IS_DISPATCHER (self));
+  g_return_if_fail (NULL != subtype);
+  g_return_if_fail (NULL != type);
+
+  service = g_hash_table_lookup (self->priv->services, type);
+
+  g_return_if_fail (NULL != service);
+
+  epc_service_add_subtype (service, subtype);
+  epc_service_publish_subtype (service, subtype, TRUE);
 }
 
 void
-epc_dispatcher_set_service (EpcDispatcher *self,
-                            const gchar   *service)
+epc_dispatcher_set_service_details (EpcDispatcher *self,
+                                    const gchar   *type,
+                                                   ...)
 {
+  EpcService *service;
+  va_list args;
+
   g_return_if_fail (EPC_IS_DISPATCHER (self));
-  g_object_set (self, "service", service, NULL);
-}
+  g_return_if_fail (NULL != type);
 
-G_CONST_RETURN char*
-epc_dispatcher_get_service (EpcDispatcher *self)
-{
-  g_return_val_if_fail (EPC_IS_DISPATCHER (self), NULL);
-  return self->priv->service;
-}
+  service = g_hash_table_lookup (self->priv->services, type);
 
-void
-epc_dispatcher_quit (EpcDispatcher *self)
-{
-  g_return_if_fail (EPC_IS_DISPATCHER (self));
+  g_return_if_fail (NULL != service);
 
-  if (self->priv->startup_handler)
-    {
-      g_source_remove (self->priv->startup_handler);
-      self->priv->startup_handler = 0;
-    }
+  va_start (args, type);
+  avahi_string_list_free (service->details);
+  service->details = avahi_string_list_new_va (args);
+  va_end (args);
 
-  if (self->priv->group)
-    {
-      avahi_entry_group_free (self->priv->group);
-      self->priv->group = NULL;
-    }
-
-  if (self->priv->client)
-    {
-      avahi_client_free (self->priv->client);
-      self->priv->client = NULL;
-    }
+  epc_service_publish_details (service, TRUE);
 }

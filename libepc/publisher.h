@@ -31,19 +31,15 @@ struct _EpcPublisherClass
 
 GType                epc_publisher_get_type    (void) G_GNUC_CONST;
 
-EpcPublisher*        epc_publisher_new         (const gchar   *name);
+EpcPublisher*        epc_publisher_new         (const gchar   *name,
+                                                const gchar   *service,
+                                                const gchar   *domain);
 
-void                 epc_publisher_set_name    (EpcPublisher *publisher,
-                                                 const gchar   *name);
-G_CONST_RETURN char* epc_publisher_get_name    (EpcPublisher *publisher);
-
-void                 epc_publisher_set_domain  (EpcPublisher *publisher,
-                                                 const gchar   *domain);
-G_CONST_RETURN char* epc_publisher_get_domain  (EpcPublisher *publisher);
-
-void                 epc_publisher_set_service (EpcPublisher *publisher,
-                                                 const gchar   *service);
-G_CONST_RETURN char* epc_publisher_get_service (EpcPublisher *publisher);
+void                 epc_publisher_set_name    (EpcPublisher  *publisher,
+                                                const gchar   *name);
+G_CONST_RETURN char* epc_publisher_get_name    (EpcPublisher  *publisher);
+G_CONST_RETURN char* epc_publisher_get_domain  (EpcPublisher  *publisher);
+G_CONST_RETURN char* epc_publisher_get_service (EpcPublisher  *publisher);
 
 void                 epc_publisher_add         (EpcPublisher  *publisher,
                                                 const gchar   *key,

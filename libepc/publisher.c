@@ -73,35 +73,6 @@ epc_record_free (EpcRecord* record)
 G_DEFINE_TYPE (EpcPublisher, epc_publisher, G_TYPE_OBJECT);
 
 static void
-epc_publisher_update_dispatcher (EpcPublisher *self)
-{
-  const gchar *name = self->priv->name;
-  const gchar *domain = self->priv->domain;
-  const gchar *service = self->priv->service;
-
-  if (!name)
-    name = g_get_application_name ();
-  if (!name)
-    name = g_get_prgname ();
-  if (!service)
-    service = EPC_PUBLISHER_SERVICE_TYPE;
-
-  if (!self->priv->dispatcher)
-    {
-      SoupSocket *listener = soup_server_get_listener (self->priv->server);
-      SoupAddress *address = soup_socket_get_local_address (listener);
-      const gchar *host = soup_address_get_name (address);
-      gint port = soup_server_get_port (self->priv->server);
-
-      g_print ("listening on http://%s:%d/\n", host ? host : "localhost", port);
-
-      self->priv->dispatcher = epc_dispatcher_new (name, domain, service);
-    }
-  else
-    g_object_set (self->priv->dispatcher, "name", name, "domain", domain, "service", service, NULL);
-}
-
-static void
 epc_publisher_get_handler (SoupServerContext *context,
                            SoupMessage       *message,
                            gpointer           data)
@@ -149,12 +120,52 @@ epc_publisher_init (EpcPublisher *self)
 }
 
 static void
-epc_publisher_dispatch_properties_changed (GObject     *object,
-                                           guint        n_pspecs,
-                                           GParamSpec **pspecs)
+epc_publisher_constructed (GObject *object)
 {
-  G_OBJECT_CLASS (epc_publisher_parent_class)->dispatch_properties_changed (object, n_pspecs, pspecs);
-  epc_publisher_update_dispatcher (EPC_PUBLISHER (object));
+  EpcPublisher *self;
+
+  SoupSocket *listener;
+  SoupAddress *address;
+
+  const gchar *name;
+  const gchar *domain;
+  const gchar *service;
+  const gchar *host;
+  gint port;
+
+  AvahiProtocol protocol;
+  struct sockaddr *sockaddr;
+  gint addrlen;
+
+  if (G_OBJECT_CLASS (epc_publisher_parent_class)->constructed)
+    G_OBJECT_CLASS (epc_publisher_parent_class)->constructed (object);
+
+  self = EPC_PUBLISHER (object);
+  name = self->priv->name;
+  domain = self->priv->domain;
+  service = self->priv->service;
+
+  if (!name)
+    name = g_get_application_name ();
+  if (!name)
+    name = g_get_prgname ();
+  if (!service)
+    service = EPC_PUBLISHER_SERVICE_TYPE;
+
+  listener = soup_server_get_listener (self->priv->server);
+  port = soup_server_get_port (self->priv->server);
+
+  address = soup_socket_get_local_address (listener);
+  sockaddr = soup_address_get_sockaddr (address, &addrlen);
+  protocol = avahi_af_to_proto (sockaddr->sa_family);
+  host = soup_address_get_name (address);
+
+  g_print ("listening on http://%s:%d/\n", host ? host : "localhost", port);
+  self->priv->dispatcher = epc_dispatcher_new (AVAHI_IF_UNSPEC, protocol, name);
+
+  epc_dispatcher_add_service (self->priv->dispatcher, service,
+                              self->priv->domain, host, port,
+                              NULL);
 }
 
 static void
@@ -223,7 +234,6 @@ epc_publisher_dispose (GObject *object)
 
   if (self->priv->dispatcher)
     {
-      epc_dispatcher_quit (self->priv->dispatcher);
       g_object_unref (self->priv->dispatcher);
       self->priv->dispatcher = NULL;
     }
@@ -258,7 +268,7 @@ epc_publisher_class_init (EpcPublisherClass *cls)
 {
   GObjectClass *oclass = G_OBJECT_CLASS (cls);
 
-  oclass->dispatch_properties_changed = epc_publisher_dispatch_properties_changed;
+  oclass->constructed = epc_publisher_constructed;
   oclass->set_property = epc_publisher_set_property;
   oclass->get_property = epc_publisher_get_property;
   oclass->dispose = epc_publisher_dispose;
@@ -272,13 +282,13 @@ epc_publisher_class_init (EpcPublisherClass *cls)
   g_object_class_install_property (oclass, PROP_DOMAIN,
                                    g_param_spec_string ("domain", "Domain",
                                                         "Internet domain for publishing the service", NULL,
-                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
+                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
                                                         G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
   g_object_class_install_property (oclass, PROP_SERVICE,
                                    g_param_spec_string ("service", "Service",
                                                         "Wellknown DNS-SD name the service", NULL,
-                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
+                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
                                                         G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
 
@@ -286,9 +296,12 @@ epc_publisher_class_init (EpcPublisherClass *cls)
 }
 
 EpcPublisher*
-epc_publisher_new (const gchar *name)
+epc_publisher_new (const gchar *name,
+                   const gchar *service,
+                   const gchar *domain)
 {
-  return g_object_new (EPC_TYPE_PUBLISHER, "name", name, NULL);
+  return g_object_new (EPC_TYPE_PUBLISHER, "name", name,
+                       "service", service, "domain", domain, NULL);
 }
 
 void
@@ -326,7 +339,7 @@ epc_publisher_add_file (EpcPublisher  *self,
 
   /* TODO: use gio to determinate mime-type */
 
-  if (!g_file_get_contents (filename, &contents, &length, error))
+  if (g_file_get_contents (filename, &contents, &length, error))
     g_hash_table_insert (self->priv->records, g_strdup (key),
                          epc_record_new (NULL, contents, length));
 

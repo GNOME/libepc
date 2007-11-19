@@ -24,12 +24,12 @@ main (int   argc,
   g_thread_init (NULL);
   g_type_init ();
 
-  publisher = epc_publisher_new ("Easy Publisher Test");
+  publisher = epc_publisher_new ("Easy Publisher Test", NULL, NULL);
 
   if (1 == argc)
     {
       epc_publisher_add (publisher, "test", "value", -1);
-      epc_publisher_add_file (publisher, "code", __FILE__, &error);
+      epc_publisher_add_file (publisher, "source-code", __FILE__, &error);
       report_error (G_STRLOC, &error);
     }
   else

@@ -20,7 +20,9 @@ libepc_libeasy_publish_consume_la_SOURCES = \
 	libepc/publisher.c \
 	libepc/publisher.h
 
-tests_test_publisher_LDADD = $(LIBEPC_LIBS) libepc/libeasy-publish-consume.la
-tests_test_consumer_LDADD = $(LIBEPC_LIBS) libepc/libeasy-publish-consume.la
+tests_test_publisher_LDADD = libepc/libeasy-publish-consume.la
+
+tests_test_consumer_CFLAGS = $(AM_CFLAGS) $(AVAHIUI_CFLAGS)
+tests_test_consumer_LDADD = libepc/libeasy-publish-consume.la $(AVAHIUI_LIBS)
 
 -include Makefile.local
