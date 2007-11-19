@@ -24,9 +24,9 @@ EPC_DISPATCHER_GET_CLASS
 <SECTION>
 <FILE>publisher</FILE>
 EpcContent
+EpcContentHandler
 EpcPublisherPrivate
 EpcPublisherClass
-EpcPublisherHandler
 <TITLE>EpcPublisher</TITLE>
 EpcPublisher
 epc_publisher_new

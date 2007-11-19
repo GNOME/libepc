@@ -1,7 +1,17 @@
 2007-11-05  Mathias Hasselmann  <mathias@openismus.com>
 
-	Implement epc_publisher_add_handler. Rewrite epc_publisher_add
-	and epc_publisher_add_file to use it.
+	Document epc_publisher_add_handler and related API.
+
+	* docs/reference/libepc/libepc-sections.txt:
+	Rename EpcPublisherHandler to EpcContentHandler.
+	* libepc/publisher.c: Document epc_publisher_add_handler
+	and EpcContent with its methods.
+	* libepc/publisher.h: Document EpcContentHandler.
+
+2007-11-05  Mathias Hasselmann  <mathias@openismus.com>
+
+	Implement epc_publisher_add_handler.
+	Rewrite epc_publisher_add and epc_publisher_add_file to use it.
 
 	* docs/reference/libepc/libepc-sections.txt, libepc/publisher.c,
 	libepc/publisher.h: Add epc_publisher_add_handler and EpcContent.
