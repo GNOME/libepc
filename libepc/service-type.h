@@ -21,7 +21,7 @@
 #ifndef __EPC_SERVICE_TYPE_H__
 #define __EPC_SERVICE_TYPE_H__
 
-#include "protocol.h"
+#include <libepc/protocol.h>
 
 /**
  * EPC_SERVICE_TYPE_HTTP:

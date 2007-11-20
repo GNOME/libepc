@@ -1,3 +1,13 @@
+2007-11-20  Murray Cumming  <murrayc@murrayc.com>
+
+	* examples/consumer-ui.c:
+	* examples/simple-publisher.c: Use < instead of quotes, 
+	because that is what an application should do 
+	(for consistency at least, though people can argue about 
+	it endlessely. Don't.)
+	* libepc/service-type.h: Include protocol.h via the 
+	libepc/ directory path.
+
 2007-11-19  Mathias Hasselmann  <mathias@openismus.com>
 
 	List download locations, code repository, bugzilla.

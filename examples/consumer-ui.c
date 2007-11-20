@@ -1,7 +1,7 @@
 /* This program demonstrates UI integration of the EpcConsumer.
  */
-#include "libepc/consumer.h"
-#include "libepc-ui/password-dialog.h"
+#include <libepc/consumer.h>
+#include <libepc-ui/password-dialog.h>
 
 #include <avahi-ui/avahi-ui.h>
 #include <glib/gi18n.h>

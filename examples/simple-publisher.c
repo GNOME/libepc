@@ -11,8 +11,8 @@
  * To access the default resource called "sensitive"
  * use your login name as user name and the word "secret" as password.
  */
-#include "libepc/publisher.h"
-#include "libepc/enums.h"
+#include <libepc/publisher.h>
+#include <libepc/enums.h> /* For EPC_TYPE_PROTOCOL */
 
 #include <glib/gi18n.h>
 #include <locale.h>
