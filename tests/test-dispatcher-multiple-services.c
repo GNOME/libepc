@@ -35,6 +35,7 @@ main (void)
   EpcDispatcher *dispatcher = NULL;
   gint result = EPC_TEST_MASK_ALL;
   gint hash = g_random_int ();
+  GError *error = NULL;
   unsigned i;
 
   g_type_init ();
@@ -54,6 +55,9 @@ main (void)
 
   dispatcher = epc_dispatcher_new (test_name);
 
+  if (!epc_dispatcher_run (dispatcher, &error))
+    goto out;
+
   for (i = 0; i < G_N_ELEMENTS (test_types); ++i)
     epc_dispatcher_add_service (dispatcher, EPC_ADDRESS_UNSPEC,
                                 test_types[i], NULL, NULL, 2007, NULL);
@@ -61,6 +65,11 @@ main (void)
   result = epc_test_run ();
 
 out:
+  if (error)
+    g_print ("%s: %s\n", G_STRLOC, error->message);
+
+  g_clear_error (&error);
+
   if (dispatcher)
     g_object_unref (dispatcher);
 

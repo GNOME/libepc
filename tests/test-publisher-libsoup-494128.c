@@ -21,6 +21,7 @@ main (int   argc G_GNUC_UNUSED,
       char *argv[])
 {
   gchar *prgname;
+  GError *error = NULL;
   EpcPublisher *publisher;
   GMainLoop *loop;
   guint timeout;
@@ -50,11 +51,12 @@ main (int   argc G_GNUC_UNUSED,
   epc_publisher_set_protocol (publisher, EPC_PROTOCOL_HTTP);
   timeout = g_timeout_add (250, sync_timeout_cb, publisher);
 
-  epc_publisher_run (publisher);
+  if (!epc_publisher_run (publisher, &error))
+    g_error ("%s: %s", G_STRLOC, error->message);
 
   g_source_remove (timeout);
   g_object_unref (publisher);
-  g_usleep (250 * 1000);
+  g_usleep (200 * 1000);
 
   g_print ("3) RUN_ASYNC, QUIT\n");
 
@@ -62,12 +64,14 @@ main (int   argc G_GNUC_UNUSED,
   epc_publisher_set_protocol (publisher, EPC_PROTOCOL_HTTP);
   timeout = g_timeout_add (250, async_timeout_cb, loop);
 
-  epc_publisher_run_async (publisher);
+  if (!epc_publisher_run_async (publisher, &error))
+    g_error ("%s: %s", G_STRLOC, error->message);
+
   g_main_loop_run (loop);
 
   g_source_remove (timeout);
   g_object_unref (publisher);
-  g_usleep (250 * 1000);
+  g_usleep (200 * 1000);
 
   g_print ("4) RUN_ASYNC, RUN, QUIT\n");
 
@@ -75,12 +79,14 @@ main (int   argc G_GNUC_UNUSED,
   epc_publisher_set_protocol (publisher, EPC_PROTOCOL_HTTP);
   timeout = g_timeout_add (250, sync_timeout_cb, publisher);
 
-  epc_publisher_run_async (publisher);
-  epc_publisher_run (publisher);
+  if (!epc_publisher_run_async (publisher, &error))
+    g_error ("%s: %s", G_STRLOC, error->message);
+  if (!epc_publisher_run (publisher, &error))
+    g_error ("%s: %s", G_STRLOC, error->message);
 
   g_source_remove (timeout);
   g_object_unref (publisher);
-  g_usleep (250 * 1000);
+  g_usleep (200 * 1000);
 
   g_print ("X) DONE\n");
 

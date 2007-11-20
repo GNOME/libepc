@@ -152,8 +152,10 @@ void                  epc_publisher_set_auth_handler     (EpcPublisher      *pub
 gboolean              epc_publisher_remove               (EpcPublisher      *publisher,
                                                           const gchar       *key);
 
-void                  epc_publisher_run                  (EpcPublisher      *publisher);
-void                  epc_publisher_run_async            (EpcPublisher      *publisher);
+gboolean              epc_publisher_run                  (EpcPublisher      *publisher,
+                                                          GError           **error);
+gboolean              epc_publisher_run_async            (EpcPublisher      *publisher,
+                                                          GError           **error);
 void                  epc_publisher_quit                 (EpcPublisher      *publisher);
 
 EpcPublisher*         epc_auth_context_get_publisher     (EpcAuthContext    *context);

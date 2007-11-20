@@ -83,6 +83,8 @@ struct _EpcDispatcherClass
 GType                 epc_dispatcher_get_type            (void) G_GNUC_CONST;
 
 EpcDispatcher*        epc_dispatcher_new                 (const gchar      *name);
+gboolean              epc_dispatcher_run                 (EpcDispatcher    *dispatcher,
+                                                          GError          **error);
 void                  epc_dispatcher_reset               (EpcDispatcher    *dispatcher);
 
 void                  epc_dispatcher_add_service         (EpcDispatcher    *dispatcher,

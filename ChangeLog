@@ -1,12 +1,28 @@
+2007-11-20  Mathias Hasselmann  <mathias@openismus.com>
+
+	Add error reporting to epc_publisher_run and epc_publisher_run_async.
+
+	* libepc/publisher.c, libepc/publisher.h:
+	Add error reporting to epc_publisher_run and epc_publisher_run_async.
+	* libepc/dispatcher.c, libepc/dispatcher.h: Don't start the dispatcher
+	before epc_dispatcher_run is called to support error reporting.
+	* examples/simple-publisher.c, tests/test-publisher-change-name.c,
+	tests/test-consumer-by-name.c, tests/test-publisher-libsoup-494128.c:
+	Handle errors reported by epc_publisher_run.
+	* tests/test-dispatcher-*: Call epc_dispatcher_run, which is needed
+	for error handling now.
+	* docs/reference/libepc/libepc-1.0-sections.txt: Update symbols.
+
 2007-11-20  Murray Cumming  <murrayc@murrayc.com>
 
-	* examples/consumer-ui.c:
-	* examples/simple-publisher.c: Use < instead of quotes, 
-	because that is what an application should do 
-	(for consistency at least, though people can argue about 
-	it endlessely. Don't.)
-	* libepc/service-type.h: Include protocol.h via the 
-	libepc/ directory path.
+	Improve include file handling.
+
+	* examples/consumer-ui.c, examples/simple-publisher.c:
+	Use < instead of quotes, because that is what an application
+	should do. For consistency at least, though people can argue
+	about it endlessely. Don't.
+	* libepc/service-type.h: Include protocol.h via the libepc/
+	directory path.
 
 2007-11-19  Mathias Hasselmann  <mathias@openismus.com>
 

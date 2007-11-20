@@ -38,6 +38,7 @@ main (void)
   EpcDispatcher *dispatcher = NULL;
   gint result = EPC_TEST_MASK_ALL;
   gint hash = g_random_int ();
+  GError *error = NULL;
 
   g_type_init ();
 
@@ -47,11 +48,23 @@ main (void)
   if (epc_test_init (1) &&
       epc_test_init_service_browser (test_type, service_browser_cb, NULL))
     {
+g_debug ("1");
       dispatcher = epc_dispatcher_new (test_name);
+
+g_debug ("2");
       epc_dispatcher_add_service (dispatcher, EPC_ADDRESS_UNSPEC,
                                   test_type, NULL, NULL, 2007, NULL);
-      result = epc_test_run ();
+
+g_debug ("3");
+      if (epc_dispatcher_run (dispatcher, &error))
+        result = epc_test_run ();
+g_debug ("4");
     }
+
+  if (error)
+    g_print ("%s: %s\n", G_STRLOC, error->message);
+
+  g_clear_error (&error);
 
   if (dispatcher)
     g_object_unref (dispatcher);

@@ -172,7 +172,14 @@ main (int   argc,
 
   /* Actually run the publisher. */
 
-  epc_publisher_run (publisher);
+  if (!epc_publisher_run (publisher, &error))
+    {
+      g_print ("Cannot start publisher: %s.\n",
+               error ? error->message : "Unknown error");
+      g_error_free (error);
+      return 2;
+    }
+
   g_object_unref (publisher);
 
   return 0;

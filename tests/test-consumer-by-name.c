@@ -14,6 +14,7 @@ main (void)
 {
   EpcPublisher *publisher = NULL;
   EpcConsumer *consumer = NULL;
+  gboolean running = FALSE;
   GError *error = NULL;
   gchar *value = NULL;
   const gchar *name;
@@ -27,7 +28,9 @@ main (void)
   epc_test_goto_if_fail (EPC_IS_PUBLISHER (publisher), out);
   epc_publisher_set_protocol (publisher, EPC_PROTOCOL_HTTP);
   epc_publisher_add (publisher, "maman", "bar", -1);
-  epc_publisher_run_async (publisher);
+
+  running = epc_publisher_run_async (publisher, &error);
+  epc_test_goto_if_fail (running, out);
 
   name = epc_publisher_get_service_name (publisher);
   epc_test_goto_if_fail (NULL != name, out);

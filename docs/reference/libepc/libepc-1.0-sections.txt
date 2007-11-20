@@ -6,6 +6,7 @@ EpcDispatcherClass
 <TITLE>EpcDispatcher</TITLE>
 EpcDispatcher
 epc_dispatcher_new
+epc_dispatcher_run
 epc_dispatcher_reset
 epc_dispatcher_add_service
 epc_dispatcher_add_service_subtype

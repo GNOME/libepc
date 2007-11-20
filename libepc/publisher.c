@@ -621,7 +621,7 @@ epc_publisher_init (EpcPublisher *self)
 }
 
 static void
-epc_publisher_announce (EpcPublisher *self)
+epc_publisher_announce (EpcPublisher  *self)
 {
   SoupSocket *listener;
   SoupAddress *address;
@@ -698,13 +698,17 @@ epc_publisher_find_name (EpcPublisher *self)
   return name;
 }
 
-static void
-epc_publisher_create_server (EpcPublisher *self)
+static gboolean
+epc_publisher_create_server (EpcPublisher  *self,
+                             GError       **error)
 {
-  g_return_if_fail (!epc_publisher_is_server_created (self));
-  g_return_if_fail (NULL == self->priv->dispatcher);
+  g_return_val_if_fail (!epc_publisher_is_server_created (self), FALSE);
+  g_return_val_if_fail (NULL == self->priv->dispatcher, FALSE);
 
   self->priv->dispatcher = epc_dispatcher_new (epc_publisher_find_name (self));
+
+  if (!epc_dispatcher_run (self->priv->dispatcher, error))
+    return FALSE;
 
   if (EPC_PROTOCOL_UNKNOWN == self->priv->protocol)
     self->priv->protocol = EPC_PROTOCOL_HTTPS;
@@ -754,6 +758,8 @@ epc_publisher_create_server (EpcPublisher *self)
                            NULL, self);
 
   epc_publisher_announce (self);
+
+  return TRUE;
 }
 
 static void
@@ -1316,18 +1322,27 @@ epc_publisher_get_protocol (EpcPublisher *self)
 /**
  * epc_publisher_run:
  * @publisher: a #EpcPublisher
+ * @error: return location for a #GError, or %NULL
  *
- * Starts the server component of the #EpcPublisher
- * and blocks until it is shutdown using #epc_publisher_quit.
+ * Starts the server component of the #EpcPublisher and blocks until it is
+ * shutdown using #epc_publisher_quit. If the server was not started, the
+ * function returns %FALSE and sets @error. The error domain is
+ * #EPC_AVAHI_ERROR. Possible error codes are those of the
+ * <citetitle>Avahi</citetitle> library.
  *
  * To start the server without blocking call #epc_publisher_run_async.
+ *
+ * Returns: %TRUE when the publisher was started successfully,
+ * %FALSE if an error occurred.
  */
-void
-epc_publisher_run (EpcPublisher *self)
+gboolean
+epc_publisher_run (EpcPublisher  *self,
+                   GError       **error)
 {
-  g_return_if_fail (EPC_IS_PUBLISHER (self));
+  g_return_val_if_fail (EPC_IS_PUBLISHER (self), FALSE);
 
-  epc_publisher_run_async (self);
+  if (!epc_publisher_run_async (self, error))
+    return FALSE;
 
   if (NULL == self->priv->server_loop)
     {
@@ -1338,23 +1353,36 @@ epc_publisher_run (EpcPublisher *self)
       g_main_loop_unref (self->priv->server_loop);
       self->priv->server_loop = NULL;
     }
+
+  return TRUE;
 }
 
 /**
  * epc_publisher_run_async:
  * @publisher: a #EpcPublisher
+ * @error: return location for a #GError, or %NULL
  *
- * Starts the server component of the #EpcPublisher without blocking.
- * To start the server without blocking call #epc_publisher_run_async.
+ * Starts the server component of the #EpcPublisher without blocking. If the
+ * server was not started, the function returns %FALSE and sets @error. The
+ * error domain is #EPC_AVAHI_ERROR. Possible error codes are those of the
+ * <citetitle>Avahi</citetitle> library.
+ *
  * To stop the server component call #epc_publisher_quit.
+ *
+ * See also: #epc_publisher_run
+ *
+ * Returns: %TRUE when the publisher was started successfully,
+ * %FALSE if an error occurred.
  */
-void
-epc_publisher_run_async (EpcPublisher *self)
+gboolean
+epc_publisher_run_async (EpcPublisher  *self,
+                         GError       **error)
 {
-  g_return_if_fail (EPC_IS_PUBLISHER (self));
+  g_return_val_if_fail (EPC_IS_PUBLISHER (self), FALSE);
 
-  if (!epc_publisher_is_server_created (self))
-    epc_publisher_create_server (self);
+  if (!epc_publisher_is_server_created (self) &&
+      !epc_publisher_create_server (self, error))
+    return FALSE;
 
   if (!self->priv->server_started)
     {
@@ -1362,6 +1390,8 @@ epc_publisher_run_async (EpcPublisher *self)
       g_object_unref (self->priv->server); /* work arround bug #494128 */
       self->priv->server_started = TRUE;
     }
+
+  return TRUE;
 }
 
 /**

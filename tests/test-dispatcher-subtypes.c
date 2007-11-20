@@ -47,6 +47,7 @@ main (void)
   gint result = EPC_TEST_MASK_ALL;
   gint hash = g_random_int ();
   const gchar *base_type;
+  GError *error = NULL;
   unsigned i;
 
   g_type_init ();
@@ -70,6 +71,9 @@ main (void)
 
   dispatcher = epc_dispatcher_new (test_name);
 
+  if (!epc_dispatcher_run (dispatcher, &error))
+    goto out;
+
   base_type = epc_service_type_get_base (test_types[0]);
   epc_dispatcher_add_service (dispatcher, EPC_ADDRESS_UNSPEC,
                               base_type, NULL, NULL, 2007, NULL);
@@ -80,6 +84,11 @@ main (void)
   result = epc_test_run ();
 
 out:
+  if (error)
+    g_print ("%s: %s\n", G_STRLOC, error->message);
+
+  g_clear_error (&error);
+
   if (dispatcher)
     g_object_unref (dispatcher);
 
