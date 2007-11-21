@@ -1,5 +1,11 @@
 2007-11-21  Mathias Hasselmann  <mathias@openismus.com>
 
+	There is no "reauthenticate" signal anymore in EpcConsumer.
+
+	* libepc/consumer.h: Remove documentation for "reauthenticate".
+
+2007-11-21  Mathias Hasselmann  <mathias@openismus.com>
+
 	Move progress reporting from EpcTls to EpcSell and turn
 	EpcProgressWindow into a versatile thing.
 

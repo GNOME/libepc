@@ -63,7 +63,6 @@ struct _EpcConsumer
 /**
  * EpcConsumerClass:
  * @authenticate: virtual method of the #EpcConsumer::authenticate signal
- * @reauthenticate: virtual method of the #EpcConsumer::reauthenticate signal
  * @publisher_resolved: virtual method of the #EpcConsumer::publisher-resolved signal
  *
  * Virtual methods of the #EpcConsumer class.
