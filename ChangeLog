@@ -1,5 +1,14 @@
 2007-11-21  Mathias Hasselmann  <mathias@openismus.com>
 
+	Rename EpcEntropyWindow to EpcProgressWindow.
+
+	* Makefile.am, examples/server-credentials.c,
+	libepc-ui/progress-window.c, libepc-ui/progress-window.h,
+	docs/reference/libepc/libepc-1.0-sections.txt:
+	Update symbols and filenames.
+
+2007-11-21  Mathias Hasselmann  <mathias@openismus.com>
+
 	Change version number as ABI has changed.
 
 	* configure.ac: Bump version number and add LT_VERSION_INFO variable.

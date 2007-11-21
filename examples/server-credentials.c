@@ -1,7 +1,7 @@
 /* This example demonstrates how to retreive SSL/TLS server credentials.
  */
-#include "libepc/tls.h"
-#include "libepc-ui/entropy-window.h"
+#include <libepc/tls.h>
+#include <libepc-ui/progress-window.h>
 #include <gtk/gtk.h>
 
 int
@@ -24,7 +24,7 @@ main (int   argc,
 
   /* Show a progress window when generating new keys.
    */
-  epc_entropy_window_install ();
+  epc_progress_window_install ();
 
   /* Retreive and display of server credentials.
    */

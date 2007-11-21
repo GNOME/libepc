@@ -233,19 +233,19 @@ epc_password_dialog_get_type
 </SECTION>
 
 <SECTION>
-<FILE>entropy-window</FILE>
-EpcEntropyWindowClass
-EpcEntropyWindowPrivate
-<TITLE>EpcEntropyWindow</TITLE>
-EpcEntropyWindow
-epc_entropy_window_new
-epc_entropy_window_install
+<FILE>progress-window</FILE>
+EpcProgressWindowClass
+EpcProgressWindowPrivate
+<TITLE>EpcProgressWindow</TITLE>
+EpcProgressWindow
+epc_progress_window_new
+epc_progress_window_install
 <SUBSECTION Standard>
-EPC_ENTROPY_WINDOW
-EPC_ENTROPY_WINDOW_CLASS
-EPC_ENTROPY_WINDOW_GET_CLASS
-EPC_IS_ENTROPY_WINDOW
-EPC_IS_ENTROPY_WINDOW_CLASS
-EPC_TYPE_ENTROPY_WINDOW
-epc_entropy_window_get_type
+EPC_PROGRESS_WINDOW
+EPC_PROGRESS_WINDOW_CLASS
+EPC_PROGRESS_WINDOW_GET_CLASS
+EPC_IS_PROGRESS_WINDOW
+EPC_IS_PROGRESS_WINDOW_CLASS
+EPC_TYPE_PROGRESS_WINDOW
+epc_progress_window_get_type
 </SECTION>

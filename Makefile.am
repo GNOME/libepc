@@ -63,8 +63,8 @@ libepc_include_HEADERS = \
 	libepc/enums.h \
 	libepc/marshal.h
 libepc_ui_include_HEADERS = \
-	libepc-ui/entropy-window.h \
-	libepc-ui/password-dialog.h
+	libepc-ui/password-dialog.h \
+	libepc-ui/progress-window.h
 pkgconfig_DATA = \
 	libepc-1.0.pc \
 	libepc-ui-1.0.pc
@@ -95,8 +95,8 @@ libepc_libepc_1_0_la_SOURCES = \
 	libepc/tls.c
 libepc_ui_libepc_ui_1_0_la_SOURCES = \
 	$(libepc_ui_include_HEADERS) \
-	libepc-ui/entropy-window.c \
-	libepc-ui/password-dialog.c
+	libepc-ui/password-dialog.c \
+	libepc-ui/progress-window.c
 tests_libepc_tests_la_SOURCES = \
 	tests/framework.c \
 	tests/framework.h
