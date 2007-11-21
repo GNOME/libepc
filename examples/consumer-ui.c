@@ -174,14 +174,50 @@ main (int   argc,
   gchar *publisher_name = NULL;
   GtkWidget *password_dialog = NULL;
   GtkWidget *dialog = NULL;
+  GError *error;
+
+  gchar *service_type_https = NULL;
+  gchar *service_type_http = NULL;
+
+  /* Declare command line options. */
+
+  const gchar *application = "test-publisher";
+  gboolean browse_all = FALSE;
+
+  GOptionEntry entries[] =
+    {
+      { "application", 'n', 0, G_OPTION_ARG_STRING, &application,
+        N_("Application name of the publisher"), N_("NAME") },
+      { "all",         'a', 0, G_OPTION_ARG_NONE, &browse_all,
+        N_("Browse all easy publishers"), NULL },
+      { NULL, 0, 0, 0, NULL, NULL, NULL }
+    };
 
   /* Initialize the toolkit */
 
   g_thread_init (NULL);
   gdk_threads_init ();
-  gtk_init (&argc, &argv);
+
+  if (!gtk_init_with_args (&argc, &argv, NULL, entries, NULL, &error))
+    {
+      g_print ("Usage error: %s\n", error->message);
+      g_clear_error (&error);
+
+      return 2;
+    }
 
   /* Show Avahi's stock dialog for choosing a publisher service */
+
+  if (application && *application && !browse_all)
+    {
+      service_type_https = epc_service_type_new (EPC_PROTOCOL_HTTPS, application);
+      service_type_http = epc_service_type_new (EPC_PROTOCOL_HTTP, application);
+    }
+  else
+    {
+      service_type_https = g_strdup (EPC_SERVICE_TYPE_HTTPS);
+      service_type_http = g_strdup (EPC_SERVICE_TYPE_HTTP);
+    }
 
   dialog = aui_service_dialog_new ("Choose an Easy Publish and Consume Service", NULL,
                                    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
@@ -189,9 +225,12 @@ main (int   argc,
                                    NULL);
 
   aui_service_dialog_set_browse_service_types (AUI_SERVICE_DIALOG (dialog),
-					       EPC_SERVICE_TYPE_HTTPS,
-					       EPC_SERVICE_TYPE_HTTP,
+                                               service_type_https,
+                                               service_type_http,
                                                NULL);
+
+  g_free (service_type_https);
+  g_free (service_type_http);
 
 #ifdef HAVE_AVAHI_UI_0_6_22
 

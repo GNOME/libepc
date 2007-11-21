@@ -1,5 +1,11 @@
 2007-11-21  Mathias Hasselmann  <mathias@openismus.com>
 
+	Demonstrate browsing for a specific application.
+
+	* examples/consumer-ui.c: Update the example.
+
+2007-11-21  Mathias Hasselmann  <mathias@openismus.com>
+
 	Introduce epc_protocol_from_name.
 
 	* libepc/protocol.c, libepc/protocol.h: Add epc_protocol_from_name.
