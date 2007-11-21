@@ -1,3 +1,10 @@
+2007-11-21  Mathias Hasselmann  <mathias@openismus.com>
+
+	Change version number as ABI has changed.
+
+	* configure.ac: Bump version number and add LT_VERSION_INFO variable.
+	* Makefile.am: Pass -version-info switch to libtool.
+
 2007-11-20  Mathias Hasselmann  <mathias@openismus.com>
 
 	Add error reporting to epc_publisher_run and epc_publisher_run_async.

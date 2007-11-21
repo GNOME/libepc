@@ -120,10 +120,10 @@ endif
 LIBEPC_UI_CFLAGS += $(AVAHI_UI_DEFINES)
 
 libepc_libepc_1_0_la_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS) -DGETTEXT_PACKAGE=\"libepc\"
-libepc_libepc_1_0_la_LDFLAGS			= $(LIBEPC_LIBS)
+libepc_libepc_1_0_la_LDFLAGS			= $(LIBEPC_LIBS) -version-info $(LT_VERSION_INFO)
 
 libepc_ui_libepc_ui_1_0_la_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_UI_CFLAGS) -DGETTEXT_PACKAGE=\"libepc-ui\"
-libepc_ui_libepc_ui_1_0_la_LDFLAGS		= $(LIBEPC_UI_LIBS) libepc/libepc-1.0.la
+libepc_ui_libepc_ui_1_0_la_LDFLAGS		= $(LIBEPC_UI_LIBS) -version-info $(LT_VERSION_INFO) libepc/libepc-1.0.la
 
 examples_list_resources_CFLAGS 			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 examples_list_resources_LDADD 			= libepc/libepc-1.0.la
