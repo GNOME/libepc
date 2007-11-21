@@ -157,14 +157,24 @@ epc_protocol_get_type
 
 <SECTION>
 <FILE>shell</FILE>
+EpcShellProgressHooks
 <TITLE>EpcShell</TITLE>
-EPC_AVAHI_ERROR
-epc_shell_create_avahi_client
 epc_shell_enter
-epc_shell_get_avahi_poll_api
 epc_shell_leave
 epc_shell_ref
 epc_shell_unref
+
+<SUBSECTION>
+epc_shell_progress_begin
+epc_shell_progress_end
+epc_shell_progress_update
+epc_shell_set_progress_hooks
+
+<SUBSECTION>
+EPC_AVAHI_ERROR
+epc_shell_create_avahi_client
+epc_shell_get_avahi_poll_api
+
 <SUBSECTION Standard>
 epc_avahi_error_quark
 </SECTION>
@@ -172,8 +182,6 @@ epc_avahi_error_quark
 <SECTION>
 <FILE>tls</FILE>
 <TITLE>EpcTls</TITLE>
-EpcTlsPrivkeyEnterHook
-EpcTlsPrivkeyLeaveHook
 EPC_TLS_ERROR
 EPC_TLS_SECONDS_PER_DAY
 EPC_TLS_SECONDS_PER_HOUR
@@ -193,7 +201,6 @@ epc_tls_private_key_save
 epc_tls_get_private_key_filename
 epc_tls_get_certificate_filename
 epc_tls_get_server_credentials
-epc_tls_set_private_key_hooks
 <SUBSECTION Standard>
 epc_tls_error_quark
 </SECTION>
@@ -239,6 +246,7 @@ EpcProgressWindowPrivate
 <TITLE>EpcProgressWindow</TITLE>
 EpcProgressWindow
 epc_progress_window_new
+epc_progress_window_update
 epc_progress_window_install
 <SUBSECTION Standard>
 EPC_PROGRESS_WINDOW

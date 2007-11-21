@@ -24,6 +24,8 @@
 #include <glib.h>
 #include <avahi-client/client.h>
 
+G_BEGIN_DECLS
+
 /**
  * EPC_AVAHI_ERROR:
  *
@@ -33,7 +35,37 @@
  */
 #define EPC_AVAHI_ERROR (epc_avahi_error_quark ())
 
-G_BEGIN_DECLS
+typedef struct _EpcShellProgressHooks EpcShellProgressHooks;
+
+/**
+ * EpcShellProgressHooks:
+ * @begin: the function called by #epc_shell_progress_begin
+ * @update: the function called by #epc_shell_progress_update
+ * @end: the function called by #epc_shell_progress_end
+ *
+ * This table is used by #epc_shell_set_progress_hooks to install functions
+ * allowing the library to provide feedback on lengthly operations.
+ *
+ * See also: #epc_progress_window_install
+ */
+struct _EpcShellProgressHooks
+{
+  /*< public >*/
+  gpointer (*begin)  (const gchar *title,
+                      const gchar *message,
+                      gpointer     user_data);
+  void     (*update) (gpointer     context,
+                      gdouble      percentage,
+                      const gchar *message);
+  void     (*end)    (gpointer     context);
+
+  /*< private >*/
+  gpointer reserved1;
+  gpointer reserved2;
+  gpointer reserved3;
+  gpointer reserved4;
+  gpointer reserved5;
+};
 
 void                        epc_shell_ref                 (void);
 void                        epc_shell_unref               (void);
@@ -41,10 +73,21 @@ void                        epc_shell_leave               (void);
 void                        epc_shell_enter               (void);
 
 G_CONST_RETURN AvahiPoll*   epc_shell_get_avahi_poll_api  (void);
-AvahiClient*                epc_shell_create_avahi_client (AvahiClientFlags      flags,
-                                                           AvahiClientCallback   callback,
-                                                           gpointer              user_data,
-                                                           GError              **error);
+AvahiClient*                epc_shell_create_avahi_client (AvahiClientFlags             flags,
+                                                           AvahiClientCallback          callback,
+                                                           gpointer                     user_data,
+                                                           GError                     **error);
+
+void                        epc_shell_set_progress_hooks  (const EpcShellProgressHooks *hooks,
+                                                           gpointer                     user_data,
+                                                           GDestroyNotify               destroy_data);
+
+gpointer                    epc_shell_progress_begin      (const gchar                 *title,
+                                                           const gchar                 *message);
+void                        epc_shell_progress_update     (gpointer                     context,
+                                                           gdouble                      percentage,
+                                                           const gchar                 *message);
+void                        epc_shell_progress_end        (gpointer                     context);
 
 GQuark                      epc_avahi_error_quark         (void) G_GNUC_CONST;
 

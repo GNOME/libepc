@@ -85,8 +85,8 @@
 
   <chapter id="widgets">
     <title>Widgets</title>
-    <xi:include href="xml/entropy-window.xml"/>
     <xi:include href="xml/password-dialog.xml"/>
+    <xi:include href="xml/progress-window.xml"/>
 
     <para>
      These widgets perform common tasks when using the Easy Publish and Consume library.

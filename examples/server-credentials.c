@@ -24,7 +24,7 @@ main (int   argc,
 
   /* Show a progress window when generating new keys.
    */
-  epc_progress_window_install ();
+  epc_progress_window_install (NULL);
 
   /* Retreive and display of server credentials.
    */

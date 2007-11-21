@@ -1,5 +1,28 @@
 2007-11-21  Mathias Hasselmann  <mathias@openismus.com>
 
+	Move progress reporting from EpcTls to EpcSell and turn
+	EpcProgressWindow into a versatile thing.
+
+	* libepc/shell.c, libepc/shell.h: Add EpcShellProgressHooks,
+	epc_shell_set_progress_hooks, epc_shell_progress_begin,
+	epc_shell_progress_begin and epc_shell_progress_end.
+	* libepc/tls.c, libepc/tls.h: Remove EpcTlsPrivkeyEnterHook,
+	EpcTlsPrivkeyLeaveHook and epc_tls_set_private_key_hooks.
+	* libepc-ui/progress-window.c, libepc-ui/progress-window.h: Add
+	epc_progress_window_update. Support additional arguments for
+	epc_progress_window_new and epc_progress_window_install. Use
+	epc_shell_set_progress_hooks instead of epc_tls_set_private_key_hooks.
+	* Makefile.am: Add tests/test-progress-hooks and declare G_LOG_DOMAIN.
+	* docs/reference/libepc/libepc-1.0-docs.xml: Update symbols.
+	* docs/reference/libepc/libepc-1.0-sections.txt: Include
+	progress-window.xml, instead of entropy-window.xml.
+	* examples/server-credentials.c:
+	Pass NULL as parent window to epc_progress_window_install.
+	* tests/test-progress-hooks.c: The the new progress hooks.
+	* tests/.gitignore: Add test-progress-hooks.
+
+2007-11-21  Mathias Hasselmann  <mathias@openismus.com>
+
 	Various improvements to the test framework.
 
 	* tests/framework.c, tests/framework.h: Change epc_test_init to take

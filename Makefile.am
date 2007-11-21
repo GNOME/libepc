@@ -41,6 +41,7 @@ TESTS = \
 	tests/test-dispatcher-reset \
 	tests/test-dispatcher-simple-service \
 	tests/test-dispatcher-subtypes \
+	tests/test-progress-hooks \
 	tests/test-publisher-change-name \
 	tests/test-publisher-libsoup-494128 \
 	tests/test-service-type
@@ -107,9 +108,9 @@ tests_libepc_tests_la_SOURCES = \
 
 AM_CFLAGS = \
 	-Wall \
-	-DGTK_DISABLE_DEPRECATED=1 \
+	-DG_DISABLE_DEPRECATED=1 \
 	-DGDK_DISABLE_DEPRECATED=1 \
-	-DG_DISABLE_DEPRECATED=1
+	-DGTK_DISABLE_DEPRECATED=1
 
 if HAVE_AVAHI_UI_0_6_22
 AVAHI_UI_DEFINES = -DHAVE_AVAHI_UI_0_6_22=1
@@ -119,16 +120,16 @@ endif
 
 LIBEPC_UI_CFLAGS += $(AVAHI_UI_DEFINES)
 
-libepc_libepc_1_0_la_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS) -DGETTEXT_PACKAGE=\"libepc\"
+libepc_libepc_1_0_la_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS) -DGETTEXT_PACKAGE=\"libepc\" -DG_LOG_DOMAIN=\"libepc\"
 libepc_libepc_1_0_la_LDFLAGS			= $(LIBEPC_LIBS) -version-info $(LT_VERSION_INFO)
 
-libepc_ui_libepc_ui_1_0_la_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_UI_CFLAGS) -DGETTEXT_PACKAGE=\"libepc-ui\"
+libepc_ui_libepc_ui_1_0_la_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_UI_CFLAGS) -DGETTEXT_PACKAGE=\"libepc-ui\" -DG_LOG_DOMAIN=\"libepc-ui\"
 libepc_ui_libepc_ui_1_0_la_LDFLAGS		= $(LIBEPC_UI_LIBS) -version-info $(LT_VERSION_INFO) libepc/libepc-1.0.la
 
-examples_list_resources_CFLAGS 			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-examples_list_resources_LDADD 			= libepc/libepc-1.0.la
-examples_lookup_resource_CFLAGS 		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-examples_lookup_resource_LDADD 			= libepc/libepc-1.0.la
+examples_list_resources_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+examples_list_resources_LDADD			= libepc/libepc-1.0.la
+examples_lookup_resource_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+examples_lookup_resource_LDADD			= libepc/libepc-1.0.la
 examples_simple_publisher_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 examples_simple_publisher_LDADD			= libepc/libepc-1.0.la
 
@@ -137,28 +138,30 @@ examples_consumer_ui_LDADD			= libepc/libepc-1.0.la libepc-ui/libepc-ui-1.0.la $
 examples_server_credentials_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS)
 examples_server_credentials_LDADD		= libepc/libepc-1.0.la libepc-ui/libepc-ui-1.0.la
 
-tests_libepc_tests_la_CFLAGS 			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+tests_libepc_tests_la_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 
-tests_test_consumer_by_name_CFLAGS 		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_consumer_by_name_LDADD 		= libepc/libepc-1.0.la tests/libepc-tests.la
+tests_test_consumer_by_name_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+tests_test_consumer_by_name_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la
 tests_test_dispatcher_local_collision_CFLAGS	= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_dispatcher_local_collision_LDADD 	= libepc/libepc-1.0.la tests/libepc-tests.la
-tests_test_dispatcher_multiple_services_CFLAGS 	= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_dispatcher_multiple_services_LDADD 	= libepc/libepc-1.0.la tests/libepc-tests.la
-tests_test_dispatcher_rename_CFLAGS 		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_dispatcher_rename_LDADD 		= libepc/libepc-1.0.la tests/libepc-tests.la
-tests_test_dispatcher_reset_CFLAGS 		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_dispatcher_reset_LDADD 		= libepc/libepc-1.0.la tests/libepc-tests.la
-tests_test_dispatcher_simple_service_CFLAGS 	= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_dispatcher_simple_service_LDADD 	= libepc/libepc-1.0.la tests/libepc-tests.la
-tests_test_dispatcher_subtypes_CFLAGS 		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_dispatcher_subtypes_LDADD 		= libepc/libepc-1.0.la tests/libepc-tests.la
-tests_test_publisher_change_name_CFLAGS      	= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_publisher_change_name_LDADD 		= libepc/libepc-1.0.la tests/libepc-tests.la
+tests_test_dispatcher_local_collision_LDADD	= libepc/libepc-1.0.la tests/libepc-tests.la
+tests_test_dispatcher_multiple_services_CFLAGS	= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+tests_test_dispatcher_multiple_services_LDADD	= libepc/libepc-1.0.la tests/libepc-tests.la
+tests_test_dispatcher_rename_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+tests_test_dispatcher_rename_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la
+tests_test_dispatcher_reset_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+tests_test_dispatcher_reset_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la
+tests_test_dispatcher_simple_service_CFLAGS	= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+tests_test_dispatcher_simple_service_LDADD	= libepc/libepc-1.0.la tests/libepc-tests.la
+tests_test_dispatcher_subtypes_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+tests_test_dispatcher_subtypes_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la
+tests_test_progress_hooks_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS)
+tests_test_progress_hooks_LDADD			= libepc/libepc-1.0.la libepc-ui/libepc-ui-1.0.la tests/libepc-tests.la
+tests_test_publisher_change_name_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+tests_test_publisher_change_name_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la
 tests_test_publisher_libsoup_494128_CFLAGS      = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_publisher_libsoup_494128_LDADD 	= libepc/libepc-1.0.la tests/libepc-tests.la
-tests_test_service_type_CFLAGS      		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_service_type_LDADD 			= libepc/libepc-1.0.la tests/libepc-tests.la
+tests_test_publisher_libsoup_494128_LDADD	= libepc/libepc-1.0.la tests/libepc-tests.la
+tests_test_service_type_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+tests_test_service_type_LDADD			= libepc/libepc-1.0.la tests/libepc-tests.la
 
 # ==================
 # -- CUSTOM RULES --

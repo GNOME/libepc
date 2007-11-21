@@ -64,8 +64,15 @@ struct _EpcProgressWindowClass
 };
 
 GType      epc_progress_window_get_type (void) G_GNUC_CONST;
-GtkWidget* epc_progress_window_new      (void);
-void       epc_progress_window_install  (void);
+
+GtkWidget* epc_progress_window_new      (const gchar       *title,
+                                         GtkWindow         *parent,
+                                         const gchar       *message);
+void       epc_progress_window_update   (EpcProgressWindow *window,
+                                         gdouble            progress,
+                                         const gchar       *message);
+
+void       epc_progress_window_install  (GtkWindow         *parent);
 
 G_END_DECLS
 

@@ -22,6 +22,8 @@
 #include <glib-object.h>
 #include <gnutls/x509.h>
 
+G_BEGIN_DECLS
+
 /**
  * EPC_TLS_ERROR:
  *
@@ -52,28 +54,6 @@
  */
 #define EPC_TLS_SECONDS_PER_DAY     (24 * EPC_TLS_SECONDS_PER_HOUR)
 
-/**
- * EpcTlsPrivkeyEnterHook:
- *
- * This hook is invoked when the TLS engine starts generating a private key.
- * It can be used inform the user about this lengthly process by creating
- * an #EpcEntropyProgress dialog.
- *
- * Returns: Information which shall be passed to the #EpcTlsPrivkeyLeaveHook.
- */
-typedef gpointer (*EpcTlsPrivkeyEnterHook) (void);
-
-/**
- * EpcTlsPrivkeyLeaveHook:
- * @data: the information returned by #EpcTlsPrivkeyEnterHook
- *
- * This hook is invoked when the TLS engine has finished a privatekey.
- * It shall be used to tear down information shown by #EpcTlsPrivkeyEnterHook.
- */
-typedef void     (*EpcTlsPrivkeyLeaveHook) (gpointer data);
-
-G_BEGIN_DECLS
-
 GQuark                epc_tls_error_quark              (void) G_GNUC_CONST;
 
 gnutls_x509_crt_t     epc_tls_certificate_new          (const gchar            *hostname,
@@ -92,9 +72,6 @@ gnutls_x509_privkey_t epc_tls_private_key_load         (const gchar            *
 gboolean              epc_tls_private_key_save         (gnutls_x509_privkey_t   key,
                                                         const gchar            *filename,
                                                         GError                **error);
-
-void                  epc_tls_set_private_key_hooks    (EpcTlsPrivkeyEnterHook  enter,
-                                                        EpcTlsPrivkeyLeaveHook  leave);
 
 gchar*                epc_tls_get_certificate_filename (const gchar            *hostname);
 gchar*                epc_tls_get_private_key_filename (const gchar            *hostname);

@@ -19,6 +19,7 @@
  *      Mathias Hasselmann
  */
 #include "tls.h"
+#include "shell.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -52,11 +53,6 @@ struct _EcpTlsKeyContext
   GMainLoop *loop;
   gint rc;
 };
-
-static gpointer epc_tls_private_key_enter_default (void);
-
-static EpcTlsPrivkeyEnterHook epc_tls_private_key_enter = epc_tls_private_key_enter_default;
-static EpcTlsPrivkeyLeaveHook epc_tls_private_key_leave = NULL;
 
 extern gboolean _epc_debug;
 
@@ -123,39 +119,6 @@ epc_tls_get_certificate_filename (const gchar *hostname)
 }
 
 static gpointer
-epc_tls_private_key_enter_default (void)
-{
-  g_print (_("Generating server key. This may take some time. "
-             "Type on the keyboard, move your mouse or "
-             "browse the web to generate some entropy.\n"));
-
-  return NULL;
-}
-
-/**
- * epc_tls_set_private_key_hooks:
- * @enter: the function to call on start
- * @leave: the function to call when finished
- *
- * Installs functions which are called when private keys have to be generated.
- *
- * Generating secure keys needs quite some time, so those functions shall be
- * called to provide  some feedback to your users. Key generation takes place
- * in a separate background thread, whilst the calling thread waits in a
- * GMainLoop. So for instance the GTK+ widget system remains responsible during
- * that phase.
- *
- * See also: #EpcEntropyProgress
- */
-void
-epc_tls_set_private_key_hooks (EpcTlsPrivkeyEnterHook enter,
-                               EpcTlsPrivkeyLeaveHook leave)
-{
-  epc_tls_private_key_enter = enter;
-  epc_tls_private_key_leave = leave;
-}
-
-static gpointer
 epc_tls_private_key_thread (gpointer data)
 {
   EcpTlsKeyContext *context = data;
@@ -191,10 +154,12 @@ gnutls_x509_privkey_t
 epc_tls_private_key_new (GError **error)
 {
   EcpTlsKeyContext context = { NULL, NULL, GNUTLS_E_SUCCESS };
-  gpointer private_key_data = NULL;
+  gpointer progress_data = NULL;
 
-  if (epc_tls_private_key_enter)
-    private_key_data = epc_tls_private_key_enter ();
+  progress_data = epc_shell_progress_begin (_("Generating Server Key"),
+                                            _("This may take some time. Type on the "
+                                            "keyboard, move your mouse, or browse "
+                                            "the web to generate some entropy."));
 
   context.rc = gnutls_x509_privkey_init (&context.key);
   epc_tls_check (context.rc);
@@ -212,8 +177,7 @@ epc_tls_private_key_new (GError **error)
   epc_tls_check (context.rc);
 
 out:
-  if (epc_tls_private_key_leave)
-    epc_tls_private_key_leave (private_key_data);
+  epc_shell_progress_end (progress_data);
 
   if (GNUTLS_E_SUCCESS != context.rc)
     {

@@ -12,6 +12,7 @@ test-dispatcher-rename
 test-dispatcher-reset
 test-dispatcher-simple-service
 test-dispatcher-subtypes
+test-progress-hooks
 test-publisher-change-name
 test-publisher-libsoup-494128
 test-service-type
