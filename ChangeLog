@@ -1,5 +1,11 @@
 2007-11-21  Mathias Hasselmann  <mathias@openismus.com>
 
+	Don't crash on empty publishers.
+
+	* examples/consumer-ui.c: Handle empty publishers.
+
+2007-11-21  Mathias Hasselmann  <mathias@openismus.com>
+
 	Demonstrate browsing for a specific application.
 
 	* examples/consumer-ui.c: Update the example.

@@ -25,7 +25,7 @@ list_keys (EpcConsumer *consumer,
 
   keys = epc_consumer_list (consumer, NULL, &error);
 
-  if (NULL == error)
+  if (keys)
     {
       /* fill the combo box with all published resources */
 
@@ -37,7 +37,7 @@ list_keys (EpcConsumer *consumer,
       gtk_combo_box_set_active (GTK_COMBO_BOX (keys_combo), 0);
       gtk_widget_set_sensitive (keys_combo, TRUE);
     }
-  else
+  else if (error)
     {
       /* listing failed, show the error message */
 
@@ -46,6 +46,8 @@ list_keys (EpcConsumer *consumer,
       gtk_label_set_markup (GTK_LABEL (stats), markup);
       g_free (markup);
     }
+  else
+    gtk_label_set_text (GTK_LABEL (stats), "No publications available.");
 
   /* release resources */
 
@@ -67,7 +69,9 @@ keys_combo_changed_cb (GtkComboBox *combo_box,
   /* retreive a the currently selected resource */
 
   key = gtk_combo_box_get_active_text (combo_box);
-  value = epc_consumer_lookup (consumer, key, &length, &error);
+
+  if (key)
+    value = epc_consumer_lookup (consumer, key, &length, &error);
 
   if (value)
     {
@@ -80,19 +84,20 @@ keys_combo_changed_cb (GtkComboBox *combo_box,
       gtk_text_buffer_set_text (buffer, value, length);
       gtk_widget_set_sensitive (scroller, TRUE);
     }
-  else
+  else if (error)
     {
       /* lookup failed, show error message */
 
-      markup = g_markup_printf_escaped (
-        "Look failed for <b>%s</b>: %s",
-        key, error->message);
+        markup = g_markup_printf_escaped (
+          "Look failed for <b>%s</b>: %s",
+          key, error->message);
 
       gtk_text_buffer_set_text (buffer, "", 0);
       gtk_widget_set_sensitive (scroller, FALSE);
     }
 
-  gtk_label_set_markup (GTK_LABEL (stats), markup);
+  if (markup)
+    gtk_label_set_markup (GTK_LABEL (stats), markup);
 
   /* release resources */
 
