@@ -1,5 +1,11 @@
 2007-11-21  Mathias Hasselmann  <mathias@openismus.com>
 
+	Explain TLS key generation during epc_publisher_run.
+
+	* libepc/publisher.c: Update API docs.
+
+2007-11-21  Mathias Hasselmann  <mathias@openismus.com>
+
 	There is no "reauthenticate" signal anymore in EpcConsumer.
 
 	* libepc/consumer.h: Remove documentation for "reauthenticate".

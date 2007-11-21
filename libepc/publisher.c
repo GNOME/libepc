@@ -1330,6 +1330,14 @@ epc_publisher_get_protocol (EpcPublisher *self)
  * #EPC_AVAHI_ERROR. Possible error codes are those of the
  * <citetitle>Avahi</citetitle> library.
  *
+ * When starting the publisher in HTTPS mode for the first time, self-signed
+ * keys have to be generated. Generating secure keys needs quite some time,
+ * therefore it is recommended to call #epc_progress_window_install, or
+ * #epc_shell_set_progress_hooks to provide visual feedback during that
+ * operation. Key generation takes place in a separate background thread,
+ * the calling thread waits in a GMainLoop. Therefore the UI should remain
+ * responsive, when generating keys.
+ *
  * To start the server without blocking call #epc_publisher_run_async.
  *
  * Returns: %TRUE when the publisher was started successfully,
@@ -1368,8 +1376,7 @@ epc_publisher_run (EpcPublisher  *self,
  * <citetitle>Avahi</citetitle> library.
  *
  * To stop the server component call #epc_publisher_quit.
- *
- * See also: #epc_publisher_run
+ * See #epc_publisher_run for additional information.
  *
  * Returns: %TRUE when the publisher was started successfully,
  * %FALSE if an error occurred.
