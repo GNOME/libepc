@@ -1,5 +1,14 @@
 2007-11-21  Mathias Hasselmann  <mathias@openismus.com>
 
+	Various improvements to the test framework.
+
+	* tests/framework.c, tests/framework.h: Change epc_test_init to take
+	number of tests, instead of test mask as argument. Change epc_test_quit
+	to return test mask and to print failed tests.
+	* tests/*: Adopt framework changes.
+
+2007-11-21  Mathias Hasselmann  <mathias@openismus.com>
+
 	Rename EpcEntropyWindow to EpcProgressWindow.
 
 	* Makefile.am, examples/server-credentials.c,

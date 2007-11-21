@@ -28,6 +28,7 @@ G_BEGIN_DECLS
 
 #define epc_test_pass_many(mask) (_epc_test_pass (G_STRLOC, FALSE, (mask)))
 #define epc_test_pass_once(mask) (_epc_test_pass (G_STRLOC, TRUE, (mask)))
+#define epc_test_quit()          (_epc_test_quit (G_STRLOC))
 
 enum
 {
@@ -41,7 +42,7 @@ gboolean epc_test_init_service_browser (const gchar                 *service,
                                         AvahiServiceBrowserCallback  callback,
                                         gpointer                     data);
 gint     epc_test_run                  (void);
-void     epc_test_quit                 (void);
+gint    _epc_test_quit                 (const gchar                 *strloc);
 
 void    _epc_test_pass                 (const gchar                 *strloc,
                                         gboolean                     once,

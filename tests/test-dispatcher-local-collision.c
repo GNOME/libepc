@@ -48,7 +48,7 @@ main (void)
 
   g_assert (!g_str_equal (preferred_name, alternative_name));
 
-  if (epc_test_init (3) &&
+  if (epc_test_init (2) &&
       epc_test_init_service_browser (test_type, service_browser_cb, NULL))
     {
       dispatcher1 = epc_dispatcher_new (preferred_name);

@@ -31,12 +31,13 @@ static guint epc_test_timeout = 0;
 static gint epc_test_result = 1;
 
 gboolean
-epc_test_init (gint tests)
+epc_test_init (gint test_count)
 {
+  gint test_mask = (1 << test_count) - 1;
   GError *error = NULL;
 
-  tests &= EPC_TEST_MASK_USER;
-  epc_test_result = EPC_TEST_MASK_INIT | tests;
+  g_assert (test_mask <= EPC_TEST_MASK_USER);
+  epc_test_result = EPC_TEST_MASK_INIT | test_mask;
   epc_shell_ref ();
 
   if (NULL == epc_test_loop)
@@ -59,9 +60,11 @@ epc_test_init (gint tests)
   return TRUE;
 }
 
-void
-epc_test_quit (void)
+gint
+_epc_test_quit (const gchar *strloc)
 {
+  gint i;
+
   if (epc_test_loop)
     g_main_loop_quit (epc_test_loop);
 
@@ -81,6 +84,12 @@ epc_test_quit (void)
       g_main_loop_unref (epc_test_loop);
       epc_test_loop = NULL;
     }
+
+  for (i = 0; (1 << i) < EPC_TEST_MASK_USER; ++i)
+    if (epc_test_result & (1 << i))
+      g_print ("%s: Test #%d failed\n", strloc, i + 1);
+
+  return epc_test_result;
 }
 
 static gboolean
@@ -111,18 +120,21 @@ _epc_test_pass (const gchar *strloc,
 {
   int i;
 
-  g_source_remove (epc_test_timeout);
-  epc_test_timeout = g_timeout_add (5000, epc_test_timeout_cb, NULL);
+  if (epc_test_timeout)
+    {
+      g_source_remove (epc_test_timeout);
+      epc_test_timeout = g_timeout_add (5000, epc_test_timeout_cb, NULL);
+    }
 
   mask &= EPC_TEST_MASK_USER;
 
   for (i = 0; (1 << i) < EPC_TEST_MASK_USER; ++i)
     if (mask & (1 << i))
       {
-        g_print ("%s: Test #%d passed\n", strloc, i + 1);
-
         if (once && !(epc_test_result & (1 << i)))
-          g_critical ("Test passed a second time, which was not expected");
+          g_error ("Test #%d passed a second time, which was not expected", i + 1);
+        else
+          g_print ("%s: Test #%d passed\n", strloc, i + 1);
       }
 
   epc_test_result &= ~mask;
@@ -146,7 +158,7 @@ epc_test_init_service_browser (const gchar                 *service,
   if (NULL == browser)
     {
       int error = avahi_client_errno (epc_test_client);
-      g_warning ("%s: %s (%d)", G_STRLOC, avahi_strerror (error), error);
+      g_warning ("%s: %s (%d)", G_STRFUNC, avahi_strerror (error), error);
       return FALSE;
     }
 

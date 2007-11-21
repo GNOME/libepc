@@ -47,7 +47,7 @@ main (void)
 
   dispatcher = epc_dispatcher_new (test_name);
 
-  if (epc_test_init (3) &&
+  if (epc_test_init (2) &&
       epc_test_init_service_browser (test_type, service_browser_cb, dispatcher) &&
       epc_dispatcher_run (dispatcher, &error))
     {

@@ -54,7 +54,7 @@ main (void)
 
   test_name = g_strdup_printf ("%s: %08x", __FILE__, hash);
 
-  if (!epc_test_init (EPC_TEST_MASK_ALL))
+  if (!epc_test_init (7))
     goto out;
 
   for (i = 0; i < G_N_ELEMENTS (test_types); ++i)
