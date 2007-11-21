@@ -21,6 +21,9 @@
 
 #include "protocol.h"
 #include "service-type.h"
+#include "enums.h"
+
+#include <glib-object.h>
 
 /**
  * SECTION:protocol
@@ -69,6 +72,40 @@ epc_protocol_build_uri (EpcProtocol  protocol,
   g_return_val_if_fail (NULL != scheme, NULL);
 
   return g_strdup_printf ("%s://%s:%d/%s", scheme, hostname, port, path + 1);
+}
+
+/**
+ * epc_protocol_from_name:
+ * @name: a protocol name
+ * @fallback: the #EpcProtocol to use on errors
+ *
+ * Parses the protocol @name. Case of the name doesn't matter. Returns the
+ * matching #EpcProtocol, when the name was recognized, and the value of
+ * @fallback otherwise.
+ *
+ * Returns: The #EpcProtocol matching @name, or @fallback on error.
+ */
+EpcProtocol
+epc_protocol_from_name (const gchar *name,
+                        EpcProtocol  fallback)
+{
+  static GEnumClass *cls = NULL;
+  GEnumValue *result;
+  gchar *lower;
+
+  g_return_val_if_fail (NULL != name, fallback);
+
+  if (G_UNLIKELY (NULL == cls))
+    cls = g_type_class_ref (EPC_TYPE_PROTOCOL);
+
+  lower = g_utf8_strdown (name, -1);
+  result = g_enum_get_value_by_nick (cls, lower);
+  g_free (lower);
+
+  if (result && EPC_PROTOCOL_UNKNOWN != result->value)
+    return result->value;
+
+  return fallback;
 }
 
 /**

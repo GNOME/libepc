@@ -1,5 +1,12 @@
 2007-11-21  Mathias Hasselmann  <mathias@openismus.com>
 
+	Introduce epc_protocol_from_name.
+
+	* libepc/protocol.c, libepc/protocol.h: Add epc_protocol_from_name.
+	* examples/simple-publisher.c: Use epc_protocol_from_name.
+
+2007-11-21  Mathias Hasselmann  <mathias@openismus.com>
+
 	Explain TLS key generation during epc_publisher_run.
 
 	* libepc/publisher.c: Update API docs.

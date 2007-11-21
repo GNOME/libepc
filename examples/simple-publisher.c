@@ -12,7 +12,6 @@
  * use your login name as user name and the word "secret" as password.
  */
 #include <libepc/publisher.h>
-#include <libepc/enums.h> /* For EPC_TYPE_PROTOCOL */
 
 #include <glib/gi18n.h>
 #include <locale.h>
@@ -58,35 +57,22 @@ parse_protocol (const gchar *option G_GNUC_UNUSED,
                 gpointer     data G_GNUC_UNUSED,
                 GError     **error)
 {
-  static GEnumClass *cls = NULL;
-  GEnumValue *result;
-  gchar *lower;
+  /* Parse @text */
 
-  /* Look up @text in EpcProtocol enumeration */
+  protocol = epc_protocol_from_name (text, EPC_PROTOCOL_UNKNOWN);
 
-  if (G_UNLIKELY (NULL == cls))
-    cls = g_type_class_ref (EPC_TYPE_PROTOCOL);
+  if (EPC_PROTOCOL_UNKNOWN != protocol)
+    return TRUE;
 
-  lower = g_utf8_strdown (text, -1);
-  result = g_enum_get_value_by_nick (cls, lower);
-  g_free (lower);
+  /* Report parsing error */
 
-  if (NULL == result || EPC_PROTOCOL_UNKNOWN == result->value)
-    {
-      /* Report parsing error */
+  g_set_error (error,
+               G_OPTION_ERROR_FAILED,
+               G_OPTION_ERROR_BAD_VALUE,
+               _("Invalid transport protocol: '%s'"),
+               text);
 
-      g_set_error (error,
-                   G_OPTION_ERROR_FAILED,
-                   G_OPTION_ERROR_BAD_VALUE,
-                   _("Invalid transport protocol: '%s'"),
-                   text);
-
-      return FALSE;
-    }
-
-  protocol = result->value;
-
-  return TRUE;
+  return FALSE;
 }
 
 int

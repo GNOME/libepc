@@ -43,12 +43,16 @@ typedef enum
 }
 EpcProtocol;
 
-gchar*                epc_protocol_build_uri        (EpcProtocol  protocol,
-                                                     const gchar *hostname,
-                                                     guint16      port,
-                                                     const gchar *path);
-G_CONST_RETURN gchar* epc_protocol_get_service_type (EpcProtocol  protocol) G_GNUC_CONST;
-G_CONST_RETURN gchar* epc_protocol_get_uri_scheme   (EpcProtocol  protocol) G_GNUC_CONST;
+EpcProtocol           epc_protocol_from_name        (const gchar  *name,
+                                                     EpcProtocol   fallback);
+
+gchar*                epc_protocol_build_uri        (EpcProtocol   protocol,
+                                                     const gchar  *hostname,
+                                                     guint16       port,
+                                                     const gchar  *path);
+
+G_CONST_RETURN gchar* epc_protocol_get_service_type (EpcProtocol   protocol) G_GNUC_CONST;
+G_CONST_RETURN gchar* epc_protocol_get_uri_scheme   (EpcProtocol   protocol) G_GNUC_CONST;
 
 G_END_DECLS
 
