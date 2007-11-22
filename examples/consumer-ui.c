@@ -255,7 +255,7 @@ main (int   argc,
 
       const gint port = aui_service_dialog_get_port (AUI_SERVICE_DIALOG (dialog));
       const gchar *host = aui_service_dialog_get_host_name (AUI_SERVICE_DIALOG (dialog));
-      const gchar *transport = aui_service_dialog_get_service_type (AUI_SERVICE_DIALOG (dialog));
+      const gchar *service_type = aui_service_dialog_get_service_type (AUI_SERVICE_DIALOG (dialog));
 
       /* Retrieve the human readable name of the selected service,
        * just for the purpose of displaying it in the UI later. */
@@ -264,7 +264,7 @@ main (int   argc,
 
       /* Create an EpcConsumer for the selected service. */
 
-      consumer = epc_consumer_new (epc_service_type_get_protocol (transport), host, port);
+      consumer = epc_consumer_new (epc_service_type_get_protocol (service_type), host, port);
 
       /* Associate a password dialog */
 

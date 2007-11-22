@@ -1,3 +1,8 @@
+2007-11-22  Murray Cumming  <murrayc@murrayc.com>
+
+	* examples/consumer-ui.c: (main): Rename the transport 
+	variable to service_type because that is what it is.
+
 2007-11-21  Mathias Hasselmann  <mathias@openismus.com>
 
 	Don't crash on empty publishers.
