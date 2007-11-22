@@ -20,6 +20,7 @@
  */
 
 #include "contents.h"
+#include <string.h>
 
 /**
  * SECTION:contents
@@ -70,7 +71,6 @@ struct _EpcContents
   gpointer            data;
 
   EpcContentsReadFunc callback;
-  gpointer            user_data;
   GDestroyNotify      destroy_data;
 };
 
@@ -79,21 +79,28 @@ extern gboolean _epc_debug;
 /**
  * epc_contents_new:
  * @type: the MIME type of this contents, or %NULL
- * @data: the contents for this buffer
  * @length: the contents length in bytes
+ * @data: static contents for the buffer
+ * @destroy_data: function for freeing @data when destroying the buffer
  *
- * Creates a new #EpcContents buffer.
+ * Creates a new #EpcContents buffer, and takes ownership of the @data passed.
  * Passing %NULL for @type is equivalent to passing "application/octet-stream".
+ *
+ * See also: epc_contents_new_dup, epc_contents_stream_new
  *
  * Returns: The newly created #EpcContents buffer.
  */
 EpcContents*
-epc_contents_new (const gchar *type,
-                  gpointer     data,
-                  gsize        length)
+epc_contents_new (const gchar    *type,
+                  gsize           length,
+                  gpointer        data,
+                  GDestroyNotify  destroy_data)
 {
-  EpcContents *self = g_slice_new0 (EpcContents);
+  EpcContents *self;
 
+  g_return_val_if_fail (NULL != data, NULL);
+
+  self = g_slice_new0 (EpcContents);
   self->ref_count = 1;
 
   if (type)
@@ -101,8 +108,37 @@ epc_contents_new (const gchar *type,
 
   self->data = data;
   self->length = length;
+  self->destroy_data = destroy_data;
 
   return self;
+}
+
+/**
+ * epc_contents_new_dup:
+ * @type: the MIME type of this contents, or %NULL
+ * @length: the contents length in bytes
+ * @data: static contents for the buffer
+ *
+ * Creates a new #EpcContents buffer, and copies the @data passed.
+ * Passing %NULL for @type is equivalent to passing "application/octet-stream".
+ *
+ * See also: epc_contents_new, epc_contents_stream_new
+ *
+ * Returns: The newly created #EpcContents buffer.
+ */
+EpcContents*
+epc_contents_new_dup (const gchar    *type,
+                      gsize           length,
+                      const gpointer  data)
+{
+  gpointer cloned_data;
+
+  g_return_val_if_fail (NULL != data, NULL);
+
+  cloned_data = g_malloc (length);
+  memcpy (cloned_data, data, length);
+
+  return epc_contents_new (type, length, cloned_data, g_free);
 }
 
 /**
@@ -137,8 +173,8 @@ epc_contents_stream_new (const gchar         *type,
   if (type)
     self->type = g_strdup (type);
 
+  self->data = user_data;
   self->callback = callback;
-  self->user_data = user_data;
   self->destroy_data = destroy_data;
 
   return self;
@@ -184,9 +220,8 @@ epc_contents_unref (EpcContents *self)
   if (g_atomic_int_dec_and_test (&self->ref_count))
     {
       if (self->destroy_data)
-        self->destroy_data (self->user_data);
+        self->destroy_data (self->data);
 
-      g_free (self->data);
       g_free (self->type);
 
       g_slice_free (EpcContents, self);
@@ -249,6 +284,9 @@ epc_contents_get_data (EpcContents *contents,
 {
   g_return_val_if_fail (NULL != contents, NULL);
 
+  if (epc_contents_is_stream (contents))
+    return NULL;
+
   if (length)
     *length = contents->length;
 
@@ -275,5 +313,5 @@ epc_contents_stream_read (EpcContents *contents,
   g_return_val_if_fail (epc_contents_is_stream (contents), NULL);
   g_return_val_if_fail (NULL != length, NULL);
 
-  return contents->callback (contents, length, contents->user_data);
+  return contents->callback (contents, length, contents->data);
 }

@@ -35,7 +35,7 @@ timestamp_handler (EpcPublisher *publisher G_GNUC_UNUSED,
   buffer = g_malloc (length);
   length = strftime (buffer, length, format, tm);
 
-  return epc_contents_new ("text/plain", buffer, length);
+  return epc_contents_new ("text/plain", length, buffer, g_free);
 }
 
 static gboolean

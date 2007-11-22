@@ -266,7 +266,7 @@ epc_publisher_handle_file (EpcPublisher *publisher G_GNUC_UNUSED,
 
   /* TODO: use gio to determinate mime-type */
   if (g_file_get_contents (filename, &data, &length, NULL))
-    contents = epc_contents_new (NULL, data, length);
+    contents = epc_contents_new (NULL, length, data, g_free);
 
   return contents;
 }
@@ -986,7 +986,7 @@ epc_publisher_add (EpcPublisher  *self,
 
   epc_publisher_add_handler (self, key,
                              epc_publisher_handle_static,
-                             epc_contents_new (type, data, length),
+                             epc_contents_new (type, length, data, g_free),
                              (GDestroyNotify) epc_contents_unref);
 }
 

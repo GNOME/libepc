@@ -28,6 +28,7 @@ EPC_DISPATCHER_GET_CLASS
 
 <SECTION>
 <FILE>publisher</FILE>
+EpcContentsHandler
 EpcPublisherPrivate
 EpcPublisherClass
 <TITLE>EpcPublisher</TITLE>
@@ -84,13 +85,22 @@ epc_auth_context_get_publisher
 
 <SECTION>
 <FILE>contents</FILE>
-EpcContentsHandler
+EpcContentsReadFunc
 <TITLE>EpcContents</TITLE>
 EpcContents
 epc_contents_new
+epc_contents_new_dup
 epc_contents_ref
 epc_contents_unref
-</SECTION>
+
+<SUBSECTION>
+epc_contents_get_data
+epc_contents_get_mime_type
+
+<SUBSECTION>
+epc_contents_stream_new
+epc_contents_stream_read
+epc_contents_is_stream
 
 <SECTION>
 <FILE>consumer</FILE>
