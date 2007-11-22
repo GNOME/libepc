@@ -21,8 +21,9 @@
 #ifndef __EPC_PUBLISHER_H__
 #define __EPC_PUBLISHER_H__
 
-#include <libepc/service-type.h>
 #include <glib-object.h>
+#include <libepc/contents.h>
+#include <libepc/service-type.h>
 
 G_BEGIN_DECLS
 
@@ -34,7 +35,6 @@ G_BEGIN_DECLS
 #define EPC_PUBLISHER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), EPC_TYPE_PUBLISHER, EpcPublisherClass))
 
 typedef struct _EpcAuthContext                  EpcAuthContext;
-typedef struct _EpcContents                     EpcContents;
 typedef struct _EpcPublisher                    EpcPublisher;
 typedef struct _EpcPublisherClass               EpcPublisherClass;
 typedef struct _EpcPublisherPrivate             EpcPublisherPrivate;
@@ -166,12 +166,6 @@ EpcPublisher*         epc_auth_context_get_publisher     (EpcAuthContext    *con
 G_CONST_RETURN gchar* epc_auth_context_get_key           (EpcAuthContext    *context);
 gboolean              epc_auth_context_check_password    (EpcAuthContext    *context,
                                                           const gchar       *password);
-
-EpcContents*          epc_contents_new                   (const gchar       *type,
-                                                          gpointer           data,
-                                                          gsize              length);
-EpcContents*          epc_contents_ref                   (EpcContents       *contents);
-void                  epc_contents_unref                 (EpcContents       *contents);
 
 G_END_DECLS
 

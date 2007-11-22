@@ -52,6 +52,7 @@ TESTS = \
 
 libepc_headers = \
 	libepc/consumer.h \
+	libepc/contents.h \
 	libepc/dispatcher.h \
 	libepc/marshal.h \
 	libepc/protocol.h \
@@ -83,6 +84,7 @@ BUILT_SOURCES = \
 libepc_libepc_1_0_la_SOURCES = \
 	$(libepc_include_HEADERS) \
 	libepc/consumer.c \
+	libepc/contents.c \
 	libepc/dispatcher.c \
 	libepc/enums.c \
 	libepc/enums.c.in \

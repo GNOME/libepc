@@ -26,9 +26,9 @@
 #include "tls.h"
 
 #include <libsoup/soup-address.h>
-#include <libsoup/soup-message.h>
 #include <libsoup/soup-server.h>
 #include <libsoup/soup-server-auth.h>
+#include <libsoup/soup-server-message.h>
 #include <libsoup/soup-socket.h>
 
 #include <string.h>
@@ -73,40 +73,6 @@
  *     expected_password = lookup_password (self, requested_key);
  *
  *     return epc_auth_context_check_password (context, expected_password);
- *   }
- *  </programlisting>
- * </example>
- */
-
-/**
- * SECTION:contents
- * @short_description: custom contents
- * @see_also: #EpcPublisher
- * @include: libepc/publish.h
- * @stability: Unstable
- *
- * #EpcContents is a reference counted structure for storing custom contents.
- * To publish custom content call #epc_publisher_add_handler to register a
- * #EpcContentsHandler like this:
- *
- * <example id="custom-contents-handler">
- *  <title>A custom contents handler</title>
- *  <programlisting>
- *   static EpcContents*
- *   timestamp_handler (EpcPublisher *publisher G_GNUC_UNUSED,
- *                      const gchar  *key G_GNUC_UNUSED,
- *                      gpointer      data)
- *   {
- *     time_t now = time (NULL);
- *     struct tm *tm = localtime (&now);
- *     const gchar *format = data;
- *     gsize length = 60;
- *     gchar *buffer;
- *
- *     buffer = g_malloc (length);
- *     length = strftime (buffer, length, format, tm);
- *
- *     return epc_content_new ("text/plain", buffer, length);
  *   }
  *  </programlisting>
  * </example>
@@ -192,20 +158,6 @@ struct _EpcAuthContext
   /*< public >*/
 };
 
-/**
- * EpcContents:
- *
- * A reference counted buffer for storing contents to deliver by the
- * #EpcPublisher. Use #epc_contents_new to create instances of this buffer.
- */
-struct _EpcContents
-{
-  volatile gint ref_count;
-  gsize         length;
-  gpointer      data;
-  gchar        *type;
-};
-
 struct _EpcListContext
 {
   GPatternSpec *pattern;
@@ -253,84 +205,6 @@ struct _EpcPublisherPrivate
 extern gboolean _epc_debug;
 
 G_DEFINE_TYPE (EpcPublisher, epc_publisher, G_TYPE_OBJECT);
-
-/**
- * epc_contents_new:
- * @type: the MIME type of this contents, or %NULL
- * @data: the contents for this buffer
- * @length: the contents length in bytes
- *
- * Creates a new #EpcContents buffer.
- * Passing %NULL for @type is equivalent to passing "application/octet-stream".
- *
- * Returns: The newly created #EpcContents buffer.
- */
-EpcContents*
-epc_contents_new (const gchar *type,
-                  gpointer     data,
-                  gsize        length)
-{
-  EpcContents *self = g_slice_new0 (EpcContents);
-
-  self->ref_count = 1;
-
-  if (type)
-    self->type = g_strdup (type);
-
-  self->data = data;
-  self->length = length;
-
-  return self;
-}
-
-/**
- * epc_contents_ref:
- * @contents: a EpcContents buffer
- *
- * Increases the reference count of @contents.
- *
- * Returns: the same @contents buffer.
- */
-EpcContents*
-epc_contents_ref (EpcContents *self)
-{
-  g_return_val_if_fail (NULL != self, NULL);
-  g_atomic_int_inc (&self->ref_count);
-  return self;
-}
-
-/**
- * epc_contents_unref:
- * @contents: a EpcContents buffer
- *
- * Decreases the reference count of @contents.
- * When its reference count drops to 0, the buffer is released
- * (i.e. its memory is freed).
- */
-void
-epc_contents_unref (EpcContents *self)
-{
-  g_return_if_fail (NULL != self);
-
-  if (g_atomic_int_dec_and_test (&self->ref_count))
-    {
-      g_free (self->data);
-      g_free (self->type);
-
-      g_slice_free (EpcContents, self);
-    }
-}
-
-static G_CONST_RETURN gchar*
-epc_contents_get_mime_type (EpcContents *self)
-{
-  g_return_val_if_fail (NULL != self, NULL);
-
-  if (self->type)
-    return self->type;
-
-  return "application/octet-stream";
-}
 
 static EpcResource*
 epc_resource_new (EpcContentsHandler handler,
@@ -414,14 +288,50 @@ epc_publisher_get_key (const gchar *path)
 }
 
 static void
+epc_publisher_chunk_cb (SoupMessage *message,
+                        gpointer     data)
+{
+  EpcContents *contents = data;
+  gpointer chunk;
+  gsize length;
+
+  chunk = epc_contents_stream_read (contents, &length);
+
+  if (chunk && length)
+    {
+      if (G_UNLIKELY (_epc_debug))
+        g_debug ("%s: writing %d bytes", G_STRLOC, length);
+
+      soup_message_add_chunk (message, SOUP_BUFFER_SYSTEM_OWNED, chunk, length);
+    }
+  else
+    {
+      if (G_UNLIKELY (_epc_debug))
+        g_debug ("%s: done", G_STRLOC);
+
+      soup_message_add_final_chunk (message);
+      g_free (chunk);
+    }
+}
+
+static void
 epc_publisher_handle_get_path (SoupServerContext *context,
                                SoupMessage       *message,
                                gpointer           data)
 {
-  EpcPublisher *self = data;
+  EpcPublisher *self = EPC_PUBLISHER (data);
   EpcResource *resource = NULL;
   EpcContents *contents = NULL;
   const gchar *key = NULL;
+
+  if (G_UNLIKELY (_epc_debug))
+    g_debug ("%s: method=%s, path=%s", G_STRFUNC, message->method, context->path);
+
+  if (SOUP_METHOD_ID_GET != context->method_id)
+    {
+      soup_message_set_status (message, SOUP_STATUS_METHOD_NOT_ALLOWED);
+      return;
+    }
 
   key = epc_publisher_get_key (context->path);
 
@@ -430,22 +340,33 @@ epc_publisher_handle_get_path (SoupServerContext *context,
   if (resource && resource->handler)
     contents = resource->handler (self, key, resource->user_data);
 
+  soup_message_set_status (message, SOUP_STATUS_NOT_FOUND);
+
   if (contents)
     {
-      const gchar *mime_type = epc_contents_get_mime_type (contents);
+      const gchar *type;
+      gsize length = 0;
+      gpointer data;
 
-      soup_message_set_response (message, mime_type,
-                                 SOUP_BUFFER_USER_OWNED,
-                                 contents->data,
-				 contents->length);
-      soup_message_set_status (message, SOUP_STATUS_OK);
+      data = epc_contents_get_data (contents, &length);
+      type = epc_contents_get_mime_type (contents);
 
-      g_signal_connect_swapped (message, "finished",
-                                G_CALLBACK (epc_contents_unref),
-                                contents);
+      if (data)
+        {
+          soup_message_set_response (message, type, SOUP_BUFFER_USER_OWNED, data, length);
+          soup_message_set_status (message, SOUP_STATUS_OK);
+        }
+      else if (epc_contents_is_stream (contents))
+        {
+          g_signal_connect (message, "wrote-chunk", G_CALLBACK (epc_publisher_chunk_cb), contents);
+          g_signal_connect (message, "wrote-headers", G_CALLBACK (epc_publisher_chunk_cb), contents);
+
+          soup_server_message_set_encoding (SOUP_SERVER_MESSAGE (message), SOUP_TRANSFER_CHUNKED);
+          soup_message_set_status (message, SOUP_STATUS_OK);
+        }
+
+      g_signal_connect_swapped (message, "finished", G_CALLBACK (epc_contents_unref), contents);
     }
-  else
-    soup_message_set_status (message, SOUP_STATUS_NOT_FOUND);
 }
 
 static void
@@ -1157,8 +1078,13 @@ epc_publisher_get_url (EpcPublisher *self,
 
   if (!host)
     host = epc_dispatcher_get_host_name (self->priv->dispatcher);
+
   if (key)
-    path = g_strconcat ("/get/", key, NULL);
+    {
+      gchar *encoded_key = soup_uri_encode (key, NULL);
+      path = g_strconcat ("/get/", encoded_key, NULL);
+      g_free (encoded_key);
+    }
 
   url = epc_protocol_build_uri (self->priv->protocol, host, port, path);
   g_free (path);
