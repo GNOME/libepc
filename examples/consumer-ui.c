@@ -104,6 +104,7 @@ keys_combo_changed_cb (GtkComboBox *combo_box,
   g_free (markup);
   g_free (value);
   g_free (key);
+  g_clear_error (&error);
 }
 
 static GtkWidget*
@@ -179,7 +180,7 @@ main (int   argc,
   gchar *publisher_name = NULL;
   GtkWidget *password_dialog = NULL;
   GtkWidget *dialog = NULL;
-  GError *error;
+  GError *error = NULL;
 
   gchar *service_type_https = NULL;
   gchar *service_type_http = NULL;

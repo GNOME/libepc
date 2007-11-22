@@ -1,3 +1,8 @@
+2007-11-22  Murray Cumming,  <murrayc@murrayc.com>
+
+	* examples/consumer-ui.c: (keys_combo_changed_cb), (main):
+	Initialize and free GErrors.
+
 2007-11-22  Murray Cumming  <murrayc@murrayc.com>
 
 	* examples/consumer-ui.c: (main): Rename the transport 
