@@ -41,6 +41,8 @@ epc_publisher_add
 epc_publisher_add_file
 epc_publisher_add_handler
 epc_publisher_remove
+epc_publisher_get_url
+epc_publisher_list
 
 <SUBSECTION>
 epc_publisher_run
@@ -134,6 +136,7 @@ epc_http_error_quark
 <FILE>protocol</FILE>
 <TITLE>EpcProtocol</TITLE>
 EpcProtocol
+epc_protocol_from_name
 epc_protocol_build_uri
 epc_protocol_get_service_type
 epc_protocol_get_uri_scheme

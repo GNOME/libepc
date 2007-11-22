@@ -1170,6 +1170,8 @@ epc_consumer_list_parser_text (GMarkupParseContext *context G_GNUC_UNUSED,
  *  g_list_free (keys);
  * </programlisting>
  *
+ * See also #epc_publisher_list for creating custom listings.
+ *
  * Returns: A newly allocated list of keys, or %NULL when an error occurred.
  */
 GList*

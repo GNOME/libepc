@@ -10,6 +10,16 @@
 
 2007-11-21  Mathias Hasselmann  <mathias@openismus.com>
 
+	Implement epc_publisher_get_url and epc_publisher_list,
+	as the Totem plugin needs them.
+
+	* libepc/publisher.c, libepc/publisher.h:
+	Add epc_publisher_get_url and epc_publisher_list.
+	* docs/reference/libepc/libepc-1.0-sections.txt: Update symbols.
+	* libepc/consumer.c: Reference epc_publisher_list in docs.
+
+2007-11-21  Mathias Hasselmann  <mathias@openismus.com>
+
 	Don't crash on empty publishers.
 
 	* examples/consumer-ui.c: Handle empty publishers.

@@ -210,6 +210,7 @@ struct _EpcListContext
 {
   GPatternSpec *pattern;
   GString *buffer;
+  GList *matches;
 };
 
 struct _EpcResource
@@ -620,27 +621,42 @@ epc_publisher_init (EpcPublisher *self)
                                                  g_free, epc_resource_free);
 }
 
+static const gchar*
+epc_publisher_get_host (EpcPublisher     *self,
+                        struct sockaddr **sockaddr,
+                        gint             *addrlen)
+{
+  SoupSocket *listener = soup_server_get_listener (self->priv->server);
+  SoupAddress *address = soup_socket_get_local_address (listener);
+
+  if (sockaddr && addrlen)
+    *sockaddr = soup_address_get_sockaddr (address, addrlen);
+
+  return soup_address_get_name (address);
+}
+
+static gint
+epc_publisher_get_port (EpcPublisher *self)
+{
+  return soup_server_get_port (self->priv->server);
+}
+
 static void
 epc_publisher_announce (EpcPublisher  *self)
 {
-  SoupSocket *listener;
-  SoupAddress *address;
   const gchar *host;
-  gchar *service;
-  gint port;
-
   struct sockaddr *sockaddr;
   gint addrlen;
+
+  gchar *service;
+  gint port;
 
   g_return_if_fail (SOUP_IS_SERVER (self->priv->server));
 
   service = epc_service_type_new (self->priv->protocol, self->priv->application);
-  listener = soup_server_get_listener (self->priv->server);
-  address = soup_socket_get_local_address (listener);
-  port = soup_server_get_port (self->priv->server);
-  host = soup_address_get_name (address);
 
-  sockaddr = soup_address_get_sockaddr (address, &addrlen);
+  host = epc_publisher_get_host (self, &sockaddr, &addrlen);
+  port = epc_publisher_get_port (self);
 
   epc_dispatcher_reset (self->priv->dispatcher);
 
@@ -1113,6 +1129,44 @@ epc_publisher_add_handler (EpcPublisher      *self,
 }
 
 /**
+ * epc_publisher_get_url:
+ * @publisher: a #EpcPublisher
+ * @key: the resource key to inspect, or %NULL
+ *
+ * Queries the fully qualified URL for accessing the resource published under
+ * @key. This is useful when referencing keys in published resources. When
+ * passing %NULL the publisher's base URL is returned.
+ *
+ * Returns: The fully qualified URL for @key, or the publisher's
+ * base URL when passing %NULL for @key.
+ */
+gchar*
+epc_publisher_get_url (EpcPublisher *self,
+                       const gchar  *key)
+{
+  gchar *path = NULL;
+  gchar *url = NULL;
+
+  const gchar *host;
+  gint port;
+
+  g_return_val_if_fail (EPC_IS_PUBLISHER (self), NULL);
+
+  host = epc_publisher_get_host (self, NULL, NULL);
+  port = epc_publisher_get_port (self);
+
+  if (!host)
+    host = epc_dispatcher_get_host_name (self->priv->dispatcher);
+  if (key)
+    path = g_strconcat ("/get/", key, NULL);
+
+  url = epc_protocol_build_uri (self->priv->protocol, host, port, path);
+  g_free (path);
+
+  return url;
+}
+
+/**
  * epc_publisher_remove:
  * @publisher: a #EpcPublisher
  * @key: the key for addressing the content
@@ -1129,6 +1183,66 @@ epc_publisher_remove (EpcPublisher *self,
   g_return_val_if_fail (NULL != key, FALSE);
 
   return g_hash_table_remove (self->priv->resources, key);
+}
+
+static void
+epc_publisher_list_cb (gpointer key,
+                       gpointer value G_GNUC_UNUSED,
+                       gpointer data)
+{
+  EpcListContext *context = data;
+
+  if (NULL == context->pattern || g_pattern_match_string (context->pattern, key))
+    context->matches = g_list_prepend (context->matches, g_strdup (key));
+}
+
+/**
+ * epc_publisher_list:
+ * @publisher: a #EpcPublisher
+ * @pattern: a glob-style pattern, or %NULL
+ *
+ * Matches published keys against patterns containing '*' (wildcard) and '?'
+ * (joker). Passing %NULL as @pattern is equivalent to passing "*" and returns
+ * all published keys. This function is useful for generating dynamic resource
+ * listings in other formats than libepc's specific format. See #GPatternSpec
+ * for information about glob-style patterns.
+ *
+ * If the call was successful, a list of keys matching @pattern is returned.
+ * If the call was not successful, it returns %NULL.
+ *
+ * The returned list should be freed when no longer needed:
+ *
+ * <programlisting>
+ *  g_list_foreach (keys, (GFunc) g_free, NULL);
+ *  g_list_free (keys);
+ * </programlisting>
+ *
+ * See also #epc_consumer_list for builtin listing capabilities.
+ *
+ * Returns: A newly allocated list of keys, or %NULL when an error occurred.
+ */
+GList*
+epc_publisher_list (EpcPublisher *self,
+                    const gchar  *pattern)
+{
+  EpcListContext context;
+
+  g_return_val_if_fail (EPC_IS_PUBLISHER (self), NULL);
+
+  context.matches = NULL;
+  context.pattern = NULL;
+
+  if (pattern && *pattern)
+    context.pattern = g_pattern_spec_new (pattern);
+
+  g_hash_table_foreach (self->priv->resources,
+                        epc_publisher_list_cb,
+                        &context);
+
+  if (context.pattern)
+    g_pattern_spec_free (context.pattern);
+
+  return context.matches;
 }
 
 /**
