@@ -266,7 +266,7 @@ epc_publisher_handle_file (EpcPublisher *publisher G_GNUC_UNUSED,
 
   /* TODO: use gio to determinate mime-type */
   if (g_file_get_contents (filename, &data, &length, NULL))
-    contents = epc_contents_new (NULL, length, data, g_free);
+    contents = epc_contents_new (NULL, data, length, g_free);
 
   return contents;
 }
@@ -944,7 +944,7 @@ epc_publisher_new (const gchar *name,
  * epc_publisher_add:
  * @publisher: a #EpcPublisher
  * @key: the key for addressing the value
- * @value: the value to publish
+ * @data: the value to publish
  * @length: the length of @value in bytes, or -1.
  *
  * Publishes a new @value on the #EpcPublisher using the unique @key for
@@ -965,28 +965,24 @@ epc_publisher_new (const gchar *name,
 void
 epc_publisher_add (EpcPublisher  *self,
                    const gchar   *key,
-                   const gchar   *value,
+                   gconstpointer  data,
                    gssize         length)
 {
   const gchar *type = NULL;
-  gchar *data = NULL;
 
   g_return_if_fail (EPC_IS_PUBLISHER (self));
-  g_return_if_fail (NULL != value);
+  g_return_if_fail (NULL != data);
   g_return_if_fail (NULL != key);
 
   if (-1 == length)
     {
-      length = strlen (value);
+      length = strlen (data);
       type = "text/plain";
     }
 
-  data = g_malloc (length);
-  memcpy (data, value, length);
-
   epc_publisher_add_handler (self, key,
                              epc_publisher_handle_static,
-                             epc_contents_new (type, length, data, g_free),
+                             epc_contents_new_dup (type, data, length),
                              (GDestroyNotify) epc_contents_unref);
 }
 

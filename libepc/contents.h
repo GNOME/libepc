@@ -46,12 +46,12 @@ typedef gpointer    (*EpcContentsReadFunc)       (EpcContents         *contents,
                                                   gpointer             user_data);
 
 EpcContents*          epc_contents_new           (const gchar         *type,
-                                                  gsize                length,
                                                   gpointer             data,
+                                                  gsize                length,
                                                   GDestroyNotify       destroy_data);
 EpcContents*          epc_contents_new_dup       (const gchar         *type,
-                                                  gsize                length,
-                                                  const gpointer       data);
+                                                  gconstpointer        data,
+                                                  gsize                length);
 EpcContents*          epc_contents_stream_new    (const gchar         *type,
                                                   EpcContentsReadFunc  callback,
                                                   gpointer             user_data,

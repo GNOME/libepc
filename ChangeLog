@@ -1,5 +1,30 @@
 2007-11-22  Mathias Hasselmann  <mathias@openismus.com>
 
+	* libepc/consumer.c, libepc/consumer.h: Change return
+	type of epc_consumer_lookup from "gchar*" to "gpointer".
+	* libepc/contents.c, libepc/contents.h: Change data argument type
+	from "const gpointer" to "gconstpointer" for epc_contents_new_dup.
+	Move length argument behind data for consistency.
+	* libepc/publisher.c, libepc/publisher.h: Rename value argument to
+	data and change its type from "const gchar*" to "gconstpointer"
+	for consistency.
+	* examples/simple-publisher.c: Change order of length and
+	data argument when using epc_contents_new.
+
+	2007-11-22  Mathias Hasselmann  <mathias@openismus.com>
+
+	* libepc/consumer.c, libepc/consumer.h: 
+	* libepc/contents.c, libepc/contents.h, 
+	
+	epc_contents_new_dup
+	
+	, libepc/publisher.c, libepc/publisher.h, 
+	Makefile.am: Your changes...
+
+
+
+2007-11-22  Mathias Hasselmann  <mathias@openismus.com>
+
 	Improve memory handling of EpcContents.
 
 	* libepc/contents.c, libepc/contents.h: Add destroy_data argument to

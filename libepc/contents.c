@@ -79,8 +79,8 @@ extern gboolean _epc_debug;
 /**
  * epc_contents_new:
  * @type: the MIME type of this contents, or %NULL
- * @length: the contents length in bytes
  * @data: static contents for the buffer
+ * @length: the contents length in bytes
  * @destroy_data: function for freeing @data when destroying the buffer
  *
  * Creates a new #EpcContents buffer, and takes ownership of the @data passed.
@@ -92,8 +92,8 @@ extern gboolean _epc_debug;
  */
 EpcContents*
 epc_contents_new (const gchar    *type,
-                  gsize           length,
                   gpointer        data,
+                  gsize           length,
                   GDestroyNotify  destroy_data)
 {
   EpcContents *self;
@@ -116,8 +116,8 @@ epc_contents_new (const gchar    *type,
 /**
  * epc_contents_new_dup:
  * @type: the MIME type of this contents, or %NULL
- * @length: the contents length in bytes
  * @data: static contents for the buffer
+ * @length: the contents length in bytes
  *
  * Creates a new #EpcContents buffer, and copies the @data passed.
  * Passing %NULL for @type is equivalent to passing "application/octet-stream".
@@ -127,9 +127,9 @@ epc_contents_new (const gchar    *type,
  * Returns: The newly created #EpcContents buffer.
  */
 EpcContents*
-epc_contents_new_dup (const gchar    *type,
-                      gsize           length,
-                      const gpointer  data)
+epc_contents_new_dup (const gchar  *type,
+                      gconstpointer data,
+                      gsize         length)
 {
   gpointer cloned_data;
 
@@ -138,7 +138,7 @@ epc_contents_new_dup (const gchar    *type,
   cloned_data = g_malloc (length);
   memcpy (cloned_data, data, length);
 
-  return epc_contents_new (type, length, cloned_data, g_free);
+  return epc_contents_new (type, cloned_data, length, g_free);
 }
 
 /**

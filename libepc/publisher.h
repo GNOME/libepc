@@ -132,7 +132,7 @@ EpcProtocol           epc_publisher_get_protocol         (EpcPublisher      *pub
 
 void                  epc_publisher_add                  (EpcPublisher      *publisher,
                                                           const gchar       *key,
-                                                          const gchar       *value,
+                                                          gconstpointer      data,
                                                           gssize             length);
 void                  epc_publisher_add_file             (EpcPublisher      *publisher,
                                                           const gchar       *key,

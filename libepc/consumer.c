@@ -1000,7 +1000,7 @@ epc_consumer_set_http_error (GError     **error,
  * Returns: A copy of the publisher's value for the the requested @key,
  * or %NULL when an error occurred.
  */
-gchar*
+gpointer
 epc_consumer_lookup (EpcConsumer  *self,
                      const gchar  *key,
                      gsize        *length,

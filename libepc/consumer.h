@@ -107,7 +107,7 @@ gboolean              epc_consumer_resolve_publisher     (EpcConsumer  *consumer
                                                           guint         timeout);
 gboolean              epc_consumer_is_publisher_resolved (EpcConsumer *consumer);
 
-gchar*                epc_consumer_lookup                (EpcConsumer  *consumer,
+gpointer              epc_consumer_lookup                (EpcConsumer  *consumer,
                                                           const gchar  *key,
                                                           gsize        *length,
                                                           GError      **error);
