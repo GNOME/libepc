@@ -62,7 +62,8 @@
  * EpcContents:
  *
  * A reference counted buffer for storing contents to deliver by the
- * #EpcPublisher. Use #epc_contents_new or #epc_conents_new_dup to create instances of this buffer.
+ * #EpcPublisher. Use #epc_contents_new or #epc_contents_new_dup to create
+ * instances of this buffer.
  */
 struct _EpcContents
 {
