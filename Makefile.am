@@ -57,6 +57,7 @@ libepc_headers = \
 	libepc/marshal.h \
 	libepc/protocol.h \
 	libepc/publisher.h \
+	libepc/service-monitor.h \
 	libepc/service-type.h \
 	libepc/shell.h \
 	libepc/tls.h
@@ -93,6 +94,7 @@ libepc_libepc_1_0_la_SOURCES = \
 	libepc/marshal.list \
 	libepc/protocol.c \
 	libepc/publisher.c \
+	libepc/service-monitor.c \
 	libepc/service-type.c \
 	libepc/shell.c \
 	libepc/tls.c

@@ -61,12 +61,11 @@
     <title>Consuming</title>
     <xi:include href="xml/consumer.xml"/>
     <xi:include href="xml/protocol.xml"/>
-    <xi:include href="xml/service-type.xml"/>
 
     <para>
-     These objects and functions are used to consume Easy Publish and Consume resources.
-     To use them link with <filename>libepc</filename> and include its headers,
-     for instance by checking for libepc-1.0 with pkg-config.
+      These objects and functions are used to consume Easy Publish and Consume resources.
+      To use them link with <filename>libepc</filename> and include its headers, for instance
+      by checking for <filename>libepc-1.0</filename> with <command>pkg-config</command>.
     </para>
   </chapter>
 
@@ -77,9 +76,23 @@
     <xi:include href="xml/publisher.xml"/>
 
     <para>
-     These objects and functions are used to publish Easy Publish and Consume resources.
-     To use them link with <filename>libepc</filename> and include its headers,
-     for instance by checking for libepc-1.0 with pkg-config.
+      These objects and functions are used to publish Easy Publish and Consume resources.
+      To use them link with <filename>libepc</filename> and include its headers, for instance
+      by checking for <filename>libepc-1.0</filename> with <command>pkg-config</command>.
+    </para>
+  </chapter>
+
+  <chapter id="dns-sd-support">
+    <title>DNS-SD Support</title>
+    <xi:include href="xml/dispatcher.xml"/>
+    <xi:include href="xml/service-monitor.xml"/>
+    <xi:include href="xml/service-type.xml"/>
+
+    <para>
+      These objects and functions provide support for publishing and finding DNS-SD
+      services. To use them link with <filename>libepc</filename> and include its
+      headers, for instance by checking for <filename>libepc-1.0</filename> with
+      <command>pkg-config</command>.
     </para>
   </chapter>
 
@@ -89,15 +102,15 @@
     <xi:include href="xml/progress-window.xml"/>
 
     <para>
-     These widgets perform common tasks when using the Easy Publish and Consume library.
-     To use them link with <filename>libepc-ui</filename> and include its headers,
-     for instance by checking for libepc-ui-1.0 with pkg-config.
+      These widgets perform common tasks when using the Easy Publish and Consume library.
+      To use them link with <filename>libepc-ui</filename> and include its headers, for
+      instance by checking for <filename>libepc-ui-1.0</filename> with
+      <command>pkg-config</command>.
     </para>
   </chapter>
 
   <chapter id="internal-api">
     <title>Internal API</title>
-    <xi:include href="xml/dispatcher.xml"/>
     <xi:include href="xml/shell.xml"/>
     <xi:include href="xml/tls.xml"/>
 

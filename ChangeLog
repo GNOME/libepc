@@ -1,3 +1,13 @@
+2007-11-23  Mathias Hasselmann  <mathias@openismus.com>
+
+	Start with EpcServiceMonitor class.
+
+	* docs/reference/libepc/libepc-1.0-docs.xml: Re-order sections.
+	* docs/reference/libepc/libepc-1.0-sections.txt: Update symbols.
+	* libepc/marshal.list: Add VOID:STRING,STRING,STRING,UINT.
+	* Makefile.am: Add libepc/service-monitor.c and
+	libepc/service-monitor.h.
+
 2007-11-22  Mathias Hasselmann  <mathias@openismus.com>
 
 	Change some function signatures for consistency.
