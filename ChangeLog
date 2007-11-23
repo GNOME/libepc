@@ -1,15 +1,20 @@
+2007-11-23  Mathias Hasselmann  <mathias@openismus.com>
+
+	Change type of length arguments from gsize to gssize for
+	epc_contents_new and epc_contents_new_dup, as they support
+	zero terminated strings now.
+
+	* libepc/contents.c, libepc/contents.h: Change length argument type.
+
 2007-11-23  Murray Cumming  <murrayc@murrayc.com>
 
+	* libepc/contents.h: EpcContentsReadFunc documentation:
+	Specify that the data length is in bytes (not characters).
 	* libepc/contents.c: (epc_contents_new), (epc_contents_new_dup):
-	* libepc/contents.h: EpcContentsReadFunc documentation: Specify that 
-	the data length is in bytes (not characters). 
-	epc_contents_new(), epc_contents_new_dup(): Allow -1 for length if 
-	the data is null-terminated.
+	Allow -1 for length if the data is null-terminated.
 	* libepc/publisher.c: Change a mention to @value to @data.
-	* libepc/consumer.c: (epc_consumer_class_init):
-	* libepc/shell.c:
-	* libepc/shell.h: Some improvement to the documentation, without 
-	changing meanings.
+	* libepc/shell.c, libepc/shell.h: Some improvement to the
+	documentation, without changing meanings.
 
 2007-11-23  Mathias Hasselmann  <mathias@openismus.com>
 

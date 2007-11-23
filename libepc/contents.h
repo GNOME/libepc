@@ -55,11 +55,11 @@ typedef gboolean    (*EpcContentsReadFunc)       (EpcContents         *contents,
 
 EpcContents*          epc_contents_new           (const gchar         *type,
                                                   gpointer             data,
-                                                  gsize                length,
+                                                  gssize               length,
                                                   GDestroyNotify       destroy_data);
 EpcContents*          epc_contents_new_dup       (const gchar         *type,
                                                   gconstpointer        data,
-                                                  gsize                length);
+                                                  gssize               length);
 EpcContents*          epc_contents_stream_new    (const gchar         *type,
                                                   EpcContentsReadFunc  callback,
                                                   gpointer             user_data,

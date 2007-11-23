@@ -98,7 +98,7 @@ extern gboolean _epc_debug;
 EpcContents*
 epc_contents_new (const gchar    *type,
                   gpointer        data,
-                  gsize           length,
+                  gssize          length,
                   GDestroyNotify  destroy_data)
 {
   EpcContents *self;
@@ -110,14 +110,11 @@ epc_contents_new (const gchar    *type,
 
   if (type)
     self->type = g_strdup (type);
-
+  if (-1 == length)
+    length = strlen (data);
 
   self->buffer = data;
-
-  if (length == -1)
-    length = strlen (data);
   self->buffer_size = length;
-
   self->destroy_buffer = destroy_data;
 
   return self;
@@ -139,13 +136,13 @@ epc_contents_new (const gchar    *type,
 EpcContents*
 epc_contents_new_dup (const gchar  *type,
                       gconstpointer data,
-                      gsize         length)
+                      gssize        length)
 {
   gpointer cloned_data;
 
   g_return_val_if_fail (NULL != data, NULL);
 
-  if(length == -1)
+  if (-1 == length)
     length = strlen (data);
 
   cloned_data = g_malloc (length);
