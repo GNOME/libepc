@@ -13,6 +13,12 @@
 
 2007-11-23  Mathias Hasselmann  <mathias@openismus.com>
 
+	Make tests/test-progress-hooks pass.
+
+	* tests/test-progress-hooks.c: Remove EPC_TEST_MASK_USER from result.
+
+2007-11-23  Mathias Hasselmann  <mathias@openismus.com>
+
 	Improve memory handling for EpcContents and improve documentation.
 
 	* docs/reference/libepc/libepc-1.0-sections.txt: Close <SECTION> tag.

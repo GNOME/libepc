@@ -158,10 +158,9 @@ main (int   argc,
       epc_shell_progress_update (context, 1.5, test_update_message5);
       wait (3 == i);
 
-
       epc_shell_progress_end (context);
       wait (3 == i);
     }
 
-  return epc_test_quit ();
+  return epc_test_quit () & EPC_TEST_MASK_USER;
 }
