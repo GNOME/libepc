@@ -143,7 +143,7 @@ install-data-local:
         gtkdoc-rebase --relative --dest-dir=$(DESTDIR) --html-dir=$(DESTDIR)$(TARGET_DIR) ; \
 	  fi \
 	fi
-
+	
 
 uninstall-local:
 	rm -f $(DESTDIR)$(TARGET_DIR)/*

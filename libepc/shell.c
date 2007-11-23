@@ -68,7 +68,7 @@ gboolean _epc_debug = FALSE;
  * epc_shell_ref:
  *
  * Increases the reference count for this library. When called for the first
- * time essential resources are allocated. Each call to this function has to
+ * time essential resources are allocated. Each call to this function should 
  * be paired with a call to #epc_shell_unref.
  */
 void
@@ -139,7 +139,7 @@ epc_shell_unref (void)
  * epc_shell_leave:
  *
  * Releases the big GDK lock when running unter GDK/GTK+.
- * It has to be called before entering GLib main loops to avoid race
+ * This must be called before entering GLib main loops to avoid race
  * conditions. See #gdk_threads_leave for details.
  */
 void
@@ -153,7 +153,7 @@ epc_shell_leave (void)
  * epc_shell_enter:
  *
  * Acquires the big GDK lock when running unter GDK/GTK+.
- * It has to be called after leaving GLib main loops to avoid race
+ * This should be called after leaving GLib main loops to avoid race
  * conditions. See #gdk_threads_enter for details.
  */
 void
@@ -270,8 +270,9 @@ epc_shell_progress_begin_default (const gchar *title,
  * @user_data: custom data which shall be passed to the start hook
  * @destroy_data: function to call on @user_data when the hooks are replaced
  *
- * Installs functions which are called when performing lengthly operations,
- * like for instance generating server keys. When never calling this function,
+ * Installs functions which are called during processing, such as generating 
+ * server keys. This allows the application to indicate progress and generally 
+ * keep its UI responsive. If no progress callbacks are provided,
  * or when %NULL is passed for @hooks, progress messages are written to the
  * console.
  *
@@ -295,11 +296,12 @@ epc_shell_set_progress_hooks (const EpcShellProgressHooks *hooks,
 
 /**
  * epc_shell_progress_begin:
- * @title: the title of the lengthly operation
- * @message: description of the lengthly operation
+ * @title: the title of the lengthy operation
+ * @message: description of the lengthy operation
  *
- * Call this function before starting a lengthly operation to support the
- * application in providing some visual feedback during that operation.
+ * Call this function before starting a lengthy operation to allow the
+ * application tp provide some visual feedback during the operation, 
+ * and to generally keep its UI responsive.
  *
  * See also: #epc_shell_set_progress_hooks, #epc_progress_window_install,
  * #epc_shell_progress_update, #epc_shell_progress_end
@@ -322,7 +324,7 @@ epc_shell_progress_begin (const gchar *title,
  * @percentage: current progress of the operation, or -1
  * @message: a description of the current progress
  *
- * Called this function to inform about progress in your lengthly operation.
+ * Called this function to inform about progress of a lengthy operation.
  * The progress is expressed as @percentage in the range [0..1], or -1 if the
  * progress cannot be estimated.
  *
@@ -344,7 +346,7 @@ epc_shell_progress_update (gpointer     context,
  * epc_shell_progress_end:
  * @context: the context information returned by #epc_shell_progress_begin
  *
- * Call this function when your lengthly operation has finished.
+ * Call this function when your lengthy operation has finished.
  *
  * See also: #epc_shell_set_progress_hooks, #epc_progress_window_install,
  * #epc_shell_progress_begin, #epc_shell_progress_update

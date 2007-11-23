@@ -62,7 +62,7 @@
  * EpcContents:
  *
  * A reference counted buffer for storing contents to deliver by the
- * #EpcPublisher. Use #epc_contents_new to create instances of this buffer.
+ * #EpcPublisher. Use #epc_contents_new or #epc_conents_new_dup to create instances of this buffer.
  */
 struct _EpcContents
 {
@@ -84,8 +84,8 @@ extern gboolean _epc_debug;
  * epc_contents_new:
  * @type: the MIME type of this contents, or %NULL
  * @data: static contents for the buffer
- * @length: the contents length in bytes
- * @destroy_data: function for freeing @data when destroying the buffer
+ * @length: the contents length in bytes, or -1 if @data is a null-terminated string.
+ * @destroy_data: This function will be called to free @data when it is no longer needed.
  *
  * Creates a new #EpcContents buffer, and takes ownership of the @data passed.
  * Passing %NULL for @type is equivalent to passing "application/octet-stream".
@@ -110,8 +110,13 @@ epc_contents_new (const gchar    *type,
   if (type)
     self->type = g_strdup (type);
 
+
   self->buffer = data;
+
+  if (length == -1)
+    length = strlen (data);
   self->buffer_size = length;
+
   self->destroy_buffer = destroy_data;
 
   return self;
@@ -121,7 +126,7 @@ epc_contents_new (const gchar    *type,
  * epc_contents_new_dup:
  * @type: the MIME type of this contents, or %NULL
  * @data: static contents for the buffer
- * @length: the contents length in bytes
+ * @length: the content's length in bytes, or -1 if @data is a null-terminated string. 
  *
  * Creates a new #EpcContents buffer, and copies the @data passed.
  * Passing %NULL for @type is equivalent to passing "application/octet-stream".
@@ -139,6 +144,9 @@ epc_contents_new_dup (const gchar  *type,
 
   g_return_val_if_fail (NULL != data, NULL);
 
+  if(length == -1)
+    length = strlen (data);
+
   cloned_data = g_malloc (length);
   memcpy (cloned_data, data, length);
 
@@ -149,8 +157,8 @@ epc_contents_new_dup (const gchar  *type,
  * epc_contents_stream_new:
  * @type: the MIME type of this contents, or %NULL
  * @callback: the function for retrieving chunks
- * @user_data: data which which is passed to @callback
- * @destroy_data: function for freeing @user_data, when destroying the buffer
+ * @user_data: data which will be passed to @callback
+ * @destroy_data:  This function will be called to free @user_data when it is no longer needed.
  *
  * Creates a new #EpcContents buffer for large contents like movie files,
  * which cannot, or should be delivered as solid blob of data.
@@ -284,7 +292,7 @@ epc_contents_get_mime_type (EpcContents *self)
  *
  * See also: #epc_contents_stream_read.
  *
- * Returns: Returns the static buffer contents, or %NULL.
+ * Returns: Returns the static buffer contents, or %NULL. This should not be freed or modified.
  */
 gconstpointer
 epc_contents_get_data (EpcContents *contents,
@@ -317,7 +325,7 @@ epc_contents_get_data (EpcContents *contents,
  *
  * See also: #epc_contents_stream_new, #epc_contents_is_stream
  *
- * Returns: Returns the next chunk of data, or %NULL.
+ * Returns: Returns the next chunk of data, or %NULL. The should not be freed or modified.
  */
 gconstpointer
 epc_contents_stream_read (EpcContents *self,

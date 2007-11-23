@@ -944,18 +944,18 @@ epc_publisher_new (const gchar *name,
  * @publisher: a #EpcPublisher
  * @key: the key for addressing the value
  * @data: the value to publish
- * @length: the length of @value in bytes, or -1.
+ * @length: the length of @data in bytes, or -1 if @data is a null-terminated string.
  *
- * Publishes a new @value on the #EpcPublisher using the unique @key for
- * addressing. When -1 is passed for @length, @value is expected to be a
+ * Publishes a new value on the #EpcPublisher using the unique @key for
+ * addressing. When -1 is passed for @length, @data is expected to be a
  * null-terminated string and its length in bytes is determined automatically
  * using <function>strlen</function>.
  *
  * <note><para>
  *  Values published by the #EpcPublisher can be arbitrary data, possibly
  *  including null characters in the middle. The kind of data associated
- *  with a @key is chosen by the application providing values and has
- *  to be specified separately.
+ *  with a @key is chosen by the application providing values and should 
+ *  be specified separately.
  *
  *  However, when publishing plain text it is strongly recommended
  *  to use UTF-8 encoding to avoid internationalization issues.

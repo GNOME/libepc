@@ -44,7 +44,7 @@ typedef struct _EpcShellProgressHooks EpcShellProgressHooks;
  * @end: the function called by #epc_shell_progress_end
  *
  * This table is used by #epc_shell_set_progress_hooks to install functions
- * allowing the library to provide feedback on lengthly operations.
+ * allowing the library to provide feedback during processing.
  *
  * See also: #epc_progress_window_install
  */

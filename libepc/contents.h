@@ -31,7 +31,7 @@ typedef struct _EpcContents EpcContents;
  * EpcContentsReadFunc:
  * @contents: a #EpcContents buffer
  * @buffer: a location for storing the contents, or %NULL
- * @length: a location for passing and storing the contents length
+ * @length: a location for passing and storing the contents length in bytes.
  * @user_data: the user_data passed to #epc_contents_stream_new
  *
  * This callback is used to retrieve the next chunk of data for a streaming

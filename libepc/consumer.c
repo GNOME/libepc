@@ -634,7 +634,7 @@ epc_consumer_class_init (EpcConsumerClass *cls)
    * handler should provide these credentials, which may come from the
    * user or from cached information by setting the #EpcConsumer:username
    * and #EpcConsumer:password properties. When providing credentials
-   * the signal handler also has to return %TRUE to stop signal emission.
+   * the signal handler should return %TRUE to stop signal emission.
    *
    * If the provided credentials fail then the signal will be emmitted again.
    *
