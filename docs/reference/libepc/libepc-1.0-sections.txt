@@ -163,6 +163,7 @@ EPC_SERVICE_TYPE_HTTP
 EPC_SERVICE_TYPE_HTTPS
 epc_service_type_get_base
 epc_service_type_get_protocol
+epc_service_type_list_supported
 epc_service_type_new
 <SUBSECTION Standard>
 EPC_TYPE_PROTOCOL
@@ -279,7 +280,7 @@ EpcServiceMonitorPrivate
 <TITLE>EpcServiceMonitor</TITLE>
 EpcServiceMonitor
 epc_service_monitor_new
-epc_service_monitor_new_for_application
+epc_service_monitor_new_for_types
 <SUBSECTION Standard>
 epc_service_monitor_get_type
 EPC_IS_SERVICE_MONITOR

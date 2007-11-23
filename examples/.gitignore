@@ -4,5 +4,6 @@
 consumer-ui
 list-resources
 lookup-resource
-simple-publisher
 server-credentials
+service-browser
+simple-publisher

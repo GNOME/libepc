@@ -20,6 +20,8 @@
  */
 
 #include "service-type.h"
+#include "enums.h"
+
 #include <string.h>
 
 /**
@@ -190,3 +192,45 @@ epc_service_type_get_protocol (const gchar *service_type)
 
   return EPC_PROTOCOL_UNKNOWN;
 }
+
+/**
+ * epc_service_type_list_supported:
+ * @application: an application name, or %NULL
+ *
+ * Lists all service types supported by the library. When @application is %NULL
+ * just the generic types, otherwise the service-subtypes for that application
+ * are returned. The returned list is terminated by %NULL and must be released
+ * by the caller with #g_strfreev.
+ *
+ * See also: #epc_service_type_new.
+ *
+ * Returns: The %NULL terminated list of all supported service types.
+ */
+gchar**
+epc_service_type_list_supported (const gchar *application)
+{
+  static GEnumClass *cls = NULL;
+  gchar **types = NULL;
+  guint vi, ti;
+
+  if (G_UNLIKELY (NULL == cls))
+    cls = g_type_class_ref (EPC_TYPE_PROTOCOL);
+
+  types = g_new0 (gchar*, cls->n_values);
+
+  for (vi = 0, ti = 0; vi < cls->n_values; ++vi)
+    {
+      const EpcProtocol protocol = cls->values[vi].value;
+
+      if (EPC_PROTOCOL_UNKNOWN == protocol)
+        continue;
+
+      types[ti++] = application ?
+        epc_service_type_new (protocol, application) :
+        g_strdup (epc_protocol_get_service_type (protocol));
+    }
+
+  return types;
+}
+
+

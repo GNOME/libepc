@@ -38,38 +38,56 @@ typedef struct _EpcServiceMonitor        EpcServiceMonitor;
 typedef struct _EpcServiceMonitorClass   EpcServiceMonitorClass;
 typedef struct _EpcServiceMonitorPrivate EpcServiceMonitorPrivate;
 
+/**
+ * EpcServiceMonitor:
+ *
+ * Public fields of the #EpcServiceMonitor class.
+ */
 struct _EpcServiceMonitor
 {
+  /*< private >*/
   GObject parent_instance;
   EpcServiceMonitorPrivate *priv;
+
+  /*< public >*/
 };
 
+/**
+ * EpcServiceMonitorClass:
+ * @service_found: virtual method of the #EpcServiceMonitor::service-found signal
+ * @service_removed: virtual method of the #EpcServiceMonitor::service-removed signal
+ * @done: virtual method of the #EpcServiceMonitor::done signal
+ *
+ * Virtual methods of the #EpcServiceMonitor class.
+ */
 struct _EpcServiceMonitorClass
 {
   /*< private >*/
   GObjectClass parent_class;
 
   /*< public >*/
-  void (*service_found) (EpcServiceMonitor *monitor,
-                         const gchar       *service_name,
-                         const gchar       *service_type,
-                         const gchar       *host_name,
-                         guint              port);
-  void (*service_lost)  (EpcServiceMonitor *monitor,
-                         const gchar       *service_name,
-                         const gchar       *service_type,
-                         const gchar       *host_name,
-                         guint              port);
+  void (*service_found)   (EpcServiceMonitor *monitor,
+                           const gchar       *type,
+                           const gchar       *name,
+                           const gchar       *host,
+                           guint              port);
+  void (*service_removed) (EpcServiceMonitor *monitor,
+                           const gchar       *type,
+                           const gchar       *name);
+  void (*done)            (EpcServiceMonitor *monitor,
+                           const gchar       *type);
 };
 
-GType              epc_service_monitor_get_type            (void) G_GNUC_CONST;
+GType              epc_service_monitor_get_type      (void) G_GNUC_CONST;
 
-EpcServiceMonitor* epc_service_monitor_new                 (const gchar *first_service_type,
-                                                                        ...)
-                                                            G_GNUC_NULL_TERMINATED;
-EpcServiceMonitor* epc_service_monitor_new_for_application (const gchar *application,
-                                                            EpcProtocol  first_protocol,
-                                                                         ...);
+EpcServiceMonitor* epc_service_monitor_new           (const gchar *application,
+                                                      const gchar *domain,
+                                                      EpcProtocol  first_protocol,
+                                                                   ...);
+EpcServiceMonitor* epc_service_monitor_new_for_types (const gchar *domain,
+                                                      const gchar *first_service_type,
+                                                                   ...)
+                                                      G_GNUC_NULL_TERMINATED;
 
 G_END_DECLS
 

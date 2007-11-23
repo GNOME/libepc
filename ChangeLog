@@ -13,6 +13,20 @@
 
 2007-11-23  Mathias Hasselmann  <mathias@openismus.com>
 
+	Implement EpcServiceMonitor by extracting EpcConsumer code.
+
+	* libepc/consumer.c: Use EpcServiceMonitor.
+	* libepc/marshal.list: Add VOID:STRING,STRING.
+	* libepc/service-monitor.c, libepc/service-monitor.h:
+	Implement the EpcServiceMonitor by refactoring EpcConsumer code.
+	* libepc/service-type.c, libepc/service-type.h:
+	Add epc_service_type_list_supported.
+	* examples/service-browser: Demonstrate usage of EpcServiceMonitor.
+	* Makefile.am, examples/.gitignore: Add examples/service-browser.
+	* docs/reference/libepc/libepc-1.0-sections.txt: Update symbols
+
+2007-11-23  Mathias Hasselmann  <mathias@openismus.com>
+
 	Make tests/test-progress-hooks pass.
 
 	* tests/test-progress-hooks.c: Remove EPC_TEST_MASK_USER from result.

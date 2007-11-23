@@ -29,6 +29,7 @@ noinst_LTLIBRARIES = \
 noinst_PROGRAMS = \
 	examples/list-resources \
 	examples/lookup-resource \
+	examples/service-browser \
 	examples/simple-publisher \
 	examples/consumer-ui \
 	examples/server-credentials \
@@ -134,6 +135,8 @@ examples_list_resources_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 examples_list_resources_LDADD			= libepc/libepc-1.0.la
 examples_lookup_resource_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 examples_lookup_resource_LDADD			= libepc/libepc-1.0.la
+examples_service_browser_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+examples_service_browser_LDADD			= libepc/libepc-1.0.la
 examples_simple_publisher_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 examples_simple_publisher_LDADD			= libepc/libepc-1.0.la
 
