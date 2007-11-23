@@ -292,7 +292,7 @@ epc_publisher_chunk_cb (SoupMessage *message,
                         gpointer     data)
 {
   EpcContents *contents = data;
-  gpointer chunk;
+  gconstpointer chunk;
   gsize length;
 
   chunk = epc_contents_stream_read (contents, &length);
@@ -302,7 +302,7 @@ epc_publisher_chunk_cb (SoupMessage *message,
       if (G_UNLIKELY (_epc_debug))
         g_debug ("%s: writing %d bytes", G_STRLOC, length);
 
-      soup_message_add_chunk (message, SOUP_BUFFER_SYSTEM_OWNED, chunk, length);
+      soup_message_add_chunk (message, SOUP_BUFFER_USER_OWNED, chunk, length);
     }
   else
     {
@@ -310,7 +310,6 @@ epc_publisher_chunk_cb (SoupMessage *message,
         g_debug ("%s: done", G_STRLOC);
 
       soup_message_add_final_chunk (message);
-      g_free (chunk);
     }
 }
 
@@ -344,16 +343,16 @@ epc_publisher_handle_get_path (SoupServerContext *context,
 
   if (contents)
     {
+      gconstpointer data;
       const gchar *type;
       gsize length = 0;
-      gpointer data;
 
       data = epc_contents_get_data (contents, &length);
       type = epc_contents_get_mime_type (contents);
 
       if (data)
         {
-          soup_message_set_response (message, type, SOUP_BUFFER_USER_OWNED, data, length);
+          soup_message_set_response (message, type, SOUP_BUFFER_USER_OWNED, (gpointer) data, length);
           soup_message_set_status (message, SOUP_STATUS_OK);
         }
       else if (epc_contents_is_stream (contents))

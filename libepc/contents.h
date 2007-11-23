@@ -30,18 +30,26 @@ typedef struct _EpcContents EpcContents;
 /**
  * EpcContentsReadFunc:
  * @contents: a #EpcContents buffer
- * @length: a location for storing the contents length
+ * @buffer: a location for storing the contents, or %NULL
+ * @length: a location for passing and storing the contents length
  * @user_data: the user_data passed to #epc_contents_stream_new
  *
  * This callback is used to retrieve the next chunk of data for a streaming
- * contents buffer created with #epc_contents_stream_read. Return %NULL when
- * the buffer has reached its end, and no more data is available.
+ * contents buffer created with #epc_contents_stream_read.
+ *
+ * Return %FALSE when the buffer has reached its end, and no more data is
+ * available. Also return %FALSE, when the buffer size passed in @length is
+ * not sufficient. Copy your minimal buffer size to @length in that situation.
+ *
+ * The library might pass %NULL for @buffer on the first call to start buffer
+ * size negotation.
  *
  * See also: #epc_contents_stream_new, #epc_contents_stream_read
  *
- * Returns: Returns the next chunk of data, or %NULL.
+ * Returns: Returns %TRUE when the next chunk could be read, and %FALSE on error.
  */
-typedef gpointer    (*EpcContentsReadFunc)       (EpcContents         *contents,
+typedef gboolean    (*EpcContentsReadFunc)       (EpcContents         *contents,
+                                                  gpointer             buffer,
                                                   gsize               *length,
                                                   gpointer             user_data);
 
@@ -56,16 +64,17 @@ EpcContents*          epc_contents_stream_new    (const gchar         *type,
                                                   EpcContentsReadFunc  callback,
                                                   gpointer             user_data,
                                                   GDestroyNotify       destroy_data);
-gpointer              epc_contents_stream_read   (EpcContents         *contents,
-                                                  gsize               *length);
-
-gboolean              epc_contents_is_stream     (EpcContents         *contents);
-G_CONST_RETURN gchar* epc_contents_get_mime_type (EpcContents         *contents);
-gpointer              epc_contents_get_data      (EpcContents         *contents,
-                                                  gsize               *length);
 
 EpcContents*          epc_contents_ref           (EpcContents         *contents);
 void                  epc_contents_unref         (EpcContents         *contents);
+
+gboolean              epc_contents_is_stream     (EpcContents         *contents);
+G_CONST_RETURN gchar* epc_contents_get_mime_type (EpcContents         *contents);
+
+gconstpointer         epc_contents_get_data      (EpcContents         *contents,
+                                                  gsize               *length);
+gconstpointer         epc_contents_stream_read   (EpcContents         *contents,
+                                                  gsize               *length);
 
 G_END_DECLS
 

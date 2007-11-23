@@ -101,6 +101,7 @@ epc_contents_get_mime_type
 epc_contents_stream_new
 epc_contents_stream_read
 epc_contents_is_stream
+</SECTION>
 
 <SECTION>
 <FILE>consumer</FILE>

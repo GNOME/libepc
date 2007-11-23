@@ -1,5 +1,13 @@
 2007-11-23  Mathias Hasselmann  <mathias@openismus.com>
 
+	Improve memory handling for EpcContents and improve documentation.
+
+	* docs/reference/libepc/libepc-1.0-sections.txt: Close <SECTION> tag.
+	* libepc/contents.c, libepc/contents.h: Improve memory management.
+	* libepc/publisher.c: Use gconstpointer where needed.
+
+2007-11-23  Mathias Hasselmann  <mathias@openismus.com>
+
 	Start with EpcServiceMonitor class.
 
 	* docs/reference/libepc/libepc-1.0-docs.xml: Re-order sections.

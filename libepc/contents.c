@@ -20,7 +20,9 @@
  */
 
 #include "contents.h"
+
 #include <string.h>
+#include <unistd.h>
 
 /**
  * SECTION:contents
@@ -67,10 +69,12 @@ struct _EpcContents
   volatile gint       ref_count;
   gchar              *type;
 
-  gsize               length;
-  gpointer            data;
+  gpointer            buffer;
+  gsize               buffer_size;
+  GDestroyNotify      destroy_buffer;
 
   EpcContentsReadFunc callback;
+  gpointer            user_data;
   GDestroyNotify      destroy_data;
 };
 
@@ -106,9 +110,9 @@ epc_contents_new (const gchar    *type,
   if (type)
     self->type = g_strdup (type);
 
-  self->data = data;
-  self->length = length;
-  self->destroy_data = destroy_data;
+  self->buffer = data;
+  self->buffer_size = length;
+  self->destroy_buffer = destroy_data;
 
   return self;
 }
@@ -173,9 +177,10 @@ epc_contents_stream_new (const gchar         *type,
   if (type)
     self->type = g_strdup (type);
 
-  self->data = user_data;
   self->callback = callback;
+  self->user_data = user_data;
   self->destroy_data = destroy_data;
+  self->destroy_buffer = g_free;
 
   return self;
 }
@@ -219,8 +224,10 @@ epc_contents_unref (EpcContents *self)
 
   if (g_atomic_int_dec_and_test (&self->ref_count))
     {
+      if (self->destroy_buffer)
+        self->destroy_buffer (self->buffer);
       if (self->destroy_data)
-        self->destroy_data (self->data);
+        self->destroy_data (self->user_data);
 
       g_free (self->type);
 
@@ -272,13 +279,14 @@ epc_contents_get_mime_type (EpcContents *self)
  * @length: a location for storing the contents length
  *
  * Retrieves the contents of a static contents buffer created with
- * #epc_contents_new. Any other buffer returns %NULL.
+ * #epc_contents_new. Any other buffer returns %NULL. The data returned
+ * is owned by the #EpcContents buffer and must not be freeded.
  *
  * See also: #epc_contents_stream_read.
  *
  * Returns: Returns the static buffer contents, or %NULL.
  */
-gpointer
+gconstpointer
 epc_contents_get_data (EpcContents *contents,
                        gsize       *length)
 {
@@ -288,9 +296,9 @@ epc_contents_get_data (EpcContents *contents,
     return NULL;
 
   if (length)
-    *length = contents->length;
+    *length = contents->buffer_size;
 
-  return contents->data;
+  return contents->buffer;
 }
 
 /**
@@ -302,16 +310,45 @@ epc_contents_get_data (EpcContents *contents,
  * with #epc_contents_stream_read. %NULL is returned, when the buffer has
  * reached its end, or isn't a streaming contents buffer.
  *
+ * The data returned is owned by the #EpcContents buffer and must not be
+ * freeded by the called. Make sure to copy the returned data before the
+ * function again, as repeated calls to the function might return the
+ * same buffer, but filled with new data.
+ *
  * See also: #epc_contents_stream_new, #epc_contents_is_stream
  *
  * Returns: Returns the next chunk of data, or %NULL.
  */
-gpointer
-epc_contents_stream_read (EpcContents *contents,
+gconstpointer
+epc_contents_stream_read (EpcContents *self,
                           gsize       *length)
 {
-  g_return_val_if_fail (epc_contents_is_stream (contents), NULL);
+  gconstpointer data = NULL;
+
+  g_return_val_if_fail (epc_contents_is_stream (self), NULL);
   g_return_val_if_fail (NULL != length, NULL);
 
-  return contents->callback (contents, length, contents->data);
+
+  if (0 == self->buffer_size)
+    self->buffer_size = sysconf (_SC_PAGESIZE);
+
+  *length = self->buffer_size;
+
+  if (self->callback (self, self->buffer, length, self->user_data))
+    data = self->buffer;
+  else if (*length > 0)
+    {
+      gssize page_size = sysconf (_SC_PAGESIZE);
+      gsize page_count = (*length + page_size - 1) / page_size;
+
+      self->buffer_size = page_count * page_size;
+      self->buffer = g_realloc (self->buffer, self->buffer_size);
+
+      *length = self->buffer_size;
+
+      if (self->callback (self, self->buffer, length, self->user_data))
+        data = self->buffer;
+    }
+
+  return data;
 }
