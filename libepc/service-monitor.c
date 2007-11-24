@@ -38,7 +38,7 @@
  * services. It hides all the boring state and callback handling Avahi
  * requires, and just exposes three simple GObject signals:
  * #EpcServiceMonitor:service-found, #EpcServiceMonitor:service-removed
- * and #EpcServiceMonitor:done.
+ * and #EpcServiceMonitor:scanning-done.
  *
  * <example id="find-services">
  *  <title>Find an Easy-Publish service</title>
@@ -65,7 +65,7 @@ enum
 {
   SIGNAL_SERVICE_FOUND,
   SIGNAL_SERVICE_REMOVED,
-  SIGNAL_DONE,
+  SIGNAL_SCANNING_DONE,
   SIGNAL_LAST
 };
 
@@ -219,7 +219,7 @@ epc_service_monitor_browser_cb (AvahiServiceBrowser    *browser,
         break;
 
       case AVAHI_BROWSER_ALL_FOR_NOW:
-        g_signal_emit (self, signals[SIGNAL_DONE], 0, type);
+        g_signal_emit (self, signals[SIGNAL_SCANNING_DONE], 0, type);
         break;
 
       case AVAHI_BROWSER_FAILURE:
@@ -401,7 +401,7 @@ epc_service_monitor_class_init (EpcServiceMonitorClass *cls)
                                                   G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_STRING);
 
   /**
-   * EpcServiceMonitor::done:
+   * EpcServiceMonitor::scanning-done:
    * @monitor: a #EpcServiceMonitor
    * @type: the service type watched
    *
@@ -409,11 +409,11 @@ epc_service_monitor_class_init (EpcServiceMonitorClass *cls)
    * no new services will be detected for some time. Can be used for instance
    * to hide an progress indicator.
    */
-  signals[SIGNAL_DONE] = g_signal_new ("done",
-                                       EPC_TYPE_SERVICE_MONITOR, G_SIGNAL_RUN_FIRST,
-                                       G_STRUCT_OFFSET (EpcServiceMonitorClass, done),
-                                       NULL, NULL, g_cclosure_marshal_VOID__STRING,
-                                       G_TYPE_NONE, 1, G_TYPE_STRING);
+  signals[SIGNAL_SCANNING_DONE] = g_signal_new ("scanning-done",
+                                                EPC_TYPE_SERVICE_MONITOR, G_SIGNAL_RUN_FIRST,
+                                                G_STRUCT_OFFSET (EpcServiceMonitorClass, scanning_done),
+                                                NULL, NULL, g_cclosure_marshal_VOID__STRING,
+                                                G_TYPE_NONE, 1, G_TYPE_STRING);
 
   g_type_class_add_private (cls, sizeof (EpcServiceMonitorPrivate));
 }

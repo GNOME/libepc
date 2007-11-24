@@ -1,3 +1,10 @@
+2007-11-24  Mathias Hasselmann  <mathias@openismus.com>
+
+	Rename EpcServiceMonitor::done signal to
+	EpcServiceMonitor::scanning-done.
+
+	* libepc/service-monitor.c, libepc/service-monitor.h: Rename signal.
+
 2007-11-23  Mathias Hasselmann  <mathias@openismus.com>
 
 	Change type of length arguments from gsize to gssize for

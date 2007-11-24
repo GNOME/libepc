@@ -56,7 +56,7 @@ struct _EpcServiceMonitor
  * EpcServiceMonitorClass:
  * @service_found: virtual method of the #EpcServiceMonitor::service-found signal
  * @service_removed: virtual method of the #EpcServiceMonitor::service-removed signal
- * @done: virtual method of the #EpcServiceMonitor::done signal
+ * @scanning_done: virtual method of the #EpcServiceMonitor::scanning-done signal
  *
  * Virtual methods of the #EpcServiceMonitor class.
  */
@@ -74,7 +74,7 @@ struct _EpcServiceMonitorClass
   void (*service_removed) (EpcServiceMonitor *monitor,
                            const gchar       *type,
                            const gchar       *name);
-  void (*done)            (EpcServiceMonitor *monitor,
+  void (*scanning_done)   (EpcServiceMonitor *monitor,
                            const gchar       *type);
 };
 
