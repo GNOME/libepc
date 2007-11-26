@@ -1,14 +1,19 @@
 /*** BEGIN file-header ***/
 #include "enums.h"
+
 /*** END file-header ***/
 
 /*** BEGIN file-production ***/
-#include "@filename@"
+/* enumerations from "@filename@" */
 
 /*** END file-production ***/
 
 /*** BEGIN value-header ***/
-GType\n@enum_name@_get_type (void)
+
+#define __EPC_@ENUMSHORT@_IS_@TYPE@__ 1
+
+GType
+@enum_name@_get_type (void)
 {
   static GType etype = G_TYPE_INVALID;
 
@@ -31,4 +36,44 @@ GType\n@enum_name@_get_type (void)
 
   return etype;
 }
+
+/**
+ * @enum_name@_get_class:
+ *
+ * Retrieves the G@Type@Class describing the @EnumName@ @type@.
+ *
+ * Returns: The G@Type@Class describing @EnumName@.
+ */
+G@Type@Class*
+@enum_name@_get_class (void)
+{
+  static G@Type@Class *@type@_class = NULL;
+
+  if (G_UNLIKELY (NULL == @type@_class))
+    @type@_class = g_type_class_ref (@enum_name@_get_type ());
+
+  return @type@_class;
+}
+
+#if __EPC_@ENUMSHORT@_IS_ENUM__
+
+/**
+ * @enum_name@_to_string:
+ * @value: a @EnumName@ value
+ *
+ * Retrieves the name of a @EnumName@ @value, or %NULL when @value is invalid.
+ *
+ * Returns: The string representation of @value, or %NULL.
+ */
+G_CONST_RETURN gchar*
+@enum_name@_to_string (@EnumName@ value)
+{
+  const G@Type@Value *@type@_value = g_@type@_get_value (@enum_name@_get_class (), value);
+
+  g_return_val_if_fail (NULL != @type@_value, NULL);
+  return @type@_value->value_name;
+}
+
+#endif
+
 /*** END value-tail ***/

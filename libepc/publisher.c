@@ -132,6 +132,7 @@ enum
   PROP_SERVICE_DOMAIN,
   PROP_APPLICATION,
 
+  PROP_AUTH_FLAGS,
   PROP_CERTIFICATE_FILE,
   PROP_PRIVATE_KEY_FILE,
 };
@@ -198,6 +199,7 @@ struct _EpcPublisherPrivate
   gchar                 *service_domain;
   gchar                 *application;
 
+  EpcAuthFlags           auth_flags;
   gchar                 *certificate_file;
   gchar                 *private_key_file;
 };
@@ -233,9 +235,9 @@ epc_resource_free (gpointer data)
 
 static void
 epc_resource_set_auth_handler (EpcResource    *self,
-                                  EpcAuthHandler  handler,
-                                  gpointer        user_data,
-                                  GDestroyNotify  destroy_data)
+                               EpcAuthHandler  handler,
+                               gpointer        user_data,
+                               GDestroyNotify  destroy_data)
 
 {
   if (self->auth_destroy_data)
@@ -504,12 +506,24 @@ epc_publisher_server_auth_cb (SoupServerAuthContext *auth_ctx G_GNUC_UNUSED,
 
   if (NULL != auth)
     user = soup_server_auth_get_user (auth);
-  if (NULL == user)
-    auth_ctx->digest_info.realm = context.publisher->priv->service_name;
   if (NULL != context.key)
     resource = g_hash_table_lookup (context.publisher->priv->resources, context.key);
   if (NULL == resource)
     resource = context.publisher->priv->default_resource;
+
+  switch (auth_ctx->types)
+    {
+      case SOUP_AUTH_TYPE_BASIC:
+        auth_ctx->basic_info.realm = context.publisher->priv->service_name;
+        break;
+
+      case SOUP_AUTH_TYPE_DIGEST:
+        /* TODO: Figure out why force_integrity doesn't work. */
+        auth_ctx->digest_info.force_integrity = FALSE;
+        auth_ctx->digest_info.allow_algorithms = SOUP_ALGORITHM_MD5;
+        auth_ctx->digest_info.realm = context.publisher->priv->service_name;
+        break;
+    }
 
   if (resource && resource->auth_handler)
     authorized = resource->auth_handler (&context, user, resource->auth_user_data);
@@ -532,10 +546,6 @@ epc_publisher_init (EpcPublisher *self)
   self->priv->server_auth.types = SOUP_AUTH_TYPE_DIGEST;
   self->priv->server_auth.callback = epc_publisher_server_auth_cb;
   self->priv->server_auth.user_data = self;
-
-  /* TODO: Figure out why force_integrity doesn't work. */
-  self->priv->server_auth.digest_info.force_integrity = FALSE;
-  self->priv->server_auth.digest_info.allow_algorithms = SOUP_ALGORITHM_MD5;
 
   self->priv->resources = g_hash_table_new_full (g_str_hash, g_str_equal,
                                                  g_free, epc_resource_free);
@@ -699,6 +709,23 @@ epc_publisher_create_server (EpcPublisher  *self,
 }
 
 static void
+epc_publisher_real_set_auth_flags (EpcPublisher *self,
+                                   EpcAuthFlags  flags)
+{
+  if (0 != (flags & EPC_AUTH_PASSWORD_TEXT_NEEDED) &&
+      EPC_PROTOCOL_HTTPS != self->priv->protocol)
+    {
+      g_warning ("%s: Basic authentication not allowed for %s",
+                 G_STRFUNC, epc_protocol_to_string (self->priv->protocol));
+      flags &= ~EPC_AUTH_PASSWORD_TEXT_NEEDED;
+    }
+
+  self->priv->server_auth.types =
+    flags & EPC_AUTH_PASSWORD_TEXT_NEEDED ?
+    SOUP_AUTH_TYPE_BASIC : SOUP_AUTH_TYPE_DIGEST;
+}
+
+static void
 epc_publisher_set_property (GObject      *object,
                             guint         prop_id,
                             const GValue *value,
@@ -734,6 +761,10 @@ epc_publisher_set_property (GObject      *object,
       case PROP_APPLICATION:
         g_return_if_fail (!epc_publisher_is_server_created (self));
         self->priv->application = g_value_dup_string (value);
+        break;
+
+      case PROP_AUTH_FLAGS:
+        epc_publisher_real_set_auth_flags (self, g_value_get_flags (value));
         break;
 
       case PROP_CERTIFICATE_FILE:
@@ -780,6 +811,10 @@ epc_publisher_get_property (GObject    *object,
 
       case PROP_APPLICATION:
         g_value_set_string (value, self->priv->application);
+        break;
+
+      case PROP_AUTH_FLAGS:
+        g_value_set_flags (value, self->priv->auth_flags);
         break;
 
       case PROP_CERTIFICATE_FILE:
@@ -893,6 +928,14 @@ epc_publisher_class_init (EpcPublisherClass *cls)
                                                         G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
                                                         G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
+
+  g_object_class_install_property (oclass, PROP_AUTH_FLAGS,
+                                   g_param_spec_flags ("auth-flags", "Authentication Flags",
+                                                      "The authentication settings to use",
+                                                      EPC_TYPE_AUTH_FLAGS, EPC_AUTH_DEFAULT,
+                                                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
+                                                      G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
+                                                      G_PARAM_STATIC_BLURB));
 
   g_object_class_install_property (oclass, PROP_CERTIFICATE_FILE,
                                    g_param_spec_string ("certificate-file", "Certificate File",
@@ -1275,6 +1318,22 @@ epc_publisher_set_protocol (EpcPublisher *self,
 }
 
 /**
+ * epc_publisher_set_auth_flags:
+ * @publisher: a #EpcPublisher
+ * @flags: new authentication settings
+ *
+ * Changes the authentication settings the publisher uses.
+ * See #EpcPublisher:auth-flags for details.
+ */
+void
+epc_publisher_set_auth_flags (EpcPublisher *self,
+                              EpcAuthFlags  flags)
+{
+  g_return_if_fail (EPC_IS_PUBLISHER (self));
+  g_object_set (self, "auth-flags", flags, NULL);
+}
+
+/**
  * epc_publisher_get_service_name:
  * @publisher: a #EpcPublisher
  *
@@ -1345,13 +1404,31 @@ epc_publisher_get_private_key_file (EpcPublisher *self)
  * Queries the transport protocol the publisher uses.
  * See #EpcPublisher:protocol for details.
  *
- * Returns: The transport protocol the publisher uses, or #EPC_PROTOCOL_UNKNOWN.
+ * Returns: The transport protocol the publisher uses,
+ * or #EPC_PROTOCOL_UNKNOWN on error.
  */
 EpcProtocol
 epc_publisher_get_protocol (EpcPublisher *self)
 {
   g_return_val_if_fail (EPC_IS_PUBLISHER (self), EPC_PROTOCOL_UNKNOWN);
   return self->priv->protocol;
+}
+
+/**
+ * epc_publisher_get_auth_flags:
+ * @publisher: a #EpcPublisher
+ *
+ * Queries the current authentication settings of the publisher.
+ * See #EpcPublisher:auth-flags for details.
+ *
+ * Returns: The authentication settings of the publisher,
+ * or #EPC_AUTH_DEFAULT on error.
+ */
+EpcAuthFlags
+epc_publisher_get_auth_flags (EpcPublisher *self)
+{
+  g_return_val_if_fail (EPC_IS_PUBLISHER (self), EPC_AUTH_DEFAULT);
+  return self->priv->auth_flags;
 }
 
 /**
@@ -1471,7 +1548,7 @@ epc_auth_context_get_publisher (EpcAuthContext *context)
  * epc_auth_context_get_key:
  * @context: a #EpcAuthContext
  *
- * Queries the resource key assosiated with the authentication @context.
+ * Queries the resource key associated with the authentication @context.
  *
  * Returns: The resource key.
  */
@@ -1480,6 +1557,29 @@ epc_auth_context_get_key (EpcAuthContext *context)
 {
   g_return_val_if_fail (NULL != context, NULL);
   return context->key;
+}
+
+/**
+ * epc_auth_context_get_password:
+ * @context: a #EpcAuthContext
+ *
+ * Queries the password sent for the authentication @context when Basic
+ * authentication was allowed for the @context, and %NULL otherwise.
+ *
+ * See also: #EPC_AUTH_PASSWORD_TEXT_NEEDED
+ *
+ * Returns: The password sent, or %NULL.
+ */
+G_CONST_RETURN gchar*
+epc_auth_context_get_password (EpcAuthContext *context)
+{
+  g_return_val_if_fail (NULL != context, NULL);
+
+  if (NULL != context->auth &&
+      SOUP_AUTH_TYPE_BASIC == context->auth->type)
+    return context->auth->basic.passwd;
+
+  return NULL;
 }
 
 /**

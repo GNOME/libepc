@@ -84,6 +84,25 @@ typedef gboolean    (*EpcAuthHandler)    (EpcAuthContext *context,
                                           gpointer        user_data);
 
 /**
+ * EpcAuthFlags:
+ * @EPC_AUTH_DEFAULT: The default authentication settings.
+ * @EPC_AUTH_PASSWORD_TEXT_NEEDED: Set this flag when your #EpcAuthFlags
+ * needs the supplied password in plain text - for instance to pass it to the
+ * database manager of your application. This flag replaces the secure Digest
+ * authentication scheme with the insecure Basic authentication scheme.
+ * Therefore this setting is valid only, when the publisher's transport
+ * protocol #EPC_PROTOCOL_HTTPS.
+ *
+ * This flags configure the authentication behaviour of a #EpcPublisher.
+ */
+
+typedef enum /* <flags> */
+{
+  EPC_AUTH_DEFAULT =                     0,
+  EPC_AUTH_PASSWORD_TEXT_NEEDED =       (1 << 0)
+} EpcAuthFlags;
+
+/**
  * EpcPublisher:
  *
  * Public fields of the #EpcPublisher class.
@@ -123,12 +142,15 @@ void                  epc_publisher_set_credentials      (EpcPublisher      *pub
                                                           const gchar       *keyfile);
 void                  epc_publisher_set_protocol         (EpcPublisher      *publisher,
                                                           EpcProtocol        protocol);
+void                  epc_publisher_set_auth_flags       (EpcPublisher      *publisher,
+                                                          EpcAuthFlags       flags);
 
 G_CONST_RETURN gchar* epc_publisher_get_service_name     (EpcPublisher      *publisher);
 G_CONST_RETURN gchar* epc_publisher_get_service_domain   (EpcPublisher      *publisher);
 G_CONST_RETURN gchar* epc_publisher_get_certificate_file (EpcPublisher      *publisher);
 G_CONST_RETURN gchar* epc_publisher_get_private_key_file (EpcPublisher      *publisher);
 EpcProtocol           epc_publisher_get_protocol         (EpcPublisher      *publisher);
+EpcAuthFlags          epc_publisher_get_auth_flags       (EpcPublisher      *publisher);
 
 void                  epc_publisher_add                  (EpcPublisher      *publisher,
                                                           const gchar       *key,
@@ -164,6 +186,7 @@ void                  epc_publisher_quit                 (EpcPublisher      *pub
 
 EpcPublisher*         epc_auth_context_get_publisher     (EpcAuthContext    *context);
 G_CONST_RETURN gchar* epc_auth_context_get_key           (EpcAuthContext    *context);
+G_CONST_RETURN gchar* epc_auth_context_get_password      (EpcAuthContext    *context);
 gboolean              epc_auth_context_check_password    (EpcAuthContext    *context,
                                                           const gchar       *password);
 

@@ -43,6 +43,14 @@ authentication_handler (EpcAuthContext *context,
                         const gchar    *user_name,
                         gpointer        user_data)
 {
+  const gchar *password;
+
+  /* Dump the supplied password when plain-text authentication was choosen.
+   * See: EPC_AUTH_PASSWORD_TEXT_NEEDED */
+
+  if (NULL != (password = epc_auth_context_get_password (context)))
+    g_debug ("The password: %s", password);
+
   /* Check if he password supplied matches @user_data */
 
   return
@@ -79,16 +87,17 @@ int
 main (int   argc,
       char *argv[])
 {
+  gboolean basic_auth = FALSE;
   EpcPublisher *publisher;
   GOptionContext *options;
   GError *error = NULL;
 
   /* Declare command line options. */
 
-  static GOptionEntry entries[] =
+  GOptionEntry entries[] =
     {
-      { "protocol", 'p', 0, G_OPTION_ARG_CALLBACK, parse_protocol,
-	N_("Transport protocol"), N_("PROTOCOL") },
+      { "protocol", 'p', 0, G_OPTION_ARG_CALLBACK, parse_protocol, N_("Transport protocol"), N_("PROTOCOL") },
+      { "basic-auth", 'b', 0, G_OPTION_ARG_NONE, &basic_auth, N_("Use plain text authentication"), NULL },
       { NULL, 0, 0, 0, NULL, NULL, NULL }
     };
 
@@ -115,7 +124,11 @@ main (int   argc,
 
   publisher = epc_publisher_new ("Easy Publisher Test",
                                  "test-publisher", NULL);
+
   epc_publisher_set_protocol (publisher, protocol);
+
+  if (basic_auth)
+    epc_publisher_set_auth_flags (publisher, EPC_AUTH_PASSWORD_TEXT_NEEDED);
 
   if (1 == argc)
     {

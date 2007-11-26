@@ -209,18 +209,15 @@ epc_service_type_get_protocol (const gchar *service_type)
 gchar**
 epc_service_type_list_supported (const gchar *application)
 {
-  static GEnumClass *cls = NULL;
+  GEnumClass *protocol_class = epc_protocol_get_class ();
   gchar **types = NULL;
   guint vi, ti;
 
-  if (G_UNLIKELY (NULL == cls))
-    cls = g_type_class_ref (EPC_TYPE_PROTOCOL);
+  types = g_new0 (gchar*, protocol_class->n_values);
 
-  types = g_new0 (gchar*, cls->n_values);
-
-  for (vi = 0, ti = 0; vi < cls->n_values; ++vi)
+  for (vi = 0, ti = 0; vi < protocol_class->n_values; ++vi)
     {
-      const EpcProtocol protocol = cls->values[vi].value;
+      const EpcProtocol protocol = protocol_class->values[vi].value;
 
       if (EPC_PROTOCOL_UNKNOWN == protocol)
         continue;

@@ -14,6 +14,11 @@ epc_dispatcher_set_service_details
 epc_dispatcher_set_name
 epc_dispatcher_get_name
 epc_dispatcher_get_host_name
+
+<SUBSECTION>
+epc_address_family_get_class
+epc_address_family_to_string
+
 <SUBSECTION Standard>
 EPC_TYPE_ADDRESS_FAMILY
 epc_address_family_get_type
@@ -55,6 +60,7 @@ epc_publisher_set_auth_handler
 epc_publisher_set_credentials
 epc_publisher_set_protocol
 epc_publisher_set_service_name
+epc_publisher_set_auth_flags
 
 <SUBSECTION>
 epc_publisher_get_certificate_file
@@ -62,6 +68,7 @@ epc_publisher_get_private_key_file
 epc_publisher_get_protocol
 epc_publisher_get_service_name
 epc_publisher_get_service_domain
+epc_publisher_get_auth_flags
 
 <SUBSECTION Standard>
 EPC_IS_PUBLISHER
@@ -75,12 +82,22 @@ epc_publisher_get_type
 
 <SECTION>
 <FILE>auth-context</FILE>
+EpcAuthFlags
 EpcAuthHandler
 <TITLE>EpcAuthContext</TITLE>
 EpcAuthContext
 epc_auth_context_check_password
 epc_auth_context_get_key
+epc_auth_context_get_password
 epc_auth_context_get_publisher
+
+<SUBSECTION>
+epc_auth_flags_get_class
+epc_auth_flags_to_string
+
+<SUBSECTION Standard>
+EPC_TYPE_AUTH_FLAGS
+epc_auth_flags_get_type
 </SECTION>
 
 <SECTION>
@@ -151,6 +168,8 @@ epc_protocol_from_name
 epc_protocol_build_uri
 epc_protocol_get_service_type
 epc_protocol_get_uri_scheme
+epc_protocol_get_class
+epc_protocol_to_string
 <SUBSECTION Standard>
 EPC_TYPE_PROTOCOL
 epc_protocol_get_type

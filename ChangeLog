@@ -1,3 +1,15 @@
+2007-11-26  Mathias Hasselmann  <mathias@openismus.com>
+
+	Support Basic authentication via EPC_AUTH_PASSWORD_TEXT_NEEDED.
+
+	* libepc/publisher.c, libepc/publisher.h: Add EpcAuthFlags,
+	epc_publisher_set_auth_flags, epc_publisher_get_auth_flags.
+	* libepc/enums.c.in, libepc/enums.h.in: Add generic
+	_get_class and _to_string functions.
+	* libepc/service-type.c: Use epc_protocol_get_class.
+	* examples/simple-publisher.c: Allow Basic authentication.
+	* docs/reference/libepc/libepc-1.0-sections.txt: Update symbols.
+
 2007-11-26  Murray Cumming  <murrayc@murrayc.com>
 
 	* libepc/publisher.c: Documentation: Minor grammatical corrections.
