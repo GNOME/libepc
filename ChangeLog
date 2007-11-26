@@ -1,5 +1,9 @@
 2007-11-26  Murray Cumming  <murrayc@murrayc.com>
 
+	* libepc/publisher.c: Documentation: Minor grammatical corrections.
+
+2007-11-26  Murray Cumming  <murrayc@murrayc.com>
+
 	* configure.ac: Depend on gnutls 1.4 instead of 1.6, because it 
 	works too.
 
