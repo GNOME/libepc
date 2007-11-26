@@ -23,7 +23,7 @@ PKG_CHECK_MODULES(LIBEPC,    [avahi-client >= 0.6
                               glib-2.0     >= 2.12
                               gmodule-2.0  >= 2.0
                               gobject-2.0  >= 2.4
-                              gnutls       >= 1.6
+                              gnutls       >= 1.4
                               libsoup-2.2  >= 2.2])
 PKG_CHECK_MODULES(LIBEPC_UI, [gtk+-2.0     >= 2.10])
 

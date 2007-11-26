@@ -132,7 +132,7 @@ main (int   argc,
                          "This value is top secret.", -1);
       epc_publisher_set_auth_handler (publisher, "sensitive",
                                       authentication_handler,
-                                      "secret", NULL);
+                                      "secret" /* user_data */, NULL);
     }
   else
     {
