@@ -1,3 +1,9 @@
+2007-11-27  Mathias Hasselmann  <mathias@openismus.com>
+
+	Remove some debugging left-overs.
+
+	* tests/test-dispatcher-simple-service.c: Cleanup.
+
 2007-11-26  Mathias Hasselmann  <mathias@openismus.com>
 
 	Change @stability of EpcDispatcher and EpcServiceMonitor to unstable.

@@ -48,17 +48,13 @@ main (void)
   if (epc_test_init (1) &&
       epc_test_init_service_browser (test_type, service_browser_cb, NULL))
     {
-g_debug ("1");
       dispatcher = epc_dispatcher_new (test_name);
 
-g_debug ("2");
       epc_dispatcher_add_service (dispatcher, EPC_ADDRESS_UNSPEC,
                                   test_type, NULL, NULL, 2007, NULL);
 
-g_debug ("3");
       if (epc_dispatcher_run (dispatcher, &error))
         result = epc_test_run ();
-g_debug ("4");
     }
 
   if (error)
