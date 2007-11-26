@@ -31,7 +31,7 @@
  * SECTION:dispatcher
  * @short_description: publish DNS-SD services
  * @include: libepc/dispatcher.h
- * @stability: Private
+ * @stability: Unstable
  *
  * The #EpcDispatcher object provides an easy method for publishing
  * DNS-SD services. Unlike established APIs like Avahi or HOWL the

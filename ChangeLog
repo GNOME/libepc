@@ -1,5 +1,11 @@
 2007-11-26  Mathias Hasselmann  <mathias@openismus.com>
 
+	Change @stability of EpcDispatcher and EpcServiceMonitor to unstable.
+
+	* libepc/dispatcher.c, libepc/service-monitor.c: Change @stability.
+
+2007-11-26  Mathias Hasselmann  <mathias@openismus.com>
+
 	Support Basic authentication via EPC_AUTH_PASSWORD_TEXT_NEEDED.
 
 	* libepc/publisher.c, libepc/publisher.h: Add EpcAuthFlags,

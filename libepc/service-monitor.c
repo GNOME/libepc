@@ -32,7 +32,7 @@
  * SECTION:service-monitor
  * @short_description: find DNS-SD services
  * @include: libepc/service-monitor.h
- * @stability: Private
+ * @stability: Unstable
  *
  * The #EpcServiceMonitor object provides an easy method for finding DNS-SD
  * services. It hides all the boring state and callback handling Avahi
