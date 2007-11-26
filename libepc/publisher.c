@@ -600,10 +600,7 @@ epc_publisher_announce (EpcPublisher  *self)
 
   g_free (service);
 
-  if (!host)
-    host = epc_dispatcher_get_host_name (self->priv->dispatcher);
-
-  service = epc_protocol_build_uri (self->priv->protocol, host, port, NULL);
+  service = epc_publisher_get_url (self, NULL);
   g_print ("%s: listening on %s\n", G_STRFUNC, service);
   g_free (service);
 }
@@ -669,7 +666,7 @@ epc_publisher_create_server (EpcPublisher  *self,
       g_free (self->priv->certificate_file);
       g_free (self->priv->private_key_file);
 
-      host = epc_dispatcher_get_host_name (self->priv->dispatcher);
+      host = epc_shell_get_host_name ();
 
       if (!epc_tls_get_server_credentials (host,
                                            &self->priv->certificate_file,
@@ -1115,7 +1112,7 @@ epc_publisher_get_url (EpcPublisher *self,
   port = epc_publisher_get_port (self);
 
   if (!host)
-    host = epc_dispatcher_get_host_name (self->priv->dispatcher);
+    host = epc_shell_get_host_name ();
 
   if (key)
     {

@@ -24,7 +24,6 @@
 #include <avahi-client/client.h>
 #include <avahi-common/error.h>
 
-static AvahiClient *epc_test_client = NULL;
 static GSList *epc_test_service_browsers = NULL;
 static GMainLoop *epc_test_loop = NULL;
 static guint epc_test_timeout = 0;
@@ -34,28 +33,17 @@ gboolean
 epc_test_init (gint test_count)
 {
   gint test_mask = (1 << test_count) - 1;
-  GError *error = NULL;
 
   g_assert (test_mask <= EPC_TEST_MASK_USER);
   epc_test_result = EPC_TEST_MASK_INIT | test_mask;
+
   epc_shell_ref ();
+  g_atexit (epc_shell_unref);
 
   if (NULL == epc_test_loop)
     epc_test_loop = g_main_loop_new (NULL, FALSE);
 
   g_return_val_if_fail (NULL != epc_test_loop, FALSE);
-
-  if (NULL == epc_test_client)
-    epc_test_client = epc_shell_create_avahi_client (AVAHI_CLIENT_IGNORE_USER_CONFIG |
-                                                     AVAHI_CLIENT_NO_FAIL,
-                                                     NULL, NULL, &error);
-
-  if (!epc_test_client)
-    {
-      g_warning ("%s: %s", G_STRFUNC, error->message);
-      g_error_free (error);
-      return FALSE;
-    }
 
   return TRUE;
 }
@@ -71,13 +59,6 @@ _epc_test_quit (const gchar *strloc)
   g_slist_foreach (epc_test_service_browsers,
                    (GFunc) avahi_service_browser_free, NULL);
   epc_test_service_browsers = NULL;
-
-  if (epc_test_client)
-    {
-      avahi_client_free (epc_test_client);
-      epc_test_client = NULL;
-      epc_shell_unref ();
-    }
 
   if (epc_test_loop)
     {
@@ -149,21 +130,19 @@ epc_test_init_service_browser (const gchar                 *service,
                                gpointer                     data)
 {
   AvahiServiceBrowser *browser;
+  GError *error = NULL;
 
-  browser = avahi_service_browser_new (
-    epc_test_client, AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC,
-    service, NULL, AVAHI_LOOKUP_USE_MULTICAST,
-    callback, data);
+  browser = epc_shell_create_service_browser (AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC,
+                                              service, NULL, AVAHI_LOOKUP_USE_MULTICAST,
+                                              callback, data, &error);
 
   if (NULL == browser)
     {
-      int error = avahi_client_errno (epc_test_client);
-      g_warning ("%s: %s (%d)", G_STRFUNC, avahi_strerror (error), error);
+      g_warning ("%s: %s (%d)", G_STRFUNC, error->message, error->code);
       return FALSE;
     }
 
-  epc_test_service_browsers =
-    g_slist_prepend (epc_test_service_browsers, browser);
+  epc_test_service_browsers = g_slist_prepend (epc_test_service_browsers, browser);
 
   return TRUE;
 }

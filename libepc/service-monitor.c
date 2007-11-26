@@ -25,7 +25,6 @@
 #include "service-type.h"
 #include "shell.h"
 
-#include <avahi-client/lookup.h>
 #include <avahi-common/error.h>
 
 /**
@@ -76,12 +75,10 @@ enum
  */
 struct _EpcServiceMonitorPrivate
 {
-  AvahiClient  *client;
-  GSList       *browsers;
-
-  gchar        *application;
-  gchar        *domain;
-  gchar       **types;
+  GSList  *browsers;
+  gchar   *application;
+  gchar   *domain;
+  gchar  **types;
 };
 
 static guint signals[SIGNAL_LAST];
@@ -193,22 +190,24 @@ epc_service_monitor_browser_cb (AvahiServiceBrowser    *browser,
                                 const char             *name,
                                 const char             *type,
                                 const char             *domain,
-                                AvahiLookupResultFlags  flags G_GNUC_UNUSED,
+                                AvahiLookupResultFlags  flags,
                                 void                   *data)
 {
+  AvahiClient *client = avahi_service_browser_get_client (browser);
   EpcServiceMonitor *self = EPC_SERVICE_MONITOR (data);
   gint error;
 
   if (G_UNLIKELY (_epc_debug))
-    g_debug ("%s: event=%d, name=`%s', type=`%s', domain=`%s'",
-             G_STRLOC, event, name, type, domain);
+    g_debug ("%s: event=%d, name=`%s', type=`%s', domain=`%s', our-own=%d",
+             G_STRLOC, event, name, type, domain,
+             flags & AVAHI_LOOKUP_RESULT_OUR_OWN);
 
   switch (event)
     {
       case AVAHI_BROWSER_NEW:
-        avahi_service_resolver_new (self->priv->client, interface,
-                                    protocol, name, type, domain, AVAHI_PROTO_UNSPEC,
-                                    0, epc_service_monitor_resolver_cb, self);
+        avahi_service_resolver_new (client, interface, protocol, name,
+                                    type, domain, AVAHI_PROTO_UNSPEC, 0,
+                                    epc_service_monitor_resolver_cb, self);
         break;
 
       case AVAHI_BROWSER_REMOVE:
@@ -223,17 +222,24 @@ epc_service_monitor_browser_cb (AvahiServiceBrowser    *browser,
         break;
 
       case AVAHI_BROWSER_FAILURE:
-        error = avahi_client_errno (avahi_service_browser_get_client (browser));
-        g_warning ("%s: %s (%d)", G_STRFUNC, avahi_strerror (error), error);
+        error = avahi_client_errno (client);
+
+        g_warning ("%s: %s (%d)", G_STRFUNC,
+                   avahi_strerror (error), error);
+
         break;
     }
 }
 
 static void
-epc_service_monitor_create_browsers (EpcServiceMonitor *self)
+epc_service_monitor_constructed (GObject *object)
 {
+  EpcServiceMonitor *self = EPC_SERVICE_MONITOR (object);
   gchar **service_types = self->priv->types;
   gchar **iter;
+
+  if (G_OBJECT_CLASS (epc_service_monitor_parent_class)->constructed)
+    G_OBJECT_CLASS (epc_service_monitor_parent_class)->constructed (object);
 
   if (NULL == service_types || NULL == *service_types)
     service_types = epc_service_type_list_supported (self->priv->application);
@@ -241,19 +247,19 @@ epc_service_monitor_create_browsers (EpcServiceMonitor *self)
   for (iter = service_types; *iter; ++iter)
     {
       AvahiServiceBrowser *browser;
+      GError *error = NULL;
 
-      browser = avahi_service_browser_new (self->priv->client,
-                                           AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC,
-                                           *iter, self->priv->domain, 0,
-                                           epc_service_monitor_browser_cb,
-                                           self);
+      browser = epc_shell_create_service_browser (AVAHI_IF_UNSPEC,
+                                                  AVAHI_PROTO_UNSPEC,
+                                                  *iter, self->priv->domain, 0,
+                                                  epc_service_monitor_browser_cb,
+                                                  self, &error);
 
-      if (NULL == browser)
+      if (error)
         {
-          gint error = avahi_client_errno (self->priv->client);
-
           g_warning ("%s: Cannot create service type browser for '%s': %s (%d)",
-                     G_STRFUNC, *iter, avahi_strerror (error), error);
+                     G_STRFUNC, *iter, error->message, error->code);
+          g_clear_error (&error);
 
           continue;
       }
@@ -269,27 +275,6 @@ epc_service_monitor_create_browsers (EpcServiceMonitor *self)
 }
 
 static void
-epc_service_monitor_constructed (GObject *object)
-{
-  EpcServiceMonitor *self = EPC_SERVICE_MONITOR (object);
-  GError *error = NULL;
-
-  if (G_OBJECT_CLASS (epc_service_monitor_parent_class)->constructed)
-    G_OBJECT_CLASS (epc_service_monitor_parent_class)->constructed (object);
-
-  self->priv->client = epc_shell_create_avahi_client (AVAHI_CLIENT_NO_FAIL,
-                                                      NULL, NULL, &error);
-
-  if (NULL == self->priv->client)
-    {
-      g_warning ("%s: %s", G_STRFUNC, error->message);
-      g_error_free (error);
-    }
-  else
-    epc_service_monitor_create_browsers (self);
-}
-
-static void
 epc_service_monitor_dispose (GObject *object)
 {
   EpcServiceMonitor *self = EPC_SERVICE_MONITOR (object);
@@ -298,12 +283,6 @@ epc_service_monitor_dispose (GObject *object)
     {
       avahi_service_browser_free (self->priv->browsers->data);
       self->priv->browsers = g_slist_delete_link (self->priv->browsers, self->priv->browsers);
-    }
-
-  if (self->priv->client)
-    {
-      avahi_client_free (self->priv->client);
-      self->priv->client = NULL;
     }
 
   if (self->priv->types)

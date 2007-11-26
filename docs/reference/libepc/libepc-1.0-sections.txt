@@ -13,7 +13,6 @@ epc_dispatcher_add_service_subtype
 epc_dispatcher_set_service_details
 epc_dispatcher_set_name
 epc_dispatcher_get_name
-epc_dispatcher_get_host_name
 
 <SUBSECTION>
 epc_address_family_get_class
@@ -206,8 +205,11 @@ epc_shell_set_progress_hooks
 
 <SUBSECTION>
 EPC_AVAHI_ERROR
-epc_shell_create_avahi_client
-epc_shell_get_avahi_poll_api
+epc_shell_watch_avahi_client_state
+epc_shell_create_avahi_entry_group
+epc_shell_create_service_browser
+epc_shell_get_host_name
+epc_shell_watch_remove
 
 <SUBSECTION Standard>
 epc_avahi_error_quark

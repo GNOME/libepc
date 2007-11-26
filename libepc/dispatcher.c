@@ -23,7 +23,6 @@
 #include "service-type.h"
 #include "shell.h"
 
-#include <avahi-client/publish.h>
 #include <avahi-common/alternative.h>
 #include <avahi-common/error.h>
 
@@ -90,16 +89,13 @@ extern gboolean _epc_debug;
  */
 struct _EpcDispatcherPrivate
 {
-  gchar        *name;
-  AvahiClient  *client;
-  GHashTable   *services;
+  gchar      *name;
+  GHashTable *services;
+  guint       watch_id;
 };
 
-static void     epc_service_run                 (EpcService    *self);
-
-static void     epc_dispatcher_handle_collision (EpcDispatcher *self);
-static gboolean epc_dispatcher_reset_client     (EpcDispatcher  *self,
-                                                 GError        **error);
+static void epc_dispatcher_handle_collision (EpcDispatcher *self);
+static void epc_service_run                 (EpcService    *self);
 
 static gboolean
 epc_service_commit_cb (gpointer data)
@@ -219,7 +215,9 @@ epc_service_group_cb (AvahiEntryGroup      *group,
                       AvahiEntryGroupState  state,
                       gpointer              data)
 {
+#if 0
   AvahiClient *client = avahi_entry_group_get_client (group);
+#endif
   EpcService *self = data;
   GError *error = NULL;
 
@@ -242,6 +240,7 @@ epc_service_group_cb (AvahiEntryGroup      *group,
         break;
 
       case AVAHI_ENTRY_GROUP_FAILURE:
+#if 0
         g_warning ("%s: Avahi group failure: %s (%d)", G_STRLOC,
                    avahi_strerror (avahi_client_errno (client)),
                    avahi_client_errno (client));
@@ -250,6 +249,7 @@ epc_service_group_cb (AvahiEntryGroup      *group,
           g_warning ("%s: Cannot reset Avahi client: %s", G_STRLOC,
                      error ? error->message : "No error message");
 
+#endif
         break;
     }
 
@@ -265,8 +265,7 @@ epc_service_run (EpcService *self)
         g_debug ("%s: Creating service `%s' group for `%s'...",
                  G_STRLOC, self->type, self->dispatcher->priv->name);
 
-      self->group = avahi_entry_group_new (self->dispatcher->priv->client,
-                                           epc_service_group_cb, self);
+      self->group = epc_shell_create_avahi_entry_group (epc_service_group_cb, self);
     }
 }
 
@@ -348,17 +347,12 @@ epc_dispatcher_foreach_service (EpcDispatcher      *self,
 }
 
 static void
-epc_dispatcher_client_cb (AvahiClient      *client,
+epc_dispatcher_client_cb (AvahiClient      *client G_GNUC_UNUSED,
                           AvahiClientState  state,
                           gpointer          data)
 {
   EpcDispatcher *self = data;
   GError *error = NULL;
-
-  if (self->priv->client)
-    g_assert (client == self->priv->client);
-  else
-    self->priv->client = client;
 
   switch (state)
     {
@@ -384,6 +378,7 @@ epc_dispatcher_client_cb (AvahiClient      *client,
         break;
 
       case AVAHI_CLIENT_FAILURE:
+#if 0
         g_warning ("%s: Avahi client failure: %s (%d)\n", G_STRLOC,
                    avahi_strerror (avahi_client_errno (client)),
                    avahi_client_errno (client));
@@ -391,7 +386,7 @@ epc_dispatcher_client_cb (AvahiClient      *client,
         if (!epc_dispatcher_reset_client (self, &error))
           g_warning ("%s: Cannot reset Avahi client: %s", G_STRLOC,
                      error ? error->message : "No error message");
-
+#endif
         break;
 
       case AVAHI_CLIENT_CONNECTING:
@@ -423,6 +418,7 @@ epc_dispatcher_handle_collision (EpcDispatcher *self)
   epc_dispatcher_foreach_service (self, epc_service_publish);
 }
 
+#if 0
 static gboolean
 epc_dispatcher_reset_client (EpcDispatcher  *self,
                              GError        **error)
@@ -435,6 +431,7 @@ epc_dispatcher_reset_client (EpcDispatcher  *self,
 
   return epc_dispatcher_run (self, error);
 }
+#endif
 
 static void
 epc_dispatcher_init (EpcDispatcher *self)
@@ -508,10 +505,10 @@ epc_dispatcher_dispose (GObject *object)
       self->priv->services = NULL;
     }
 
-  if (self->priv->client)
+  if (self->priv->watch_id)
     {
-      avahi_client_free (self->priv->client);
-      self->priv->client = NULL;
+      epc_shell_watch_remove (self->priv->watch_id);
+      self->priv->watch_id = 0;
     }
 
   g_free (self->priv->name);
@@ -582,13 +579,13 @@ epc_dispatcher_run (EpcDispatcher  *self,
                     GError        **error)
 {
   g_return_val_if_fail (EPC_IS_DISPATCHER (self), FALSE);
-  g_return_val_if_fail (NULL == self->priv->client, FALSE);
+  g_return_val_if_fail (0 == self->priv->watch_id, FALSE);
 
-  self->priv->client = epc_shell_create_avahi_client (AVAHI_CLIENT_NO_FAIL,
-                                                      epc_dispatcher_client_cb,
-                                                      self, error);
+  self->priv->watch_id =
+    epc_shell_watch_avahi_client_state (epc_dispatcher_client_cb,
+                                        self, NULL, error);
 
-  return (NULL != self->priv->client);
+  return (0 != self->priv->watch_id);
 }
 
 /**
@@ -665,7 +662,7 @@ epc_dispatcher_add_service (EpcDispatcher    *self,
 
   g_hash_table_insert (self->priv->services, service->type, service);
 
-  if (self->priv->client)
+  if (self->priv->watch_id)
     epc_service_run (service);
 }
 
@@ -699,7 +696,7 @@ epc_dispatcher_add_service_subtype (EpcDispatcher *self,
 
   epc_service_add_subtype (service, subtype);
 
-  if (self->priv->client)
+  if (self->priv->watch_id)
     epc_service_publish_subtype (service, subtype);
 }
 
@@ -776,20 +773,3 @@ epc_dispatcher_get_name (EpcDispatcher *self)
   g_return_val_if_fail (EPC_IS_DISPATCHER (self), NULL);
   return self->priv->name;
 }
-
-/**
- * epc_dispatcher_get_host_name:
- * @dispatcher: a #EpcDispatcher
- *
- * Query the official host name of this machine.
- *
- * Returns: The official host name, or %NULL on error.
- */
-G_CONST_RETURN gchar*
-epc_dispatcher_get_host_name (EpcDispatcher *self)
-{
-  g_return_val_if_fail (EPC_IS_DISPATCHER (self), NULL);
-  g_return_val_if_fail (NULL != self->priv->client, NULL);
-  return avahi_client_get_host_name (self->priv->client);
-}
-

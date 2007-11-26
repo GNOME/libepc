@@ -1,5 +1,20 @@
 2007-11-27  Mathias Hasselmann  <mathias@openismus.com>
 
+	Modify the library to share one single AvahiClient instance. This
+	allows to filter-out services announced by the current process in the
+	service monitor.
+
+	TODO: Find a way to restore epc_dispatcher_reset_client.
+
+	* docs/reference/libepc/libepc-1.0-sections.txt: Update symbols.
+	* libepc/publisher.c: Use epc_shell_get_host_name.
+	* libepc/service-monitor.c, tests/framework.c: Use shared AvahiClient.
+	* libepc/shell.c, libepc/shell.h: Modify to use only one AvahiClient.
+	* libepc/dispatcher.c, libepc/dispatcher.h: Use shared AvahiClient.
+	Remove epc_dispatcher_get_host_name.
+
+2007-11-27  Mathias Hasselmann  <mathias@openismus.com>
+
 	Remove some debugging left-overs.
 
 	* tests/test-dispatcher-simple-service.c: Cleanup.

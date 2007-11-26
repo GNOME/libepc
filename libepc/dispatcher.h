@@ -106,7 +106,6 @@ void                  epc_dispatcher_set_service_details (EpcDispatcher     *dis
 void                  epc_dispatcher_set_name            (EpcDispatcher     *dispatcher,
                                                           const gchar       *name);
 
-G_CONST_RETURN gchar* epc_dispatcher_get_host_name       (EpcDispatcher     *dispatcher);
 G_CONST_RETURN gchar* epc_dispatcher_get_name            (EpcDispatcher     *dispatcher);
 
 G_END_DECLS

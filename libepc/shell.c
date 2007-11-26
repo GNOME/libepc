@@ -24,6 +24,7 @@
 #include <avahi-glib/glib-malloc.h>
 #include <avahi-glib/glib-watch.h>
 
+#include <glib-object.h>
 #include <glib/gi18n-lib.h>
 #include <gmodule.h>
 #include <gnutls/gnutls.h>
@@ -36,6 +37,16 @@
  *
  * The methods of the #EpcShell singleton are used to manage library resources.
  */
+
+typedef struct _EpcShellWatch EpcShellWatch;
+
+struct _EpcShellWatch
+{
+  guint          id;
+  GCallback      callback;
+  gpointer       user_data;
+  GDestroyNotify destroy_data;
+};
 
 static gpointer epc_shell_progress_begin_default  (const gchar *title,
                                                    const gchar *message,
@@ -54,6 +65,8 @@ epc_shell_default_progress_hooks =
 
 static volatile gint  epc_shell_ref_count = 0;
 static AvahiGLibPoll *epc_shell_avahi_poll = NULL;
+static AvahiClient   *epc_shell_avahi_client = NULL;
+static GArray        *epc_shell_watches = NULL;
 
 static void (*epc_shell_threads_enter)(void) = NULL;
 static void (*epc_shell_threads_leave)(void) = NULL;
@@ -126,6 +139,12 @@ epc_shell_unref (void)
 
   if (g_atomic_int_dec_and_test (&epc_shell_ref_count))
     {
+      if (NULL != epc_shell_avahi_client)
+        {
+          avahi_client_free (epc_shell_avahi_client);
+          epc_shell_avahi_client = NULL;
+        }
+
       g_assert (NULL != epc_shell_avahi_poll);
       avahi_glib_poll_free (epc_shell_avahi_poll);
       epc_shell_avahi_poll = NULL;
@@ -163,72 +182,237 @@ epc_shell_enter (void)
     epc_shell_threads_enter ();
 }
 
-/**
- * epc_shell_get_avahi_poll_api:
- *
- * Returns the <citetitle>Avahi</citetitle> polling API object used for
- * integrating the <citetitle>Avahi</citetitle> library with the
- * <citetitle>GLib</citetitle> main loop.
- *
- * You have to call #epc_shell_ref before using this function.
- *
- * Returns: The Avahi polling API used.
- */
-G_CONST_RETURN AvahiPoll*
-epc_shell_get_avahi_poll_api (void)
+static guint
+epc_shell_watches_length (void)
 {
-  g_return_val_if_fail (NULL != epc_shell_avahi_poll, NULL);
-  return avahi_glib_poll_get (epc_shell_avahi_poll);
+  if (epc_shell_watches)
+    return epc_shell_watches->len;
+
+  return 0;
+}
+
+static EpcShellWatch*
+epc_shell_watches_get (guint index)
+{
+  g_return_val_if_fail (index < epc_shell_watches_length (), NULL);
+  return &g_array_index (epc_shell_watches, EpcShellWatch, index);
+}
+
+static EpcShellWatch*
+epc_shell_watches_last (void)
+{
+  if (epc_shell_watches && epc_shell_watches->len)
+    return epc_shell_watches_get (epc_shell_watches->len - 1);
+
+  return NULL;
+}
+
+static guint
+epc_shell_watch_add (GCallback      callback,
+                     gpointer       user_data,
+                     GDestroyNotify destroy_data)
+{
+  EpcShellWatch *last, *self;
+
+  if (NULL == epc_shell_watches)
+    epc_shell_watches = g_array_sized_new (TRUE, TRUE, sizeof (EpcShellWatch), 4);
+
+  g_return_val_if_fail (NULL != epc_shell_watches, 0);
+
+  last = epc_shell_watches_last ();
+
+  g_array_set_size (epc_shell_watches, epc_shell_watches->len + 1);
+
+  self = epc_shell_watches_last ();
+
+  self->id = (last ? last->id + 1 : 1);
+  self->callback = callback;
+  self->user_data = user_data;
+  self->destroy_data = destroy_data;
+
+  return self->id;
 }
 
 /**
- * epc_shell_create_avahi_client:
- * @flags: options for creating the client
- * @callback: the function to call on status changes, or %NULL
- * @user_data: data to passed to @callback
+ * epc_shell_watch_remove:
+ * @id: identifier of an watching callback
+ *
+ * Removes the watching callback identified by @id.
+ *
+ * See also: #epc_shell_watch_avahi_client
+ */
+void
+epc_shell_watch_remove (guint id)
+{
+  guint idx, len;
+
+  g_return_if_fail (id > 0);
+
+  if (!epc_shell_watches)
+    return;
+
+  len = epc_shell_watches_length ();
+
+  for (idx = MIN (id, len) - 1; idx < len; ++idx)
+    if (epc_shell_watches_get (idx)->id == id)
+      break;
+
+  if (idx < len)
+    g_array_remove_index (epc_shell_watches, idx);
+}
+
+static void
+epc_shell_avahi_client_cb (AvahiClient      *client,
+                           AvahiClientState  state,
+                           gpointer          user_data G_GNUC_UNUSED)
+{
+  guint i;
+
+  if (epc_shell_avahi_client)
+    g_assert (client == epc_shell_avahi_client);
+  else
+    epc_shell_avahi_client = client;
+
+  if (epc_shell_watches)
+    for (i = 0; i < epc_shell_watches->len; ++i)
+      {
+        EpcShellWatch *watch = &g_array_index (epc_shell_watches, EpcShellWatch, i);
+        ((AvahiClientCallback) watch->callback) (client, state, watch->user_data);
+      }
+}
+
+static AvahiClient*
+epc_shell_get_avahi_client (GError **error)
+{
+  g_return_val_if_fail (NULL != epc_shell_avahi_client ||
+                        NULL != error, NULL);
+
+  if (G_UNLIKELY (NULL == epc_shell_avahi_client))
+    {
+      gint error_code = AVAHI_OK;
+
+      epc_shell_avahi_client =
+        avahi_client_new (avahi_glib_poll_get (epc_shell_avahi_poll),
+                          AVAHI_CLIENT_NO_FAIL, epc_shell_avahi_client_cb,
+                          NULL, &error_code);
+
+      if (NULL == epc_shell_avahi_client)
+        g_set_error (error, EPC_AVAHI_ERROR, error_code,
+                     _("Cannot create Avahi client: %s"),
+                     avahi_strerror (error_code));
+    }
+
+  return epc_shell_avahi_client;
+}
+
+/**
+ * epc_shell_watch_avahi_client_state:
+ * @callback: a callback function
+ * @user_data: data to pass to @callback
+ * @destroy_data: a function for freeing @user_data when removing the watch
  * @error: return location for a #GError, or %NULL
  *
- * Creates a new Avahi client with the behavior described by @flags. Whenever
- * the state of the client changes @callback is called. This callback may be
- * %NULL. If the call was not successful, it returns %FALSE. The error domain
- * is EPC_AVAHI_ERROR. Possible error codes are those of the
- * <citetitle>Avahi</citetitle> library.
+ * Registers a function to watch state changes of the library's #AvahiClient.
+ * On success the identifier of the newly created watch is returned. Pass it
+ * to #epc_shell_watch_remove to remove the watch. On failure it returns 0 and
+ * sets @error. The error domain is #EPC_AVAHI_ERROR. Possible error codes are
+ * those of the <citetitle>Avahi</citetitle> library.
  *
- * You have to call #epc_shell_ref before using this function.
- *
- * <note><para>
- *  Please note that this function is called for the first time from within the
- *  #epc_shell_create_avahi_client context! Thus, in the callback you should
- *  not make use of global variables that are initialized only after your
- *  call to #epc_shell_create_avahi_client. A common mistake is to store the
- *  AvahiClient pointer returned by #epc_shell_create_avahi_client in a global
- *  variable and assume that this global variable already contains the valid
- *  pointer when the callback is called for the first time. A work-around for
- *  this is to always use the AvahiClient pointer passed to the callback
- *  function instead of the global pointer.
- * </para></note>
- *
- * Returns: The newly created Avahi client instance, or %NULL on error.
+ * Returns: The identifier of the newly created watch, or 0 on error.
  */
-AvahiClient*
-epc_shell_create_avahi_client (AvahiClientFlags      flags,
-                               AvahiClientCallback   callback,
-                               gpointer              user_data,
-                               GError              **error)
+guint
+epc_shell_watch_avahi_client_state (AvahiClientCallback callback,
+                                    gpointer            user_data,
+                                    GDestroyNotify      destroy_data,
+                                    GError            **error)
 {
-  gint error_code = AVAHI_OK;
-  AvahiClient *client;
+  AvahiClient *client = epc_shell_get_avahi_client (error);
+  guint id = 0;
 
-  client = avahi_client_new (epc_shell_get_avahi_poll_api (),
-                             flags, callback, user_data,
-                             &error_code);
+  g_return_val_if_fail (NULL != callback, 0);
 
-  if (!client)
-    g_set_error (error, EPC_AVAHI_ERROR, error_code,
-                 _("Cannot create Avahi client: %s"),
-                 avahi_strerror (error_code));
+  if (NULL != client)
+    {
+      id = epc_shell_watch_add (G_CALLBACK (callback), user_data, destroy_data);
+      callback (client, avahi_client_get_state (client), user_data);
+    }
 
-  return client;
+  return id;
+}
+
+/**
+ * epc_shell_create_avahi_entry_group:
+ * @callback: a callback function
+ * @user_data: data to pass to @callback
+ *
+ * Creates a new #AvahiEntryGroup for the library's shared #AvahiClient.
+ * On success the newly created #AvahiEntryGroup is returned,
+ * and %NULL on failure.
+ *
+ * Returns: The newly created #AvahiEntryGroup, or %NULL on error.
+ */
+AvahiEntryGroup*
+epc_shell_create_avahi_entry_group (AvahiEntryGroupCallback callback,
+                                    gpointer                user_data)
+{
+  AvahiClient *client = epc_shell_get_avahi_client (NULL);
+  AvahiEntryGroup *group = NULL;
+
+  if (NULL != client)
+    group = avahi_entry_group_new (client, callback, user_data);
+
+  return group;
+}
+
+/**
+ * epc_shell_create_service_browser:
+ * @interface: the index of the network interface to watch
+ * @protocol: the protocol of the services to watch
+ * @type: the DNS-SD service type to watch
+ * @domain: the DNS domain to watch, or %NULL
+ * @flags: flags for creating the service browser
+ * @callback: a callback function
+ * @user_data: data to pass to @callback
+ * @error: return location for a #GError, or %NULL
+ *
+ * Creates a new #AvahiServiceBrowser for the library's shared #AvahiClient.
+ * On success the newly created #AvahiEntryGroup is returned. On failure
+ * %NULL is returned and @error is set.The error domain is #EPC_AVAHI_ERROR.
+ * Possible error codes are those of the <citetitle>Avahi</citetitle> library.
+ *
+ * Returns: The newly created #AvahiServiceBrowser, or %NULL on error.
+ */
+AvahiServiceBrowser*
+epc_shell_create_service_browser (AvahiIfIndex                interface,
+                                  AvahiProtocol               protocol,
+                                  const gchar                *type,
+                                  const gchar                *domain,
+                                  AvahiLookupFlags            flags,
+                                  AvahiServiceBrowserCallback callback,
+                                  gpointer                    user_data,
+                                  GError                    **error)
+{
+  AvahiClient *client = epc_shell_get_avahi_client (error);
+  AvahiServiceBrowser *browser = NULL;
+
+  if (NULL != client)
+    browser = avahi_service_browser_new (client, interface, protocol, type,
+                                         domain, flags, callback, user_data);
+
+  return browser;
+}
+
+/**
+ * epc_shell_get_host_name:
+ *
+ * Query the official host name of this machine.
+ *
+ * Returns: The official host name, or %NULL on error.
+ */
+G_CONST_RETURN gchar*
+epc_shell_get_host_name (void)
+{
+  return avahi_client_get_host_name (epc_shell_get_avahi_client (NULL));
 }
 
 static void
