@@ -1224,6 +1224,9 @@ epc_publisher_list (EpcPublisher *self,
  * the publisher is destroyed, the function
  * described by @destroy_data is called with @user_data as argument.
  *
+ * This should be called after adding the key, not before. For instance, 
+ * after calling #epc_publisher_add.
+ *
  * See also #epc_publisher_set_auth_flags.
  */
 void

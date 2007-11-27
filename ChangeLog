@@ -1,5 +1,10 @@
 2007-11-27  Murray Cumming  <murrayc@murrayc.com>
 
+	* libepc/publisher.c: epc_publisher_set_auth_handler() documentation: 
+	Note that this should be used _after_ adding the key.
+
+2007-11-27  Murray Cumming  <murrayc@murrayc.com>
+
 	* libepc/consumer.c: epc_consumer_lookup(): Mention the specific error 
 	code that is relevant when using authentication.
 	* libepc/publisher.c:
