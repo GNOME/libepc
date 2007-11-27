@@ -1,3 +1,12 @@
+2007-11-27  Murray Cumming  <murrayc@murrayc.com>
+
+	* libepc/consumer.c: epc_consumer_lookup(): Mention the specific error 
+	code that is relevant when using authentication.
+	* libepc/publisher.c:
+	* libepc/publisher.h: EpcAuthHandler: mention the two different 
+	auth methods (and what to do) in the documentation.
+	EpcAuthFlags: Some minor changes to the documention.
+
 2007-11-27  Mathias Hasselmann  <mathias@openismus.com>
 
 	Modify the library to share one single AvahiClient instance. This

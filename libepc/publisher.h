@@ -68,14 +68,19 @@ typedef EpcContents* (*EpcContentsHandler) (EpcPublisher   *publisher,
  * to the resource described by @context.
  *
  * The @username is %NULL when no creditials were passed, and anonymous access
- * is tried. When a @username was passed call #epc_auth_context_check_password
+ * is tried.
+ * 
+ * See also #epc_publisher_set_auth_flags. When EPC_AUTH_DEFAULT is used, 
+ * you should call #epc_auth_context_check_password
  * to verify that the password passed in the request matches the known password
- * for that user.
+ * for that user. In this case there is no way to retrieve the password from 
+ * the #EpcAuthContext because the network protocol transfers just a hash code, 
+ * not the actual password.
  *
- * <note><para>
- *  There is no way to retrieve the password from the #EpcAuthContext, as
- *  the network protocol transfers just a hash code, not the actual password.
- * </para></note>
+ * However, when EPC_AUTH_PASSWORD_TEXT_NEEDED is used, you should call 
+ * epc_auth_context_get_password() and then do your own authentication check. 
+ * For instance, you might need to delegate the authentication to some other 
+ * code or server, such as a database server.
  *
  * Returns: %TRUE when access is granted, and %FALSE otherwise.
  */
@@ -87,13 +92,13 @@ typedef gboolean    (*EpcAuthHandler)    (EpcAuthContext *context,
  * EpcAuthFlags:
  * @EPC_AUTH_DEFAULT: The default authentication settings.
  * @EPC_AUTH_PASSWORD_TEXT_NEEDED: Set this flag when your #EpcAuthFlags
- * needs the supplied password in plain text - for instance to pass it to the
- * database manager of your application. This flag replaces the secure Digest
+ * needs the supplied password in plain text - for instance to pass it to a
+ * database server used by your application. This flag replaces the secure Digest
  * authentication scheme with the insecure Basic authentication scheme.
- * Therefore this setting is valid only, when the publisher's transport
- * protocol #EPC_PROTOCOL_HTTPS.
+ * Therefore this setting is valid only when the publisher's transport
+ * protocol is #EPC_PROTOCOL_HTTPS (secure http).
  *
- * This flags configure the authentication behaviour of a #EpcPublisher.
+ * These flags specify the authentication behaviour of an #EpcPublisher.
  */
 
 typedef enum /* <flags> */

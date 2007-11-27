@@ -1223,6 +1223,8 @@ epc_publisher_list (EpcPublisher *self,
  * When replacing or deleting the resource referenced by @key, or when
  * the publisher is destroyed, the function
  * described by @destroy_data is called with @user_data as argument.
+ *
+ * See also #epc_publisher_set_auth_flags.
  */
 void
 epc_publisher_set_auth_handler (EpcPublisher   *self,
@@ -1319,7 +1321,8 @@ epc_publisher_set_protocol (EpcPublisher *self,
  * @publisher: a #EpcPublisher
  * @flags: new authentication settings
  *
- * Changes the authentication settings the publisher uses.
+ * Changes the authentication settings the publisher uses 
+ * when #epc_publisher_set_auth_handler is used.
  * See #EpcPublisher:auth-flags for details.
  */
 void
