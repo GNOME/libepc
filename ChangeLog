@@ -1,5 +1,11 @@
 2007-11-27  Mathias Hasselmann  <mathias@openismus.com>
 
+	Correct XML problems in epc_consumer_lookup documentation.
+
+	* libepc/consumer.c: Drop the angle brackets.
+
+2007-11-27  Mathias Hasselmann  <mathias@openismus.com>
+
 	Replace the global _epc_debug variable by epc_shell_get_debug_level.
 	Also document the EPC_DEBUG environment variable.
 

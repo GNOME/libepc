@@ -884,9 +884,10 @@ epc_consumer_set_http_error (GError     **error,
  * #EPC_HTTP_ERROR. Error codes are taken from the #SoupKnownStatusCode
  * enumeration.
  *
- * For instance, the error code will be SOUP_STATUS_FORBIDDEN if authentication 
- * failed (see #epc_publisher_set_auth_handler). You must 
- * include <libsoup/soup-status.h> to use this error code.
+ * For instance, the error code will be #SOUP_STATUS_FORBIDDEN if
+ * authentication failed (see #epc_publisher_set_auth_handler). You must
+ * include <filename class="headerfile">libsoup/soup-status.h</filename>
+ * to use this error code.
  *
  * The returned buffer should be freed when no longer needed.
  *
