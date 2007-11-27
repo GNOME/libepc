@@ -30,6 +30,19 @@
 G_BEGIN_DECLS
 
 /**
+ * EPC_DEBUG_LEVEL:
+ * @level: the minimum level to check for
+ *
+ * Checks if the library's debug level, which can be modified by setting the
+ * <varname>EPC_DEBUG</varname> environment variable, is above the value
+ * sepecified by @level.
+ *
+ * Returns: %TRUE if the library's debug level is above the threshold specified
+ * by @level, and %FALSE otherwise.
+ */
+#define EPC_DEBUG_LEVEL(level) G_UNLIKELY(epc_shell_get_debug_level () >= (level))
+
+/**
  * EPC_AVAHI_ERROR:
  *
  * Error domain for <citetitle>Avahi</citetitle> operations. Errors in this
@@ -69,6 +82,8 @@ struct _EpcShellProgressHooks
   gpointer reserved4;
   gpointer reserved5;
 };
+
+guint                 epc_shell_get_debug_level          (void) G_GNUC_CONST;
 
 void                  epc_shell_leave                    (void);
 void                  epc_shell_enter                    (void);

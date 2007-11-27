@@ -82,7 +82,6 @@ struct _EpcServiceMonitorPrivate
 };
 
 static guint signals[SIGNAL_LAST];
-extern gboolean _epc_debug;
 
 G_DEFINE_TYPE (EpcServiceMonitor, epc_service_monitor, G_TYPE_OBJECT);
 
@@ -170,7 +169,7 @@ epc_service_monitor_resolver_cb (AvahiServiceResolver   *resolver,
 {
   EpcServiceMonitor *self = EPC_SERVICE_MONITOR (data);
 
-  if (G_UNLIKELY (_epc_debug))
+  if (EPC_DEBUG_LEVEL (1))
     g_debug ("%s: Service resolved: type='%s', hostname='%s', port=%d",
              G_STRLOC, type, hostname, port);
 
@@ -195,7 +194,7 @@ epc_service_monitor_browser_cb (AvahiServiceBrowser    *browser,
   EpcServiceMonitor *self = EPC_SERVICE_MONITOR (data);
   gint error;
 
-  if (G_UNLIKELY (_epc_debug))
+  if (EPC_DEBUG_LEVEL (1))
     g_debug ("%s: event=%d, name=`%s', type=`%s', domain=`%s', our-own=%d",
              G_STRLOC, event, name, type, domain,
              flags & AVAHI_LOOKUP_RESULT_OUR_OWN);
@@ -262,7 +261,7 @@ epc_service_monitor_constructed (GObject *object)
           continue;
       }
 
-      if (G_UNLIKELY (_epc_debug))
+      if (EPC_DEBUG_LEVEL (1))
         g_debug ("%s: watching %s", G_STRLOC, *iter);
 
       self->priv->browsers = g_slist_prepend (self->priv->browsers, browser);

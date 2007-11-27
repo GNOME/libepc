@@ -204,8 +204,6 @@ struct _EpcPublisherPrivate
   gchar                 *private_key_file;
 };
 
-extern gboolean _epc_debug;
-
 G_DEFINE_TYPE (EpcPublisher, epc_publisher, G_TYPE_OBJECT);
 
 static EpcResource*
@@ -301,14 +299,14 @@ epc_publisher_chunk_cb (SoupMessage *message,
 
   if (chunk && length)
     {
-      if (G_UNLIKELY (_epc_debug))
+      if (EPC_DEBUG_LEVEL (1))
         g_debug ("%s: writing %d bytes", G_STRLOC, length);
 
       soup_message_add_chunk (message, SOUP_BUFFER_USER_OWNED, chunk, length);
     }
   else
     {
-      if (G_UNLIKELY (_epc_debug))
+      if (EPC_DEBUG_LEVEL (1))
         g_debug ("%s: done", G_STRLOC);
 
       soup_message_add_final_chunk (message);
@@ -325,7 +323,7 @@ epc_publisher_handle_get_path (SoupServerContext *context,
   EpcContents *contents = NULL;
   const gchar *key = NULL;
 
-  if (G_UNLIKELY (_epc_debug))
+  if (EPC_DEBUG_LEVEL (1))
     g_debug ("%s: method=%s, path=%s", G_STRFUNC, message->method, context->path);
 
   if (SOUP_METHOD_ID_GET != context->method_id)
@@ -528,7 +526,7 @@ epc_publisher_server_auth_cb (SoupServerAuthContext *auth_ctx G_GNUC_UNUSED,
   if (resource && resource->auth_handler)
     authorized = resource->auth_handler (&context, user, resource->auth_user_data);
 
-  if (G_UNLIKELY (_epc_debug))
+  if (EPC_DEBUG_LEVEL (1))
     g_debug ("%s: path=%s, resource=%p, auth_handler=%p, authorized=%d", G_STRLOC,
              uri->path, resource, resource ? resource->auth_handler : NULL, authorized);
 

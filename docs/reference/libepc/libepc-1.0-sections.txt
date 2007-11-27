@@ -190,12 +190,16 @@ epc_protocol_get_type
 
 <SECTION>
 <FILE>shell</FILE>
-EpcShellProgressHooks
 <TITLE>EpcShell</TITLE>
 epc_shell_enter
 epc_shell_leave
 
 <SUBSECTION>
+EPC_DEBUG_LEVEL
+epc_shell_debug_level
+
+<SUBSECTION>
+EpcShellProgressHooks
 epc_shell_progress_begin
 epc_shell_progress_end
 epc_shell_progress_update

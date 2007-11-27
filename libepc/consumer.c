@@ -166,7 +166,6 @@ struct _EpcListingState
 };
 
 static guint signals[SIGNAL_LAST];
-extern gboolean _epc_debug;
 
 G_DEFINE_TYPE (EpcConsumer, epc_consumer, G_TYPE_OBJECT);
 
@@ -181,7 +180,7 @@ epc_consumer_authenticate_cb (SoupSession  *session G_GNUC_UNUSED,
 {
   EpcConsumer *self = EPC_CONSUMER (data);
 
-  if (G_UNLIKELY (_epc_debug))
+  if (EPC_DEBUG_LEVEL (1))
     g_debug ("%s: path=%s, realm=%s, username=%s, password=%s",
              G_STRLOC, soup_message_get_uri (message)->path,
              auth_realm, *username, *password);
@@ -192,7 +191,7 @@ epc_consumer_authenticate_cb (SoupSession  *session G_GNUC_UNUSED,
   *username = g_strdup (self->priv->username ? self->priv->username : "");
   *password = g_strdup (self->priv->password ? self->priv->password : "");
 
-  if (G_UNLIKELY (_epc_debug))
+  if (EPC_DEBUG_LEVEL (1))
     g_debug ("%s: path=%s, realm=%s, username=%s, password=%s",
              G_STRLOC, soup_message_get_uri (message)->path,
              auth_realm, *username, *password);
@@ -210,7 +209,7 @@ epc_consumer_reauthenticate_cb (SoupSession  *session,
   EpcConsumer *self = EPC_CONSUMER (data);
   gboolean handled = FALSE;
 
-  if (G_UNLIKELY (_epc_debug))
+  if (EPC_DEBUG_LEVEL (1))
     g_debug ("%s: path=%s, realm=%s, username=%s, password=%s, handled=%d",
              G_STRLOC, soup_message_get_uri (message)->path,
              auth_realm, *username, *password, handled);
@@ -220,7 +219,7 @@ epc_consumer_reauthenticate_cb (SoupSession  *session,
                  0, auth_realm, &handled);
   epc_shell_leave ();
 
-  if (G_UNLIKELY (_epc_debug))
+  if (EPC_DEBUG_LEVEL (1))
     g_debug ("%s: path=%s, realm=%s, username=%s, password=%s, handled=%d",
              G_STRLOC, soup_message_get_uri (message)->path,
              auth_realm, *username, *password, handled);
@@ -359,7 +358,7 @@ epc_consumer_service_found_cb (EpcServiceMonitor *monitor G_GNUC_UNUSED,
   EpcProtocol transport = epc_service_type_get_protocol (type);
   EpcConsumer *self = EPC_CONSUMER (data);
 
-  if (G_UNLIKELY (_epc_debug))
+  if (EPC_DEBUG_LEVEL (1))
     g_debug ("%s: Service resolved: type='%s', host='%s', port=%d", G_STRLOC, type, host, port);
   if (name && strcmp (name, self->priv->name))
     return;
@@ -368,7 +367,7 @@ epc_consumer_service_found_cb (EpcServiceMonitor *monitor G_GNUC_UNUSED,
 
   if (transport > self->priv->protocol)
     {
-      if (G_UNLIKELY (_epc_debug))
+      if (EPC_DEBUG_LEVEL (1))
         g_debug ("%s: Upgrading to %s protocol", G_STRLOC, epc_protocol_get_service_type (transport));
 
       g_signal_emit (self, signals[SIGNAL_PUBLISHER_RESOLVED], 0, transport, host, port);
@@ -845,7 +844,7 @@ epc_consumer_create_request (EpcConsumer *self,
 
       g_return_val_if_fail (NULL != request_uri, NULL);
 
-      if (G_UNLIKELY (_epc_debug))
+      if (EPC_DEBUG_LEVEL (1))
         g_debug ("%s: Connecting to `%s'", G_STRLOC, request_uri);
 
       request = soup_message_new ("GET", request_uri);

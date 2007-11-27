@@ -77,8 +77,6 @@ struct _EpcService
   AvahiStringList *details;
 };
 
-extern gboolean _epc_debug;
-
 /**
  * EpcDispatcherPrivate:
  * @name: the service name
@@ -121,7 +119,7 @@ epc_service_publish_subtype (EpcService  *self,
 {
   gint result;
 
-  if (G_UNLIKELY (_epc_debug))
+  if (EPC_DEBUG_LEVEL (1))
     g_debug ("%s: Publishing sub-service `%s' for `%s'...",
              G_STRLOC, subtype, self->dispatcher->priv->name);
 
@@ -145,7 +143,7 @@ epc_service_publish_details (EpcService *self)
 {
   gint result;
 
-  if (G_UNLIKELY (_epc_debug))
+  if (EPC_DEBUG_LEVEL (1))
     g_debug ("%s: Publishing details for `%s'...",
              G_STRLOC, self->dispatcher->priv->name);
 
@@ -171,7 +169,7 @@ epc_service_publish (EpcService *self)
       gint result;
       GList *iter;
 
-      if (G_UNLIKELY (_epc_debug))
+      if (EPC_DEBUG_LEVEL (1))
         g_debug ("%s: Publishing service `%s' for `%s'...",
                  G_STRLOC, self->type, self->dispatcher->priv->name);
 
@@ -203,7 +201,7 @@ epc_service_publish (EpcService *self)
 static void
 epc_service_reset (EpcService *self)
 {
-  if (G_UNLIKELY (_epc_debug))
+  if (EPC_DEBUG_LEVEL (1))
     g_debug ("%s: Resetting `%s' for `%s'...",
              G_STRLOC, self->type, self->dispatcher->priv->name);
 
@@ -261,7 +259,7 @@ epc_service_run (EpcService *self)
 {
   if (NULL == self->group)
     {
-      if (G_UNLIKELY (_epc_debug))
+      if (EPC_DEBUG_LEVEL (1))
         g_debug ("%s: Creating service `%s' group for `%s'...",
                  G_STRLOC, self->type, self->dispatcher->priv->name);
 
@@ -357,21 +355,21 @@ epc_dispatcher_client_cb (AvahiClient      *client G_GNUC_UNUSED,
   switch (state)
     {
       case AVAHI_CLIENT_S_RUNNING:
-        if (G_UNLIKELY (_epc_debug))
+        if (EPC_DEBUG_LEVEL (1))
           g_debug ("%s: Avahi client is running...", G_STRLOC);
 
         epc_dispatcher_foreach_service (self, epc_service_publish);
         break;
 
       case AVAHI_CLIENT_S_REGISTERING:
-        if (G_UNLIKELY (_epc_debug))
+        if (EPC_DEBUG_LEVEL (1))
           g_debug ("%s: Avahi client is registering...", G_STRLOC);
 
         epc_dispatcher_foreach_service (self, epc_service_reset);
         break;
 
       case AVAHI_CLIENT_S_COLLISION:
-        if (G_UNLIKELY (_epc_debug))
+        if (EPC_DEBUG_LEVEL (1))
           g_debug ("%s: Collision detected...", G_STRLOC);
 
         epc_dispatcher_handle_collision (self);
@@ -390,7 +388,7 @@ epc_dispatcher_client_cb (AvahiClient      *client G_GNUC_UNUSED,
         break;
 
       case AVAHI_CLIENT_CONNECTING:
-        if (G_UNLIKELY (_epc_debug))
+        if (EPC_DEBUG_LEVEL (1))
           g_debug ("%s: Waiting for Avahi server...", G_STRLOC);
 
         break;

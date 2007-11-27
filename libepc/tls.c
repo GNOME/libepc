@@ -54,8 +54,6 @@ struct _EcpTlsKeyContext
   gint rc;
 };
 
-extern gboolean _epc_debug;
-
 GQuark
 epc_tls_error_quark (void)
 {
@@ -222,7 +220,7 @@ epc_tls_private_key_load (const gchar *filename,
 
   if (g_file_get_contents (filename, &contents, &buffer.size, error))
     {
-      if (G_UNLIKELY (_epc_debug))
+      if (EPC_DEBUG_LEVEL (1))
         g_debug ("%s: Loading private key `%s'", G_STRLOC, filename);
 
       buffer.data = (guchar*) contents;
@@ -279,7 +277,7 @@ epc_tls_private_key_save (gnutls_x509_privkey_t  key,
   g_return_val_if_fail (NULL != key, FALSE);
   g_return_val_if_fail (NULL != filename, FALSE);
 
-  if (G_UNLIKELY (_epc_debug))
+  if (EPC_DEBUG_LEVEL (1))
     g_debug ("%s: Writing server key `%s'", G_STRLOC, filename);
 
   rc = gnutls_x509_privkey_export (key, GNUTLS_X509_FMT_PEM, NULL, &length);
@@ -387,7 +385,7 @@ epc_tls_certificate_new (const gchar            *hostname,
   g_return_val_if_fail (NULL != key, NULL);
   g_return_val_if_fail (NULL != hostname, NULL);
 
-  if (G_UNLIKELY (_epc_debug))
+  if (EPC_DEBUG_LEVEL (1))
     g_debug ("%s: Generating self signed server certificate for `%s'", G_STRLOC, hostname);
 
   epc_tls_check (rc = gnutls_x509_crt_init (&crt));
@@ -445,7 +443,7 @@ epc_tls_certificate_load (const gchar *filename,
 
   if (g_file_get_contents (filename, &contents, &buffer.size, error))
     {
-      if (G_UNLIKELY (_epc_debug))
+      if (EPC_DEBUG_LEVEL (1))
         g_debug ("%s: Loading server certificate `%s'", G_STRLOC, filename);
 
       buffer.data = (guchar*) contents;
@@ -501,7 +499,7 @@ epc_tls_certificate_save (gnutls_x509_crt_t  certificate,
   g_return_val_if_fail (NULL != certificate, FALSE);
   g_return_val_if_fail (NULL != filename, FALSE);
 
-  if (G_UNLIKELY (_epc_debug))
+  if (EPC_DEBUG_LEVEL (1))
     g_debug ("%s: Writing server certificate `%s'", G_STRLOC, filename);
 
   rc = gnutls_x509_crt_export (certificate, GNUTLS_X509_FMT_PEM, NULL, &length);

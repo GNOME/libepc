@@ -27,7 +27,10 @@
 #include <glib-object.h>
 #include <glib/gi18n-lib.h>
 #include <gmodule.h>
+
 #include <gnutls/gnutls.h>
+
+#include <stdlib.h>
 
 /**
  * SECTION:shell
@@ -74,12 +77,34 @@ static const EpcShellProgressHooks  *epc_shell_progress_hooks = &epc_shell_defau
 static gpointer                      epc_shell_progress_user_data = NULL;
 static GDestroyNotify                epc_shell_progress_destroy_data = NULL;
 
-gboolean _epc_debug = FALSE;
+/**
+ * epc_shell_get_debug_level:
+ *
+ * Query the library's debug level. The debug level can be modified by setting
+ * the external <varname>EPC_DEBUG</varname> environment variable. In most
+ * cases the #EPC_DEBUG_LEVEL macro should be used, instead of calling this
+ * checking the return value of this function.
+ *
+ * Returns: The library's current debugging level.
+ */
+guint
+epc_shell_get_debug_level (void)
+{
+  static gint level = -1;
+
+  if (G_UNLIKELY (-1 == level))
+    {
+      const gchar *text = g_getenv ("EPC_DEBUG");
+      level = text ? MAX (0, atoi (text)) : 0;
+    }
+
+  return level;
+}
 
 static void
 epc_shell_exit (void)
 {
-  if (_epc_debug)
+  if (EPC_DEBUG_LEVEL (1))
     g_debug ("%s: releasing libepc resources", G_STRLOC);
 
   if (NULL != epc_shell_avahi_client)
@@ -135,7 +160,7 @@ epc_shell_threads_init (void)
       g_module_symbol (module, "gdk_threads_leave", &symbol);
       epc_shell_threads_leave = symbol;
 
-      if (_epc_debug)
+      if (EPC_DEBUG_LEVEL (1))
         g_debug ("%s: threads_enter=%p, threads_leave=%p", G_STRLOC,
                  epc_shell_threads_enter, epc_shell_threads_leave);
 

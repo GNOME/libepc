@@ -20,6 +20,7 @@
  */
 
 #include "contents.h"
+#include "shell.h"
 
 #include <string.h>
 #include <unistd.h>
@@ -78,8 +79,6 @@ struct _EpcContents
   gpointer            user_data;
   GDestroyNotify      destroy_data;
 };
-
-extern gboolean _epc_debug;
 
 /**
  * epc_contents_new:
@@ -206,7 +205,7 @@ epc_contents_ref (EpcContents *self)
 
   g_atomic_int_inc (&self->ref_count);
 
-  if (G_UNLIKELY (_epc_debug))
+  if (EPC_DEBUG_LEVEL (1))
     g_debug ("%s: self=%p, ref_count=%d", G_STRFUNC, self, self->ref_count);
 
   return self;
@@ -225,7 +224,7 @@ epc_contents_unref (EpcContents *self)
 {
   g_return_if_fail (NULL != self);
 
-  if (G_UNLIKELY (_epc_debug))
+  if (EPC_DEBUG_LEVEL (1))
     g_debug ("%s: self=%p, ref_count=%d", G_STRFUNC, self, self->ref_count);
 
   if (g_atomic_int_dec_and_test (&self->ref_count))

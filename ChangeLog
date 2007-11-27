@@ -1,5 +1,17 @@
 2007-11-27  Mathias Hasselmann  <mathias@openismus.com>
 
+	Replace the global _epc_debug variable by epc_shell_get_debug_level.
+	Also document the EPC_DEBUG environment variable.
+
+	* docs/reference/libepc/libepc-1.0-sections.txt, libepc/shell.h:
+	Add EPC_DEBUG_LEVEL and epc_shell_get_debug_level.
+	* libepc/shell.c: Replace _epc_debug by epc_shell_get_debug_level.
+	* libepc/consumer.c, libepc/contents.c, libepc/dispatcher.c,
+	libepc/publisher.c, libepc/service-monitor.c, libepc/tls.c:
+	Replace _epc_debug by EPC_DEBUG_LEVEL.
+
+2007-11-27  Mathias Hasselmann  <mathias@openismus.com>
+
 	Drop epc_shell_ref and epc_shell_unref and use g_atexit for cleanup.
 
 	* docs/reference/libepc/libepc-1.0-sections.txt, libepc/shell.c,
