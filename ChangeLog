@@ -1,3 +1,13 @@
+2007-11-27  Mathias Hasselmann  <mathias@openismus.com>
+
+	Drop epc_shell_ref and epc_shell_unref and use g_atexit for cleanup.
+
+	* docs/reference/libepc/libepc-1.0-sections.txt, libepc/shell.c,
+	libepc/shell.h: Remove epc_shell_ref and epc_shell_unref.
+	* libepc/consumer.c, libepc/dispatcher.c, libepc/publisher.c, 
+	libepc/service-monitor.c, tests/framework.c:
+	Don't call epc_shell_ref and epc_shell_unref.
+
 2007-11-27  Murray Cumming  <murrayc@murrayc.com>
 
 	* libepc/publisher.c: epc_publisher_set_auth_handler() documentation: 

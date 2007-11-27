@@ -442,8 +442,6 @@ epc_dispatcher_init (EpcDispatcher *self)
 
   self->priv->services = g_hash_table_new_full (g_str_hash, g_str_equal,
                                                 NULL, epc_service_free);
-
-  epc_shell_ref ();
 }
 
 static void
@@ -518,20 +516,12 @@ epc_dispatcher_dispose (GObject *object)
 }
 
 static void
-epc_dispatcher_finalize (GObject *object)
-{
-  G_OBJECT_CLASS (epc_dispatcher_parent_class)->finalize (object);
-  epc_shell_unref ();
-}
-
-static void
 epc_dispatcher_class_init (EpcDispatcherClass *cls)
 {
   GObjectClass *oclass = G_OBJECT_CLASS (cls);
 
   oclass->set_property = epc_dispatcher_set_property;
   oclass->get_property = epc_dispatcher_get_property;
-  oclass->finalize = epc_dispatcher_finalize;
   oclass->dispose = epc_dispatcher_dispose;
 
   g_object_class_install_property (oclass, PROP_NAME,

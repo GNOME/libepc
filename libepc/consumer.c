@@ -233,8 +233,6 @@ epc_consumer_reauthenticate_cb (SoupSession  *session,
 static void
 epc_consumer_init (EpcConsumer *self)
 {
-  epc_shell_ref ();
-
   self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self, EPC_TYPE_CONSUMER, EpcConsumerPrivate);
   self->priv->loop = g_main_loop_new (NULL, FALSE);
   self->priv->session = soup_session_async_new ();
@@ -450,13 +448,6 @@ epc_consumer_dispose (GObject *object)
 }
 
 static void
-epc_consumer_finalize (GObject *object)
-{
-  G_OBJECT_CLASS (epc_consumer_parent_class)->finalize (object);
-  epc_shell_unref ();
-}
-
-static void
 epc_consumer_class_init (EpcConsumerClass *cls)
 {
   GObjectClass *oclass = G_OBJECT_CLASS (cls);
@@ -464,7 +455,6 @@ epc_consumer_class_init (EpcConsumerClass *cls)
   oclass->set_property = epc_consumer_set_property;
   oclass->get_property = epc_consumer_get_property;
   oclass->constructed = epc_consumer_constructed;
-  oclass->finalize = epc_consumer_finalize;
   oclass->dispose = epc_consumer_dispose;
 
   g_object_class_install_property (oclass, PROP_NAME,

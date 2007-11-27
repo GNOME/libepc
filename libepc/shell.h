@@ -70,8 +70,6 @@ struct _EpcShellProgressHooks
   gpointer reserved5;
 };
 
-void                  epc_shell_ref                      (void);
-void                  epc_shell_unref                    (void);
 void                  epc_shell_leave                    (void);
 void                  epc_shell_enter                    (void);
 

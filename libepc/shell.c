@@ -63,7 +63,6 @@ epc_shell_default_progress_hooks =
   end: g_free
 };
 
-static volatile gint  epc_shell_ref_count = 0;
 static AvahiGLibPoll *epc_shell_avahi_poll = NULL;
 static AvahiClient   *epc_shell_avahi_client = NULL;
 static GArray        *epc_shell_watches = NULL;
@@ -77,29 +76,51 @@ static GDestroyNotify                epc_shell_progress_destroy_data = NULL;
 
 gboolean _epc_debug = FALSE;
 
-/**
- * epc_shell_ref:
- *
- * Increases the reference count for this library. When called for the first
- * time essential resources are allocated. Each call to this function should 
- * be paired with a call to #epc_shell_unref.
- */
-void
-epc_shell_ref (void)
+static void
+epc_shell_exit (void)
 {
-  if (0 == g_atomic_int_exchange_and_add (&epc_shell_ref_count, 1))
+  if (_epc_debug)
+    g_debug ("%s: releasing libepc resources", G_STRLOC);
+
+  if (NULL != epc_shell_avahi_client)
+    {
+      avahi_client_free (epc_shell_avahi_client);
+      epc_shell_avahi_client = NULL;
+    }
+
+  if (epc_shell_avahi_poll)
+    {
+      avahi_glib_poll_free (epc_shell_avahi_poll);
+      epc_shell_avahi_poll = NULL;
+    }
+
+  epc_shell_threads_enter = NULL;
+  epc_shell_threads_leave = NULL;
+}
+
+static void
+epc_shell_init (void)
+{
+  if (G_UNLIKELY (NULL == epc_shell_avahi_poll))
+    {
+      gnutls_global_init ();
+      avahi_set_allocator (avahi_glib_allocator ());
+      g_atexit (epc_shell_exit);
+
+      epc_shell_avahi_poll = avahi_glib_poll_new (NULL, G_PRIORITY_DEFAULT);
+      g_assert (NULL != epc_shell_avahi_poll);
+    }
+}
+
+static void
+epc_shell_threads_init (void)
+{
+  static gboolean uninitialized = FALSE;
+
+  if (G_UNLIKELY (uninitialized))
     {
       GModule *module;
       gpointer symbol;
-
-      if (g_getenv ("EPC_DEBUG"))
-        _epc_debug = TRUE;
-
-      gnutls_global_init ();
-      avahi_set_allocator (avahi_glib_allocator ());
-
-      g_assert (NULL == epc_shell_avahi_poll);
-      epc_shell_avahi_poll = avahi_glib_poll_new (NULL, G_PRIORITY_DEFAULT);
 
       g_assert (NULL == epc_shell_threads_enter);
       g_assert (NULL == epc_shell_threads_leave);
@@ -119,38 +140,7 @@ epc_shell_ref (void)
                  epc_shell_threads_enter, epc_shell_threads_leave);
 
       g_module_close (module);
-    }
-
-  if (G_UNLIKELY (_epc_debug))
-    g_debug ("%s: %d", G_STRFUNC, epc_shell_ref_count);
-}
-
-/**
- * epc_shell_unref:
- *
- * Decreases the reference count for this library. When the reference count
- * reaches zero, global resources allocated by the library are released.
- */
-void
-epc_shell_unref (void)
-{
-  if (G_UNLIKELY (_epc_debug))
-    g_debug ("%s: %d", G_STRFUNC, epc_shell_ref_count);
-
-  if (g_atomic_int_dec_and_test (&epc_shell_ref_count))
-    {
-      if (NULL != epc_shell_avahi_client)
-        {
-          avahi_client_free (epc_shell_avahi_client);
-          epc_shell_avahi_client = NULL;
-        }
-
-      g_assert (NULL != epc_shell_avahi_poll);
-      avahi_glib_poll_free (epc_shell_avahi_poll);
-      epc_shell_avahi_poll = NULL;
-
-      epc_shell_threads_enter = NULL;
-      epc_shell_threads_leave = NULL;
+      uninitialized = FALSE;
     }
 }
 
@@ -164,6 +154,8 @@ epc_shell_unref (void)
 void
 epc_shell_leave (void)
 {
+  epc_shell_threads_init ();
+
   if (epc_shell_threads_leave)
     epc_shell_threads_leave ();
 }
@@ -178,6 +170,8 @@ epc_shell_leave (void)
 void
 epc_shell_enter (void)
 {
+  epc_shell_threads_init ();
+
   if (epc_shell_threads_enter)
     epc_shell_threads_enter ();
 }
@@ -290,6 +284,8 @@ epc_shell_get_avahi_client (GError **error)
   if (G_UNLIKELY (NULL == epc_shell_avahi_client))
     {
       gint error_code = AVAHI_OK;
+
+      epc_shell_init ();
 
       epc_shell_avahi_client =
         avahi_client_new (avahi_glib_poll_get (epc_shell_avahi_poll),

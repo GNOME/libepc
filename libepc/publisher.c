@@ -538,8 +538,6 @@ epc_publisher_server_auth_cb (SoupServerAuthContext *auth_ctx G_GNUC_UNUSED,
 static void
 epc_publisher_init (EpcPublisher *self)
 {
-  epc_shell_ref ();
-
   self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self, EPC_TYPE_PUBLISHER, EpcPublisherPrivate);
 
   self->priv->protocol = EPC_PROTOCOL_HTTPS;
@@ -878,20 +876,12 @@ epc_publisher_dispose (GObject *object)
 }
 
 static void
-epc_publisher_finalize (GObject *object)
-{
-  G_OBJECT_CLASS (epc_publisher_parent_class)->finalize (object);
-  epc_shell_unref ();
-}
-
-static void
 epc_publisher_class_init (EpcPublisherClass *cls)
 {
   GObjectClass *oclass = G_OBJECT_CLASS (cls);
 
   oclass->set_property = epc_publisher_set_property;
   oclass->get_property = epc_publisher_get_property;
-  oclass->finalize = epc_publisher_finalize;
   oclass->dispose = epc_publisher_dispose;
 
   g_object_class_install_property (oclass, PROP_PROTOCOL,

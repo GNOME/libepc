@@ -37,9 +37,6 @@ epc_test_init (gint test_count)
   g_assert (test_mask <= EPC_TEST_MASK_USER);
   epc_test_result = EPC_TEST_MASK_INIT | test_mask;
 
-  epc_shell_ref ();
-  g_atexit (epc_shell_unref);
-
   if (NULL == epc_test_loop)
     epc_test_loop = g_main_loop_new (NULL, FALSE);
 

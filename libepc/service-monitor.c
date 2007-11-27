@@ -89,8 +89,6 @@ G_DEFINE_TYPE (EpcServiceMonitor, epc_service_monitor, G_TYPE_OBJECT);
 static void
 epc_service_monitor_init (EpcServiceMonitor *self)
 {
-  epc_shell_ref ();
-
   self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self,
                                             EPC_TYPE_SERVICE_MONITOR,
                                             EpcServiceMonitorPrivate);
@@ -307,13 +305,6 @@ epc_service_monitor_dispose (GObject *object)
 }
 
 static void
-epc_service_monitor_finalize (GObject *object)
-{
-  G_OBJECT_CLASS (epc_service_monitor_parent_class)->finalize (object);
-  epc_shell_unref ();
-}
-
-static void
 epc_service_monitor_class_init (EpcServiceMonitorClass *cls)
 {
   GObjectClass *oclass = G_OBJECT_CLASS (cls);
@@ -321,7 +312,6 @@ epc_service_monitor_class_init (EpcServiceMonitorClass *cls)
   oclass->set_property = epc_service_monitor_set_property;
   oclass->get_property = epc_service_monitor_get_property;
   oclass->constructed = epc_service_monitor_constructed;
-  oclass->finalize = epc_service_monitor_finalize;
   oclass->dispose = epc_service_monitor_dispose;
 
   g_object_class_install_property (oclass, PROP_DOMAIN,

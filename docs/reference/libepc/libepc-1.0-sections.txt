@@ -194,8 +194,6 @@ EpcShellProgressHooks
 <TITLE>EpcShell</TITLE>
 epc_shell_enter
 epc_shell_leave
-epc_shell_ref
-epc_shell_unref
 
 <SUBSECTION>
 epc_shell_progress_begin
