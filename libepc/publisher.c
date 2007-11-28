@@ -208,6 +208,7 @@ struct _EpcPublisherPrivate
   gchar                 *private_key_file;
 };
 
+G_LOCK_DEFINE (epc_publisher_lock);
 G_DEFINE_TYPE (EpcPublisher, epc_publisher, G_TYPE_OBJECT);
 
 static EpcResource*
@@ -361,6 +362,7 @@ epc_publisher_handle_get_path (SoupServerContext *context,
       return;
     }
 
+  G_LOCK (epc_publisher_lock);
   key = epc_publisher_get_key (context->path);
 
   if (key)
@@ -395,6 +397,8 @@ epc_publisher_handle_get_path (SoupServerContext *context,
 
       g_signal_connect_swapped (message, "finished", G_CALLBACK (epc_contents_unref), contents);
     }
+
+  G_UNLOCK (epc_publisher_lock);
 }
 
 static void
@@ -407,6 +411,8 @@ epc_publisher_handle_list_path (SoupServerContext *context,
   GList *iter;
 
   GString *contents = g_string_new (NULL);
+
+  G_LOCK (epc_publisher_lock);
 
   if (g_str_has_prefix (context->path, "/list/") && '\0' != context->path[6])
     files = epc_publisher_list (self, context->path + 6);
@@ -438,6 +444,8 @@ epc_publisher_handle_list_path (SoupServerContext *context,
 
   g_string_free (contents, FALSE);
   g_list_free (files);
+
+  G_UNLOCK (epc_publisher_lock);
 }
 
 static void
@@ -454,6 +462,8 @@ epc_publisher_handle_root (SoupServerContext *context,
 
       GList *files;
       GList *iter;
+
+      G_LOCK (epc_publisher_lock);
 
       files = epc_publisher_list (self, NULL);
       files = g_list_sort (files, (GCompareFunc) g_utf8_collate);
@@ -495,6 +505,8 @@ epc_publisher_handle_root (SoupServerContext *context,
 
       g_string_free (contents, FALSE);
       g_list_free (files);
+
+      G_UNLOCK (epc_publisher_lock);
     }
   else
     soup_message_set_status (message, SOUP_STATUS_NOT_FOUND);
@@ -513,6 +525,8 @@ epc_publisher_server_auth_cb (SoupServerAuthContext *auth_ctx G_GNUC_UNUSED,
   const SoupUri *uri;
 
   uri = soup_message_get_uri (message);
+
+  G_LOCK (epc_publisher_lock);
 
   context.auth = auth;
   context.publisher = EPC_PUBLISHER (data);
@@ -545,6 +559,8 @@ epc_publisher_server_auth_cb (SoupServerAuthContext *auth_ctx G_GNUC_UNUSED,
   if (EPC_DEBUG_LEVEL (1))
     g_debug ("%s: path=%s, resource=%p, auth_handler=%p, authorized=%d", G_STRLOC,
              uri->path, resource, resource ? resource->auth_handler : NULL, authorized);
+
+  G_UNLOCK (epc_publisher_lock);
 
   return authorized;
 }
@@ -1198,8 +1214,12 @@ epc_publisher_add_handler (EpcPublisher      *self,
   g_return_if_fail (NULL != handler);
   g_return_if_fail (NULL != key);
 
+  G_LOCK (epc_publisher_lock);
+
   resource = epc_resource_new (handler, user_data, destroy_data);
   g_hash_table_insert (self->priv->resources, g_strdup (key), resource);
+
+  G_UNLOCK (epc_publisher_lock);
 }
 
 /**
@@ -1286,8 +1306,12 @@ gboolean
 epc_publisher_remove (EpcPublisher *self,
                       const gchar  *key)
 {
+  gboolean success;
+
   g_return_val_if_fail (EPC_IS_PUBLISHER (self), FALSE);
   g_return_val_if_fail (NULL != key, FALSE);
+
+  G_LOCK (epc_publisher_lock);
 
   if (self->priv->default_bookmark &&
       g_str_equal (key, self->priv->default_bookmark))
@@ -1299,7 +1323,11 @@ epc_publisher_remove (EpcPublisher *self,
         epc_publisher_announce (self);
     }
 
-  return g_hash_table_remove (self->priv->resources, key);
+  success = g_hash_table_remove (self->priv->resources, key);
+
+  G_UNLOCK (epc_publisher_lock);
+
+  return success;
 }
 
 static void
@@ -1352,9 +1380,13 @@ epc_publisher_list (EpcPublisher *self,
   if (pattern && *pattern)
     context.pattern = g_pattern_spec_new (pattern);
 
+  G_LOCK (epc_publisher_lock);
+
   g_hash_table_foreach (self->priv->resources,
                         epc_publisher_list_cb,
                         &context);
+
+  G_UNLOCK (epc_publisher_lock);
 
   if (context.pattern)
     g_pattern_spec_free (context.pattern);
@@ -1399,12 +1431,16 @@ epc_publisher_set_auth_handler (EpcPublisher   *self,
   g_return_if_fail (EPC_IS_PUBLISHER (self));
   g_return_if_fail (NULL != handler);
 
+  G_LOCK (epc_publisher_lock);
+
   resource = epc_publisher_find_resource (self, key);
 
   if (resource)
     epc_resource_set_auth_handler (resource, handler, user_data, destroy_data);
   else
     g_warning ("%s: No resource handler found for key `%s'", G_STRFUNC, key);
+
+  G_UNLOCK (epc_publisher_lock);
 }
 
 /**
@@ -1441,6 +1477,8 @@ epc_publisher_add_bookmark (EpcPublisher *self,
 
   g_return_if_fail (EPC_IS_PUBLISHER (self));
 
+  G_LOCK (epc_publisher_lock);
+
   resource = epc_publisher_find_resource (self, key);
 
   if (resource)
@@ -1455,6 +1493,8 @@ epc_publisher_add_bookmark (EpcPublisher *self,
     }
   else
     g_warning ("%s: No resource handler found for key `%s'", G_STRFUNC, key);
+
+  G_UNLOCK (epc_publisher_lock);
 }
 
 /**

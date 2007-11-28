@@ -1,5 +1,19 @@
 2007-11-28  Mathias Hasselmann  <mathias@openismus.com>
 
+	Libsoup uses threads to invoke HTTP request handlers. Therefore some
+	locking has to be used to protect central data structures of the
+	publisher. Let's hope that:
+
+	  1) I protected all critical data structures
+	  2) really balanced all lock/unlock calls
+	  3) produced no dead locks
+
+	Did I mention that I hate threads?
+
+	* libepc/publisher.c: Add epc_publisher_lock and use it.
+
+2007-11-28  Mathias Hasselmann  <mathias@openismus.com>
+
 	Demonstrate epc_publisher_add_bookmark in simple-publisher example.
 
 	* examples/simple-publisher.c: Use epc_publisher_add_bookmark.
