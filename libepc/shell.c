@@ -425,15 +425,23 @@ epc_shell_create_service_browser (AvahiIfIndex                interface,
 
 /**
  * epc_shell_get_host_name:
+ * @error: return location for a #GError, or %NULL
  *
- * Query the official host name of this machine.
+ * Retrieves the official host name of this machine. On failure the function
+ * returns %NULL and sets @error. The error domain is #EPC_AVAHI_ERROR.
+ * Possible error codes are those of the <citetitle>Avahi</citetitle> library.
  *
  * Returns: The official host name, or %NULL on error.
  */
 G_CONST_RETURN gchar*
-epc_shell_get_host_name (void)
+epc_shell_get_host_name (GError **error)
 {
-  return avahi_client_get_host_name (epc_shell_get_avahi_client (NULL));
+  AvahiClient *client = epc_shell_get_avahi_client (error);
+
+  if (client)
+    return avahi_client_get_host_name (client);
+
+  return NULL;
 }
 
 static void

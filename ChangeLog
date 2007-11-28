@@ -1,5 +1,16 @@
 2007-11-27  Mathias Hasselmann  <mathias@openismus.com>
 
+	Add error argument to epc_shell_get_host_name to allow usage,
+	even if no Avahi clients has been created yet.
+
+	* libepc/shell.c, libepc/shell.h:
+	Add error argument to epc_shell_get_host_name.
+	* libepc/publisher.c, libepc/publisher.h:
+	Add error argument to epc_publisher_get_url and propagate
+	errors reported by epc_shell_get_host_name.
+
+2007-11-27  Mathias Hasselmann  <mathias@openismus.com>
+
 	Correct XML problems in epc_consumer_lookup documentation.
 
 	* libepc/consumer.c: Drop the angle brackets.

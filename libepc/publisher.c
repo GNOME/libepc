@@ -596,7 +596,7 @@ epc_publisher_announce (EpcPublisher  *self)
 
   g_free (service);
 
-  service = epc_publisher_get_url (self, NULL);
+  service = epc_publisher_get_url (self, NULL, NULL);
   g_print ("%s: listening on %s\n", G_STRFUNC, service);
   g_free (service);
 }
@@ -656,23 +656,24 @@ epc_publisher_create_server (EpcPublisher  *self,
       NULL == self->priv->certificate_file ||
       NULL == self->priv->private_key_file))
     {
-      GError *error = NULL;
+      GError *tls_error = NULL;
       const gchar *host;
 
       g_free (self->priv->certificate_file);
       g_free (self->priv->private_key_file);
 
-      host = epc_shell_get_host_name ();
+      host = epc_shell_get_host_name (error);
 
-      if (!epc_tls_get_server_credentials (host,
+      if (NULL != host &&
+          !epc_tls_get_server_credentials (host,
                                            &self->priv->certificate_file,
                                            &self->priv->private_key_file,
-                                           &error))
+                                           &tls_error))
         {
           self->priv->protocol = EPC_PROTOCOL_HTTP;
           g_warning ("%s: Cannot retrieve server credentials, using insecure transport protocol: %s",
-                     G_STRFUNC, error ? error->message : "No error details available.");
-          g_clear_error (&error);
+                     G_STRFUNC, tls_error ? tls_error->message : "No error details available.");
+          g_clear_error (&tls_error);
 
         }
     }
@@ -1076,17 +1077,22 @@ epc_publisher_add_handler (EpcPublisher      *self,
  * epc_publisher_get_url:
  * @publisher: a #EpcPublisher
  * @key: the resource key to inspect, or %NULL
+ * @error: return location for a #GError, or %NULL
  *
  * Queries the fully qualified URL for accessing the resource published under
  * @key. This is useful when referencing keys in published resources. When
  * passing %NULL the publisher's base URL is returned.
  *
- * Returns: The fully qualified URL for @key, or the publisher's
- * base URL when passing %NULL for @key.
+ * Fails if the publisher's host name cannot be retrieved. In that case %NULL
+ * is returned and @error is set. The error domain is #EPC_AVAHI_ERROR.
+ * Possible error codes are those of the <citetitle>Avahi</citetitle> library.
+ *
+ * Returns: The fully qualified URL for @key, or %NULL on error.
  */
 gchar*
-epc_publisher_get_url (EpcPublisher *self,
-                       const gchar  *key)
+epc_publisher_get_url (EpcPublisher  *self,
+                       const gchar   *key,
+                       GError       **error)
 {
   gchar *path = NULL;
   gchar *url = NULL;
@@ -1100,7 +1106,9 @@ epc_publisher_get_url (EpcPublisher *self,
   port = epc_publisher_get_port (self);
 
   if (!host)
-    host = epc_shell_get_host_name ();
+    host = epc_shell_get_host_name (error);
+  if (!host)
+    return NULL;
 
   if (key)
     {
