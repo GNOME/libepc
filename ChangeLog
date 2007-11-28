@@ -1,5 +1,14 @@
 2007-11-27  Mathias Hasselmann  <mathias@openismus.com>
 
+	Add epc_shell_expand_name for constructing service names.
+
+	* docs/reference/libepc/libepc-1.0-sections.txt: Update symbols.
+	* libepc/shell.c, libepc/shell.h: Add epc_shell_expand_name.
+	* Makefile.am, tests/.gitignore: Add tests/test-expand-name.c.
+	* tests/test-expand-name.c: Test epc_shell_expand_name.
+
+2007-11-27  Mathias Hasselmann  <mathias@openismus.com>
+
 	Add error argument to epc_shell_get_host_name to allow usage,
 	even if no Avahi clients has been created yet.
 

@@ -31,6 +31,7 @@
 #include <gnutls/gnutls.h>
 
 #include <stdlib.h>
+#include <string.h>
 
 /**
  * SECTION:shell
@@ -398,7 +399,7 @@ epc_shell_create_avahi_entry_group (AvahiEntryGroupCallback callback,
  *
  * Creates a new #AvahiServiceBrowser for the library's shared #AvahiClient.
  * On success the newly created #AvahiEntryGroup is returned. On failure
- * %NULL is returned and @error is set.The error domain is #EPC_AVAHI_ERROR.
+ * %NULL is returned and @error is set. The error domain is #EPC_AVAHI_ERROR.
  * Possible error codes are those of the <citetitle>Avahi</citetitle> library.
  *
  * Returns: The newly created #AvahiServiceBrowser, or %NULL on error.
@@ -421,6 +422,154 @@ epc_shell_create_service_browser (AvahiIfIndex                interface,
                                          domain, flags, callback, user_data);
 
   return browser;
+}
+
+static gchar*
+epc_utf8_strtitle (const gchar *str,
+                   gssize       len)
+{
+    gunichar     first_chr;
+    gchar        first_str[7];
+    gint         first_len;
+
+    const gchar *tail_str;
+    gsize        tail_len;
+
+    gchar       *lower_str;
+    gsize        lower_len;
+
+    gchar       *title_str;
+
+    g_return_val_if_fail (NULL != str, NULL);
+
+    if (-1 == len)
+      len = strlen (str);
+
+    first_chr = g_utf8_get_char_validated (str, len);
+
+    if ((gint) first_chr < 0)
+      return NULL;
+
+    first_chr = g_unichar_totitle (first_chr);
+    first_len = g_unichar_to_utf8 (first_chr, first_str);
+
+    tail_str = g_utf8_next_char (str);
+    tail_len = len - (tail_str - str);
+
+    lower_str = g_utf8_strdown (tail_str, tail_len);
+    lower_len = strlen (lower_str);
+
+    len = first_len + lower_len;
+    title_str = g_new (gchar, len + 1);
+    title_str[len] = '\0';
+
+    memcpy (title_str, first_str, first_len);
+    memcpy (title_str + first_len, lower_str, lower_len);
+
+    g_free (lower_str);
+
+    return title_str;
+}
+
+/**
+ * epc_shell_expand_name:
+ * @name: a service name with placeholders
+ * @error: return location for a #GError, or %NULL
+ *
+ * Expands all known placeholders in @name. Supported placeholders are:
+ *
+ * <itemizedlist>
+ *  <listitem>%%a: the program name as returned by #g_get_application_name</listitem>
+ *  <listitem>%%h: the machine's host name in title case</listitem>
+ *  <listitem>%%u: the user's login name in title case</listitem>
+ *  <listitem>%%U: the user's real name</listitem>
+ *  <listitem>%%: the percent sign</listitem>
+ * </itemizedlist>
+ *
+ * The function fails when the host name cannot looked up. In that case %NULL
+ * is returned and @error is set. The error domain is #EPC_AVAHI_ERROR.
+ * Possible error codes are those of the <citetitle>Avahi</citetitle> library.
+ *
+ * Returns: The @name with all known placeholders expanded, or %NULL on error.
+ */
+gchar*
+epc_shell_expand_name (const gchar  *name,
+                       GError      **error)
+{
+  gchar *tcase_host = NULL;
+  const gchar *host = NULL;
+  const gchar *tail = NULL;
+
+  GString *expand = NULL;
+
+  if (NULL == name)
+    name = _("%a of %u on %h");
+
+  host = epc_shell_get_host_name (error);
+
+  if (NULL == host)
+    return NULL;
+
+  expand = g_string_new (NULL);
+
+  while (NULL != (tail = strchr (name, '%')))
+    {
+      const gchar *subst = NULL;
+      gchar *temp_str1 = NULL;
+      gchar *temp_str2 = NULL;
+      gsize  temp_len;
+
+      g_string_append_len (expand, name, tail - name);
+
+      switch (tail[1])
+        {
+          case 'u':
+            temp_str1 = g_filename_to_utf8 (g_get_user_name (), -1, NULL, &temp_len, NULL);
+            temp_str2 = epc_utf8_strtitle (temp_str1, temp_len);
+            subst = temp_str2;
+            break;
+
+          case 'U':
+            temp_str1 = g_filename_to_utf8 (g_get_real_name (), -1, NULL, NULL, NULL);
+            subst = temp_str1;
+            break;
+            break;
+
+          case 'a':
+            subst = g_get_application_name ();
+            break;
+
+          case 'h':
+            if (!tcase_host)
+              tcase_host = epc_utf8_strtitle (host, -1);
+
+            subst = tcase_host;
+            break;
+
+          case '%':
+            subst = "%";
+            break;
+        }
+
+      if (subst)
+        {
+          g_string_append (expand, subst);
+          name = tail + 2;
+        }
+      else
+        {
+          g_string_append_c (expand, *tail);
+          name = tail + 1;
+        }
+
+      g_free (temp_str2);
+      g_free (temp_str1);
+    }
+
+  g_string_append (expand, name);
+  g_free (tcase_host);
+
+  return g_string_free (expand, FALSE);
 }
 
 /**
