@@ -1,5 +1,12 @@
 2007-11-28  Mathias Hasselmann  <mathias@openismus.com>
 
+	Of course I've created a dead lock. Using GStaticRecMutex now.
+
+	* libepc/publisher.c: Change type of epc_publisher_lock
+	from GStaticMutex to GStaticRecMutex.
+
+2007-11-28  Mathias Hasselmann  <mathias@openismus.com>
+
 	Libsoup uses threads to invoke HTTP request handlers. Therefore some
 	locking has to be used to protect central data structures of the
 	publisher. Let's hope that:
