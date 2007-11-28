@@ -130,13 +130,16 @@ main (int   argc,
   if (basic_auth)
     epc_publisher_set_auth_flags (publisher, EPC_AUTH_PASSWORD_TEXT_NEEDED);
 
+  /* Create dynamic bookmark for the builtin HTTP server */
+
+  epc_publisher_add_bookmark (publisher, NULL, NULL);
+
   if (1 == argc)
     {
       /* Publish some default values,
        * as no arguments are passed on the command line. */
 
       epc_publisher_add (publisher, "test", "value", -1);
-      epc_publisher_add_file (publisher, "source-code", __FILE__);
       epc_publisher_add_handler (publisher, "date", timestamp_handler, "%x", NULL);
       epc_publisher_add_handler (publisher, "time", timestamp_handler, "%X", NULL);
       epc_publisher_add_handler (publisher, "date-time", timestamp_handler, "%x %X", NULL);
@@ -146,6 +149,13 @@ main (int   argc,
       epc_publisher_set_auth_handler (publisher, "sensitive",
                                       authentication_handler,
                                       "secret" /* user_data */, NULL);
+
+      epc_publisher_add_file (publisher, "source-code", __FILE__);
+
+      /* Create dynamic bookmark for this example */
+
+      epc_publisher_add_bookmark (publisher, "source-code",
+                                  "Source code of a simple publisher");
     }
   else
     {

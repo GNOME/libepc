@@ -1,5 +1,11 @@
 2007-11-28  Mathias Hasselmann  <mathias@openismus.com>
 
+	Demonstrate epc_publisher_add_bookmark in simple-publisher example.
+
+	* examples/simple-publisher.c: Use epc_publisher_add_bookmark.
+
+2007-11-28  Mathias Hasselmann  <mathias@openismus.com>
+
 	Reuse epc_publisher_list function for HTTP request handlers.
 
 	* libepc/publisher.c: Remove epc_publisher_list_resource_item_xml and
