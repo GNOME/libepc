@@ -31,6 +31,8 @@
 #include <glib/gi18n-lib.h>
 #include <glib/gstdio.h>
 
+#include <uuid/uuid.h>
+
 /**
  * SECTION:tls
  * @short_description: TLS support
@@ -381,6 +383,7 @@ epc_tls_certificate_new (const gchar            *hostname,
   gint rc = GNUTLS_E_SUCCESS;
   gnutls_x509_crt_t crt = NULL;
   time_t now = time (NULL);
+  uuid_t serial;
 
   g_return_val_if_fail (NULL != key, NULL);
   g_return_val_if_fail (NULL != hostname, NULL);
@@ -388,10 +391,12 @@ epc_tls_certificate_new (const gchar            *hostname,
   if (EPC_DEBUG_LEVEL (1))
     g_debug ("%s: Generating self signed server certificate for `%s'", G_STRLOC, hostname);
 
+  uuid_generate_time (serial);
+
   epc_tls_check (rc = gnutls_x509_crt_init (&crt));
   epc_tls_check (rc = gnutls_x509_crt_set_version (crt, 1));
   epc_tls_check (rc = gnutls_x509_crt_set_key (crt, key));
-  epc_tls_check (rc = gnutls_x509_crt_set_serial (crt, "", 1));
+  epc_tls_check (rc = gnutls_x509_crt_set_serial (crt, serial, sizeof serial));
   epc_tls_check (rc = gnutls_x509_crt_set_activation_time (crt, now));
   epc_tls_check (rc = gnutls_x509_crt_set_expiration_time (crt, now + validity));
   epc_tls_check (rc = gnutls_x509_crt_set_subject_alternative_name (crt, GNUTLS_SAN_DNSNAME, hostname));
