@@ -64,12 +64,14 @@ epc_tls_error_quark (void)
 
 static gchar*
 epc_tls_get_filename (const gchar *hostname,
-                      const gchar *category)
+                      const gchar *extension)
 {
   const gchar *progname = g_get_prgname ();
+  gchar *filename = NULL;
+  gchar *basename = NULL;
 
   g_return_val_if_fail (NULL != hostname, NULL);
-  g_return_val_if_fail (NULL != category, NULL);
+  g_return_val_if_fail (NULL != extension, NULL);
 
   if (NULL == progname)
     {
@@ -80,8 +82,13 @@ epc_tls_get_filename (const gchar *hostname,
       progname = "";
     }
 
-  return g_build_filename (g_get_user_config_dir (), progname,
-                           "libepc", category, hostname, NULL);
+  basename = g_strconcat (hostname, extension, NULL);
+  filename = g_build_filename (g_get_user_config_dir (),
+                               "libepc", progname,
+                               basename, NULL);
+
+  g_free (basename);
+  return filename;
 }
 
 /**
@@ -98,7 +105,7 @@ epc_tls_get_filename (const gchar *hostname,
 gchar*
 epc_tls_get_private_key_filename (const gchar *hostname)
 {
-  return epc_tls_get_filename (hostname, "keys");
+  return epc_tls_get_filename (hostname, ".key");
 }
 
 /**
@@ -115,7 +122,7 @@ epc_tls_get_private_key_filename (const gchar *hostname)
 gchar*
 epc_tls_get_certificate_filename (const gchar *hostname)
 {
-  return epc_tls_get_filename (hostname, "certs");
+  return epc_tls_get_filename (hostname, ".crt");
 }
 
 static gpointer

@@ -1,5 +1,11 @@
 2007-11-28  Mathias Hasselmann  <mathias@openismus.com>
 
+	Use lower directory hierarchy for storing certificates.
+
+	* libepc/tls.c: Modify epc_tls_get_filename.
+
+2007-11-28  Mathias Hasselmann  <mathias@openismus.com>
+
 	Use a time based UUID as serial for self-signed certificates.
 
 	* configure.ac: Check for uuid >= 1.36.
