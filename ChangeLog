@@ -7,6 +7,7 @@
 2007-11-28  Mathias Hasselmann  <mathias@openismus.com>
 
 	Use a time based UUID as serial for self-signed certificates.
+	Bug #500251.
 
 	* configure.ac: Check for uuid >= 1.36.
 	* libepc/tls.c: Pass UUID to gnutls_x509_crt_set_serial.
@@ -166,8 +167,8 @@
 
 2007-11-26  Murray Cumming  <murrayc@murrayc.com>
 
-	* configure.ac: Depend on gnutls 1.4 instead of 1.6, because it 
-	works too.
+	* configure.ac: Depend on gnutls 1.4 instead of 1.6,
+	because it works too. Bug #500251.
 
 2007-11-24  Mathias Hasselmann  <mathias@openismus.com>
 
