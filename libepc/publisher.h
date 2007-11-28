@@ -176,9 +176,15 @@ void                  epc_publisher_set_auth_handler     (EpcPublisher      *pub
                                                           gpointer           user_data,
                                                           GDestroyNotify     destroy_data);
 
-gchar*                epc_publisher_get_url              (EpcPublisher      *publisher,
+void                  epc_publisher_add_bookmark         (EpcPublisher      *publisher,
+                                                          const gchar       *key,
+                                                          const gchar       *label);
+
+gchar*                epc_publisher_get_path             (const gchar       *key);
+gchar*                epc_publisher_get_uri              (EpcPublisher      *publisher,
                                                           const gchar       *key,
                                                           GError           **error);
+
 gboolean              epc_publisher_remove               (EpcPublisher      *publisher,
                                                           const gchar       *key);
 GList*                epc_publisher_list                 (EpcPublisher      *publisher,

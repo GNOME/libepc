@@ -177,6 +177,8 @@ struct _EpcResource
   EpcAuthHandler     auth_handler;
   gpointer           auth_user_data;
   GDestroyNotify     auth_destroy_data;
+
+  EpcDispatcher     *dispatcher;
 };
 
 /**
@@ -188,8 +190,9 @@ struct _EpcPublisherPrivate
 {
   EpcDispatcher         *dispatcher;
 
-  EpcResource           *default_resource;
   GHashTable            *resources;
+  EpcResource           *default_resource;
+  gchar                 *default_bookmark;
 
   gboolean               server_started;
   GMainLoop             *server_loop;
@@ -227,8 +230,12 @@ epc_resource_free (gpointer data)
 {
   EpcResource *self = data;
 
+  if (self->dispatcher)
+    g_object_unref (self->dispatcher);
   if (self->destroy_data)
     self->destroy_data (self->user_data);
+  if (self->auth_destroy_data)
+    self->auth_destroy_data (self->auth_user_data);
 
   g_slice_free (EpcResource, self);
 }
@@ -246,6 +253,27 @@ epc_resource_set_auth_handler (EpcResource    *self,
   self->auth_handler = handler;
   self->auth_user_data = user_data;
   self->auth_destroy_data = destroy_data;
+}
+
+static void
+epc_resource_announce (EpcResource *self,
+                       const gchar *label)
+{
+  if (!self->dispatcher)
+    {
+      GError *error = NULL;
+
+      self->dispatcher = epc_dispatcher_new (label);
+
+      /* TODO: real error reporting */
+      if (!epc_dispatcher_run (self->dispatcher, &error))
+        {
+          g_warning ("%s: %s", G_STRFUNC, error->message);
+          g_clear_error (&error);
+        }
+    }
+  else
+    epc_dispatcher_set_name (self->dispatcher, label);
 }
 
 static EpcContents*
@@ -569,38 +597,142 @@ epc_publisher_get_port (EpcPublisher *self)
   return soup_server_get_port (self->priv->server);
 }
 
-static void
-epc_publisher_announce (EpcPublisher  *self)
+static const gchar*
+epc_publisher_get_bookmark_type (EpcPublisher *self)
 {
-  const gchar *host;
-  struct sockaddr *sockaddr;
-  gint addrlen;
+  switch (self->priv->protocol)
+    {
+      case EPC_PROTOCOL_HTTP:
+        return "_http._tcp";
 
-  gchar *service;
+      case EPC_PROTOCOL_HTTPS:
+        return "_https._tcp";
+
+      case EPC_PROTOCOL_UNKNOWN:
+        break;
+    }
+
+  return NULL;
+}
+
+static void
+epc_publisher_find_bookmarks_cb (gpointer key,
+                                 gpointer value,
+                                 gpointer data)
+{
+  EpcResource *resource = value;
+  GSList **bookmarks = data;
+
+  if (resource->dispatcher)
+    {
+      *bookmarks = g_slist_prepend (*bookmarks, resource);
+      *bookmarks = g_slist_prepend (*bookmarks, key);
+    }
+}
+
+static EpcResource*
+epc_publisher_find_resource (EpcPublisher   *self,
+                             const gchar    *key)
+{
+  if (NULL != key)
+    return g_hash_table_lookup (self->priv->resources, key);
+
+  if (NULL == self->priv->default_resource)
+    self->priv->default_resource = epc_resource_new (NULL, NULL, NULL);
+
+  return self->priv->default_resource;
+}
+
+static void
+epc_publisher_announce (EpcPublisher *self)
+{
+  EpcResource *default_bookmark = NULL;
+  GSList *bookmarks = NULL;
+  GSList *iter;
+
+  const gchar *bookmark_type;
+  const gchar *service_type;
+  gchar *service_sub_type;
+
+  const gchar *host;
+  struct sockaddr *addr;
+  gint addrlen;
   gint port;
 
   g_return_if_fail (SOUP_IS_SERVER (self->priv->server));
 
-  service = epc_service_type_new (self->priv->protocol, self->priv->application);
+  /* compute service types */
 
-  host = epc_publisher_get_host (self, &sockaddr, &addrlen);
+  service_sub_type = epc_service_type_new (self->priv->protocol,
+                                           self->priv->application);
+  service_type = epc_protocol_get_service_type (self->priv->protocol);
+  bookmark_type = epc_publisher_get_bookmark_type (self);
+
+  /* compute service address */
+
+  host = epc_publisher_get_host (self, &addr, &addrlen);
   port = epc_publisher_get_port (self);
+
+  /* find all bookmark resources */
+
+  g_hash_table_foreach (self->priv->resources,
+                        epc_publisher_find_bookmarks_cb,
+                        &bookmarks);
+
+  if (self->priv->default_bookmark)
+    default_bookmark = epc_publisher_find_resource (self, self->priv->default_bookmark);
+
+  if (default_bookmark)
+    {
+      bookmarks = g_slist_prepend (bookmarks, default_bookmark);
+      bookmarks = g_slist_prepend (bookmarks, self->priv->default_bookmark);
+    }
+
+  /* announce the easy-publish service */
 
   epc_dispatcher_reset (self->priv->dispatcher);
 
-  epc_dispatcher_add_service (self->priv->dispatcher, sockaddr->sa_family,
-                              epc_protocol_get_service_type (self->priv->protocol),
-                              self->priv->service_domain, host, port, NULL);
+  epc_dispatcher_add_service (self->priv->dispatcher, addr->sa_family,
+                              service_type, self->priv->service_domain,
+                              host, port, NULL);
 
   epc_dispatcher_add_service_subtype (self->priv->dispatcher,
-                                      epc_protocol_get_service_type (self->priv->protocol),
-                                      service);
+                                      service_type, service_sub_type);
 
-  g_free (service);
+  /* announce dynamic bookmarks */
 
-  service = epc_publisher_get_url (self, NULL, NULL);
-  g_print ("%s: listening on %s\n", G_STRFUNC, service);
-  g_free (service);
+  for (iter = bookmarks; iter; iter = iter->next->next)
+    {
+      EpcDispatcher *dispatcher = self->priv->dispatcher;
+      EpcResource *resource = iter->next->data;
+      const gchar *key = iter->data;
+
+      gchar *path = epc_publisher_get_path (key);
+      gchar *path_record = g_strconcat ("path=", path, NULL);
+
+      if (resource->dispatcher)
+        {
+          dispatcher = resource->dispatcher;
+          epc_dispatcher_reset (dispatcher);
+        }
+
+      if (EPC_DEBUG_LEVEL (1))
+        g_debug ("%s: Creating dynamic %s bookmark for %s: %s", G_STRLOC,
+                 bookmark_type, key, epc_dispatcher_get_name (dispatcher));
+
+      epc_dispatcher_add_service (dispatcher, addr->sa_family, bookmark_type,
+                                  self->priv->service_domain, host, port,
+                                  path_record, NULL);
+
+      g_free (path_record);
+      g_free (path);
+    }
+
+  /* release resources */
+
+  g_free (service_sub_type);
+  g_slist_free (bookmarks);
+
 }
 
 static gboolean
@@ -610,7 +742,7 @@ epc_publisher_is_server_created (EpcPublisher *self)
 }
 
 static G_CONST_RETURN gchar*
-epc_publisher_find_name (EpcPublisher *self)
+epc_publisher_compute_name (EpcPublisher *self)
 {
   const gchar *name = self->priv->service_name;
 
@@ -643,10 +775,12 @@ static gboolean
 epc_publisher_create_server (EpcPublisher  *self,
                              GError       **error)
 {
+  gchar *base_uri;
+
   g_return_val_if_fail (!epc_publisher_is_server_created (self), FALSE);
   g_return_val_if_fail (NULL == self->priv->dispatcher, FALSE);
 
-  self->priv->dispatcher = epc_dispatcher_new (epc_publisher_find_name (self));
+  self->priv->dispatcher = epc_dispatcher_new (epc_publisher_compute_name (self));
 
   if (!epc_dispatcher_run (self->priv->dispatcher, error))
     return FALSE;
@@ -701,6 +835,10 @@ epc_publisher_create_server (EpcPublisher  *self,
 
   epc_publisher_announce (self);
 
+  base_uri = epc_publisher_get_uri (self, NULL, NULL);
+  g_print ("%s: listening on %s\n", G_STRFUNC, base_uri);
+  g_free (base_uri);
+
   return TRUE;
 }
 
@@ -743,7 +881,7 @@ epc_publisher_set_property (GObject      *object,
 
         if (self->priv->dispatcher)
           epc_dispatcher_set_name (self->priv->dispatcher,
-                                   epc_publisher_find_name (self));
+                                   epc_publisher_compute_name (self));
 
         break;
 
@@ -872,6 +1010,9 @@ epc_publisher_dispose (GObject *object)
 
   g_free (self->priv->application);
   self->priv->application = NULL;
+
+  g_free (self->priv->default_bookmark);
+  self->priv->default_bookmark = NULL;
 
   G_OBJECT_CLASS (epc_publisher_parent_class)->dispose (object);
 }
@@ -1076,23 +1217,50 @@ epc_publisher_add_handler (EpcPublisher      *self,
 }
 
 /**
- * epc_publisher_get_url:
+ * epc_publisher_get_path:
+ * @publisher: a #EpcPublisher
+ * @key: the resource key to inspect, or %NULL
+ *
+ * Queries the path component of the URI used to publish the resource
+ * associated with @key. This is useful when referencing keys in published
+ * resources. When passing %NULL the publisher's base path is returned.
+ *
+ * Returns: The resource path for @key.
+ */
+gchar*
+epc_publisher_get_path (const gchar *key)
+{
+  gchar *path = NULL;
+
+  if (key)
+    {
+      gchar *encoded_key = soup_uri_encode (key, NULL);
+      path = g_strconcat ("/get/", encoded_key, NULL);
+      g_free (encoded_key);
+    }
+
+  return path;
+}
+
+/**
+ * epc_publisher_get_uri:
  * @publisher: a #EpcPublisher
  * @key: the resource key to inspect, or %NULL
  * @error: return location for a #GError, or %NULL
  *
- * Queries the fully qualified URL for accessing the resource published under
- * @key. This is useful when referencing keys in published resources. When
- * passing %NULL the publisher's base URL is returned.
+ * Queries the URI used to publish the resource associated with @key.
+ * This is useful when referencing keys in published resources. When
+ * passing %NULL the publisher's base URI is returned.
  *
- * Fails if the publisher's host name cannot be retrieved. In that case %NULL
- * is returned and @error is set. The error domain is #EPC_AVAHI_ERROR.
- * Possible error codes are those of the <citetitle>Avahi</citetitle> library.
+ * The function fails if the publisher's host name cannot be retrieved.
+ * In that case %NULL is returned and @error is set. The error domain is
+ * #EPC_AVAHI_ERROR. Possible error codes are those of the
+ * <citetitle>Avahi</citetitle> library.
  *
- * Returns: The fully qualified URL for @key, or %NULL on error.
+ * Returns: The fully qualified URI for @key, or %NULL on error.
  */
 gchar*
-epc_publisher_get_url (EpcPublisher  *self,
+epc_publisher_get_uri (EpcPublisher  *self,
                        const gchar   *key,
                        GError       **error)
 {
@@ -1112,13 +1280,7 @@ epc_publisher_get_url (EpcPublisher  *self,
   if (!host)
     return NULL;
 
-  if (key)
-    {
-      gchar *encoded_key = soup_uri_encode (key, NULL);
-      path = g_strconcat ("/get/", encoded_key, NULL);
-      g_free (encoded_key);
-    }
-
+  path = epc_publisher_get_path (key);
   url = epc_protocol_build_uri (self->priv->protocol, host, port, path);
   g_free (path);
 
@@ -1140,6 +1302,16 @@ epc_publisher_remove (EpcPublisher *self,
 {
   g_return_val_if_fail (EPC_IS_PUBLISHER (self), FALSE);
   g_return_val_if_fail (NULL != key, FALSE);
+
+  if (self->priv->default_bookmark &&
+      g_str_equal (key, self->priv->default_bookmark))
+    {
+      g_free (self->priv->default_bookmark);
+      self->priv->default_bookmark = NULL;
+
+      if (self->priv->server)
+        epc_publisher_announce (self);
+    }
 
   return g_hash_table_remove (self->priv->resources, key);
 }
@@ -1222,8 +1394,10 @@ epc_publisher_list (EpcPublisher *self,
  * the publisher is destroyed, the function
  * described by @destroy_data is called with @user_data as argument.
  *
- * This should be called after adding the key, not before. For instance, 
- * after calling #epc_publisher_add.
+ * <note><para>
+ *  This should be called after adding the resource identified by @key,
+ *  not before. For instance, after calling #epc_publisher_add.
+ * </para></note>
  *
  * See also #epc_publisher_set_auth_flags.
  */
@@ -1239,25 +1413,62 @@ epc_publisher_set_auth_handler (EpcPublisher   *self,
   g_return_if_fail (EPC_IS_PUBLISHER (self));
   g_return_if_fail (NULL != handler);
 
-  if (NULL != key)
-    {
-      resource = g_hash_table_lookup (self->priv->resources, key);
+  resource = epc_publisher_find_resource (self, key);
 
-      if (NULL == resource)
-        {
-          g_warning ("%s: No resource handler found for key `%s'", G_STRFUNC, key);
-          return;
-        }
+  if (resource)
+    epc_resource_set_auth_handler (resource, handler, user_data, destroy_data);
+  else
+    g_warning ("%s: No resource handler found for key `%s'", G_STRFUNC, key);
+}
+
+/**
+ * epc_publisher_add_bookmark:
+ * @publisher: a #EpcResource
+ * @key: the key of the resource to publish, or %NULL
+ * @label: the bookmark's label, or %NULL
+ *
+ * Installs a dynamic HTTP (respectively HTTPS) bookmark for @key.
+ * This allows consumption of #EpcPublisher resources by foreign
+ * applications that support ZeroConf bookmarks, but not libepc.
+ * This is useful for instance for publishing media playlists.
+ *
+ * Passing %NULL as @key installs a bookmark for the root context of the
+ * builtin web server. When passing %NULL as @label the publisher's name
+ * is used as bookmark label.
+ *
+ * <note><para>
+ *  Dynamic bookmarks must be unique within the service domain.
+ *  Therefore the @label will get modified on name collisions.
+ * </para></note>
+ *
+ * <note><para>
+ *  This should be called after adding the resource identified by @key,
+ *  not before. For instance, after calling #epc_publisher_add.
+ * </para></note>
+ */
+void
+epc_publisher_add_bookmark (EpcPublisher *self,
+                            const gchar  *key,
+                            const gchar  *description)
+{
+  EpcResource *resource;
+
+  g_return_if_fail (EPC_IS_PUBLISHER (self));
+
+  resource = epc_publisher_find_resource (self, key);
+
+  if (resource)
+    {
+      if (description)
+        epc_resource_announce (resource, description);
+      else
+        self->priv->default_bookmark = g_strdup (key);
+
+      if (self->priv->server)
+        epc_publisher_announce (self);
     }
   else
-    {
-      if (NULL == self->priv->default_resource)
-        self->priv->default_resource = epc_resource_new (NULL, NULL, NULL);
-
-      resource = self->priv->default_resource;
-    }
-
-  epc_resource_set_auth_handler (resource, handler, user_data, destroy_data);
+    g_warning ("%s: No resource handler found for key `%s'", G_STRFUNC, key);
 }
 
 /**

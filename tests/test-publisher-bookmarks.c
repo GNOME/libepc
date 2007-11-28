@@ -1,7 +1,9 @@
 /* Test that changing of the publisher's service name gets announced */
 
 #include "framework.h"
-#include "libepc/publisher.h"
+
+#include <libepc/publisher.h>
+#include <libepc/shell.h>
 
 static gchar *first_name = NULL;
 static gchar *second_name = NULL;
@@ -17,20 +19,23 @@ service_browser_cb (AvahiServiceBrowser     *browser G_GNUC_UNUSED,
                     AvahiLookupResultFlags   flags,
                     void                    *data G_GNUC_UNUSED)
 {
-  EpcPublisher *publisher = data;
-
   if (AVAHI_BROWSER_NEW == event &&
       0 != (flags & AVAHI_LOOKUP_RESULT_LOCAL) &&
-      type && g_str_equal (type, EPC_SERVICE_TYPE_HTTP) && name)
+      type && name)
     {
       if (g_str_equal (name, first_name))
         {
-          epc_test_pass_once (1 << 1);
-          epc_publisher_set_service_name (publisher, second_name);
+          if (g_str_equal (type, EPC_SERVICE_TYPE_HTTP))
+            epc_test_pass_once (1 << 1);
+          if (g_str_equal (type, "_http._tcp"))
+            epc_test_pass_once (1 << 2);
         }
 
       if (g_str_equal (name, second_name))
-        epc_test_pass_once (1 << 2);
+        {
+          if (g_str_equal (type, "_http._tcp"))
+            epc_test_pass_once (1 << 3);
+        }
     }
 }
 
@@ -58,13 +63,23 @@ main (int   argc G_GNUC_UNUSED,
   publisher = epc_publisher_new (first_name, NULL, NULL);
   epc_publisher_set_protocol (publisher, EPC_PROTOCOL_HTTP);
 
-  if (epc_test_init (3) &&
+  epc_publisher_add (publisher, "cookie", "Yummy: A tasty, brown cookie.", -1);
+  epc_publisher_add_bookmark (publisher, "cookie", second_name);
+
+  epc_publisher_add (publisher, "egg", "What an easter egg...", -1);
+  epc_publisher_add_bookmark (publisher, "egg", NULL);
+
+  if (epc_test_init (4) &&
       epc_test_init_service_browser (EPC_SERVICE_TYPE_HTTP, service_browser_cb, publisher) &&
+      epc_test_init_service_browser ("_http._tcp", service_browser_cb, publisher) &&
       epc_publisher_run_async (publisher, &error))
     {
       epc_test_pass_once (1 << 0);
       result = epc_test_run ();
     }
+
+  while (EPC_DEBUG_LEVEL (99))
+    result = epc_test_run ();
 
   if (error)
     {

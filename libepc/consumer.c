@@ -910,7 +910,7 @@ epc_consumer_lookup (EpcConsumer  *self,
   g_return_val_if_fail (EPC_IS_CONSUMER (self), NULL);
   g_return_val_if_fail (NULL != key, NULL);
 
-  path = g_strconcat ("/get/", key, NULL);
+  path = epc_publisher_get_path (key);
   request = epc_consumer_create_request (self, path);
   g_free (path);
 

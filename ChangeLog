@@ -1,5 +1,17 @@
 2007-11-28  Mathias Hasselmann  <mathias@openismus.com>
 
+	Support dynamic ZeroConf bookmarks.
+
+	* libepc/publisher.c, libepc/publisher.h:
+	Add epc_publisher_add_bookmark and epc_publisher_get_path.
+	Rename epc_publisher_get_url to epc_publisher_get_uri.
+	* libepc/consumer.c: Use epc_publisher_get_path.
+	* Makefile.am, tests/.gitignore: Add test-publisher-change-name.
+	* tests/test-publisher-change-name.c: Test epc_publisher_add_bookmark.
+	* docs/reference/libepc/libepc-1.0-sections.txt: Update symbols.
+
+2007-11-28  Mathias Hasselmann  <mathias@openismus.com>
+
 	Move epc_test_goto_if_fail to tests/framework.h.
 
 	* tests/framework.h: Add epc_test_goto_if_fail.

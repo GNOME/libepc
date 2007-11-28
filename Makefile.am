@@ -44,6 +44,7 @@ TESTS = \
 	tests/test-dispatcher-subtypes \
 	tests/test-expand-name \
 	tests/test-progress-hooks \
+	tests/test-publisher-bookmarks \
 	tests/test-publisher-change-name \
 	tests/test-publisher-libsoup-494128 \
 	tests/test-service-type
@@ -166,6 +167,8 @@ tests_test_expand_name_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 tests_test_expand_name_LDADD			= libepc/libepc-1.0.la tests/libepc-tests.la
 tests_test_progress_hooks_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS)
 tests_test_progress_hooks_LDADD			= libepc/libepc-1.0.la libepc-ui/libepc-ui-1.0.la tests/libepc-tests.la
+tests_test_publisher_bookmarks_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+tests_test_publisher_bookmarks_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la
 tests_test_publisher_change_name_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 tests_test_publisher_change_name_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la
 tests_test_publisher_libsoup_494128_CFLAGS      = $(AM_CFLAGS) $(LIBEPC_CFLAGS)

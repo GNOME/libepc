@@ -45,8 +45,10 @@ epc_publisher_new
 epc_publisher_add
 epc_publisher_add_file
 epc_publisher_add_handler
+epc_publisher_add_bookmark
+epc_publisher_get_path
+epc_publisher_get_uri
 epc_publisher_remove
-epc_publisher_get_url
 epc_publisher_list
 
 <SUBSECTION>
