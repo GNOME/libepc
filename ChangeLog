@@ -1,5 +1,17 @@
 2007-11-28  Mathias Hasselmann  <mathias@openismus.com>
 
+	Rename epc_shell_expand_name to epc_publisher_expand_name: EpcShell
+	is private API, and the function is related to publishing anyway.
+
+	* libepc/publisher.c, libepc/publisher.h:
+	Add epc_publisher_expand_name and epc_utf8_strtitle.
+	* libepc/shell.c, libepc/shell.h:
+	Remove epc_shell_expand_name and epc_utf8_strtitle.
+	* tests/test-expand-name.c: Use epc_publisher_expand_name.
+	* docs/reference/libepc/libepc-1.0-sections.txt: Update symbols.
+
+2007-11-28  Mathias Hasselmann  <mathias@openismus.com>
+
 	Correct the EpcProgressWindow constructor to properly assign the
 	parent window by calling gtk_window_set_transient_for, instead
 	of setting the "parent" property.

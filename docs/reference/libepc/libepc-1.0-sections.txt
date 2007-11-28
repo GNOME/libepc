@@ -55,6 +55,9 @@ epc_publisher_run_async
 epc_publisher_quit
 
 <SUBSECTION>
+epc_publisher_expand_name
+
+<SUBSECTION>
 epc_publisher_set_auth_handler
 epc_publisher_set_credentials
 epc_publisher_set_protocol
@@ -210,7 +213,6 @@ EPC_AVAHI_ERROR
 epc_shell_watch_avahi_client_state
 epc_shell_create_avahi_entry_group
 epc_shell_create_service_browser
-epc_shell_expand_name
 epc_shell_get_host_name
 epc_shell_watch_remove
 

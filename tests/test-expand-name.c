@@ -1,3 +1,4 @@
+#include <libepc/publisher.h>
 #include <libepc/shell.h>
 #include <locale.h>
 
@@ -25,7 +26,7 @@ test_expand_name (void)
     const gchar *pattern;
     gchar *expected;
   } tests[] = {
-    { NULL,             epc_shell_expand_name ("%a of %u on %h", &error) },
+    { NULL,             epc_publisher_expand_name ("%a of %u on %h", &error) },
     { "Plain Text",     g_strdup ("Plain Text") },
 
     { "%%a: %a",        g_strconcat ("%a: ", g_get_application_name (), NULL) },
@@ -44,7 +45,7 @@ test_expand_name (void)
 
   for (i = 0; i < G_N_ELEMENTS (tests); ++i)
     {
-      gchar *expand = epc_shell_expand_name (tests[i].pattern, &error);
+      gchar *expand = epc_publisher_expand_name (tests[i].pattern, &error);
       gboolean success = g_str_equal (expand, tests[i].expected);
 
       g_print ("%d: \"%s\" => \"%s\": %s\n", 

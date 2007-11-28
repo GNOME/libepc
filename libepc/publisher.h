@@ -190,6 +190,9 @@ gboolean              epc_publisher_run_async            (EpcPublisher      *pub
                                                           GError           **error);
 void                  epc_publisher_quit                 (EpcPublisher      *publisher);
 
+gchar*                epc_publisher_expand_name          (const gchar       *name,
+                                                          GError           **error);
+
 EpcPublisher*         epc_auth_context_get_publisher     (EpcAuthContext    *context);
 G_CONST_RETURN gchar* epc_auth_context_get_key           (EpcAuthContext    *context);
 G_CONST_RETURN gchar* epc_auth_context_get_password      (EpcAuthContext    *context);
