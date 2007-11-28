@@ -164,7 +164,6 @@ struct _EpcAuthContext
 struct _EpcListContext
 {
   GPatternSpec *pattern;
-  GString *buffer;
   GList *matches;
 };
 
@@ -399,76 +398,46 @@ epc_publisher_handle_get_path (SoupServerContext *context,
 }
 
 static void
-epc_publisher_list_resource_item_xml (gpointer key,
-                                      gpointer value G_GNUC_UNUSED,
-                                      gpointer data)
-{
-  EpcListContext *context = data;
-
-  if (NULL == context->pattern ||
-      g_pattern_match_string (context->pattern, key))
-    {
-      gchar *markup = g_markup_escape_text (key, -1);
-
-      g_string_append (context->buffer, "<item><name>");
-      g_string_append (context->buffer, markup);
-      g_string_append (context->buffer, "</name></item>");
-
-      g_free (markup);
-    }
-}
-
-static void
 epc_publisher_handle_list_path (SoupServerContext *context,
                                 SoupMessage       *message,
                                 gpointer           data)
 {
-  EpcListContext list_context;
   EpcPublisher *self = data;
+  GList *files = NULL;
+  GList *iter;
 
-  list_context.buffer = g_string_new ("<list>");
-  list_context.pattern = NULL;
+  GString *contents = g_string_new (NULL);
 
   if (g_str_has_prefix (context->path, "/list/") && '\0' != context->path[6])
-    list_context.pattern = g_pattern_spec_new (context->path + 6);
+    files = epc_publisher_list (self, context->path + 6);
 
-  g_hash_table_foreach (self->priv->resources,
-                        epc_publisher_list_resource_item_xml,
-                        &list_context);
+  g_string_append (contents, "<list>");
 
-  g_string_append (list_context.buffer, "</list>");
+  for (iter = files; iter; iter = iter->next)
+    {
+      gchar *markup = g_markup_escape_text (iter->data, -1);
+
+      g_string_append (contents, "<item><name>");
+      g_string_append (contents, markup);
+      g_string_append (contents, "</name></item>");
+
+      g_free (iter->data);
+      g_free (markup);
+    }
+
+  g_string_append (contents, "</list>");
 
   soup_message_set_response (message, "text/xml",
                              SOUP_BUFFER_USER_OWNED,
-                             list_context.buffer->str,
-                             list_context.buffer->len);
+                             contents->str, contents->len);
   soup_message_set_status (message, SOUP_STATUS_OK);
 
   g_signal_connect_swapped (message, "finished",
                             G_CALLBACK (g_free),
-                            list_context.buffer->str);
+                            contents->str);
 
-  if (list_context.pattern)
-    g_pattern_spec_free (list_context.pattern);
-
-  g_string_free (list_context.buffer, FALSE);
-}
-
-static void
-epc_publisher_list_resource_item_html (gpointer key,
-                                       gpointer value G_GNUC_UNUSED,
-                                       gpointer data)
-{
-  gchar *markup = g_markup_escape_text (key, -1);
-  GString *contents = data;
-
-  g_string_append (contents, "<li><a href=\"/get/");
-  g_string_append (contents, markup);
-  g_string_append (contents, "\">");
-  g_string_append (contents, markup);
-  g_string_append (contents, "</a></li>");
-
-  g_free (markup);
+  g_string_free (contents, FALSE);
+  g_list_free (files);
 }
 
 static void
@@ -480,21 +449,38 @@ epc_publisher_handle_root (SoupServerContext *context,
 
   if (g_str_equal (context->path, "/"))
     {
-      GString *contents;
-      gchar *title;
+      GString *contents = g_string_new (NULL);
+      gchar *markup;
 
-      title = g_markup_escape_text (self->priv->service_name, -1);
-      contents = g_string_new (NULL);
+      GList *files;
+      GList *iter;
+
+      files = epc_publisher_list (self, NULL);
+      files = g_list_sort (files, (GCompareFunc) g_utf8_collate);
+
+      markup = g_markup_escape_text (self->priv->service_name, -1);
 
       g_string_append (contents, "<html><head><title>");
-      g_string_append (contents, title);
+      g_string_append (contents, markup);
       g_string_append (contents, "</title></head><body><h1>");
-      g_string_append (contents, title);
+      g_string_append (contents, markup);
       g_string_append (contents, "</h1><ul>");
 
-      g_hash_table_foreach (self->priv->resources,
-                            epc_publisher_list_resource_item_html,
-                            contents);
+      g_free (markup);
+
+      for (iter = files; iter; iter = iter->next)
+        {
+          markup = g_markup_escape_text (iter->data, -1);
+
+          g_string_append (contents, "<li><a href=\"/get/");
+          g_string_append (contents, markup);
+          g_string_append (contents, "\">");
+          g_string_append (contents, markup);
+          g_string_append (contents, "</a></li>");
+
+          g_free (iter->data);
+          g_free (markup);
+        }
 
       g_string_append (contents, "</ul></body></html>");
 
@@ -508,7 +494,7 @@ epc_publisher_handle_root (SoupServerContext *context,
                                 contents->str);
 
       g_string_free (contents, FALSE);
-      g_free (title);
+      g_list_free (files);
     }
   else
     soup_message_set_status (message, SOUP_STATUS_NOT_FOUND);
