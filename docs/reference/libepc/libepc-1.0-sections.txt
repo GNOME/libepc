@@ -305,6 +305,9 @@ EpcServiceMonitorPrivate
 EpcServiceMonitor
 epc_service_monitor_new
 epc_service_monitor_new_for_types
+epc_service_monitor_set_skip_our_own
+epc_service_monitor_get_skip_our_own
+
 <SUBSECTION Standard>
 epc_service_monitor_get_type
 EPC_IS_SERVICE_MONITOR

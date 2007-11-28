@@ -78,16 +78,20 @@ struct _EpcServiceMonitorClass
                            const gchar       *type);
 };
 
-GType              epc_service_monitor_get_type      (void) G_GNUC_CONST;
+GType              epc_service_monitor_get_type         (void) G_GNUC_CONST;
 
-EpcServiceMonitor* epc_service_monitor_new           (const gchar *application,
-                                                      const gchar *domain,
-                                                      EpcProtocol  first_protocol,
-                                                                   ...);
-EpcServiceMonitor* epc_service_monitor_new_for_types (const gchar *domain,
-                                                      const gchar *first_service_type,
-                                                                   ...)
-                                                      G_GNUC_NULL_TERMINATED;
+EpcServiceMonitor* epc_service_monitor_new              (const gchar *application,
+                                                         const gchar *domain,
+                                                         EpcProtocol  first_protocol,
+                                                                      ...);
+EpcServiceMonitor* epc_service_monitor_new_for_types    (const gchar *domain,
+                                                         const gchar *first_service_type,
+                                                                      ...)
+                                                         G_GNUC_NULL_TERMINATED;
+
+void               epc_service_monitor_set_skip_our_own (EpcServiceMonitor *monitor,
+                                                         gboolean           setting);
+gboolean           epc_service_monitor_get_skip_our_own (EpcServiceMonitor *monitor);
 
 G_END_DECLS
 

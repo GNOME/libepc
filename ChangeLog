@@ -1,5 +1,14 @@
 2007-11-27  Mathias Hasselmann  <mathias@openismus.com>
 
+	Add "skip-our-own" property to EpcServiceMonitor which
+	allows ignoring of services announced by the current process.
+
+	* docs/reference/libepc/libepc-1.0-sections.txt: Update symbols.
+	* libepc/service-monitor.c, libepc/service-monitor.h: Add
+	"skip-our-own" property.
+
+2007-11-27  Mathias Hasselmann  <mathias@openismus.com>
+
 	Add epc_shell_expand_name for constructing service names.
 
 	* docs/reference/libepc/libepc-1.0-sections.txt: Update symbols.

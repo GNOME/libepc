@@ -57,7 +57,8 @@ enum
   PROP_NONE,
   PROP_SERVICE_TYPES,
   PROP_APPLICATION,
-  PROP_DOMAIN
+  PROP_DOMAIN,
+  PROP_SKIP_OUR_OWN
 };
 
 enum
@@ -79,6 +80,7 @@ struct _EpcServiceMonitorPrivate
   gchar   *application;
   gchar   *domain;
   gchar  **types;
+  gboolean skip_our_own;
 };
 
 static guint signals[SIGNAL_LAST];
@@ -118,6 +120,10 @@ epc_service_monitor_set_property (GObject      *object,
         self->priv->domain = g_value_dup_string (value);
         break;
 
+      case PROP_SKIP_OUR_OWN:
+        self->priv->skip_our_own = g_value_get_boolean (value);
+        break;
+
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
         break;
@@ -144,6 +150,10 @@ epc_service_monitor_get_property (GObject    *object,
 
       case PROP_DOMAIN:
         g_value_set_string (value, self->priv->domain);
+        break;
+
+      case PROP_SKIP_OUR_OWN:
+        g_value_set_boolean (value, self->priv->skip_our_own);
         break;
 
       default:
@@ -202,9 +212,11 @@ epc_service_monitor_browser_cb (AvahiServiceBrowser    *browser,
   switch (event)
     {
       case AVAHI_BROWSER_NEW:
-        avahi_service_resolver_new (client, interface, protocol, name,
-                                    type, domain, AVAHI_PROTO_UNSPEC, 0,
-                                    epc_service_monitor_resolver_cb, self);
+        if (!self->priv->skip_our_own || !(flags & AVAHI_LOOKUP_RESULT_OUR_OWN))
+          avahi_service_resolver_new (client, interface, protocol, name,
+                                      type, domain, AVAHI_PROTO_UNSPEC, 0,
+                                      epc_service_monitor_resolver_cb, self);
+
         break;
 
       case AVAHI_BROWSER_REMOVE:
@@ -336,6 +348,15 @@ epc_service_monitor_class_init (EpcServiceMonitorClass *cls)
                                                       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
                                                       G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                       G_PARAM_STATIC_BLURB));
+
+  g_object_class_install_property (oclass, PROP_SKIP_OUR_OWN,
+                                   g_param_spec_boolean ("skip-our-own", "Skip our Own",
+                                                         "Skip services of the current application",
+                                                         FALSE,
+                                                         G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
+                                                         G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
+                                                         G_PARAM_STATIC_BLURB));
+  
 
   /**
    * EpcServiceMonitor::service-found:
@@ -491,4 +512,34 @@ epc_service_monitor_new (const gchar *application,
                        "application", application,
                        "domain", domain,
                        NULL);
+}
+
+/**
+ * epc_service_monitor_set_skip_our_own:
+ * @monitor: a #EpcServiceMonitor
+ * @setting: the new setting
+ *
+ * Updates the #EpcServiceMonitor::skip-our-own property.
+ */
+void
+epc_service_monitor_set_skip_our_own (EpcServiceMonitor *self,
+                                      gboolean           setting)
+{
+  g_return_if_fail (EPC_IS_SERVICE_MONITOR (self));
+  g_object_set (self, "skip-our-own", setting, NULL);
+}
+
+/**
+ * epc_service_monitor_get_skip_our_own:
+ * @monitor: a #EpcServiceMonitor
+ *
+ * Queries the current value of the #EpcServiceMonitor::skip-our-own property.
+ *
+ * Returns: The current value of the #EpcServiceMonitor::skip-our-own property
+ */
+gboolean
+epc_service_monitor_get_skip_our_own (EpcServiceMonitor *self)
+{
+  g_return_val_if_fail (EPC_IS_SERVICE_MONITOR (self), FALSE);
+  return self->priv->skip_our_own;
 }
