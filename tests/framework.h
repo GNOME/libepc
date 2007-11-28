@@ -30,6 +30,14 @@ G_BEGIN_DECLS
 #define epc_test_pass_once(mask) (_epc_test_pass (G_STRLOC, TRUE, (mask)))
 #define epc_test_quit()          (_epc_test_quit (G_STRLOC))
 
+#define epc_test_goto_if_fail(Test, Label) G_STMT_START{        \
+  if (!(Test))                                                  \
+    {                                                           \
+      g_warning ("%s: Assertion failed: %s", G_STRLOC, #Test);  \
+      goto Label;                                               \
+    }                                                           \
+}G_STMT_END
+
 enum
 {
   EPC_TEST_MASK_INIT = 128,

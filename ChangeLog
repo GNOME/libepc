@@ -1,5 +1,12 @@
 2007-11-28  Mathias Hasselmann  <mathias@openismus.com>
 
+	Move epc_test_goto_if_fail to tests/framework.h.
+
+	* tests/framework.h: Add epc_test_goto_if_fail.
+	* tests/test-consumer-by-name.c: Remove epc_test_goto_if_fail.
+
+2007-11-28  Mathias Hasselmann  <mathias@openismus.com>
+
 	Rename epc_shell_expand_name to epc_publisher_expand_name: EpcShell
 	is private API, and the function is related to publishing anyway.
 

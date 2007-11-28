@@ -1,13 +1,7 @@
 #include "libepc/consumer.h"
 #include "libepc/publisher.h"
 
-#define epc_test_goto_if_fail(Test, Label) G_STMT_START{        \
-  if (!(Test))                                                  \
-    {                                                           \
-      g_warning ("%s: Assertion failed: %s", G_STRLOC, #Test);  \
-      goto Label;                                               \
-    }                                                           \
-}G_STMT_END
+#include "framework.h"
 
 int
 main (void)
