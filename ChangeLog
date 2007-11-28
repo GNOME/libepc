@@ -1,3 +1,11 @@
+2007-11-28  Mathias Hasselmann  <mathias@openismus.com>
+
+	Correct the EpcProgressWindow constructor to properly assign the
+	parent window by calling gtk_window_set_transient_for, instead
+	of setting the "parent" property.
+
+	* libepc-ui/progress-window.c: Properly set parent window.
+
 2007-11-27  Mathias Hasselmann  <mathias@openismus.com>
 
 	Add "skip-our-own" property to EpcServiceMonitor which

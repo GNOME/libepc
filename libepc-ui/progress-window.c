@@ -168,7 +168,6 @@ epc_progress_window_set_property (GObject      *object,
 
       case PROP_PROGRESS:
         progress = g_value_get_double (value);
-        g_debug ("progress: %g", progress);
 
         if (progress >= 0 && progress <= 1)
           {
@@ -269,38 +268,22 @@ epc_progress_window_new (const gchar *title,
                          GtkWindow   *parent,
                          const gchar *message)
 {
-  GParameter params[5];
-  gint n_params = 4;
+  GtkWidget *self;
 
   g_return_val_if_fail (NULL != title, NULL);
   g_return_val_if_fail (NULL != message, NULL);
 
-  memset (params, 0, sizeof params);
+  self = g_object_new (EPC_TYPE_PROGRESS_WINDOW,
+                       "type", GTK_WINDOW_TOPLEVEL,
+                       "border-width", 12,
+                       "message", message,
+                       "title", title,
+                       NULL);
 
-  params[0].name = "border-width";
-  params[1].name = "message";
-  params[2].name = "title";
-  params[3].name = "type";
-  params[4].name = "parent";
+  if (GTK_IS_WINDOW (parent))
+    gtk_window_set_transient_for (GTK_WINDOW (self), parent);
 
-  g_value_init (&params[0].value, G_TYPE_INT);
-  g_value_init (&params[1].value, G_TYPE_STRING);
-  g_value_init (&params[2].value, G_TYPE_STRING);
-  g_value_init (&params[3].value, GTK_TYPE_WINDOW_TYPE);
-  g_value_init (&params[4].value, GTK_TYPE_WINDOW);
-
-  g_value_set_int    (&params[0].value, 12);
-  g_value_set_string (&params[1].value, message);
-  g_value_set_string (&params[2].value, title);
-  g_value_set_enum   (&params[3].value, GTK_WINDOW_TOPLEVEL);
-
-  if (parent)
-    {
-      g_value_set_object (&params[4].value, parent);
-      n_params += 1;
-    }
-
-  return g_object_newv (EPC_TYPE_PROGRESS_WINDOW, n_params, params);
+  return self;
 }
 
 /**
