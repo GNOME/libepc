@@ -1,3 +1,10 @@
+2007-11-29  Mathias Hasselmann  <mathias@openismus.com>
+
+	Remove documentation for non-existing publisher
+	argument of epc_publisher_get_path.
+
+	* libepc/publisher.c: Cleanup API docs.
+
 2007-11-28  Mathias Hasselmann  <mathias@openismus.com>
 
 	Of course I've created a dead lock. Using GStaticRecMutex now.

@@ -1227,7 +1227,6 @@ epc_publisher_add_handler (EpcPublisher      *self,
 
 /**
  * epc_publisher_get_path:
- * @publisher: a #EpcPublisher
  * @key: the resource key to inspect, or %NULL
  *
  * Queries the path component of the URI used to publish the resource
