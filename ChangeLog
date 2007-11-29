@@ -1,5 +1,13 @@
 2007-11-29  Mathias Hasselmann  <mathias@openismus.com>
 
+	Set G_DEBUG=fatal-warnings and EPC_DEBUG=1 on testing.
+
+	* libepc/dispatcher.c:
+	Just print a message, instead of a warning on service collisions.
+	* tests/test-runner.sh: Set G_DEBUG and EPC_DEBUG, if not set yet.
+
+2007-11-29  Mathias Hasselmann  <mathias@openismus.com>
+
 	Sanitize the progress-hook model by using just user_data.
 
 	* libepc/shell.c: Move epc_shell_default_progress_hooks into

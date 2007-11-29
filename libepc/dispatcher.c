@@ -406,7 +406,7 @@ epc_dispatcher_handle_collision (EpcDispatcher *self)
 
   alternative = avahi_alternative_service_name (self->priv->name);
 
-  g_warning ("%s: Service name collision for `%s', renaming to `%s'.",
+  g_message ("%s: Service name collision for `%s', renaming to `%s'.",
              G_STRLOC, self->priv->name, alternative);
 
   epc_dispatcher_foreach_service (self, epc_service_reset);
