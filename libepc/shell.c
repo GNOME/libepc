@@ -52,21 +52,6 @@ struct _EpcShellWatch
   GDestroyNotify destroy_data;
 };
 
-static gpointer epc_shell_progress_begin_default  (const gchar *title,
-                                                   const gchar *message,
-                                                   gpointer     user_data);
-static void     epc_shell_progress_update_default (gpointer     context,
-                                                   gdouble      progress,
-                                                   const gchar *message);
-
-static EpcShellProgressHooks
-epc_shell_default_progress_hooks =
-{
-  begin: epc_shell_progress_begin_default,
-  update: epc_shell_progress_update_default,
-  end: g_free
-};
-
 static AvahiGLibPoll *epc_shell_avahi_poll = NULL;
 static AvahiClient   *epc_shell_avahi_client = NULL;
 static gboolean       epc_shell_restart_avahi_client_allowed = TRUE;
@@ -75,7 +60,7 @@ static GArray        *epc_shell_watches = NULL;
 static void (*epc_shell_threads_enter)(void) = NULL;
 static void (*epc_shell_threads_leave)(void) = NULL;
 
-static const EpcShellProgressHooks  *epc_shell_progress_hooks = &epc_shell_default_progress_hooks;
+static const EpcShellProgressHooks  *epc_shell_progress_hooks = NULL;
 static gpointer                      epc_shell_progress_user_data = NULL;
 static GDestroyNotify                epc_shell_progress_destroy_data = NULL;
 
@@ -509,11 +494,26 @@ epc_shell_get_host_name (GError **error)
 }
 
 static void
-epc_shell_progress_update_default (gpointer     context,
-                                   gdouble      progress,
-                                   const gchar *message)
+epc_shell_progress_begin_default (const gchar *title,
+                                  gpointer     user_data)
 {
-  const gchar *title = context;
+  gchar **context = user_data;
+  g_assert (NULL != context);
+
+  if (title)
+    *context = g_strdup (title);
+}
+
+static void
+epc_shell_progress_update_default (gdouble      progress,
+                                   const gchar *message,
+                                   gpointer     user_data)
+{
+  const gchar **context = user_data;
+  const gchar *title;
+
+  g_assert (NULL != context);
+  title = *context;
 
   if (NULL == title)
     title = _("Progress Changed");
@@ -526,20 +526,14 @@ epc_shell_progress_update_default (gpointer     context,
     g_message ("%s: %s", title, message);
 }
 
-static gpointer
-epc_shell_progress_begin_default (const gchar *title,
-                                  const gchar *message,
-                                  gpointer     user_data G_GNUC_UNUSED)
+static void
+epc_shell_progress_end_default (gpointer     user_data)
 {
-  gpointer context = NULL;
-
-  if (title)
-    context = g_strdup (title);
-
-  epc_shell_progress_update_default (context, -1, message);
-
-  return context;
+  gchar **context = user_data;
+  g_assert (NULL != context);
+  g_free (*context);
 }
+
 
 /**
  * epc_shell_set_progress_hooks:
@@ -564,7 +558,21 @@ epc_shell_set_progress_hooks (const EpcShellProgressHooks *hooks,
     epc_shell_progress_destroy_data (epc_shell_progress_user_data);
 
   if (NULL == hooks)
-    hooks = &epc_shell_default_progress_hooks;
+    {
+      static EpcShellProgressHooks default_hooks =
+      {
+        begin: epc_shell_progress_begin_default,
+        update: epc_shell_progress_update_default,
+        end: epc_shell_progress_end_default,
+      };
+
+      g_return_if_fail (NULL == user_data);
+      g_return_if_fail (NULL == destroy_data);
+
+      hooks = &default_hooks;
+      user_data = g_new0 (gchar*, 1);
+      destroy_data = g_free;
+    }
 
   epc_shell_progress_hooks = hooks;
   epc_shell_progress_user_data = user_data;
@@ -577,27 +585,29 @@ epc_shell_set_progress_hooks (const EpcShellProgressHooks *hooks,
  * @message: description of the lengthy operation
  *
  * Call this function before starting a lengthy operation to allow the
- * application tp provide some visual feedback during the operation, 
+ * application tp provide some visual feedback during the operation,
  * and to generally keep its UI responsive.
+ *
+ * This function calls your #EpcShellProgressHooks::begin hook with @title
+ * as argument and #EpcShellProgressHooks::update with @message.
  *
  * See also: #epc_shell_set_progress_hooks, #epc_progress_window_install,
  * #epc_shell_progress_update, #epc_shell_progress_end
- *
- * Returns: Context information that is passed to the other progress functions.
  */
-gpointer
+void
 epc_shell_progress_begin (const gchar *title,
                           const gchar *message)
 {
+  if (!epc_shell_progress_hooks)
+    epc_shell_set_progress_hooks (NULL, NULL, NULL);
   if (epc_shell_progress_hooks->begin)
-    return epc_shell_progress_hooks->begin (title, message, epc_shell_progress_user_data);
+    epc_shell_progress_hooks->begin (title, epc_shell_progress_user_data);
 
-  return NULL;
+  epc_shell_progress_update (-1, message);
 }
 
 /**
  * epc_shell_progress_update:
- * @context: the context information returned by #epc_shell_progress_begin
  * @percentage: current progress of the operation, or -1
  * @message: a description of the current progress
  *
@@ -609,19 +619,17 @@ epc_shell_progress_begin (const gchar *title,
  * epc_shell_progress_begin, #epc_shell_progress_end
  */
 void
-epc_shell_progress_update (gpointer     context,
-                           gdouble      percentage,
+epc_shell_progress_update (gdouble      percentage,
                            const gchar *message)
 {
   g_assert (NULL != epc_shell_progress_hooks);
 
   if (epc_shell_progress_hooks->update)
-    epc_shell_progress_hooks->update (context, percentage, message);
+    epc_shell_progress_hooks->update (percentage, message, epc_shell_progress_user_data);
 }
 
 /**
  * epc_shell_progress_end:
- * @context: the context information returned by #epc_shell_progress_begin
  *
  * Call this function when your lengthy operation has finished.
  *
@@ -629,12 +637,12 @@ epc_shell_progress_update (gpointer     context,
  * #epc_shell_progress_begin, #epc_shell_progress_update
  */
 void
-epc_shell_progress_end (gpointer context)
+epc_shell_progress_end (void)
 {
   g_assert (NULL != epc_shell_progress_hooks);
 
   if (epc_shell_progress_hooks->end)
-    epc_shell_progress_hooks->end (context);
+    epc_shell_progress_hooks->end (epc_shell_progress_user_data);
 }
 
 GQuark

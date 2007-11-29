@@ -257,7 +257,7 @@ epc_progress_window_class_init (EpcProgressWindowClass *cls)
  * epc_progress_window_new:
  * @title: the title of the window
  * @parent: the transient parent of the window, or %NULL
- * @message: the message to show
+ * @message: the message to show, or %NULL
  *
  * Creates a new #EpcProgressWindow instance.
  *
@@ -271,7 +271,6 @@ epc_progress_window_new (const gchar *title,
   GtkWidget *self;
 
   g_return_val_if_fail (NULL != title, NULL);
-  g_return_val_if_fail (NULL != message, NULL);
 
   self = g_object_new (EPC_TYPE_PROGRESS_WINDOW,
                        "type", GTK_WINDOW_TOPLEVEL,
@@ -307,44 +306,85 @@ epc_progress_window_update (EpcProgressWindow *self,
   g_object_set (self, "message", message, "progress", progress, NULL);
 }
 
-static gboolean
-epc_progress_window_idle_cb (gpointer data)
-{
-  gtk_widget_show (data);
-  return FALSE;
-}
+typedef struct _EpcProgressWindowContext EpcProgressWindowContext;
 
-static gpointer
-epc_progress_window_begin_cb (const gchar *title,
-                              const gchar *message,
-                              gpointer     parent)
+struct _EpcProgressWindowContext
 {
+  GtkWindow *parent;
   GtkWidget *window;
+};
 
-  window = epc_progress_window_new (title, parent, message);
-  g_idle_add (epc_progress_window_idle_cb, window);
+static void
+epc_progress_window_begin_cb (const gchar *title,
+                              gpointer     data)
+{
+  EpcProgressWindowContext *context = data;
 
-  return window;
+  g_return_if_fail (NULL != context);
+
+  context->window = epc_progress_window_new (title, context->parent, NULL);
 }
 
 static void
-epc_progress_window_update_cb (gpointer     context,
-                               gdouble      progress,
-                               const gchar *message)
+epc_progress_window_update_cb (gdouble      progress,
+                               const gchar *message,
+                               gpointer     data)
 {
-  g_return_if_fail (EPC_IS_PROGRESS_WINDOW (context));
+  EpcProgressWindowContext *context = data;
+
+  g_return_if_fail (NULL != context);
+  g_return_if_fail (EPC_IS_PROGRESS_WINDOW (context->window));
 
   if (progress < 0 || progress > 1)
     progress = -1;
 
-  epc_progress_window_update (context, progress, message);
+  epc_progress_window_update (EPC_PROGRESS_WINDOW (context->window),
+                              progress, message);
+
+  gtk_widget_show (context->window);
 }
 
 static void
-epc_progress_window_end_cb (gpointer context)
+epc_progress_window_end_cb (gpointer data)
 {
-  g_return_if_fail (EPC_IS_PROGRESS_WINDOW (context));
-  gtk_widget_destroy (context);
+  EpcProgressWindowContext *context = data;
+
+  g_return_if_fail (NULL != context);
+  g_return_if_fail (EPC_IS_PROGRESS_WINDOW (context->window));
+
+  gtk_widget_destroy (context->window);
+  context->window = NULL;
+}
+
+static EpcProgressWindowContext*
+epc_progress_window_context_new (GtkWindow *parent)
+{
+  EpcProgressWindowContext *self = g_new0 (EpcProgressWindowContext, 1);
+
+  if (parent)
+    self->parent = g_object_ref (parent);
+
+  return self;
+}
+
+static void
+epc_progress_window_context_free (gpointer data)
+{
+  EpcProgressWindowContext *self = data;
+
+  if (self->window)
+    {
+      gtk_widget_destroy (self->window);
+      self->window = NULL;
+    }
+
+  if (self->parent)
+    {
+      g_object_unref (self->parent);
+      self->parent = NULL;
+    }
+
+  g_free (self);
 }
 
 /**
@@ -365,5 +405,7 @@ epc_progress_window_install (GtkWindow *parent)
     end:    epc_progress_window_end_cb
   };
 
-  epc_shell_set_progress_hooks (&hooks, parent, NULL);
+  epc_shell_set_progress_hooks (&hooks,
+                                epc_progress_window_context_new (parent),
+                                epc_progress_window_context_free);
 }

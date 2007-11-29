@@ -5,7 +5,6 @@
 #include <gtk/gtk.h>
 
 static gchar test_title[] = "Test";
-static gchar test_start_message[] = "Start";
 static gchar test_update_message1[] = "Update #1";
 static gchar test_update_message2[] = "Update #2";
 static gchar test_update_message3[] = "Update #3";
@@ -14,26 +13,21 @@ static gchar test_update_message5[] = "Update #5";
 static gchar test_user_data[] = "User Data";
 static gchar test_context[] = "Context";
 
-static gpointer
+static void
 begin_cb (const gchar *title,
-          const gchar *message,
           gpointer     data)
 {
-  g_return_val_if_fail (title == test_title, NULL);
-  g_return_val_if_fail (message == test_start_message, NULL);
-  g_return_val_if_fail (data == test_user_data, NULL);
-
+  g_return_if_fail (title == test_title);
+  g_return_if_fail (data == test_user_data);
   epc_test_pass_once (1 << 0);
-
-  return test_context;
 }
 
 static void
-update_cb (gpointer     context,
-           gdouble      progress,
-           const gchar *message)
+update_cb (gdouble      progress,
+           const gchar *message,
+           gpointer     data)
 {
-  g_return_if_fail (context == test_context);
+  g_return_if_fail (data == test_user_data);
 
   switch ((int)((progress + 1) * 2))
     {
@@ -68,9 +62,9 @@ update_cb (gpointer     context,
 }
 
 static void
-end_cb (gpointer context)
+end_cb (gpointer data)
 {
-  g_return_if_fail (context == test_context);
+  g_return_if_fail (data == test_user_data);
   test_context[0] = '\0';
 }
 
@@ -112,7 +106,6 @@ main (int   argc,
     end:    end_cb
   };
 
-  gpointer context;
   gint i;
 
   epc_test_init (7);
@@ -140,25 +133,22 @@ main (int   argc,
             break;
         }
 
-      context = epc_shell_progress_begin (test_title, test_start_message);
+      epc_shell_progress_begin (test_title, test_update_message1);
       wait (3 == i);
 
-      epc_shell_progress_update (context,  -1, test_update_message1);
+      epc_shell_progress_update (0.0, test_update_message2);
       wait (3 == i);
 
-      epc_shell_progress_update (context, 0.0, test_update_message2);
+      epc_shell_progress_update (0.5, test_update_message3);
       wait (3 == i);
 
-      epc_shell_progress_update (context, 0.5, test_update_message3);
+      epc_shell_progress_update (1.0, test_update_message4);
       wait (3 == i);
 
-      epc_shell_progress_update (context, 1.0, test_update_message4);
+      epc_shell_progress_update (1.5, test_update_message5);
       wait (3 == i);
 
-      epc_shell_progress_update (context, 1.5, test_update_message5);
-      wait (3 == i);
-
-      epc_shell_progress_end (context);
+      epc_shell_progress_end ();
       wait (3 == i);
     }
 

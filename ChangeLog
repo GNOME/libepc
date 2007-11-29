@@ -1,5 +1,28 @@
 2007-11-29  Mathias Hasselmann  <mathias@openismus.com>
 
+	Sanitize the progress-hook model by using just user_data.
+
+	* libepc/shell.c: Move epc_shell_default_progress_hooks into
+	epc_shell_set_progress_hooks functions. Update signatures of
+	epc_shell_progress_begin, epc_shell_progress_update and
+	epc_shell_progress_end. Change default progress hooks to deal
+	with the new data model. Add epc_shell_progress_end_default.
+	Call epc_shell_progress_update with a progress of -1 from
+	epc_shell_progress_begin to make the epc_shell_progress_begin
+	hook optional.
+	* libepc/shell.h: Remove return value of epc_shell_progress_begin.
+	Remove context argument for epc_shell_progress_update and
+	epc_shell_progress_end. Update EpcShellProgressHooks signatures
+	to match those changes and remove message argument from
+	EpcShellProgressHooks::begin hook.
+	* libepc-ui/progress-window.c: Update progress hooks for new
+	model. Add EpcProgressWindowContext, epc_progress_window_context_new
+	and epc_progress_window_context_free. Allow NULL as message argument
+	for epc_progress_window_new.
+	* libepc/tls.c, tests/test-progress-hooks.c: Use new progress-hooks.
+
+2007-11-29  Mathias Hasselmann  <mathias@openismus.com>
+
 	Restore error recovery feature, which was temporarily
 	lost during the single-AvahiClient-transition.
 

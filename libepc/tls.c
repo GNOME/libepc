@@ -161,12 +161,11 @@ gnutls_x509_privkey_t
 epc_tls_private_key_new (GError **error)
 {
   EcpTlsKeyContext context = { NULL, NULL, GNUTLS_E_SUCCESS };
-  gpointer progress_data = NULL;
 
-  progress_data = epc_shell_progress_begin (_("Generating Server Key"),
-                                            _("This may take some time. Type on the "
-                                            "keyboard, move your mouse, or browse "
-                                            "the web to generate some entropy."));
+  epc_shell_progress_begin (_("Generating Server Key"),
+                            _("This may take some time. Type on the "
+                              "keyboard, move your mouse, or browse "
+                              "the web to generate some entropy."));
 
   context.rc = gnutls_x509_privkey_init (&context.key);
   epc_tls_check (context.rc);
@@ -184,7 +183,7 @@ epc_tls_private_key_new (GError **error)
   epc_tls_check (context.rc);
 
 out:
-  epc_shell_progress_end (progress_data);
+  epc_shell_progress_end ();
 
   if (GNUTLS_E_SUCCESS != context.rc)
     {

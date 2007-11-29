@@ -67,20 +67,18 @@ typedef struct _EpcShellProgressHooks EpcShellProgressHooks;
 struct _EpcShellProgressHooks
 {
   /*< public >*/
-  gpointer (*begin)  (const gchar *title,
-                      const gchar *message,
-                      gpointer     user_data);
-  void     (*update) (gpointer     context,
-                      gdouble      percentage,
-                      const gchar *message);
-  void     (*end)    (gpointer     context);
+  void (*begin)  (const gchar *title,
+                  gpointer     user_data);
+  void (*update) (gdouble      percentage,
+                  const gchar *message,
+                  gpointer     user_data);
+  void (*end)    (gpointer     user_data);
 
   /*< private >*/
   gpointer reserved1;
   gpointer reserved2;
   gpointer reserved3;
   gpointer reserved4;
-  gpointer reserved5;
 };
 
 guint                 epc_shell_get_debug_level          (void) G_GNUC_CONST;
@@ -111,12 +109,11 @@ G_CONST_RETURN gchar* epc_shell_get_host_name            (GError                
 void                  epc_shell_set_progress_hooks       (const EpcShellProgressHooks *hooks,
                                                           gpointer                     user_data,
                                                           GDestroyNotify               destroy_data);
-gpointer              epc_shell_progress_begin           (const gchar                 *title,
+void                  epc_shell_progress_begin           (const gchar                 *title,
                                                           const gchar                 *message);
-void                  epc_shell_progress_update          (gpointer                     context,
-                                                          gdouble                      percentage,
+void                  epc_shell_progress_update          (gdouble                      percentage,
                                                           const gchar                 *message);
-void                  epc_shell_progress_end             (gpointer                     context);
+void                  epc_shell_progress_end             (void);
 
 GQuark                epc_avahi_error_quark              (void) G_GNUC_CONST;
 
