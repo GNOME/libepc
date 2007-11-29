@@ -55,6 +55,8 @@
 
 typedef struct _EpcService EpcService;
 
+typedef void (*EpcServiceCallback) (EpcService *service);
+
 enum
 {
   PROP_NONE,
@@ -94,6 +96,8 @@ struct _EpcDispatcherPrivate
 
 static void epc_dispatcher_handle_collision (EpcDispatcher *self);
 static void epc_service_run                 (EpcService    *self);
+
+G_DEFINE_TYPE (EpcDispatcher, epc_dispatcher, G_TYPE_OBJECT);
 
 static gboolean
 epc_service_commit_cb (gpointer data)
@@ -201,11 +205,14 @@ epc_service_publish (EpcService *self)
 static void
 epc_service_reset (EpcService *self)
 {
-  if (EPC_DEBUG_LEVEL (1))
-    g_debug ("%s: Resetting `%s' for `%s'...",
-             G_STRLOC, self->type, self->dispatcher->priv->name);
+  if (self->group)
+    {
+      if (EPC_DEBUG_LEVEL (1))
+        g_debug ("%s: Resetting `%s' for `%s'...",
+                 G_STRLOC, self->type, self->dispatcher->priv->name);
 
-  avahi_entry_group_reset (self->group);
+      avahi_entry_group_reset (self->group);
+    }
 }
 
 static void
@@ -213,9 +220,6 @@ epc_service_group_cb (AvahiEntryGroup      *group,
                       AvahiEntryGroupState  state,
                       gpointer              data)
 {
-#if 0
-  AvahiClient *client = avahi_entry_group_get_client (group);
-#endif
   EpcService *self = data;
   GError *error = NULL;
 
@@ -238,17 +242,16 @@ epc_service_group_cb (AvahiEntryGroup      *group,
         break;
 
       case AVAHI_ENTRY_GROUP_FAILURE:
-#if 0
-        g_warning ("%s: Avahi group failure: %s (%d)", G_STRLOC,
-                   avahi_strerror (avahi_client_errno (client)),
-                   avahi_client_errno (client));
+        {
+          AvahiClient *client = avahi_entry_group_get_client (group);
+          gint error_code = avahi_client_errno (client);
 
-        if (!epc_dispatcher_reset_client (self->dispatcher, &error))
-          g_warning ("%s: Cannot reset Avahi client: %s", G_STRLOC,
-                     error ? error->message : "No error message");
+          g_warning ("%s: Failed to publish service records: %s.",
+                     G_STRFUNC, avahi_strerror (error_code));
 
-#endif
-        break;
+          epc_shell_restart_avahi_client (G_STRLOC);
+          break;
+        }
     }
 
   g_clear_error (&error);
@@ -303,13 +306,21 @@ epc_service_new (EpcDispatcher *dispatcher,
 }
 
 static void
+epc_service_suspend (EpcService *self)
+{
+  if (self->group)
+    {
+      avahi_entry_group_free (self->group);
+      self->group = NULL;
+    }
+}
+
+static void
 epc_service_free (gpointer data)
 {
   EpcService *self = data;
 
-  if (self->group)
-    avahi_entry_group_free (self->group);
-
+  epc_service_suspend (self);
   avahi_string_list_free (self->details);
 
   g_list_foreach (self->subtypes, (GFunc)g_free, NULL);
@@ -324,10 +335,6 @@ epc_service_free (gpointer data)
 
   g_slice_free (EpcService, self);
 }
-
-G_DEFINE_TYPE (EpcDispatcher, epc_dispatcher, G_TYPE_OBJECT);
-
-typedef void (*EpcServiceCallback) (EpcService *service);
 
 static void
 epc_dispatcher_services_cb (gpointer key G_GNUC_UNUSED,
@@ -376,15 +383,10 @@ epc_dispatcher_client_cb (AvahiClient      *client G_GNUC_UNUSED,
         break;
 
       case AVAHI_CLIENT_FAILURE:
-#if 0
-        g_warning ("%s: Avahi client failure: %s (%d)\n", G_STRLOC,
-                   avahi_strerror (avahi_client_errno (client)),
-                   avahi_client_errno (client));
+        if (EPC_DEBUG_LEVEL (1))
+          g_debug ("%s: Suspending entry groups...", G_STRLOC);
 
-        if (!epc_dispatcher_reset_client (self, &error))
-          g_warning ("%s: Cannot reset Avahi client: %s", G_STRLOC,
-                     error ? error->message : "No error message");
-#endif
+        epc_dispatcher_foreach_service (self, epc_service_suspend);
         break;
 
       case AVAHI_CLIENT_CONNECTING:
@@ -415,21 +417,6 @@ epc_dispatcher_handle_collision (EpcDispatcher *self)
 
   epc_dispatcher_foreach_service (self, epc_service_publish);
 }
-
-#if 0
-static gboolean
-epc_dispatcher_reset_client (EpcDispatcher  *self,
-                             GError        **error)
-{
-  if (!self->priv->client)
-    return TRUE;
-
-  avahi_client_free (self->priv->client);
-  self->priv->client = NULL;
-
-  return epc_dispatcher_run (self, error);
-}
-#endif
 
 static void
 epc_dispatcher_init (EpcDispatcher *self)

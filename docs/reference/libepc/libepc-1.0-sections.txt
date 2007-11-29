@@ -215,6 +215,7 @@ EPC_AVAHI_ERROR
 epc_shell_watch_avahi_client_state
 epc_shell_create_avahi_entry_group
 epc_shell_create_service_browser
+epc_shell_restart_avahi_client
 epc_shell_get_host_name
 epc_shell_watch_remove
 

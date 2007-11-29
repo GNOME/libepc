@@ -1,5 +1,16 @@
 2007-11-29  Mathias Hasselmann  <mathias@openismus.com>
 
+	Restore error recovery feature, which was temporarily
+	lost during the single-AvahiClient-transition.
+
+	* docs/reference/libepc/libepc-1.0-sections.txt,
+	libepc/shell.c, libepc/shell.h: Add epc_shell_restart_avahi_client.
+	* libepc/dispatcher.c: Call epc_shell_restart_avahi_client on
+	AVAHI_ENTRY_GROUP_FAILURE, and epc_service_suspend on
+	AVAHI_CLIENT_FAILURE.
+
+2007-11-29  Mathias Hasselmann  <mathias@openismus.com>
+
 	List libuuid as dependency and mention were to find it.
 
 	* README: List libuuid as dependency.

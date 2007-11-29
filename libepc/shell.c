@@ -69,6 +69,7 @@ epc_shell_default_progress_hooks =
 
 static AvahiGLibPoll *epc_shell_avahi_poll = NULL;
 static AvahiClient   *epc_shell_avahi_client = NULL;
+static gboolean       epc_shell_restart_avahi_client_allowed = TRUE;
 static GArray        *epc_shell_watches = NULL;
 
 static void (*epc_shell_threads_enter)(void) = NULL;
@@ -294,11 +295,30 @@ epc_shell_avahi_client_cb (AvahiClient      *client,
     epc_shell_avahi_client = client;
 
   if (epc_shell_watches)
-    for (i = 0; i < epc_shell_watches->len; ++i)
-      {
-        EpcShellWatch *watch = &g_array_index (epc_shell_watches, EpcShellWatch, i);
-        ((AvahiClientCallback) watch->callback) (client, state, watch->user_data);
-      }
+    {
+      epc_shell_restart_avahi_client_allowed = FALSE;
+
+      for (i = 0; i < epc_shell_watches->len; ++i)
+        {
+          EpcShellWatch *watch = &g_array_index (epc_shell_watches, EpcShellWatch, i);
+          ((AvahiClientCallback) watch->callback) (client, state, watch->user_data);
+        }
+
+      epc_shell_restart_avahi_client_allowed = TRUE;
+    }
+
+  if (AVAHI_CLIENT_FAILURE == state)
+    {
+      gint error_code = avahi_client_errno (client);
+
+      g_warning ("%s: Avahi client failed: %s.",
+                 G_STRFUNC, avahi_strerror (error_code));
+
+      /* Restart the client __after__ notifying all watchers to give them
+       * a chance to react. Restarting the client before notification would
+       * risk that watchers deal with stale AvahiClient references. */
+      epc_shell_restart_avahi_client (G_STRLOC);
+    }
 }
 
 static AvahiClient*
@@ -339,6 +359,12 @@ epc_shell_get_avahi_client (GError **error)
  * to #epc_shell_watch_remove to remove the watch. On failure it returns 0 and
  * sets @error. The error domain is #EPC_AVAHI_ERROR. Possible error codes are
  * those of the <citetitle>Avahi</citetitle> library.
+ *
+ * <note><para>
+ *  Usually there is no need in handling the #AVAHI_CLIENT_FAILURE state
+ *  for @callback, as the callback dispatcher takes care already. This
+ *  state is dispatched mostly for notification purposes.
+ * </para></note>
  *
  * Returns: The identifier of the newly created watch, or 0 on error.
  */
@@ -422,6 +448,43 @@ epc_shell_create_service_browser (AvahiIfIndex                interface,
                                          domain, flags, callback, user_data);
 
   return browser;
+}
+
+/**
+ * epc_shell_restart_avahi_client:
+ * @strloc: code location of the callee (#G_STRLOC)
+ *
+ * Requests restart of the builtin Avahi client. Use this function to react on
+ * critical failures (like #AVAHI_ENTRY_GROUP_FAILURE) reported to your Avahi
+ * callbacks. The @strloc argument is used to prevent endless restart cycles.
+ *
+ * <note><para>
+ *  Do not call this function to react on #AVAHI_CLIENT_FAILURE in a
+ *  #AvahiClientCallback. The builtin callback dispatcher deals with
+ *  that situation.
+ * </para></note>
+ */
+void
+epc_shell_restart_avahi_client (const gchar *strloc G_GNUC_UNUSED)
+{
+  GError *error = NULL;
+
+  g_return_if_fail (epc_shell_restart_avahi_client_allowed);
+  g_warning ("%s: Restarting Avahi client.", G_STRFUNC);
+
+  /* TODO: Use strloc to prevent endless restart cycles. */
+
+  if (epc_shell_avahi_client)
+    {
+      avahi_client_free (epc_shell_avahi_client);
+      epc_shell_avahi_client = NULL;
+    }
+
+  if (!epc_shell_get_avahi_client (&error))
+    {
+      g_warning ("%s: %s", G_STRFUNC, error->message);
+      g_clear_error (&error);
+    }
 }
 
 /**
