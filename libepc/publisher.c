@@ -976,18 +976,6 @@ epc_publisher_dispose (GObject *object)
 
   epc_publisher_quit (self);
 
-  if (self->priv->dispatcher)
-    {
-      g_object_unref (self->priv->dispatcher);
-      self->priv->dispatcher = NULL;
-    }
-
-  if (self->priv->server)
-    {
-      g_object_unref (self->priv->server);
-      self->priv->server = NULL;
-    }
-
   if (self->priv->resources)
     {
       g_hash_table_unref (self->priv->resources);
@@ -1767,6 +1755,20 @@ epc_publisher_quit (EpcPublisher *self)
 
   if (self->priv->server_loop)
     g_main_loop_quit (self->priv->server_loop);
+
+  if (self->priv->dispatcher)
+    {
+      g_object_unref (self->priv->dispatcher);
+      self->priv->dispatcher = NULL;
+    }
+
+  if (self->priv->server)
+    {
+      g_object_unref (self->priv->server);
+      self->priv->server = NULL;
+    }
+
+  self->priv->server_started = FALSE;
 }
 
 static gchar*

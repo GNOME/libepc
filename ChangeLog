@@ -1,5 +1,12 @@
 2007-11-29  Mathias Hasselmann  <mathias@openismus.com>
 
+	Really shutdown the server in epc_publisher_quit,
+	to allow for instance change of the network protocol.
+
+	* libepc/publisher.c: Shutdown the server in epc_publisher_quit.
+
+2007-11-29  Mathias Hasselmann  <mathias@openismus.com>
+
 	Set G_DEBUG=fatal-warnings and EPC_DEBUG=1 on testing.
 
 	* libepc/dispatcher.c:
