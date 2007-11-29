@@ -26,6 +26,7 @@ The libepc library depends on:
     * gobject      >= 2.4
     * gnutls       >= 1.6
     * libsoup      >= 2.2
+    * libuuid      >= 0.36 [1]
 
 Additionally libepc-ui uses:
 
@@ -34,6 +35,13 @@ Additionally libepc-ui uses:
 And finally the examples need:
 
     * avahi-ui     >= 0.6
+
+
+  [1] NOTICE: Currently Debian, Ubuntu and derivates have the development
+      files of libuuid in the "uuid-dev" package instead of "libuuid-dev",
+      which would be the expected package name (IMHO). Well, but surprisingly
+      there are no naming conventions for development packages, as I was told
+      on #debian-devel.
 
 SOURCE CODE
 ===========

@@ -1,5 +1,11 @@
 2007-11-29  Mathias Hasselmann  <mathias@openismus.com>
 
+	List libuuid as dependency and mention were to find it.
+
+	* README: List libuuid as dependency.
+
+2007-11-29  Mathias Hasselmann  <mathias@openismus.com>
+
 	Remove documentation for non-existing publisher
 	argument of epc_publisher_get_path.
 
