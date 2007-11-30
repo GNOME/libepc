@@ -187,6 +187,10 @@ gchar*                epc_publisher_get_uri              (EpcPublisher      *pub
 
 gboolean              epc_publisher_remove               (EpcPublisher      *publisher,
                                                           const gchar       *key);
+gpointer              epc_publisher_lookup               (EpcPublisher      *publisher,
+                                                          const gchar       *key);
+gboolean              epc_publisher_has_key              (EpcPublisher      *publisher,
+                                                          const gchar       *key);
 GList*                epc_publisher_list                 (EpcPublisher      *publisher,
                                                           const gchar       *pattern);
 

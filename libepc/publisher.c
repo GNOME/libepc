@@ -1174,7 +1174,7 @@ epc_publisher_add (EpcPublisher  *self,
  * @filename: the name of the file to publish
  *
  * Publishes a local file on the #EpcPublisher using the unique
- * @key for addressing. The publisher delivers the current content
+ * @key for addressing. The publisher delivers the current contents
  * of the file at the time of access.
  */
 void
@@ -1194,8 +1194,8 @@ epc_publisher_add_file (EpcPublisher  *self,
 /**
  * epc_publisher_add_handler:
  * @publisher: a #EpcPublisher
- * @key: the key for addressing the content
- * @handler: the #EpcContentsHandler for handling this content
+ * @key: the key for addressing the contents
+ * @handler: the #EpcContentsHandler for handling this contents
  * @user_data: data to pass on @handler calls
  * @destroy_data: a function for releasing @user_data
  *
@@ -1303,9 +1303,9 @@ epc_publisher_get_uri (EpcPublisher  *self,
 /**
  * epc_publisher_remove:
  * @publisher: a #EpcPublisher
- * @key: the key for addressing the content
+ * @key: the key for addressing the contents
  *
- * Removes a key and its associated content from a #EpcPublisher.
+ * Removes a key and its associated contents from a #EpcPublisher.
  *
  * Returns: %TRUE if the key was found and removed from the #EpcPublisher.
  */
@@ -1331,10 +1331,78 @@ epc_publisher_remove (EpcPublisher *self,
     }
 
   success = g_hash_table_remove (self->priv->resources, key);
-
   g_static_rec_mutex_unlock (&epc_publisher_lock);
 
   return success;
+}
+
+/**
+ * epc_publisher_lookup:
+ * @publisher: a #EcpPublisher
+ * @key: the key for addressing contents
+ *
+ * Looks up the user_data passed to #epc_publisher_add_handler for @key.
+ * Returns %NULL if the specified @key doesn't exist or wasn't published
+ * with #epc_publisher_add_handler.
+ *
+ * This function allows to use the publisher as local key/value store,
+ * which is useful for instance to prevent accidental key collisions.
+ *
+ * See also: epc_publisher_has_key.
+ *
+ * Returns: The user_data associated with @key, or %NULL.
+ */
+gpointer
+epc_publisher_lookup (EpcPublisher *self,
+                      const gchar  *key)
+{
+  EpcResource *resource;
+  gpointer data = NULL;
+
+  g_return_val_if_fail (EPC_IS_PUBLISHER (self), NULL);
+  g_return_val_if_fail (NULL != key, NULL);
+
+  g_static_rec_mutex_lock (&epc_publisher_lock);
+
+  resource = g_hash_table_lookup (self->priv->resources, key);
+
+  if (resource)
+    data = resource->user_data;
+
+  g_static_rec_mutex_unlock (&epc_publisher_lock);
+
+  return data;
+}
+
+/**
+ * epc_publisher_has_key:
+ * @publisher: a #EcpPublisher
+ * @key: the key for addressing contents
+ *
+ * Checks if information is published for @key.
+ *
+ * This function allows to use the publisher as local key/value store,
+ * which is useful for instance to prevent accidental key collisions.
+ *
+ * See also: epc_publisher_lookup.
+ *
+ * Returns: %TRUE when the publisher has information for @key,
+ * and %FALSE otherwise.
+ */
+gboolean
+epc_publisher_has_key (EpcPublisher *self,
+                       const gchar  *key)
+{
+  EpcResource *resource;
+
+  g_return_val_if_fail (EPC_IS_PUBLISHER (self), FALSE);
+  g_return_val_if_fail (NULL != key, FALSE);
+
+  g_static_rec_mutex_lock (&epc_publisher_lock);
+  resource = g_hash_table_lookup (self->priv->resources, key);
+  g_static_rec_mutex_unlock (&epc_publisher_lock);
+
+  return (NULL != resource);
 }
 
 static void

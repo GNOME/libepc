@@ -48,6 +48,8 @@ epc_publisher_add_handler
 epc_publisher_add_bookmark
 epc_publisher_get_path
 epc_publisher_get_uri
+epc_publisher_has_key
+epc_publisher_lookup
 epc_publisher_remove
 epc_publisher_list
 
@@ -196,10 +198,6 @@ epc_protocol_get_type
 <SECTION>
 <FILE>shell</FILE>
 <TITLE>EpcShell</TITLE>
-epc_shell_enter
-epc_shell_leave
-
-<SUBSECTION>
 EPC_DEBUG_LEVEL
 epc_shell_get_debug_level
 

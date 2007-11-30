@@ -1,5 +1,16 @@
 2007-11-30  Mathias Hasselmann  <mathias@openismus.com>
 
+	Add epc_publisher_lookup and epc_publisher_has_key to allow usage of
+	EpcPublisher as local key/value store: This allows applications with
+	dynamic key to prevent key name collisions without having to maintain
+	an additional GHashTable.
+
+	* docs/reference/libepc/libepc-1.0-sections.txt: Update symbols.
+	* libepc/publisher.c, libepc/publisher.h: Add epc_publisher_lookup
+	and epc_publisher_has_key.
+
+2007-11-30  Mathias Hasselmann  <mathias@openismus.com>
+
 	Repair epc_publisher_handle_list_path.
 
 	* libepc/publisher.c: Always initialize file list.
