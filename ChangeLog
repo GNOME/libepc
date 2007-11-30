@@ -1,5 +1,11 @@
 2007-11-30  Mathias Hasselmann  <mathias@openismus.com>
 
+	Repair epc_publisher_handle_list_path.
+
+	* libepc/publisher.c: Always initialize file list.
+
+2007-11-30  Mathias Hasselmann  <mathias@openismus.com>
+
 	Don't mess around with GDK's broken threading support: This ugly
 	and fat non-recursive big lock hurts more than it helps.
 

@@ -408,6 +408,7 @@ epc_publisher_handle_list_path (SoupServerContext *context,
                                 SoupMessage       *message,
                                 gpointer           data)
 {
+  const gchar *pattern = NULL;
   EpcPublisher *self = data;
   GList *files = NULL;
   GList *iter;
@@ -417,8 +418,9 @@ epc_publisher_handle_list_path (SoupServerContext *context,
   g_static_rec_mutex_lock (&epc_publisher_lock);
 
   if (g_str_has_prefix (context->path, "/list/") && '\0' != context->path[6])
-    files = epc_publisher_list (self, context->path + 6);
+    pattern = context->path + 6;
 
+  files = epc_publisher_list (self, pattern);
   g_string_append (contents, "<list>");
 
   for (iter = files; iter; iter = iter->next)
