@@ -19,7 +19,6 @@ main (int   argc,
    */
   gnutls_global_init ();
   g_thread_init (NULL);
-  gdk_threads_init ();
   gtk_init (&argc, &argv);
 
   /* Show a progress window when generating new keys.

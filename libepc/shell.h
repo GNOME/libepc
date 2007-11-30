@@ -83,9 +83,6 @@ struct _EpcShellProgressHooks
 
 guint                 epc_shell_get_debug_level          (void) G_GNUC_CONST;
 
-void                  epc_shell_leave                    (void);
-void                  epc_shell_enter                    (void);
-
 void                  epc_shell_watch_remove             (guint id);
 
 guint                 epc_shell_watch_avahi_client_state (AvahiClientCallback          callback,

@@ -214,10 +214,8 @@ epc_consumer_reauthenticate_cb (SoupSession  *session,
              G_STRLOC, soup_message_get_uri (message)->path,
              auth_realm, *username, *password, handled);
 
-  epc_shell_enter ();
   g_signal_emit (self, signals[SIGNAL_AUTHENTICATE],
                  0, auth_realm, &handled);
-  epc_shell_leave ();
 
   if (EPC_DEBUG_LEVEL (1))
     g_debug ("%s: path=%s, realm=%s, username=%s, password=%s, handled=%d",
@@ -915,11 +913,7 @@ epc_consumer_lookup (EpcConsumer  *self,
   g_free (path);
 
   if (request)
-    {
-      epc_shell_leave ();
-      status = soup_session_send_message (self->priv->session, request);
-      epc_shell_enter ();
-    }
+    status = soup_session_send_message (self->priv->session, request);
   else
     status = SOUP_STATUS_CANT_RESOLVE;
 
@@ -1088,11 +1082,7 @@ epc_consumer_list (EpcConsumer  *self,
   g_free (path);
 
   if (request)
-    {
-      epc_shell_leave ();
-      status = soup_session_send_message (self->priv->session, request);
-      epc_shell_enter ();
-    }
+    status = soup_session_send_message (self->priv->session, request);
   else
     status = SOUP_STATUS_CANT_RESOLVE;
 

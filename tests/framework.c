@@ -153,10 +153,7 @@ epc_test_run ()
     epc_test_loop = g_main_loop_new (NULL, FALSE);
 
   epc_test_timeout = g_timeout_add (5000, epc_test_timeout_cb, NULL);
-
-  epc_shell_leave ();
   g_main_loop_run (epc_test_loop);
-  epc_shell_enter ();
 
   return epc_test_result;
 }

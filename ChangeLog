@@ -1,5 +1,15 @@
 2007-11-30  Mathias Hasselmann  <mathias@openismus.com>
 
+	Don't mess around with GDK's broken threading support: This ugly
+	and fat non-recursive big lock hurts more than it helps.
+
+	* libepc/shell.c, libepc/shell.h, libepc/consumer.c,
+	tests/framework.c: Remove epc_shell_leave and epc_shell_enter.
+	* examples/consumer-ui.c, examples/server-credentials.c:
+	Don't call gdk_threads_init.
+
+2007-11-30  Mathias Hasselmann  <mathias@openismus.com>
+
 	Do not pass NULL data to epc_contents_new, when passing empty strings
 	to epc_contents_new_dup.
 

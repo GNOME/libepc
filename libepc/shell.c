@@ -124,70 +124,6 @@ epc_shell_init (void)
     }
 }
 
-static void
-epc_shell_threads_init (void)
-{
-  static gboolean uninitialized = FALSE;
-
-  if (G_UNLIKELY (uninitialized))
-    {
-      GModule *module;
-      gpointer symbol;
-
-      g_assert (NULL == epc_shell_threads_enter);
-      g_assert (NULL == epc_shell_threads_leave);
-
-      module = g_module_open (NULL, G_MODULE_BIND_LAZY);
-
-      symbol = NULL;
-      g_module_symbol (module, "gdk_threads_enter", &symbol);
-      epc_shell_threads_enter = symbol;
-
-      symbol = NULL;
-      g_module_symbol (module, "gdk_threads_leave", &symbol);
-      epc_shell_threads_leave = symbol;
-
-      if (EPC_DEBUG_LEVEL (1))
-        g_debug ("%s: threads_enter=%p, threads_leave=%p", G_STRLOC,
-                 epc_shell_threads_enter, epc_shell_threads_leave);
-
-      g_module_close (module);
-      uninitialized = FALSE;
-    }
-}
-
-/**
- * epc_shell_leave:
- *
- * Releases the big GDK lock when running unter GDK/GTK+.
- * This must be called before entering GLib main loops to avoid race
- * conditions. See #gdk_threads_leave for details.
- */
-void
-epc_shell_leave (void)
-{
-  epc_shell_threads_init ();
-
-  if (epc_shell_threads_leave)
-    epc_shell_threads_leave ();
-}
-
-/**
- * epc_shell_enter:
- *
- * Acquires the big GDK lock when running unter GDK/GTK+.
- * This should be called after leaving GLib main loops to avoid race
- * conditions. See #gdk_threads_enter for details.
- */
-void
-epc_shell_enter (void)
-{
-  epc_shell_threads_init ();
-
-  if (epc_shell_threads_enter)
-    epc_shell_threads_enter ();
-}
-
 static guint
 epc_shell_watches_length (void)
 {
@@ -598,6 +534,9 @@ void
 epc_shell_progress_begin (const gchar *title,
                           const gchar *message)
 {
+  if (EPC_DEBUG_LEVEL (1))
+    g_debug ("%s: %s", G_STRFUNC, title);
+
   if (!epc_shell_progress_hooks)
     epc_shell_set_progress_hooks (NULL, NULL, NULL);
   if (epc_shell_progress_hooks->begin)
@@ -624,6 +563,9 @@ epc_shell_progress_update (gdouble      percentage,
 {
   g_assert (NULL != epc_shell_progress_hooks);
 
+  if (EPC_DEBUG_LEVEL (1))
+    g_debug ("%s: %s", G_STRFUNC, message);
+
   if (epc_shell_progress_hooks->update)
     epc_shell_progress_hooks->update (percentage, message, epc_shell_progress_user_data);
 }
@@ -640,6 +582,9 @@ void
 epc_shell_progress_end (void)
 {
   g_assert (NULL != epc_shell_progress_hooks);
+
+  if (EPC_DEBUG_LEVEL (1))
+    g_debug ("%s", G_STRFUNC);
 
   if (epc_shell_progress_hooks->end)
     epc_shell_progress_hooks->end (epc_shell_progress_user_data);

@@ -202,7 +202,6 @@ main (int   argc,
   /* Initialize the toolkit */
 
   g_thread_init (NULL);
-  gdk_threads_init ();
 
   if (!gtk_init_with_args (&argc, &argv, NULL, entries, NULL, &error))
     {
