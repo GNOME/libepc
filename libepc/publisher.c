@@ -476,22 +476,37 @@ epc_publisher_handle_root (SoupServerContext *context,
       g_string_append (contents, markup);
       g_string_append (contents, "</title></head><body><h1>");
       g_string_append (contents, markup);
-      g_string_append (contents, "</h1><ul>");
+      g_string_append (contents, "</h1><h2>");
+      g_string_append (contents, _("Table of Contents"));
+      g_string_append (contents, "</h2>");
 
       g_free (markup);
 
-      for (iter = files; iter; iter = iter->next)
+      if (files)
         {
-          markup = g_markup_escape_text (iter->data, -1);
+          g_string_append (contents, "<ul id=\"toc\">");
 
-          g_string_append (contents, "<li><a href=\"/get/");
-          g_string_append (contents, markup);
-          g_string_append (contents, "\">");
-          g_string_append (contents, markup);
-          g_string_append (contents, "</a></li>");
+          for (iter = files; iter; iter = iter->next)
+            {
+              markup = g_markup_escape_text (iter->data, -1);
 
-          g_free (iter->data);
-          g_free (markup);
+              g_string_append (contents, "<li><a href=\"/get/");
+              g_string_append (contents, markup);
+              g_string_append (contents, "\">");
+              g_string_append (contents, markup);
+              g_string_append (contents, "</a></li>");
+
+              g_free (iter->data);
+              g_free (markup);
+            }
+
+          g_string_append (contents, "</ul>");
+        }
+      else
+        {
+          g_string_append (contents, "<p id=\"toc\">");
+          g_string_append (contents, _("Sorry, no resources published yet."));
+          g_string_append (contents, "</ul>");
         }
 
       g_string_append (contents, "</ul></body></html>");

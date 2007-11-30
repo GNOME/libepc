@@ -1,3 +1,9 @@
+2007-11-30  Mathias Hasselmann  <mathias@openismus.com>
+
+	Show message on root page when no resources have been published yet.
+
+	* libepc/publisher.c: Enhance epc_publisher_handle_root.
+
 2007-11-29  Mathias Hasselmann  <mathias@openismus.com>
 
 	Really shutdown the server in epc_publisher_quit,
