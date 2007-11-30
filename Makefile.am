@@ -32,6 +32,7 @@ noinst_PROGRAMS = \
 	examples/service-browser \
 	examples/simple-publisher \
 	examples/consumer-ui \
+	examples/publisher-ui \
 	examples/server-credentials \
 	$(TESTS)
 TESTS = \
@@ -144,6 +145,8 @@ examples_simple_publisher_LDADD			= libepc/libepc-1.0.la
 
 examples_consumer_ui_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS) $(AVAHI_UI_CFLAGS)
 examples_consumer_ui_LDADD			= libepc/libepc-1.0.la libepc-ui/libepc-ui-1.0.la $(AVAHI_UI_LIBS)
+examples_publisher_ui_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS) $(AVAHI_UI_CFLAGS) -rdynamic
+examples_publisher_ui_LDADD			= libepc/libepc-1.0.la libepc-ui/libepc-ui-1.0.la $(AVAHI_UI_LIBS)
 examples_server_credentials_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS)
 examples_server_credentials_LDADD		= libepc/libepc-1.0.la libepc-ui/libepc-ui-1.0.la
 

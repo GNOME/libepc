@@ -1830,13 +1830,22 @@ epc_publisher_run_async (EpcPublisher  *self,
  * epc_publisher_quit:
  * @publisher: a #EpcPublisher
  *
- * Stops the server component of the #EpcPublisher
- * started with #epc_publisher_run or #epc_publisher_run_async.
+ * Stops the server component of the #EpcPublisher started with
+ * #epc_publisher_run or #epc_publisher_run_async. The functions
+ * returns %TRUE when the built-in server was running and had to
+ * be stopped. If the server wasn't running the function returns
+ * %FALSE.
+ *
+ * Returns: %TRUE when the server had to be stopped, and %FALSE otherwise.
  */
-void
+gboolean
 epc_publisher_quit (EpcPublisher *self)
 {
-  g_return_if_fail (EPC_IS_PUBLISHER (self));
+  gboolean was_running;
+
+  g_return_val_if_fail (EPC_IS_PUBLISHER (self), FALSE);
+
+  was_running = self->priv->server_started;
 
   if (self->priv->server_loop)
     g_main_loop_quit (self->priv->server_loop);
@@ -1854,6 +1863,8 @@ epc_publisher_quit (EpcPublisher *self)
     }
 
   self->priv->server_started = FALSE;
+
+  return was_running;
 }
 
 static gchar*

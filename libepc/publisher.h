@@ -198,7 +198,7 @@ gboolean              epc_publisher_run                  (EpcPublisher      *pub
                                                           GError           **error);
 gboolean              epc_publisher_run_async            (EpcPublisher      *publisher,
                                                           GError           **error);
-void                  epc_publisher_quit                 (EpcPublisher      *publisher);
+gboolean              epc_publisher_quit                 (EpcPublisher      *publisher);
 
 gchar*                epc_publisher_expand_name          (const gchar       *name,
                                                           GError           **error);

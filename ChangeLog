@@ -1,3 +1,14 @@
+2007-12-01  Mathias Hasselmann  <mathias@openismus.com>
+
+	Provide an example demonstrating desktop usage of EpcPublisher.
+
+	* examples/publisher-ui.c: Demonstrate desktop usage of EpcPublisher.
+	* examples/publisher.ui: User interface for examples/publisher-ui.c.
+	* examples/publisher.glade: Glade source for examples/publisher.ui.
+	* Makefile.am, examples/.gitignore: Add examples/publisher-ui.c.
+	* libepc/publisher.c, libepc/publisher.h: Let epc_publisher_quit
+	report if the built-in server was still/already running.
+
 2007-11-30  Mathias Hasselmann  <mathias@openismus.com>
 
 	Add epc_publisher_lookup and epc_publisher_has_key to allow usage of
