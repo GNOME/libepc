@@ -1,5 +1,12 @@
 2007-11-30  Mathias Hasselmann  <mathias@openismus.com>
 
+	Do not pass NULL data to epc_contents_new, when passing empty strings
+	to epc_contents_new_dup.
+
+	* libepc/contents.c: Handle empty strings in epc_contents_new_dup.
+
+2007-11-30  Mathias Hasselmann  <mathias@openismus.com>
+
 	Show message on root page when no resources have been published yet.
 
 	* libepc/publisher.c: Enhance epc_publisher_handle_root.

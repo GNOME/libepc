@@ -144,7 +144,7 @@ epc_contents_new_dup (const gchar  *type,
   if (-1 == length)
     length = strlen (data);
 
-  cloned_data = g_malloc (length);
+  cloned_data = g_malloc (MAX (1, length));
   memcpy (cloned_data, data, length);
 
   return epc_contents_new (type, cloned_data, length, g_free);
