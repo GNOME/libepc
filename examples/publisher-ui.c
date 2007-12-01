@@ -605,6 +605,26 @@ item_contents_handler (EpcPublisher *publisher G_GNUC_UNUSED,
   return epc_contents_new_dup (type, text, -1);
 }
 
+static gboolean
+auth_handler (EpcAuthContext *context,
+              const gchar    *username,
+              gpointer        data G_GNUC_UNUSED)
+{
+  EpcPublisher *publisher = epc_auth_context_get_publisher (context);
+  const gchar *key = epc_auth_context_get_key (context);
+  EpcDemoItem *item = epc_publisher_lookup (publisher, key);
+
+  g_return_val_if_fail (NULL != item, FALSE);
+
+  if (!item->username || !*item->username)
+    return TRUE;
+
+  return
+    NULL != username &&
+    g_str_equal (username, item->username) &&
+    epc_auth_context_check_password (context, item->password);
+}
+
 static void
 publish_item_cb (EpcDemoItem *item,
                  gpointer     data G_GNUC_UNUSED)
@@ -612,6 +632,8 @@ publish_item_cb (EpcDemoItem *item,
   epc_publisher_add_handler (publisher, item->name, item_contents_handler,
                              epc_demo_item_ref (item),
                              epc_demo_item_unref);
+  epc_publisher_set_auth_handler (publisher, item->name,
+                                  auth_handler, NULL, NULL);
 }
 
 void

@@ -1,5 +1,11 @@
 2007-12-01  Mathias Hasselmann  <mathias@openismus.com>
 
+	Demonstrate authentication in publisher-ui example.
+
+	* examples/publisher-ui.c: Add auth_handler function.
+
+2007-12-01  Mathias Hasselmann  <mathias@openismus.com>
+
 	Provide an example demonstrating desktop usage of EpcPublisher.
 
 	* examples/publisher-ui.c: Demonstrate desktop usage of EpcPublisher.
