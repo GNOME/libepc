@@ -21,7 +21,7 @@
 #ifndef __EPC_CONSUMER_H__
 #define __EPC_CONSUMER_H__
 
-#include <glib-object.h>
+#include <libepc/service-monitor.h>
 #include <libepc/service-type.h>
 
 G_BEGIN_DECLS
@@ -84,36 +84,34 @@ struct _EpcConsumerClass
 
 GType                 epc_consumer_get_type              (void) G_GNUC_CONST;
 
-EpcConsumer*          epc_consumer_new                   (EpcProtocol   protocol,
-                                                          const gchar  *hostname,
-                                                          guint16       port);
-EpcConsumer*          epc_consumer_new_for_name          (const gchar  *name);
-EpcConsumer*          epc_consumer_new_for_name_full     (const gchar  *name,
-                                                          const gchar  *application,
-                                                          const gchar  *domain);
+EpcConsumer*          epc_consumer_new                   (const EpcServiceInfo *service);
+EpcConsumer*          epc_consumer_new_for_name          (const gchar          *name);
+EpcConsumer*          epc_consumer_new_for_name_full     (const gchar          *name,
+                                                          const gchar          *application,
+                                                          const gchar          *domain);
 
-void                  epc_consumer_set_protocol          (EpcConsumer  *consumer,
-                                                          EpcProtocol   protocol);
-void                  epc_consumer_set_username          (EpcConsumer  *consumer,
-                                                          const gchar  *username);
-void                  epc_consumer_set_password          (EpcConsumer  *consumer,
-                                                          const gchar  *password);
+void                  epc_consumer_set_protocol          (EpcConsumer          *consumer,
+                                                          EpcProtocol           protocol);
+void                  epc_consumer_set_username          (EpcConsumer          *consumer,
+                                                          const gchar          *username);
+void                  epc_consumer_set_password          (EpcConsumer          *consumer,
+                                                          const gchar          *password);
 
-EpcProtocol           epc_consumer_get_protocol          (EpcConsumer  *consumer);
-G_CONST_RETURN gchar* epc_consumer_get_username          (EpcConsumer  *consumer);
-G_CONST_RETURN gchar* epc_consumer_get_password          (EpcConsumer  *consumer);
+EpcProtocol           epc_consumer_get_protocol          (EpcConsumer          *consumer);
+G_CONST_RETURN gchar* epc_consumer_get_username          (EpcConsumer          *consumer);
+G_CONST_RETURN gchar* epc_consumer_get_password          (EpcConsumer          *consumer);
 
-gboolean              epc_consumer_resolve_publisher     (EpcConsumer  *consumer,
-                                                          guint         timeout);
-gboolean              epc_consumer_is_publisher_resolved (EpcConsumer *consumer);
+gboolean              epc_consumer_resolve_publisher     (EpcConsumer          *consumer,
+                                                          guint                 timeout);
+gboolean              epc_consumer_is_publisher_resolved (EpcConsumer          *consumer);
 
-gpointer              epc_consumer_lookup                (EpcConsumer  *consumer,
-                                                          const gchar  *key,
-                                                          gsize        *length,
-                                                          GError      **error);
-GList*                epc_consumer_list                  (EpcConsumer  *consumer,
-                                                          const gchar  *pattern,
-                                                          GError      **error);
+gpointer              epc_consumer_lookup                (EpcConsumer          *consumer,
+                                                          const gchar          *key,
+                                                          gsize                *length,
+                                                          GError              **error);
+GList*                epc_consumer_list                  (EpcConsumer          *consumer,
+                                                          const gchar          *pattern,
+                                                          GError              **error);
 
 GQuark                epc_http_error_quark               (void) G_GNUC_CONST;
 

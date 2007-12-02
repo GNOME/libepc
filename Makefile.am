@@ -36,6 +36,7 @@ noinst_PROGRAMS = \
 	examples/server-credentials \
 	$(TESTS)
 TESTS = \
+	tests/test-consumer-by-info \
 	tests/test-consumer-by-name \
 	tests/test-dispatcher-local-collision \
 	tests/test-dispatcher-multiple-services \
@@ -61,6 +62,7 @@ libepc_headers = \
 	libepc/marshal.h \
 	libepc/protocol.h \
 	libepc/publisher.h \
+	libepc/service-info.h \
 	libepc/service-monitor.h \
 	libepc/service-type.h \
 	libepc/shell.h \
@@ -98,6 +100,7 @@ libepc_libepc_1_0_la_SOURCES = \
 	libepc/marshal.list \
 	libepc/protocol.c \
 	libepc/publisher.c \
+	libepc/service-info.c \
 	libepc/service-monitor.c \
 	libepc/service-type.c \
 	libepc/shell.c \
@@ -152,6 +155,8 @@ examples_server_credentials_LDADD		= libepc/libepc-1.0.la libepc-ui/libepc-ui-1.
 
 tests_libepc_tests_la_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 
+tests_test_consumer_by_info_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+tests_test_consumer_by_info_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la
 tests_test_consumer_by_name_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 tests_test_consumer_by_name_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la
 tests_test_dispatcher_local_collision_CFLAGS	= $(AM_CFLAGS) $(LIBEPC_CFLAGS)

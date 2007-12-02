@@ -136,6 +136,7 @@ enum
   PROP_APPLICATION,
 
   PROP_AUTH_FLAGS,
+  PROP_CONTENTS_PATH,
   PROP_CERTIFICATE_FILE,
   PROP_PRIVATE_KEY_FILE,
 };
@@ -205,6 +206,7 @@ struct _EpcPublisherPrivate
   gchar                 *application;
 
   EpcAuthFlags           auth_flags;
+  gchar                 *contents_path;
   gchar                 *certificate_file;
   gchar                 *private_key_file;
 };
@@ -346,7 +348,7 @@ epc_publisher_chunk_cb (SoupMessage *message,
 }
 
 static void
-epc_publisher_handle_get_path (SoupServerContext *context,
+epc_publisher_handle_contents (SoupServerContext *context,
                                SoupMessage       *message,
                                gpointer           data)
 {
@@ -404,9 +406,9 @@ epc_publisher_handle_get_path (SoupServerContext *context,
 }
 
 static void
-epc_publisher_handle_list_path (SoupServerContext *context,
-                                SoupMessage       *message,
-                                gpointer           data)
+epc_publisher_handle_list (SoupServerContext *context,
+                           SoupMessage       *message,
+                           gpointer           data)
 {
   const gchar *pattern = NULL;
   EpcPublisher *self = data;
@@ -490,16 +492,22 @@ epc_publisher_handle_root (SoupServerContext *context,
 
           for (iter = files; iter; iter = iter->next)
             {
+              markup = g_markup_escape_text (self->priv->contents_path, -1);
+
+              g_string_append (contents, "<li><a href=\"");
+              g_string_append (contents, markup);
+              g_string_append (contents, "/");
+
+              g_free (markup);
               markup = g_markup_escape_text (iter->data, -1);
 
-              g_string_append (contents, "<li><a href=\"/get/");
               g_string_append (contents, markup);
               g_string_append (contents, "\">");
               g_string_append (contents, markup);
               g_string_append (contents, "</a></li>");
 
-              g_free (iter->data);
               g_free (markup);
+              g_free (iter->data);
             }
 
           g_string_append (contents, "</ul>");
@@ -677,6 +685,7 @@ epc_publisher_announce (EpcPublisher *self)
 
   const gchar *host;
   struct sockaddr *addr;
+  gchar *path_record;
   gint addrlen;
   gint port;
 
@@ -713,9 +722,11 @@ epc_publisher_announce (EpcPublisher *self)
 
   epc_dispatcher_reset (self->priv->dispatcher);
 
+  path_record = g_strconcat ("path=", self->priv->contents_path, NULL);
   epc_dispatcher_add_service (self->priv->dispatcher, addr->sa_family,
                               service_type, self->priv->service_domain,
-                              host, port, NULL);
+                              host, port, path_record, NULL);
+  g_free (path_record);
 
   epc_dispatcher_add_service_subtype (self->priv->dispatcher,
                                       service_type, service_sub_type);
@@ -727,9 +738,7 @@ epc_publisher_announce (EpcPublisher *self)
       EpcDispatcher *dispatcher = self->priv->dispatcher;
       EpcResource *resource = iter->next->data;
       const gchar *key = iter->data;
-
-      gchar *path = epc_publisher_get_path (key);
-      gchar *path_record = g_strconcat ("path=", path, NULL);
+      gchar *path;
 
       if (resource->dispatcher)
         {
@@ -740,6 +749,9 @@ epc_publisher_announce (EpcPublisher *self)
       if (EPC_DEBUG_LEVEL (1))
         g_debug ("%s: Creating dynamic %s bookmark for %s: %s", G_STRLOC,
                  bookmark_type, key, epc_dispatcher_get_name (dispatcher));
+
+      path = epc_publisher_get_path (self, key);
+      path_record = g_strconcat ("path=", path, NULL);
 
       epc_dispatcher_add_service (dispatcher, addr->sa_family, bookmark_type,
                                   self->priv->service_domain, host, port,
@@ -792,6 +804,32 @@ epc_publisher_compute_name (EpcPublisher *self)
   return name;
 }
 
+static void
+epc_publisher_remove_handlers (EpcPublisher *self)
+{
+  soup_server_remove_handler (self->priv->server, self->priv->contents_path);
+  soup_server_remove_handler (self->priv->server, "/list");
+  soup_server_remove_handler (self->priv->server, "/");
+}
+
+static void
+epc_publisher_install_handlers (EpcPublisher *self)
+{
+  soup_server_add_handler (self->priv->server,
+                           self->priv->contents_path,
+                           &self->priv->server_auth,
+                           epc_publisher_handle_contents,
+                           NULL, self);
+  soup_server_add_handler (self->priv->server, "/list",
+                           &self->priv->server_auth,
+                           epc_publisher_handle_list,
+                           NULL, self);
+  soup_server_add_handler (self->priv->server, "/",
+                           &self->priv->server_auth,
+                           epc_publisher_handle_root,
+                           NULL, self);
+}
+
 static gboolean
 epc_publisher_create_server (EpcPublisher  *self,
                              GError       **error)
@@ -841,19 +879,7 @@ epc_publisher_create_server (EpcPublisher  *self,
                      SOUP_SERVER_PORT, SOUP_ADDRESS_ANY_PORT,
                      NULL);
 
-  soup_server_add_handler (self->priv->server, "/get",
-                           &self->priv->server_auth,
-                           epc_publisher_handle_get_path,
-                           NULL, self);
-  soup_server_add_handler (self->priv->server, "/list",
-                           &self->priv->server_auth,
-                           epc_publisher_handle_list_path,
-                           NULL, self);
-  soup_server_add_handler (self->priv->server, "/",
-                           &self->priv->server_auth,
-                           epc_publisher_handle_root,
-                           NULL, self);
-
+  epc_publisher_install_handlers (self);
   epc_publisher_announce (self);
 
   base_uri = epc_publisher_get_uri (self, NULL, NULL);
@@ -878,6 +904,28 @@ epc_publisher_real_set_auth_flags (EpcPublisher *self,
   self->priv->server_auth.types =
     flags & EPC_AUTH_PASSWORD_TEXT_NEEDED ?
     SOUP_AUTH_TYPE_BASIC : SOUP_AUTH_TYPE_DIGEST;
+}
+
+static void
+epc_publisher_real_set_contents_path (EpcPublisher *self,
+                                      const gchar  *path)
+{
+  g_return_if_fail (NULL != path);
+  g_return_if_fail ('/' == path[0]);
+  g_return_if_fail ('\0' != path[1]);
+
+  if (NULL == self->priv->contents_path ||
+      strcmp (self->priv->contents_path, path))
+    {
+      if (self->priv->server)
+        epc_publisher_remove_handlers (self);
+
+      g_free (self->priv->contents_path);
+      self->priv->contents_path = g_strdup (path);
+
+      if (self->priv->server)
+        epc_publisher_install_handlers (self);
+    }
 }
 
 static void
@@ -916,6 +964,10 @@ epc_publisher_set_property (GObject      *object,
       case PROP_APPLICATION:
         g_return_if_fail (!epc_publisher_is_server_created (self));
         self->priv->application = g_value_dup_string (value);
+        break;
+
+      case PROP_CONTENTS_PATH:
+        epc_publisher_real_set_contents_path (self, g_value_get_string (value));
         break;
 
       case PROP_AUTH_FLAGS:
@@ -966,6 +1018,10 @@ epc_publisher_get_property (GObject    *object,
 
       case PROP_APPLICATION:
         g_value_set_string (value, self->priv->application);
+        break;
+
+      case PROP_CONTENTS_PATH:
+        g_value_set_string (value, self->priv->contents_path);
         break;
 
       case PROP_AUTH_FLAGS:
@@ -1020,6 +1076,9 @@ epc_publisher_dispose (GObject *object)
   g_free (self->priv->application);
   self->priv->application = NULL;
 
+  g_free (self->priv->contents_path);
+  self->priv->contents_path = NULL;
+
   g_free (self->priv->default_bookmark);
   self->priv->default_bookmark = NULL;
 
@@ -1063,6 +1122,14 @@ epc_publisher_class_init (EpcPublisherClass *cls)
                                    g_param_spec_string ("application", "Application",
                                                         "Program name for deriving the service type",
                                                         NULL,
+                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
+                                                        G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
+
+  g_object_class_install_property (oclass, PROP_CONTENTS_PATH,
+                                   g_param_spec_string ("contents-path", "Contents Path",
+                                                        "The built-in server path for publishing resources",
+                                                        "/contents",
                                                         G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
                                                         G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
@@ -1232,25 +1299,32 @@ epc_publisher_add_handler (EpcPublisher      *self,
 
 /**
  * epc_publisher_get_path:
- * @key: the resource key to inspect, or %NULL
+ * @publisher: a #EpcPublisher
+ * @key: the resource key to inspect, or %NULL.
  *
  * Queries the path component of the URI used to publish the resource
  * associated with @key. This is useful when referencing keys in published
- * resources. When passing %NULL the publisher's base path is returned.
+ * resources. Passing %NULL as @key retrieve the path of the root context.
  *
  * Returns: The resource path for @key.
  */
 gchar*
-epc_publisher_get_path (const gchar *key)
+epc_publisher_get_path (EpcPublisher *self,
+                        const gchar  *key)
 {
+  gchar *encoded_key = NULL;
   gchar *path = NULL;
+
+  g_return_val_if_fail (EPC_IS_PUBLISHER (self), NULL);
 
   if (key)
     {
-      gchar *encoded_key = soup_uri_encode (key, NULL);
-      path = g_strconcat ("/get/", encoded_key, NULL);
+      encoded_key = soup_uri_encode (key, NULL);
+      path = g_strconcat (self->priv->contents_path, "/", encoded_key, NULL);
       g_free (encoded_key);
     }
+  else
+    path = g_strdup ("/");
 
   return path;
 }
@@ -1293,7 +1367,7 @@ epc_publisher_get_uri (EpcPublisher  *self,
   if (!host)
     return NULL;
 
-  path = epc_publisher_get_path (key);
+  path = epc_publisher_get_path (self, key);
   url = epc_protocol_build_uri (self->priv->protocol, host, port, path);
   g_free (path);
 
@@ -1630,6 +1704,22 @@ epc_publisher_set_protocol (EpcPublisher *self,
 }
 
 /**
+ * epc_publisher_set_contents_path:
+ * @publisher: a #EpcPublisher
+ * @path: the new contents path
+ *
+ * Changes the server path used for publishing contents.
+ * See #EpcPublisher:contents-path for details.
+ */
+void
+epc_publisher_set_contents_path (EpcPublisher *self,
+                                 const gchar  *path)
+{
+  g_return_if_fail (EPC_IS_PUBLISHER (self));
+  g_object_set (self, "contents-path", path, NULL);
+}
+
+/**
  * epc_publisher_set_auth_flags:
  * @publisher: a #EpcPublisher
  * @flags: new authentication settings
@@ -1725,6 +1815,22 @@ epc_publisher_get_protocol (EpcPublisher *self)
 {
   g_return_val_if_fail (EPC_IS_PUBLISHER (self), EPC_PROTOCOL_UNKNOWN);
   return self->priv->protocol;
+}
+
+/**
+ * epc_publisher_get_contents_path:
+ * @publisher: a #EpcPublisher
+ *
+ * Queries the server path used for publishing contents.
+ * See #EpcPublisher:contents-path for details.
+ *
+ * Returns: The server's contents path.
+ */
+G_CONST_RETURN gchar*
+epc_publisher_get_contents_path (EpcPublisher *self)
+{
+  g_return_val_if_fail (EPC_IS_PUBLISHER (self), NULL);
+  return self->priv->contents_path;
 }
 
 /**

@@ -5,6 +5,7 @@
 *.out
 .dirstamp
 
+test-consumer-by-info
 test-consumer-by-name
 test-dispatcher-local-collision
 test-dispatcher-multiple-services

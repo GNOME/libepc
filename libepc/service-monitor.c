@@ -26,6 +26,7 @@
 #include "shell.h"
 
 #include <avahi-common/error.h>
+#include <net/if.h>
 
 /**
  * SECTION:service-monitor
@@ -164,27 +165,44 @@ epc_service_monitor_get_property (GObject    *object,
 
 static void
 epc_service_monitor_resolver_cb (AvahiServiceResolver   *resolver,
-                                 AvahiIfIndex            interface G_GNUC_UNUSED,
-                                 AvahiProtocol           protocol G_GNUC_UNUSED,
-                                 AvahiResolverEvent      event G_GNUC_UNUSED,
-                                 const char             *name G_GNUC_UNUSED,
+                                 AvahiIfIndex            ifindex,
+                                 AvahiProtocol           protocol,
+                                 AvahiResolverEvent      event,
+                                 const char             *name,
                                  const char             *type,
                                  const char             *domain G_GNUC_UNUSED,
                                  const char             *hostname,
-                                 const AvahiAddress     *a G_GNUC_UNUSED,
+                                 const AvahiAddress     *address,
                                  uint16_t                port,
-                                 AvahiStringList        *txt G_GNUC_UNUSED,
+                                 AvahiStringList        *txt,
                                  AvahiLookupResultFlags  flags G_GNUC_UNUSED,
-                                 void                   *data G_GNUC_UNUSED)
+                                 void                   *data)
 {
   EpcServiceMonitor *self = EPC_SERVICE_MONITOR (data);
+  gchar ifname[IFNAMSIZ];
+  EpcServiceInfo *info;
+  gint error;
 
-  if (EPC_DEBUG_LEVEL (1))
-    g_debug ("%s: Service resolved: type='%s', hostname='%s', port=%d",
-             G_STRLOC, type, hostname, port);
+  switch (event)
+    {
+      case AVAHI_RESOLVER_FOUND:
+        if (EPC_DEBUG_LEVEL (1))
+          g_debug ("%s: Service resolved: type='%s', hostname='%s', port=%d, protocol=%s",
+                   G_STRLOC, type, hostname, port, avahi_proto_to_string (protocol));
 
-  g_signal_emit (self, signals[SIGNAL_SERVICE_FOUND],
-                 0, type, name, hostname, (guint)port);
+        g_assert (protocol == address->proto);
+
+        info = epc_service_info_new_full (type, hostname, port, txt, address,
+                                          if_indextoname (ifindex, ifname));
+        g_signal_emit (self, signals[SIGNAL_SERVICE_FOUND], 0, name, info);
+        epc_service_info_unref (info);
+        break;
+
+      case AVAHI_RESOLVER_FAILURE:
+        error = avahi_client_errno (avahi_service_resolver_get_client (resolver));
+        g_warning ("%s: %s (%d)", G_STRFUNC, avahi_strerror (error), error);
+        break;
+    }
 
   avahi_service_resolver_free (resolver);
 }
@@ -213,14 +231,13 @@ epc_service_monitor_browser_cb (AvahiServiceBrowser    *browser,
     {
       case AVAHI_BROWSER_NEW:
         if (!self->priv->skip_our_own || !(flags & AVAHI_LOOKUP_RESULT_OUR_OWN))
-          avahi_service_resolver_new (client, interface, protocol, name,
-                                      type, domain, AVAHI_PROTO_UNSPEC, 0,
-                                      epc_service_monitor_resolver_cb, self);
+          avahi_service_resolver_new (client, interface, protocol, name, type, domain,
+                                      protocol, 0, epc_service_monitor_resolver_cb, self);
 
         break;
 
       case AVAHI_BROWSER_REMOVE:
-        g_signal_emit (self, signals[SIGNAL_SERVICE_REMOVED], 0, type, name);
+        g_signal_emit (self, signals[SIGNAL_SERVICE_REMOVED], 0, name, type);
         break;
 
       case AVAHI_BROWSER_CACHE_EXHAUSTED:
@@ -361,25 +378,22 @@ epc_service_monitor_class_init (EpcServiceMonitorClass *cls)
   /**
    * EpcServiceMonitor::service-found:
    * @monitor: a #EpcServiceMonitor
-   * @type: the service type watched
    * @name: name of the service removed
-   * @host: name of the host providing the service
-   * @port: TCP/IP port for contacting the service
+   * @info: a description of the service found
    *
    * This signal is emitted when a new service was found.
    */
   signals[SIGNAL_SERVICE_FOUND] = g_signal_new ("service-found",
                                                 EPC_TYPE_SERVICE_MONITOR, G_SIGNAL_RUN_FIRST,
                                                 G_STRUCT_OFFSET (EpcServiceMonitorClass, service_found),
-                                                NULL, NULL, _epc_marshal_VOID__STRING_STRING_STRING_UINT,
-                                                G_TYPE_NONE, 4, G_TYPE_STRING, G_TYPE_STRING,
-                                                                G_TYPE_STRING, G_TYPE_UINT);
+                                                NULL, NULL, _epc_marshal_VOID__STRING_BOXED,
+                                                G_TYPE_NONE, 2, G_TYPE_STRING, EPC_TYPE_SERVICE_INFO);
 
   /**
    * EpcServiceMonitor::service-removed:
    * @monitor: a #EpcServiceMonitor
-   * @type: the service type watched
    * @name: name of the service removed
+   * @type: the service type watched
    *
    * This signal is emitted when a previously known service disappears.
    */

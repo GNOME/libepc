@@ -21,8 +21,7 @@
 #ifndef __EPC_DISPATCHER_H__
 #define __EPC_DISPATCHER_H__
 
-#include <glib-object.h>
-#include <sys/socket.h>
+#include <libepc/service-info.h>
 
 G_BEGIN_DECLS
 
@@ -36,22 +35,6 @@ G_BEGIN_DECLS
 typedef struct _EpcDispatcher        EpcDispatcher;
 typedef struct _EpcDispatcherClass   EpcDispatcherClass;
 typedef struct _EpcDispatcherPrivate EpcDispatcherPrivate;
-
-/**
- * EpcAddressFamily:
- * @EPC_ADDRESS_UNSPEC: No preferences exist. Use all address families supported.
- * @EPC_ADDRESS_IPV4: Exclusively use IPv4 for addressing network services.
- * @EPC_ADDRESS_IPV6: Exclusively use IPv6 for addressing network services.
- *
- * The address family to use for contacting network services.
- */
-typedef enum
-{
-  EPC_ADDRESS_UNSPEC = AF_UNSPEC,
-  EPC_ADDRESS_IPV4 = AF_INET,
-  EPC_ADDRESS_IPV6 = AF_INET6
-}
-EpcAddressFamily;
 
 /**
  * EpcDispatcher:

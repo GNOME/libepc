@@ -1,3 +1,27 @@
+2007-12-02  Mathias Hasselmann  <mathias@openismus.com>
+
+	Allow custom service path for publishing contents and change the
+	service monitor to use extensible EpcServiceInfo objects.
+
+	* libepc/consumer.c, libepc/consumer.h: Change epc_consumer_new to use
+	a single EpcServiceInfo. Update signal handlers. Add "path" property.
+	Call epc_consumer_resolve_publisher before constructing URIs.
+	* libepc/dispatcher.h: Remove EpcAddressFamily.
+	* libepc/marshal.list: Update service monitor signals.
+	* libepc/publisher.c, libepc/publisher.h: Add "contents-path"
+	property. Add publisher argument to epc_publisher_get_path.
+	* libepc/service-info.c, libepc/service-info.h:
+	Add EpcServiceInfo and take EpcAddressFamily.
+	* libepc/service-monitor.c, libepc/service-monitor.h: Change signals
+	to use EpcServiceInfo, instead of a myriad of arguments.
+	* docs/reference/libepc/libepc-1.0-docs.xml,
+	docs/reference/libepc/libepc-1.0-sections.txt: Add EpcServiceInfo.
+	* examples/consumer-ui.c: Update usage of epc_consumer_new.
+	* examples/service-browser.c: Update service monitor signal handlers.
+	* Makefile.am, tests/.gitignore: Add tests/test-consumer-by-info.c.
+	* tests/test-consumer-by-info.c: Test epc_consumer_new function and
+	custom contents paths.
+
 2007-12-01  Mathias Hasselmann  <mathias@openismus.com>
 
 	Demonstrate authentication in publisher-ui example.

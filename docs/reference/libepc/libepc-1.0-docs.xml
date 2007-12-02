@@ -85,6 +85,7 @@
   <chapter id="dns-sd-support">
     <title>DNS-SD Support</title>
     <xi:include href="xml/dispatcher.xml"/>
+    <xi:include href="xml/service-info.xml"/>
     <xi:include href="xml/service-monitor.xml"/>
     <xi:include href="xml/service-type.xml"/>
 

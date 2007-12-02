@@ -22,8 +22,8 @@
 #ifndef __EPC_SERVICE_MONITOR_H__
 #define __EPC_SERVICE_MONITOR_H__
 
-#include <glib-object.h>
 #include <libepc/protocol.h>
+#include <libepc/service-info.h>
 
 G_BEGIN_DECLS
 
@@ -66,27 +66,25 @@ struct _EpcServiceMonitorClass
   GObjectClass parent_class;
 
   /*< public >*/
-  void (*service_found)   (EpcServiceMonitor *monitor,
-                           const gchar       *type,
-                           const gchar       *name,
-                           const gchar       *host,
-                           guint              port);
-  void (*service_removed) (EpcServiceMonitor *monitor,
-                           const gchar       *type,
-                           const gchar       *name);
-  void (*scanning_done)   (EpcServiceMonitor *monitor,
-                           const gchar       *type);
+  void (*service_found)   (EpcServiceMonitor  *monitor,
+                           const gchar        *name,
+                           EpcServiceInfo     *info);
+  void (*service_removed) (EpcServiceMonitor  *monitor,
+                           const gchar        *name,
+                           const gchar        *type);
+  void (*scanning_done)   (EpcServiceMonitor  *monitor,
+                           const gchar        *type);
 };
 
 GType              epc_service_monitor_get_type         (void) G_GNUC_CONST;
 
-EpcServiceMonitor* epc_service_monitor_new              (const gchar *application,
-                                                         const gchar *domain,
-                                                         EpcProtocol  first_protocol,
-                                                                      ...);
-EpcServiceMonitor* epc_service_monitor_new_for_types    (const gchar *domain,
-                                                         const gchar *first_service_type,
-                                                                      ...)
+EpcServiceMonitor* epc_service_monitor_new              (const gchar       *application,
+                                                         const gchar       *domain,
+                                                         EpcProtocol        first_protocol,
+                                                                            ...);
+EpcServiceMonitor* epc_service_monitor_new_for_types    (const gchar       *domain,
+                                                         const gchar       *first_service_type,
+                                                                            ...)
                                                          G_GNUC_NULL_TERMINATED;
 
 void               epc_service_monitor_set_skip_our_own (EpcServiceMonitor *monitor,

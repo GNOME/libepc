@@ -50,8 +50,8 @@
  *
  *   if (service_name)
  *     consumer = epc_consumer_new_for_name (service_name);
- *   else if (your_app_discover_server (&protocol, &hostname, &port))
- *     consumer = epc_consumer_new (protocol, hostname, port);
+ *   else
+ *     consumer = epc_consumer_new (your_app_find_service ());
  *
  *   value = epc_consumer_lookup (consumer, "glom-settings", NULL, &error);
  *   g_object_unref (consumer);
@@ -83,11 +83,14 @@
  *
  *  if (GTK_RESPONSE_ACCEPT == gtk_dialog_run (GTK_DIALOG (dialog)))
  *   {
- *      const gchar *transport = aui_service_dialog_get_service_type (AUI_SERVICE_DIALOG (dialog));
- *      const gchar *hostname = aui_service_dialog_get_host_name (AUI_SERVICE_DIALOG (dialog));
- *      const gint port = aui_service_dialog_get_port (AUI_SERVICE_DIALOG (dialog));
+ *      EpcServiceInfo *service =
+ *        epc_service_info_new (aui_service_dialog_get_service_type (AUI_SERVICE_DIALOG (dialog)),
+ *                              aui_service_dialog_get_host_name    (AUI_SERVICE_DIALOG (dialog)),
+ *                              aui_service_dialog_get_port         (AUI_SERVICE_DIALOG (dialog)),
+ *                              aui_service_dialog_get_txt_data     (AUI_SERVICE_DIALOG (dialog)));
  *
- *      consumer = epc_consumer_new (epc_service_type_get_protocol (transport), hostname, port);
+ *      consumer = epc_consumer_new (service);
+ *      epc_service_info_unref (service);
  *      ...
  *   }
  *  </programlisting>
@@ -116,6 +119,7 @@ enum
   PROP_PROTOCOL,
   PROP_HOSTNAME,
   PROP_PORT,
+  PROP_PATH,
   PROP_USERNAME,
   PROP_PASSWORD
 };
@@ -155,6 +159,7 @@ struct _EpcConsumerPrivate
   gchar       *name;
   gchar       *domain;
   gchar       *hostname;
+  gchar       *path;
   guint16      port;
 };
 
@@ -281,6 +286,11 @@ epc_consumer_set_property (GObject      *object,
         self->priv->port = g_value_get_int (value);
         break;
 
+      case PROP_PATH:
+        g_assert (NULL == self->priv->path);
+        self->priv->path = g_value_dup_string (value);
+        break;
+
       case PROP_USERNAME:
         g_free (self->priv->username);
         self->priv->username = g_value_dup_string (value);
@@ -331,6 +341,10 @@ epc_consumer_get_property (GObject    *object,
         g_value_set_int (value, self->priv->port);
         break;
 
+      case PROP_PATH:
+        g_value_set_string (value, self->priv->path);
+        break;
+
       case PROP_USERNAME:
         g_value_set_string (value, self->priv->username);
         break;
@@ -346,18 +360,21 @@ epc_consumer_get_property (GObject    *object,
 }
 
 static void
-epc_consumer_service_found_cb (EpcServiceMonitor *monitor G_GNUC_UNUSED,
-                               const gchar       *type,
-                               const gchar       *name,
-                               const gchar       *host,
-                               const guint        port,
-                               gpointer           data)
+epc_consumer_service_found_cb (EpcConsumer    *self,
+                               const gchar    *name,
+                               EpcServiceInfo *info)
 {
+  const gchar *type = epc_service_info_get_service_type (info);
   EpcProtocol transport = epc_service_type_get_protocol (type);
-  EpcConsumer *self = EPC_CONSUMER (data);
+
+  const gchar *path = epc_service_info_get_detail (info, "path");
+  const gchar *host = epc_service_info_get_host (info);
+  guint port = epc_service_info_get_port (info);
 
   if (EPC_DEBUG_LEVEL (1))
-    g_debug ("%s: Service resolved: type='%s', host='%s', port=%d", G_STRLOC, type, host, port);
+    g_debug ("%s: Service resolved: type='%s', host='%s', port=%d, path='%s'", 
+             G_STRLOC, type, host, port, path);
+
   if (name && strcmp (name, self->priv->name))
     return;
 
@@ -374,7 +391,11 @@ epc_consumer_service_found_cb (EpcServiceMonitor *monitor G_GNUC_UNUSED,
 
   g_main_loop_quit (self->priv->loop);
 
+  g_free (self->priv->path);
   g_free (self->priv->hostname);
+
+  /* Use /get path as fallback for libepc-0.2 publishers */
+  self->priv->path = g_strdup (path ? path : "/get");
   self->priv->hostname = g_strdup (host);
   self->priv->port = port;
 }
@@ -394,9 +415,9 @@ epc_consumer_constructed (GObject *object)
                                                              self->priv->protocol,
                                                              EPC_PROTOCOL_UNKNOWN);
 
-      g_signal_connect  (self->priv->service_monitor, "service-found",
-                         G_CALLBACK (epc_consumer_service_found_cb),
-                         self);
+      g_signal_connect_swapped (self->priv->service_monitor, "service-found",
+                                G_CALLBACK (epc_consumer_service_found_cb),
+                                self);
     }
 }
 
@@ -440,6 +461,9 @@ epc_consumer_dispose (GObject *object)
 
   g_free (self->priv->password);
   self->priv->password = NULL;
+
+  g_free (self->priv->path);
+  self->priv->path = NULL;
 
   G_OBJECT_CLASS (epc_consumer_parent_class)->dispose (object);
 }
@@ -497,6 +521,14 @@ epc_consumer_class_init (EpcConsumerClass *cls)
                                                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
                                                      G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                      G_PARAM_STATIC_BLURB));
+
+  g_object_class_install_property (oclass, PROP_PATH,
+                                   g_param_spec_string ("path", "Path",
+                                                        "The path the publisher uses for contents",
+                                                        "/contents",
+                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+                                                        G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
 
   g_object_class_install_property (oclass, PROP_USERNAME,
                                    g_param_spec_string ("username", "User Name",
@@ -565,32 +597,37 @@ epc_consumer_class_init (EpcConsumerClass *cls)
 
 /**
  * epc_consumer_new:
- * @protocol: the transport protocol to use
- * @hostname: the publisher's host name
- * @port:  the publisher's TCP/IP port
+ * @service: the publisher's service description
  *
  * Creates a new #EpcConsumer object and associates it with a known
- * #EpcPublisher. Values for @protocol, @hostname and @port can be retrieved,
- * for instance, by using the service selection dialog of avahi-ui
- * (#AuiServiceDialog). Call #epc_service_type_get_protocol to convert
- * the service-type provided by that dialog to an #EpcProtocol value.
+ * #EpcPublisher. The @service description can be retrieved, for instance,
+ * by using #EpcServiceMonitor, or by using the service selection dialog
+ * of <citetitle>avahi-ui</citetitle> (#AuiServiceDialog).
  *
- * The connection is not established until #epc_consumer_lookup
- * is called to retrieve values.
+ * The connection is not established until functions like #epc_consumer_lookup,
+ * #epc_consumer_list or #epc_consumer_resolve_publisher are called.
  *
  * Returns: The newly created #EpcConsumer object
  */
 EpcConsumer*
-epc_consumer_new (EpcProtocol  protocol,
-                  const gchar *hostname,
-                  guint16      port)
+epc_consumer_new (const EpcServiceInfo *service)
 {
-  g_return_val_if_fail (EPC_PROTOCOL_UNKNOWN != protocol, NULL);
-  g_return_val_if_fail (NULL != hostname, NULL);
-  g_return_val_if_fail (port > 0, NULL);
+  EpcProtocol protocol;
+  const gchar *type;
 
-  return g_object_new (EPC_TYPE_CONSUMER, "protocol", protocol,
-                       "hostname", hostname, "port", port, NULL);
+  g_return_val_if_fail (EPC_IS_SERVICE_INFO (service), NULL);
+
+  type = epc_service_info_get_service_type (service);
+  protocol = epc_service_type_get_protocol (type);
+
+  g_return_val_if_fail (EPC_PROTOCOL_UNKNOWN != protocol, NULL);
+
+  return g_object_new (EPC_TYPE_CONSUMER,
+                       "protocol", protocol,
+                       "hostname", epc_service_info_get_host (service),
+                       "port", epc_service_info_get_port (service),
+                       "path", epc_service_info_get_detail (service, "path"),
+                       NULL);
 }
 
 /**
@@ -822,32 +859,28 @@ epc_consumer_create_request (EpcConsumer *self,
                              const gchar *path)
 {
   SoupMessage *request = NULL;
+  char *request_uri;
 
   if (NULL == path)
     path = "/";
 
   g_assert ('/' == path[0]);
 
-  if (epc_consumer_resolve_publisher (self, EPC_CONSUMER_DEFAULT_TIMEOUT))
-    {
-      char *request_uri;
+  g_return_val_if_fail (NULL != self->priv->hostname, NULL);
+  g_return_val_if_fail (self->priv->port > 0, NULL);
 
-      g_return_val_if_fail (NULL != self->priv->hostname, NULL);
-      g_return_val_if_fail (self->priv->port > 0, NULL);
+  request_uri = epc_protocol_build_uri (self->priv->protocol,
+                                        self->priv->hostname,
+                                        self->priv->port,
+                                        path);
 
-      request_uri = epc_protocol_build_uri (self->priv->protocol,
-                                            self->priv->hostname,
-                                            self->priv->port,
-                                            path);
+  g_return_val_if_fail (NULL != request_uri, NULL);
 
-      g_return_val_if_fail (NULL != request_uri, NULL);
+  if (EPC_DEBUG_LEVEL (1))
+    g_debug ("%s: Connecting to `%s'", G_STRLOC, request_uri);
 
-      if (EPC_DEBUG_LEVEL (1))
-        g_debug ("%s: Connecting to `%s'", G_STRLOC, request_uri);
-
-      request = soup_message_new ("GET", request_uri);
-      g_free (request_uri);
-    }
+  request = soup_message_new ("GET", request_uri);
+  g_free (request_uri);
 
   return request;
 }
@@ -902,15 +935,23 @@ epc_consumer_lookup (EpcConsumer  *self,
 {
   SoupMessage *request = NULL;
   gchar *contents = NULL;
-  gchar *path = NULL;
   gint status = 0;
 
   g_return_val_if_fail (EPC_IS_CONSUMER (self), NULL);
   g_return_val_if_fail (NULL != key, NULL);
 
-  path = epc_publisher_get_path (key);
-  request = epc_consumer_create_request (self, path);
-  g_free (path);
+  if (epc_consumer_resolve_publisher (self, EPC_CONSUMER_DEFAULT_TIMEOUT))
+    {
+      gchar *keyuri = NULL;
+      gchar *path = NULL;
+
+      keyuri = soup_uri_encode (key, NULL);
+      path = g_strconcat (self->priv->path, "/", keyuri, NULL);
+      request = epc_consumer_create_request (self, path);
+
+      g_free (keyuri);
+      g_free (path);
+    }
 
   if (request)
     status = soup_session_send_message (self->priv->session, request);
@@ -1069,17 +1110,19 @@ epc_consumer_list (EpcConsumer  *self,
                    const gchar  *pattern G_GNUC_UNUSED,
                    GError      **error G_GNUC_UNUSED)
 {
-  EpcListingState state;
   SoupMessage *request = NULL;
-  gchar *path = NULL;
+  EpcListingState state;
   gint status = 0;
 
   g_return_val_if_fail (EPC_IS_CONSUMER (self), NULL);
   g_return_val_if_fail (NULL == pattern || *pattern, NULL);
 
-  path = g_strconcat ("/list/", pattern, NULL);
-  request = epc_consumer_create_request (self, path);
-  g_free (path);
+  if (epc_consumer_resolve_publisher (self, EPC_CONSUMER_DEFAULT_TIMEOUT))
+    {
+      gchar *path = g_strconcat ("/list/", pattern, NULL);
+      request = epc_consumer_create_request (self, path);
+      g_free (path);
+    }
 
   if (request)
     status = soup_session_send_message (self->priv->session, request);

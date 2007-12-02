@@ -3,18 +3,25 @@
 
 static void
 service_found_cb (EpcServiceMonitor *monitor G_GNUC_UNUSED,
-                  const gchar       *type,
                   const gchar       *name,
-                  const gchar       *host,
-                  guint              port)
+                  EpcServiceInfo    *info)
 {
-  g_print ("+ %s (%s, %s:%d)\n", name, type, host, port);
+  AvahiProtocol proto = epc_service_info_get_address_family (info);
+  const gchar *iface = epc_service_info_get_interface (info);
+  const gchar *path = epc_service_info_get_detail (info, "path");
+  const gchar *type = epc_service_info_get_service_type (info);
+  const gchar *host = epc_service_info_get_host (info);
+  guint port = epc_service_info_get_port (info);
+
+  g_print ("+ %s (type=%s, addr=%s:%d (%s), interface=%s, path=%s)\n",
+           name, type, host, port, avahi_proto_to_string (proto),
+           iface, path ? path : "");
 }
 
 static void
 service_removed_cb (EpcServiceMonitor *monitor G_GNUC_UNUSED,
-                    const gchar       *type,
-                    const gchar       *name)
+                    const gchar       *name,
+                    const gchar       *type)
 {
   g_print ("- %s (%s)\n", name, type);
 }

@@ -147,6 +147,8 @@ void                  epc_publisher_set_credentials      (EpcPublisher      *pub
                                                           const gchar       *keyfile);
 void                  epc_publisher_set_protocol         (EpcPublisher      *publisher,
                                                           EpcProtocol        protocol);
+void                  epc_publisher_set_contents_path    (EpcPublisher      *publisher,
+                                                          const gchar       *path);
 void                  epc_publisher_set_auth_flags       (EpcPublisher      *publisher,
                                                           EpcAuthFlags       flags);
 
@@ -155,6 +157,7 @@ G_CONST_RETURN gchar* epc_publisher_get_service_domain   (EpcPublisher      *pub
 G_CONST_RETURN gchar* epc_publisher_get_certificate_file (EpcPublisher      *publisher);
 G_CONST_RETURN gchar* epc_publisher_get_private_key_file (EpcPublisher      *publisher);
 EpcProtocol           epc_publisher_get_protocol         (EpcPublisher      *publisher);
+G_CONST_RETURN gchar* epc_publisher_get_contents_path    (EpcPublisher      *publisher);
 EpcAuthFlags          epc_publisher_get_auth_flags       (EpcPublisher      *publisher);
 
 void                  epc_publisher_add                  (EpcPublisher      *publisher,
@@ -180,7 +183,8 @@ void                  epc_publisher_add_bookmark         (EpcPublisher      *pub
                                                           const gchar       *key,
                                                           const gchar       *label);
 
-gchar*                epc_publisher_get_path             (const gchar       *key);
+gchar*                epc_publisher_get_path             (EpcPublisher      *publisher,
+                                                          const gchar       *key);
 gchar*                epc_publisher_get_uri              (EpcPublisher      *publisher,
                                                           const gchar       *key,
                                                           GError           **error);

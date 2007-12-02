@@ -62,19 +62,21 @@ epc_publisher_quit
 epc_publisher_expand_name
 
 <SUBSECTION>
+epc_publisher_set_auth_flags
 epc_publisher_set_auth_handler
+epc_publisher_set_contents_path
 epc_publisher_set_credentials
 epc_publisher_set_protocol
 epc_publisher_set_service_name
-epc_publisher_set_auth_flags
 
 <SUBSECTION>
+epc_publisher_get_auth_flags
 epc_publisher_get_certificate_file
+epc_publisher_get_contents_path
 epc_publisher_get_private_key_file
 epc_publisher_get_protocol
-epc_publisher_get_service_name
 epc_publisher_get_service_domain
-epc_publisher_get_auth_flags
+epc_publisher_get_service_name
 
 <SUBSECTION Standard>
 EPC_IS_PUBLISHER
@@ -312,11 +314,35 @@ epc_service_monitor_set_skip_our_own
 epc_service_monitor_get_skip_our_own
 
 <SUBSECTION Standard>
-epc_service_monitor_get_type
 EPC_IS_SERVICE_MONITOR
 EPC_IS_SERVICE_MONITOR_CLASS
 EPC_SERVICE_MONITOR
 EPC_SERVICE_MONITOR_CLASS
 EPC_SERVICE_MONITOR_GET_CLASS
 EPC_TYPE_SERVICE_MONITOR
+epc_service_monitor_get_type
+</SECTION>
+
+<SECTION>
+<FILE>service-info</FILE>
+<TITLE>EpcServiceInfo</TITLE>
+EpcServiceInfo
+epc_service_info_new
+epc_service_info_new_full
+epc_service_info_ref
+epc_service_info_unref
+
+<SUBSECTION>
+epc_service_info_get_address
+epc_service_info_get_address_family
+epc_service_info_get_detail
+epc_service_info_get_host
+epc_service_info_get_interface
+epc_service_info_get_port
+epc_service_info_get_service_type
+
+<SUBSECTION Standard>
+EPC_IS_SERVICE_INFO
+EPC_TYPE_SERVICE_INFO
+epc_service_info_get_type
 </SECTION>
