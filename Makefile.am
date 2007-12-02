@@ -218,7 +218,7 @@ clean-local:
 
 distclean-local:
 	cd $(gtkdoc_builddir) && $(MAKE) $(AM_MAKEFLAGS) distclean
-docs:
+docs: $(lib_LTLIBRARIES)
 	cd $(gtkdoc_builddir) && $(MAKE) $(AM_MAKEFLAGS) docs
 install-data-local:
 	cd $(gtkdoc_builddir) && $(MAKE) $(AM_MAKEFLAGS) install-data

@@ -1,5 +1,11 @@
 2007-12-02  Mathias Hasselmann  <mathias@openismus.com>
 
+	Rebuild libraries before trying the phony docs target.
+
+	* Makefile.am: List $(lib_LTLIBRARIES) as dependency for "docs".
+
+2007-12-02  Mathias Hasselmann  <mathias@openismus.com>
+
 	Allow custom service path for publishing contents and change the
 	service monitor to use extensible EpcServiceInfo objects.
 
