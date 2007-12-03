@@ -566,20 +566,6 @@ epc_publisher_server_auth_cb (SoupServerAuthContext *auth_ctx G_GNUC_UNUSED,
   if (NULL == resource)
     resource = context.publisher->priv->default_resource;
 
-  switch (auth_ctx->types)
-    {
-      case SOUP_AUTH_TYPE_BASIC:
-        auth_ctx->basic_info.realm = context.publisher->priv->service_name;
-        break;
-
-      case SOUP_AUTH_TYPE_DIGEST:
-        /* TODO: Figure out why force_integrity doesn't work. */
-        auth_ctx->digest_info.force_integrity = FALSE;
-        auth_ctx->digest_info.allow_algorithms = SOUP_ALGORITHM_MD5;
-        auth_ctx->digest_info.realm = context.publisher->priv->service_name;
-        break;
-    }
-
   if (resource && resource->auth_handler)
     authorized = resource->auth_handler (&context, user, resource->auth_user_data);
 
@@ -807,6 +793,9 @@ epc_publisher_compute_name (EpcPublisher *self)
 static void
 epc_publisher_remove_handlers (EpcPublisher *self)
 {
+  memset (&self->priv->server_auth.digest_info, 0,
+          sizeof self->priv->server_auth.digest_info);
+
   soup_server_remove_handler (self->priv->server, self->priv->contents_path);
   soup_server_remove_handler (self->priv->server, "/list");
   soup_server_remove_handler (self->priv->server, "/");
@@ -815,6 +804,22 @@ epc_publisher_remove_handlers (EpcPublisher *self)
 static void
 epc_publisher_install_handlers (EpcPublisher *self)
 {
+  memset (&self->priv->server_auth.digest_info, 0,
+          sizeof self->priv->server_auth.digest_info);
+
+  switch (self->priv->server_auth.types)
+    {
+      case SOUP_AUTH_TYPE_BASIC:
+        self->priv->server_auth.basic_info.realm = self->priv->service_name;
+        break;
+
+      case SOUP_AUTH_TYPE_DIGEST:
+        self->priv->server_auth.digest_info.realm = self->priv->service_name;
+        self->priv->server_auth.digest_info.allow_algorithms = SOUP_ALGORITHM_MD5;
+        self->priv->server_auth.digest_info.force_integrity = FALSE; /* not implemented */
+        break;
+    }
+
   soup_server_add_handler (self->priv->server,
                            self->priv->contents_path,
                            &self->priv->server_auth,
@@ -890,9 +895,30 @@ epc_publisher_create_server (EpcPublisher  *self,
 }
 
 static void
-epc_publisher_real_set_auth_flags (EpcPublisher *self,
-                                   EpcAuthFlags  flags)
+epc_publisher_real_set_service_name (EpcPublisher *self,
+                                     const GValue *value)
 {
+  if (self->priv->server)
+    epc_publisher_remove_handlers (self);
+
+  g_free (self->priv->service_name);
+  self->priv->service_name = g_value_dup_string (value);
+
+  if (self->priv->server)
+    epc_publisher_install_handlers (self);
+
+  if (self->priv->dispatcher)
+    epc_dispatcher_set_name (self->priv->dispatcher,
+                             epc_publisher_compute_name (self));
+
+}
+
+static void
+epc_publisher_real_set_auth_flags (EpcPublisher *self,
+                                   const GValue *value)
+{
+  EpcAuthFlags flags = g_value_get_flags (value);
+
   if (0 != (flags & EPC_AUTH_PASSWORD_TEXT_NEEDED) &&
       EPC_PROTOCOL_HTTPS != self->priv->protocol)
     {
@@ -901,15 +927,23 @@ epc_publisher_real_set_auth_flags (EpcPublisher *self,
       flags &= ~EPC_AUTH_PASSWORD_TEXT_NEEDED;
     }
 
+  if (self->priv->server)
+    epc_publisher_remove_handlers (self);
+
   self->priv->server_auth.types =
     flags & EPC_AUTH_PASSWORD_TEXT_NEEDED ?
     SOUP_AUTH_TYPE_BASIC : SOUP_AUTH_TYPE_DIGEST;
+
+  if (self->priv->server)
+    epc_publisher_install_handlers (self);
 }
 
 static void
 epc_publisher_real_set_contents_path (EpcPublisher *self,
-                                      const gchar  *path)
+                                      const GValue *value)
 {
+  const gchar *path = g_value_get_string (value);
+
   g_return_if_fail (NULL != path);
   g_return_if_fail ('/' == path[0]);
   g_return_if_fail ('\0' != path[1]);
@@ -921,7 +955,7 @@ epc_publisher_real_set_contents_path (EpcPublisher *self,
         epc_publisher_remove_handlers (self);
 
       g_free (self->priv->contents_path);
-      self->priv->contents_path = g_strdup (path);
+      self->priv->contents_path = g_value_dup_string (value);
 
       if (self->priv->server)
         epc_publisher_install_handlers (self);
@@ -945,13 +979,7 @@ epc_publisher_set_property (GObject      *object,
         break;
 
       case PROP_SERVICE_NAME:
-        g_free (self->priv->service_name);
-        self->priv->service_name = g_value_dup_string (value);
-
-        if (self->priv->dispatcher)
-          epc_dispatcher_set_name (self->priv->dispatcher,
-                                   epc_publisher_compute_name (self));
-
+        epc_publisher_real_set_service_name (self, value);
         break;
 
       case PROP_SERVICE_DOMAIN:
@@ -963,15 +991,17 @@ epc_publisher_set_property (GObject      *object,
 
       case PROP_APPLICATION:
         g_return_if_fail (!epc_publisher_is_server_created (self));
+
+        g_free (self->priv->application);
         self->priv->application = g_value_dup_string (value);
         break;
 
       case PROP_CONTENTS_PATH:
-        epc_publisher_real_set_contents_path (self, g_value_get_string (value));
+        epc_publisher_real_set_contents_path (self, value);
         break;
 
       case PROP_AUTH_FLAGS:
-        epc_publisher_real_set_auth_flags (self, g_value_get_flags (value));
+        epc_publisher_real_set_auth_flags (self, value);
         break;
 
       case PROP_CERTIFICATE_FILE:

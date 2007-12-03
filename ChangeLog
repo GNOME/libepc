@@ -1,5 +1,13 @@
 2007-12-03  Mathias Hasselmann  <mathias@openismus.com>
 
+	Avoid memory management problems by properly passing authentication
+	settings to libsoup: The library forgets to use the const keyword, but
+	considers the context it passes the authentication callback constant.
+
+	* libepc/publisher.c: Properly initialize server_auth field.
+
+2007-12-03  Mathias Hasselmann  <mathias@openismus.com>
+
 	Document the @details argument of epc_service_info_new and
 	epc_service_info_new_full.
 
