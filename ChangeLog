@@ -1,3 +1,10 @@
+2007-12-03  Mathias Hasselmann  <mathias@openismus.com>
+
+	Document the @details argument of epc_service_info_new and
+	epc_service_info_new_full.
+
+	* libepc/service-info.c: Update docs.
+
 2007-12-02  Mathias Hasselmann  <mathias@openismus.com>
 
 	Rebuild libraries before trying the phony docs target.

@@ -74,9 +74,11 @@ epc_service_info_get_type (void)
  * @address: IP address of the service, or %NULL
  * @ifname: network interface for contacting the service, or %NULL
  *
- * Creates a new service description using the information provided.
- * The @details list usually is retrieved from the TXT record the
- * dynamic naming system (DNS) provides for the service.
+ * Creates a new service description using the information provided. The
+ * @details list usually is retrieved from the TXT record the dynamic naming
+ * system (DNS) provides for the service. When using Avahi's service chooser
+ * #aui_service_dialog_get_txt_data can be used for getting a @details list.
+ * To create an ad-hoc list use #avahi_string_list_new and related functions.
  *
  * Returns: The newly created service description, or %NULL on error.
  */
@@ -119,9 +121,11 @@ epc_service_info_new_full (const gchar           *type,
  * @port: the TCP/IP port
  * @details: list of key-value pairs, or %NULL
  *
- * Creates a new service description using the information provided.
- * The @details list usually is retrieved from the TXT record the
- * dynamic naming system (DNS) provides for the service.
+ * Creates a new service description using the information provided. The
+ * @details list usually is retrieved from the TXT record the dynamic naming
+ * system (DNS) provides for the service. When using Avahi's service chooser
+ * #aui_service_dialog_get_txt_data can be used for getting a @details list.
+ * To create an ad-hoc list use #avahi_string_list_new and related functions.
  *
  * Returns: The newly created service description, or %NULL on error.
  */
