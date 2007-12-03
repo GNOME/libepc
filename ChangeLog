@@ -1,5 +1,11 @@
 2007-12-03  Mathias Hasselmann  <mathias@openismus.com>
 
+	Mark the EpcAuthContext argument as constant for some functions.
+
+	* libepc/publisher.c, libepc/publisher.h: Add some const keywords.
+
+2007-12-03  Mathias Hasselmann  <mathias@openismus.com>
+
 	Avoid memory management problems by properly passing authentication
 	settings to libsoup: The library forgets to use the const keyword, but
 	considers the context it passes the authentication callback constant.

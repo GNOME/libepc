@@ -207,11 +207,11 @@ gboolean              epc_publisher_quit                 (EpcPublisher      *pub
 gchar*                epc_publisher_expand_name          (const gchar       *name,
                                                           GError           **error);
 
-EpcPublisher*         epc_auth_context_get_publisher     (EpcAuthContext    *context);
-G_CONST_RETURN gchar* epc_auth_context_get_key           (EpcAuthContext    *context);
-G_CONST_RETURN gchar* epc_auth_context_get_password      (EpcAuthContext    *context);
-gboolean              epc_auth_context_check_password    (EpcAuthContext    *context,
-                                                          const gchar       *password);
+EpcPublisher*         epc_auth_context_get_publisher     (const EpcAuthContext *context);
+G_CONST_RETURN gchar* epc_auth_context_get_key           (const EpcAuthContext *context);
+G_CONST_RETURN gchar* epc_auth_context_get_password      (const EpcAuthContext *context);
+gboolean              epc_auth_context_check_password    (const EpcAuthContext *context,
+                                                          const gchar          *password);
 
 G_END_DECLS
 

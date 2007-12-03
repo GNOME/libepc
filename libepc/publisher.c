@@ -2160,7 +2160,7 @@ epc_publisher_expand_name (const gchar  *name,
  * Returns: The owning #EpcPublisher.
  */
 EpcPublisher*
-epc_auth_context_get_publisher (EpcAuthContext *context)
+epc_auth_context_get_publisher (const EpcAuthContext *context)
 {
   g_return_val_if_fail (NULL != context, NULL);
   return context->publisher;
@@ -2175,7 +2175,7 @@ epc_auth_context_get_publisher (EpcAuthContext *context)
  * Returns: The resource key.
  */
 G_CONST_RETURN gchar*
-epc_auth_context_get_key (EpcAuthContext *context)
+epc_auth_context_get_key (const EpcAuthContext *context)
 {
   g_return_val_if_fail (NULL != context, NULL);
   return context->key;
@@ -2193,7 +2193,7 @@ epc_auth_context_get_key (EpcAuthContext *context)
  * Returns: The password sent, or %NULL.
  */
 G_CONST_RETURN gchar*
-epc_auth_context_get_password (EpcAuthContext *context)
+epc_auth_context_get_password (const EpcAuthContext *context)
 {
   g_return_val_if_fail (NULL != context, NULL);
 
@@ -2217,8 +2217,8 @@ epc_auth_context_get_password (EpcAuthContext *context)
  * Returns: %TRUE when the sent password matches, or %FALSE otherwise.
  */
 gboolean
-epc_auth_context_check_password (EpcAuthContext *context,
-                                 const gchar    *password)
+epc_auth_context_check_password (const EpcAuthContext *context,
+                                 const gchar          *password)
 {
   g_return_val_if_fail (NULL != context, FALSE);
   g_return_val_if_fail (NULL != password, FALSE);
