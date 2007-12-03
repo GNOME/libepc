@@ -1,5 +1,12 @@
 2007-12-03  Mathias Hasselmann  <mathias@openismus.com>
 
+	Track client connections and disconnect clients in epc_publisher_quit
+	to avoid leaking of HTTP servers.
+
+	* libepc/publisher.c: Add functions for client tracking.
+
+2007-12-03  Mathias Hasselmann  <mathias@openismus.com>
+
 	Mark the EpcAuthContext argument as constant for some functions.
 
 	* libepc/publisher.c, libepc/publisher.h: Add some const keywords.

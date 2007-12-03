@@ -200,6 +200,8 @@ struct _EpcPublisherPrivate
   SoupServerAuthContext  server_auth;
   SoupServer            *server;
 
+  GHashTable            *clients;
+
   EpcProtocol            protocol;
   gchar                 *service_name;
   gchar                 *service_domain;
@@ -348,6 +350,74 @@ epc_publisher_chunk_cb (SoupMessage *message,
 }
 
 static void
+epc_publisher_trace_client (const gchar *strfunc,
+                            const gchar *message,
+                            SoupSocket  *socket)
+{
+  SoupAddress *addr = soup_socket_get_remote_address (socket);
+
+  g_debug ("%s: %s: %s:%d", strfunc, message,
+           soup_address_get_physical (addr),
+           soup_address_get_port (addr));
+}
+
+static gboolean
+epc_publisher_check_client (EpcPublisher      *self,
+                            SoupServerContext *context)
+{
+  if (context->server == self->priv->server)
+    return TRUE;
+
+  if (EPC_DEBUG_LEVEL (1))
+    epc_publisher_trace_client (G_STRFUNC, "stale client", context->sock);
+
+  soup_socket_disconnect (context->sock);
+  return FALSE;
+}
+
+static G_GNUC_WARN_UNUSED_RESULT gboolean
+epc_publisher_track_client (EpcPublisher      *self,
+                            SoupServerContext *context)
+{
+  g_static_rec_mutex_lock (&epc_publisher_lock);
+
+  if (epc_publisher_check_client (self, context))
+    {
+      gpointer tag;
+
+      tag = g_hash_table_lookup (self->priv->clients, context->sock);
+      tag = GINT_TO_POINTER (GPOINTER_TO_INT (tag) + 1);
+
+      g_object_ref (context->sock);
+      g_hash_table_replace (self->priv->clients, context->sock, tag);
+
+      return TRUE;
+    }
+  else
+    g_static_rec_mutex_unlock (&epc_publisher_lock);
+
+  return FALSE;
+}
+
+static void
+epc_publisher_untrack_client (EpcPublisher      *self,
+                              SoupServerContext *context)
+{
+  if (epc_publisher_check_client (self, context))
+    {
+      gpointer tag;
+
+      tag = g_hash_table_lookup (self->priv->clients, context->sock);
+      tag = GINT_TO_POINTER (GPOINTER_TO_INT (tag) - 1);
+
+      g_object_ref (context->sock);
+      g_hash_table_replace (self->priv->clients, context->sock, tag);
+    }
+
+  g_static_rec_mutex_unlock (&epc_publisher_lock);
+}
+
+static void
 epc_publisher_handle_contents (SoupServerContext *context,
                                SoupMessage       *message,
                                gpointer           data)
@@ -366,7 +436,9 @@ epc_publisher_handle_contents (SoupServerContext *context,
       return;
     }
 
-  g_static_rec_mutex_lock (&epc_publisher_lock);
+  if (!epc_publisher_track_client (self, context))
+    return;
+
   key = epc_publisher_get_key (context->path);
 
   if (key)
@@ -402,7 +474,7 @@ epc_publisher_handle_contents (SoupServerContext *context,
       g_signal_connect_swapped (message, "finished", G_CALLBACK (epc_contents_unref), contents);
     }
 
-  g_static_rec_mutex_unlock (&epc_publisher_lock);
+  epc_publisher_untrack_client (self, context);
 }
 
 static void
@@ -417,7 +489,8 @@ epc_publisher_handle_list (SoupServerContext *context,
 
   GString *contents = g_string_new (NULL);
 
-  g_static_rec_mutex_lock (&epc_publisher_lock);
+  if (!epc_publisher_track_client (self, context))
+    return;
 
   if (g_str_has_prefix (context->path, "/list/") && '\0' != context->path[6])
     pattern = context->path + 6;
@@ -451,7 +524,7 @@ epc_publisher_handle_list (SoupServerContext *context,
   g_string_free (contents, FALSE);
   g_list_free (files);
 
-  g_static_rec_mutex_unlock (&epc_publisher_lock);
+  epc_publisher_untrack_client (self, context);
 }
 
 static void
@@ -461,15 +534,14 @@ epc_publisher_handle_root (SoupServerContext *context,
 {
   EpcPublisher *self = data;
 
-  if (g_str_equal (context->path, "/"))
+  if (g_str_equal (context->path, "/") &&
+      epc_publisher_track_client (self, context))
     {
       GString *contents = g_string_new (NULL);
       gchar *markup;
 
       GList *files;
       GList *iter;
-
-      g_static_rec_mutex_lock (&epc_publisher_lock);
 
       files = epc_publisher_list (self, NULL);
       files = g_list_sort (files, (GCompareFunc) g_utf8_collate);
@@ -533,7 +605,7 @@ epc_publisher_handle_root (SoupServerContext *context,
       g_string_free (contents, FALSE);
       g_list_free (files);
 
-      g_static_rec_mutex_unlock (&epc_publisher_lock);
+      epc_publisher_untrack_client (self, context);
     }
   else
     soup_message_set_status (message, SOUP_STATUS_NOT_FOUND);
@@ -590,6 +662,8 @@ epc_publisher_init (EpcPublisher *self)
 
   self->priv->resources = g_hash_table_new_full (g_str_hash, g_str_equal,
                                                  g_free, epc_resource_free);
+  self->priv->clients = g_hash_table_new_full (g_direct_hash, g_direct_equal,
+                                               g_object_unref, NULL);
 }
 
 static const gchar*
@@ -835,6 +909,31 @@ epc_publisher_install_handlers (EpcPublisher *self)
                            NULL, self);
 }
 
+static void
+epc_publisher_client_disconnected_cb (EpcPublisher *self,
+                                      SoupSocket   *socket)
+{
+  if (EPC_DEBUG_LEVEL (1))
+    epc_publisher_trace_client (G_STRFUNC, "disconnected", socket);
+
+  g_hash_table_remove (self->priv->clients, socket);
+}
+
+static void
+epc_publisher_new_connection_cb (EpcPublisher *self,
+                                 SoupSocket   *socket)
+{
+  if (EPC_DEBUG_LEVEL (1))
+    epc_publisher_trace_client (G_STRFUNC, "new client", socket);
+
+  g_object_ref (socket);
+  g_hash_table_replace (self->priv->clients, socket, GINT_TO_POINTER (1));
+
+  g_signal_connect_swapped (socket, "disconnected",
+                            G_CALLBACK (epc_publisher_client_disconnected_cb),
+                            self);
+}
+
 static gboolean
 epc_publisher_create_server (EpcPublisher  *self,
                              GError       **error)
@@ -883,6 +982,9 @@ epc_publisher_create_server (EpcPublisher  *self,
                      SOUP_SERVER_SSL_KEY_FILE, self->priv->private_key_file,
                      SOUP_SERVER_PORT, SOUP_ADDRESS_ANY_PORT,
                      NULL);
+
+  g_signal_connect_swapped (soup_server_get_listener (self->priv->server), "new-connection",
+                            G_CALLBACK (epc_publisher_new_connection_cb), self);
 
   epc_publisher_install_handlers (self);
   epc_publisher_announce (self);
@@ -1078,6 +1180,12 @@ epc_publisher_dispose (GObject *object)
   EpcPublisher *self = EPC_PUBLISHER (object);
 
   epc_publisher_quit (self);
+
+  if (self->priv->clients)
+    {
+      g_hash_table_unref (self->priv->clients);
+      self->priv->clients = NULL;
+    }
 
   if (self->priv->resources)
     {
@@ -1962,6 +2070,20 @@ epc_publisher_run_async (EpcPublisher  *self,
   return TRUE;
 }
 
+static void
+epc_publisher_disconnect_idle_cb (gpointer key,
+                                  gpointer value,
+                                  gpointer data G_GNUC_UNUSED)
+{
+  if (1 >= GPOINTER_TO_INT (value))
+    {
+      if (EPC_DEBUG_LEVEL (1))
+        epc_publisher_trace_client (G_STRFUNC, "idle client", key);
+
+      soup_socket_disconnect (key);
+    }
+}
+
 /**
  * epc_publisher_quit:
  * @publisher: a #EpcPublisher
@@ -1985,6 +2107,15 @@ epc_publisher_quit (EpcPublisher *self)
 
   if (self->priv->server_loop)
     g_main_loop_quit (self->priv->server_loop);
+
+  g_static_rec_mutex_lock (&epc_publisher_lock);
+
+  if (self->priv->clients)
+    g_hash_table_foreach (self->priv->clients,
+                          epc_publisher_disconnect_idle_cb,
+                          self);
+
+  g_static_rec_mutex_unlock (&epc_publisher_lock);
 
   if (self->priv->dispatcher)
     {
