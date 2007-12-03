@@ -1,3 +1,48 @@
+Release 0.3
+===========
+
+Major Changes
+-------------
+
+	* Implement streaming capabilities.
+	* Provide EpcServiceMonitor by extracting EpcConsumer code.
+	* Support for dynamic ZeroConf bookmarks.
+	* Allow custom service path for publishing contents.
+	* Use one single AvahiClient for filtering out our own services.
+	* Allow plain-text authentication in HTTPS mode.
+	* Use a time based UUID as serial for self-signed certificates (#500251).
+	* Don't care anymore about GDK's broken threading support.
+	* Implement locking for HTTP request handlers.
+	* Add functions to allow usage of EpcPublisher as local key/value store.
+	* Fore server shutdown in epc_publisher_quit and disconnect clients.
+	* More examples, for instance for desktop usage of EpcPublisher.
+	* Drop "reauthenticate" signal in EpcConsumer.
+	* Make EpcProgressWindow more versatile.
+
+Other Changes
+-------------
+
+	* Many documentation improvements from Murray Cumming.
+	* Add epc_publisher_expand_name for constructing service names.
+	* Depend on gnutls 1.4 instead of 1.6 (#500251).
+	* Show message on root page when no resources have been published yet.
+	* Properly passing authentication settings to libsoup.
+	* Add error argument to epc_shell_get_host_name.
+	* Support zero terminated strings in epc_contents_new.
+	* Introduce epc_contents_new_dup.
+	* Use simpler directory hierarchy for storing certificates.
+	* Drop epc_shell_ref and epc_shell_unref and use g_atexit for cleanup.
+	* Replace the global _epc_debug variable by epc_shell_get_debug_level.
+	* Also document the EPC_DEBUG environment variable.
+	* Change some function signatures for consistency.
+	* Improve memory handling of EpcContents.
+	* Add epc_publisher_get_url and epc_publisher_list.
+	* Introduce epc_protocol_from_name.
+	* Reuse epc_publisher_list function for HTTP request handlers.
+	* Move progress reporting from EpcTls to EpcSell.
+	* Rename EpcEntropyWindow to EpcProgressWindow.
+	* Add error reporting to epc_publisher_run and epc_publisher_run_async.
+
 Release 0.2
 ===========
 

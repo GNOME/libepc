@@ -24,7 +24,7 @@ The libepc library depends on:
     * glib         >= 2.12
     * gmodule-2.0  >= 2.0
     * gobject      >= 2.4
-    * gnutls       >= 1.6
+    * gnutls       >= 1.4
     * libsoup      >= 2.2
     * libuuid      >= 0.36 [1]
 

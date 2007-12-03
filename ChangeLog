@@ -1,5 +1,12 @@
 2007-12-03  Mathias Hasselmann  <mathias@openismus.com>
 
+	=== Release 0.3 ===
+
+	* NEWS: Updated for release 0.3
+	* README: Update gnutls version.
+
+2007-12-03  Mathias Hasselmann  <mathias@openismus.com>
+
 	Track client connections and disconnect clients in epc_publisher_quit
 	to avoid leaking of HTTP servers.
 
