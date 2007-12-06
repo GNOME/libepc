@@ -1,3 +1,9 @@
+2007-12-06  Mathias Hasselmann  <mathias@openismus.com>
+
+	Fix test-consumer-by-info to terminate.
+
+	* tests/test-consumer-by-info.c: Remove epc_test_run() loop.
+
 2007-12-04  Mathias Hasselmann  <mathias@openismus.com>
 
 	* configure.ac: Bump version number.

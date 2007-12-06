@@ -90,8 +90,6 @@ main (void)
 
   result = epc_test_run ();
 
-while (epc_test_run ());
-
 out:
   if (error)
     g_warning ("%s: lookup failed: %s", G_STRLOC, error->message);
