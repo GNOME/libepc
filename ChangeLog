@@ -1,5 +1,16 @@
 2007-12-06  Mathias Hasselmann  <mathias@openismus.com>
 
+	Put idle sockets the cleanup iterator finds into a list, instead of
+	directly disconnecting them. Disconnecting them triggers the
+	"disconnected" signal, which causes the currently inspected socket
+	getting removed from the currently iterated hash table - very bad.
+
+	* libepc/publisher.c: Put idle clients into a list and disconnect
+	them in epc_publisher_quit, instead of disconnecting them immediatly
+	in epc_publisher_disconnect_idle_cb.
+
+2007-12-06  Mathias Hasselmann  <mathias@openismus.com>
+
 	Provide initial implementation of unique-service collision handling.
 
 	* libepc/dispatcher.c: Add collision-handling and service-cookie

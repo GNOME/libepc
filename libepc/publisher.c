@@ -2172,14 +2172,17 @@ epc_publisher_run_async (EpcPublisher  *self,
 static void
 epc_publisher_disconnect_idle_cb (gpointer key,
                                   gpointer value,
-                                  gpointer data G_GNUC_UNUSED)
+                                  gpointer data)
 {
+  SoupSocket *socket = key;
+  GSList **clients = data;
+
   if (1 >= GPOINTER_TO_INT (value))
     {
       if (EPC_DEBUG_LEVEL (1))
-        epc_publisher_trace_client (G_STRFUNC, "idle client", key);
+        epc_publisher_trace_client (G_STRFUNC, "idle client", socket);
 
-      soup_socket_disconnect (key);
+      *clients = g_slist_prepend (*clients, socket);
     }
 }
 
@@ -2198,6 +2201,7 @@ epc_publisher_disconnect_idle_cb (gpointer key,
 gboolean
 epc_publisher_quit (EpcPublisher *self)
 {
+  GSList *idle_clients = NULL;
   gboolean was_running;
 
   g_return_val_if_fail (EPC_IS_PUBLISHER (self), FALSE);
@@ -2212,7 +2216,10 @@ epc_publisher_quit (EpcPublisher *self)
   if (self->priv->clients)
     g_hash_table_foreach (self->priv->clients,
                           epc_publisher_disconnect_idle_cb,
-                          self);
+                          &idle_clients);
+
+  g_slist_foreach (idle_clients, (GFunc) soup_socket_disconnect, NULL);
+  g_slist_free (idle_clients);
 
   g_static_rec_mutex_unlock (&epc_publisher_lock);
 
