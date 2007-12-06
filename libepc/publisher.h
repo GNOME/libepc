@@ -21,8 +21,8 @@
 #ifndef __EPC_PUBLISHER_H__
 #define __EPC_PUBLISHER_H__
 
-#include <glib-object.h>
 #include <libepc/contents.h>
+#include <libepc/dispatcher.h>
 #include <libepc/service-type.h>
 
 G_BEGIN_DECLS
@@ -134,84 +134,90 @@ struct _EpcPublisherClass
   /*< public >*/
 };
 
-GType                 epc_publisher_get_type             (void) G_GNUC_CONST;
+GType                 epc_publisher_get_type               (void) G_GNUC_CONST;
 
-EpcPublisher*         epc_publisher_new                  (const gchar       *name,
-                                                          const gchar       *application,
-                                                          const gchar       *domain);
+EpcPublisher*         epc_publisher_new                    (const gchar           *name,
+                                                            const gchar           *application,
+                                                            const gchar           *domain);
 
-void                  epc_publisher_set_service_name     (EpcPublisher      *publisher,
-                                                          const gchar       *name);
-void                  epc_publisher_set_credentials      (EpcPublisher      *publisher,
-                                                          const gchar       *certfile,
-                                                          const gchar       *keyfile);
-void                  epc_publisher_set_protocol         (EpcPublisher      *publisher,
-                                                          EpcProtocol        protocol);
-void                  epc_publisher_set_contents_path    (EpcPublisher      *publisher,
-                                                          const gchar       *path);
-void                  epc_publisher_set_auth_flags       (EpcPublisher      *publisher,
-                                                          EpcAuthFlags       flags);
+void                  epc_publisher_set_service_name       (EpcPublisher          *publisher,
+                                                            const gchar           *name);
+void                  epc_publisher_set_credentials        (EpcPublisher          *publisher,
+                                                            const gchar           *certfile,
+                                                            const gchar           *keyfile);
+void                  epc_publisher_set_protocol           (EpcPublisher          *publisher,
+                                                            EpcProtocol            protocol);
+void                  epc_publisher_set_contents_path      (EpcPublisher          *publisher,
+                                                            const gchar           *path);
+void                  epc_publisher_set_auth_flags         (EpcPublisher          *publisher,
+                                                            EpcAuthFlags           flags);
+void                  epc_publisher_set_collision_handling (EpcPublisher          *publisher,
+                                                            EpcCollisionHandling   method);
+void                  epc_publisher_set_service_cookie     (EpcPublisher          *publisher,
+                                                            const gchar           *cookie);
 
-G_CONST_RETURN gchar* epc_publisher_get_service_name     (EpcPublisher      *publisher);
-G_CONST_RETURN gchar* epc_publisher_get_service_domain   (EpcPublisher      *publisher);
-G_CONST_RETURN gchar* epc_publisher_get_certificate_file (EpcPublisher      *publisher);
-G_CONST_RETURN gchar* epc_publisher_get_private_key_file (EpcPublisher      *publisher);
-EpcProtocol           epc_publisher_get_protocol         (EpcPublisher      *publisher);
-G_CONST_RETURN gchar* epc_publisher_get_contents_path    (EpcPublisher      *publisher);
-EpcAuthFlags          epc_publisher_get_auth_flags       (EpcPublisher      *publisher);
+G_CONST_RETURN gchar* epc_publisher_get_service_name       (EpcPublisher          *publisher);
+G_CONST_RETURN gchar* epc_publisher_get_service_domain     (EpcPublisher          *publisher);
+G_CONST_RETURN gchar* epc_publisher_get_certificate_file   (EpcPublisher          *publisher);
+G_CONST_RETURN gchar* epc_publisher_get_private_key_file   (EpcPublisher          *publisher);
+EpcProtocol           epc_publisher_get_protocol           (EpcPublisher          *publisher);
+G_CONST_RETURN gchar* epc_publisher_get_contents_path      (EpcPublisher          *publisher);
+EpcAuthFlags          epc_publisher_get_auth_flags         (EpcPublisher          *publisher);
+EpcCollisionHandling  epc_publisher_get_collision_handling (EpcPublisher          *publisher);
+G_CONST_RETURN gchar* epc_publisher_get_service_cookie     (EpcPublisher          *publisher);
 
-void                  epc_publisher_add                  (EpcPublisher      *publisher,
-                                                          const gchar       *key,
-                                                          gconstpointer      data,
-                                                          gssize             length);
-void                  epc_publisher_add_file             (EpcPublisher      *publisher,
-                                                          const gchar       *key,
-                                                          const gchar       *filename);
-void                  epc_publisher_add_handler          (EpcPublisher      *publisher,
-                                                          const gchar       *key,
-                                                          EpcContentsHandler handler,
-                                                          gpointer           user_data,
-                                                          GDestroyNotify     destroy_data);
+void                  epc_publisher_add                    (EpcPublisher          *publisher,
+                                                            const gchar           *key,
+                                                            gconstpointer          data,
+                                                            gssize                 length);
+void                  epc_publisher_add_file               (EpcPublisher          *publisher,
+                                                            const gchar           *key,
+                                                            const gchar           *filename);
+void                  epc_publisher_add_handler            (EpcPublisher          *publisher,
+                                                            const gchar           *key,
+                                                            EpcContentsHandler     handler,
+                                                            gpointer               user_data,
+                                                            GDestroyNotify         destroy_data);
 
-void                  epc_publisher_set_auth_handler     (EpcPublisher      *publisher,
-                                                          const gchar       *key,
-                                                          EpcAuthHandler     handler,
-                                                          gpointer           user_data,
-                                                          GDestroyNotify     destroy_data);
+void                  epc_publisher_set_auth_handler       (EpcPublisher          *publisher,
+                                                            const gchar           *key,
+                                                            EpcAuthHandler         handler,
+                                                            gpointer               user_data,
+                                                            GDestroyNotify         destroy_data);
 
-void                  epc_publisher_add_bookmark         (EpcPublisher      *publisher,
-                                                          const gchar       *key,
-                                                          const gchar       *label);
+void                  epc_publisher_add_bookmark           (EpcPublisher          *publisher,
+                                                            const gchar           *key,
+                                                            const gchar           *label);
 
-gchar*                epc_publisher_get_path             (EpcPublisher      *publisher,
-                                                          const gchar       *key);
-gchar*                epc_publisher_get_uri              (EpcPublisher      *publisher,
-                                                          const gchar       *key,
-                                                          GError           **error);
+gchar*                epc_publisher_get_path               (EpcPublisher          *publisher,
+                                                            const gchar           *key);
+gchar*                epc_publisher_get_uri                (EpcPublisher          *publisher,
+                                                            const gchar           *key,
+                                                            GError               **error);
 
-gboolean              epc_publisher_remove               (EpcPublisher      *publisher,
-                                                          const gchar       *key);
-gpointer              epc_publisher_lookup               (EpcPublisher      *publisher,
-                                                          const gchar       *key);
-gboolean              epc_publisher_has_key              (EpcPublisher      *publisher,
-                                                          const gchar       *key);
-GList*                epc_publisher_list                 (EpcPublisher      *publisher,
-                                                          const gchar       *pattern);
+gboolean              epc_publisher_remove                 (EpcPublisher          *publisher,
+                                                            const gchar           *key);
+gpointer              epc_publisher_lookup                 (EpcPublisher          *publisher,
+                                                            const gchar           *key);
+gboolean              epc_publisher_has_key                (EpcPublisher          *publisher,
+                                                            const gchar           *key);
+GList*                epc_publisher_list                   (EpcPublisher          *publisher,
+                                                            const gchar           *pattern);
 
-gboolean              epc_publisher_run                  (EpcPublisher      *publisher,
-                                                          GError           **error);
-gboolean              epc_publisher_run_async            (EpcPublisher      *publisher,
-                                                          GError           **error);
-gboolean              epc_publisher_quit                 (EpcPublisher      *publisher);
+gboolean              epc_publisher_run                    (EpcPublisher          *publisher,
+                                                            GError               **error);
+gboolean              epc_publisher_run_async              (EpcPublisher          *publisher,
+                                                            GError               **error);
+gboolean              epc_publisher_quit                   (EpcPublisher          *publisher);
 
-gchar*                epc_publisher_expand_name          (const gchar       *name,
-                                                          GError           **error);
+gchar*                epc_publisher_expand_name            (const gchar           *name,
+                                                            GError               **error);
 
-EpcPublisher*         epc_auth_context_get_publisher     (const EpcAuthContext *context);
-G_CONST_RETURN gchar* epc_auth_context_get_key           (const EpcAuthContext *context);
-G_CONST_RETURN gchar* epc_auth_context_get_password      (const EpcAuthContext *context);
-gboolean              epc_auth_context_check_password    (const EpcAuthContext *context,
-                                                          const gchar          *password);
+EpcPublisher*         epc_auth_context_get_publisher       (const EpcAuthContext  *context);
+G_CONST_RETURN gchar* epc_auth_context_get_key             (const EpcAuthContext  *context);
+G_CONST_RETURN gchar* epc_auth_context_get_password        (const EpcAuthContext  *context);
+gboolean              epc_auth_context_check_password      (const EpcAuthContext  *context,
+                                                            const gchar           *password);
 
 G_END_DECLS
 

@@ -49,6 +49,7 @@ TESTS = \
 	tests/test-publisher-bookmarks \
 	tests/test-publisher-change-name \
 	tests/test-publisher-libsoup-494128 \
+	tests/test-publisher-unique \
 	tests/test-service-type
 
 # ================
@@ -179,8 +180,10 @@ tests_test_publisher_bookmarks_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 tests_test_publisher_bookmarks_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la
 tests_test_publisher_change_name_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 tests_test_publisher_change_name_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la
-tests_test_publisher_libsoup_494128_CFLAGS      = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+tests_test_publisher_libsoup_494128_CFLAGS	= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 tests_test_publisher_libsoup_494128_LDADD	= libepc/libepc-1.0.la tests/libepc-tests.la
+tests_test_publisher_unique_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
+tests_test_publisher_unique_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la
 tests_test_service_type_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 tests_test_service_type_LDADD			= libepc/libepc-1.0.la tests/libepc-tests.la
 

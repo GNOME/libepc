@@ -131,9 +131,11 @@ enum
 {
   PROP_NONE,
   PROP_PROTOCOL,
+  PROP_APPLICATION,
   PROP_SERVICE_NAME,
   PROP_SERVICE_DOMAIN,
-  PROP_APPLICATION,
+  PROP_SERVICE_COOKIE,
+  PROP_COLLISION_HANDLING,
 
   PROP_AUTH_FLAGS,
   PROP_CONTENTS_PATH,
@@ -203,11 +205,13 @@ struct _EpcPublisherPrivate
   GHashTable            *clients;
 
   EpcProtocol            protocol;
+  gchar                 *application;
   gchar                 *service_name;
   gchar                 *service_domain;
-  gchar                 *application;
+  gchar                 *service_cookie;
 
   EpcAuthFlags           auth_flags;
+  EpcCollisionHandling   collisions;
   gchar                 *contents_path;
   gchar                 *certificate_file;
   gchar                 *private_key_file;
@@ -945,6 +949,10 @@ epc_publisher_create_server (EpcPublisher  *self,
 
   self->priv->dispatcher = epc_dispatcher_new (epc_publisher_compute_name (self));
 
+  if (self->priv->service_cookie)
+    epc_dispatcher_set_cookie (self->priv->dispatcher, self->priv->service_cookie);
+  epc_dispatcher_set_collision_handling (self->priv->dispatcher, self->priv->collisions);
+
   if (!epc_dispatcher_run (self->priv->dispatcher, error))
     return FALSE;
 
@@ -1040,6 +1048,22 @@ epc_publisher_real_set_auth_flags (EpcPublisher *self,
     epc_publisher_install_handlers (self);
 }
 
+void
+epc_publisher_set_service_cookie (EpcPublisher *self,
+                                  const gchar  *cookie)
+{
+  g_return_if_fail (EPC_IS_PUBLISHER (self));
+  g_object_set (self, "service-cookie", cookie, NULL);
+}
+
+void
+epc_publisher_set_collision_handling (EpcPublisher         *self,
+                                      EpcCollisionHandling  method)
+{
+  g_return_if_fail (EPC_IS_PUBLISHER (self));
+  g_object_set (self, "collision-handling", method, NULL);
+}
+
 static void
 epc_publisher_real_set_contents_path (EpcPublisher *self,
                                       const GValue *value)
@@ -1080,6 +1104,13 @@ epc_publisher_set_property (GObject      *object,
         self->priv->protocol = g_value_get_enum (value);
         break;
 
+      case PROP_APPLICATION:
+        g_return_if_fail (!epc_publisher_is_server_created (self));
+
+        g_free (self->priv->application);
+        self->priv->application = g_value_dup_string (value);
+        break;
+
       case PROP_SERVICE_NAME:
         epc_publisher_real_set_service_name (self, value);
         break;
@@ -1091,11 +1122,22 @@ epc_publisher_set_property (GObject      *object,
         self->priv->service_domain = g_value_dup_string (value);
         break;
 
-      case PROP_APPLICATION:
-        g_return_if_fail (!epc_publisher_is_server_created (self));
+      case PROP_SERVICE_COOKIE:
+        g_free (self->priv->service_cookie);
+        self->priv->service_cookie = g_value_dup_string (value);
 
-        g_free (self->priv->application);
-        self->priv->application = g_value_dup_string (value);
+        if (self->priv->dispatcher)
+          epc_dispatcher_set_cookie (self->priv->dispatcher,
+                                     self->priv->service_cookie);
+        break;
+
+      case PROP_COLLISION_HANDLING:
+        self->priv->collisions = g_value_get_enum (value);
+
+        if (self->priv->dispatcher)
+          epc_dispatcher_set_collision_handling (self->priv->dispatcher,
+                                                 self->priv->collisions);
+
         break;
 
       case PROP_CONTENTS_PATH:
@@ -1140,6 +1182,10 @@ epc_publisher_get_property (GObject    *object,
         g_value_set_enum (value, self->priv->protocol);
         break;
 
+      case PROP_APPLICATION:
+        g_value_set_string (value, self->priv->application);
+        break;
+
       case PROP_SERVICE_NAME:
         g_value_set_string (value, self->priv->service_name);
         break;
@@ -1148,8 +1194,12 @@ epc_publisher_get_property (GObject    *object,
         g_value_set_string (value, self->priv->service_domain);
         break;
 
-      case PROP_APPLICATION:
-        g_value_set_string (value, self->priv->application);
+      case PROP_SERVICE_COOKIE:
+        g_value_set_string (value, self->priv->service_cookie);
+        break;
+
+      case PROP_COLLISION_HANDLING:
+        g_value_set_enum (value, self->priv->collisions);
         break;
 
       case PROP_CONTENTS_PATH:
@@ -1240,6 +1290,14 @@ epc_publisher_class_init (EpcPublisherClass *cls)
                                                       G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                       G_PARAM_STATIC_BLURB));
 
+  g_object_class_install_property (oclass, PROP_APPLICATION,
+                                   g_param_spec_string ("application", "Application",
+                                                        "Program name for deriving the service type",
+                                                        NULL,
+                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
+                                                        G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
+
   g_object_class_install_property (oclass, PROP_SERVICE_NAME,
                                    g_param_spec_string ("service-name", "Service Name",
                                                         "User friendly name for the service",
@@ -1256,13 +1314,38 @@ epc_publisher_class_init (EpcPublisherClass *cls)
                                                         G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
 
-  g_object_class_install_property (oclass, PROP_APPLICATION,
-                                   g_param_spec_string ("application", "Application",
-                                                        "Program name for deriving the service type",
+  /**
+   * EpcPublisher:service-cookie:
+   *
+   * Unique identifier of the service. This cookie is used for implementing
+   * #EPC_COLLISION_HANDLING_UNIQUE_SERVICE, and usually is a UUID or the
+   * MD5/SHA1/... checksum of a central document.
+   *
+   * Since: 0.3.1
+   */
+  g_object_class_install_property (oclass, PROP_SERVICE_COOKIE,
+                                   g_param_spec_string ("service-cookie", "Service Cookie",
+                                                        "Unique identifier of the service",
                                                         NULL,
                                                         G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
                                                         G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
+
+  /**
+   * EpcPublisher:collision-handling:
+   *
+   * The collision handling method to use.
+   *
+   * Since: 0.3.1
+   */
+  g_object_class_install_property (oclass, PROP_COLLISION_HANDLING,
+                                   g_param_spec_enum ("collision-handling", "Collision Handling",
+                                                      "The collision handling method to use",
+                                                      EPC_TYPE_COLLISION_HANDLING,
+                                                      EPC_COLLISION_HANDLING_ALTERNATIVE_NAME,
+                                                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
+                                                      G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
+                                                      G_PARAM_STATIC_BLURB));
 
   g_object_class_install_property (oclass, PROP_CONTENTS_PATH,
                                    g_param_spec_string ("contents-path", "Contents Path",
@@ -1986,6 +2069,22 @@ epc_publisher_get_auth_flags (EpcPublisher *self)
 {
   g_return_val_if_fail (EPC_IS_PUBLISHER (self), EPC_AUTH_DEFAULT);
   return self->priv->auth_flags;
+}
+
+G_CONST_RETURN gchar*
+epc_publisher_get_service_cookie (EpcPublisher *self)
+{
+  g_return_val_if_fail (EPC_IS_PUBLISHER (self), NULL);
+  return self->priv->service_cookie;
+}
+
+EpcCollisionHandling
+epc_publisher_get_collision_handling (EpcPublisher *self)
+{
+  g_return_val_if_fail (EPC_IS_PUBLISHER (self),
+                        EPC_COLLISION_HANDLING_NONE);
+
+  return self->priv->collisions;
 }
 
 /**

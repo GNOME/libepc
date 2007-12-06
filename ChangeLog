@@ -1,5 +1,19 @@
 2007-12-06  Mathias Hasselmann  <mathias@openismus.com>
 
+	Provide initial implementation of unique-service collision handling.
+
+	* libepc/dispatcher.c: Add collision-handling and service-cookie
+	properties. Provide initial implementation of unique-service
+	collision handling.
+	* libepc/dispatcher.h: Add EpcCollisionHandling enumeration.
+	Add accessors for collision-handling and service-cookie properties.
+	* libepc/publisher.c, libepc/publisher.h: Add collision-handling
+	and service-cookie properties, which just forward to the dispatcher.
+	* tests/test-publisher-unique.c: Test the unique service feature.
+	* Makefile.am, tests/.gitignore: Add tests/test-publisher-unique.
+
+2007-12-06  Mathias Hasselmann  <mathias@openismus.com>
+
 	Correctly interpret protocol list passed to epc_service_monitor_new.
 	Release the temporary service_types array.
 

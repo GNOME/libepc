@@ -37,6 +37,23 @@ typedef struct _EpcDispatcherClass   EpcDispatcherClass;
 typedef struct _EpcDispatcherPrivate EpcDispatcherPrivate;
 
 /**
+ * EpcCollisionHandling:
+ * @NONE: Don't handle collisions at all, just fail silently.
+ * @ALTERNATIVE_NAME: Try to announce the service with another name.
+ * @UNIQUE_SERVICE: Defer own service announcement until the other service
+ * disappears.
+ *
+ * Various strategies for handling service name collisions.
+ */
+typedef enum
+{
+  EPC_COLLISION_HANDLING_NONE,
+  EPC_COLLISION_HANDLING_ALTERNATIVE_NAME,
+  EPC_COLLISION_HANDLING_UNIQUE_SERVICE
+}
+EpcCollisionHandling;
+
+/**
  * EpcDispatcher:
  *
  * Public fields of the #EpcDispatcher class.
@@ -63,33 +80,39 @@ struct _EpcDispatcherClass
   /*< public >*/
 };
 
-GType                 epc_dispatcher_get_type            (void) G_GNUC_CONST;
+GType                 epc_dispatcher_get_type               (void) G_GNUC_CONST;
 
-EpcDispatcher*        epc_dispatcher_new                 (const gchar      *name);
-gboolean              epc_dispatcher_run                 (EpcDispatcher    *dispatcher,
-                                                          GError          **error);
-void                  epc_dispatcher_reset               (EpcDispatcher    *dispatcher);
+EpcDispatcher*        epc_dispatcher_new                    (const gchar          *name);
+gboolean              epc_dispatcher_run                    (EpcDispatcher        *dispatcher,
+                                                             GError              **error);
+void                  epc_dispatcher_reset                  (EpcDispatcher        *dispatcher);
 
-void                  epc_dispatcher_add_service         (EpcDispatcher    *dispatcher,
-                                                          EpcAddressFamily  protocol,
-                                                          const gchar      *type,
-                                                          const gchar      *domain,
-                                                          const gchar      *host,
-                                                          guint16           port,
-                                                                            ...)
-                                                          G_GNUC_NULL_TERMINATED;
-void                  epc_dispatcher_add_service_subtype (EpcDispatcher    *dispatcher,
-                                                          const gchar       *type,
-                                                          const gchar       *subtype);
-void                  epc_dispatcher_set_service_details (EpcDispatcher     *dispatcher,
-                                                          const gchar       *type,
-                                                                             ...)
-                                                          G_GNUC_NULL_TERMINATED;
+void                  epc_dispatcher_add_service            (EpcDispatcher        *dispatcher,
+                                                             EpcAddressFamily      protocol,
+                                                             const gchar          *type,
+                                                             const gchar          *domain,
+                                                             const gchar          *host,
+                                                             guint16               port,
+                                                                                   ...)
+                                                             G_GNUC_NULL_TERMINATED;
+void                  epc_dispatcher_add_service_subtype    (EpcDispatcher        *dispatcher,
+                                                             const gchar          *type,
+                                                             const gchar          *subtype);
+void                  epc_dispatcher_set_service_details    (EpcDispatcher        *dispatcher,
+                                                             const gchar          *type,
+                                                                                   ...)
+                                                             G_GNUC_NULL_TERMINATED;
 
-void                  epc_dispatcher_set_name            (EpcDispatcher     *dispatcher,
-                                                          const gchar       *name);
+void                  epc_dispatcher_set_name               (EpcDispatcher        *dispatcher,
+                                                             const gchar          *name);
+void                  epc_dispatcher_set_cookie             (EpcDispatcher        *dispatcher,
+                                                             const gchar          *cookie);
+void                  epc_dispatcher_set_collision_handling (EpcDispatcher        *dispatcher,
+                                                             EpcCollisionHandling  method);
 
-G_CONST_RETURN gchar* epc_dispatcher_get_name            (EpcDispatcher     *dispatcher);
+G_CONST_RETURN gchar* epc_dispatcher_get_name               (EpcDispatcher        *dispatcher);
+EpcCollisionHandling  epc_dispatcher_get_collision_handling (EpcDispatcher        *dispatcher);
+G_CONST_RETURN gchar* epc_dispatcher_get_service_cookie     (EpcDispatcher        *dispatcher);
 
 G_END_DECLS
 
