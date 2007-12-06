@@ -47,6 +47,7 @@ service_found_cb (EpcServiceMonitor *monitor G_GNUC_UNUSED,
 static gboolean
 quit_publisher_cb (gpointer data)
 {
+  g_print ("%s: Stopping first provider...\n", G_STRFUNC);
   epc_publisher_quit (data);
   g_object_unref (data);
 
@@ -63,7 +64,7 @@ contents_handler_cb (EpcPublisher *publisher,
   if (data == test_value2)
     epc_test_pass_once (1 << 5);
 
-  g_timeout_add (500, quit_publisher_cb, g_object_ref (publisher));
+  g_timeout_add (250, quit_publisher_cb, g_object_ref (publisher));
 
   return epc_contents_new_dup (NULL, data, -1);
 }

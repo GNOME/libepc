@@ -1,5 +1,14 @@
 2007-12-06  Mathias Hasselmann  <mathias@openismus.com>
 
+	Fix some minor glitches.
+
+	* libepc/dispatcher.c: Ensure to init group field of EpcService.
+	* libepc/publisher.c: Remove TODO comment regarding MIME type.
+	* tests/test-publisher-unique.c: Show message before terminating first
+	publisher. Reduce delay before terminating that first publisher.
+
+2007-12-06  Mathias Hasselmann  <mathias@openismus.com>
+
 	Get MIME type of files from gio when available.
 
 	* configure.ac: Check for gio-2.0 package.

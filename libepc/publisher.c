@@ -308,7 +308,6 @@ epc_publisher_handle_file (EpcPublisher *publisher G_GNUC_UNUSED,
   gchar *data = NULL;
   gsize length = 0;
 
-  /* TODO: use gio to determinate mime-type */
   if (g_file_get_contents (filename, &data, &length, NULL))
     {
       gchar *type = NULL;

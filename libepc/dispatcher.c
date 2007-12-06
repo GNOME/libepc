@@ -235,7 +235,10 @@ epc_service_group_cb (AvahiEntryGroup      *group,
   EpcService *self = data;
   GError *error = NULL;
 
-  g_assert (NULL == self->group || group == self->group);
+  if (self->group)
+    g_assert (group == self->group);
+  else
+    self->group = group;
 
   switch (state)
     {
@@ -244,12 +247,10 @@ epc_service_group_cb (AvahiEntryGroup      *group,
         break;
 
       case AVAHI_ENTRY_GROUP_UNCOMMITED:
-        self->group = group;
         epc_service_publish (self);
         break;
 
       case AVAHI_ENTRY_GROUP_COLLISION:
-        self->group = group;
         epc_dispatcher_handle_collision (self->dispatcher);
         break;
 
