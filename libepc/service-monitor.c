@@ -373,7 +373,6 @@ epc_service_monitor_class_init (EpcServiceMonitorClass *cls)
                                                          G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
                                                          G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                          G_PARAM_STATIC_BLURB));
-  
 
   /**
    * EpcServiceMonitor::service-found:
@@ -494,6 +493,7 @@ epc_service_monitor_new (const gchar *application,
                          EpcProtocol  first_protocol,
                                       ...)
 {
+  EpcServiceMonitor* self = NULL;
   gchar **service_types = NULL;
   va_list args;
   gint i;
@@ -507,11 +507,10 @@ epc_service_monitor_new (const gchar *application,
 
       while (((gint) protocol) > EPC_PROTOCOL_UNKNOWN)
         {
-          protocol = va_arg (args, EpcProtocol);
-
           if (service_types)
             service_types[tail] = epc_service_type_new (protocol, application);
 
+          protocol = va_arg (args, EpcProtocol);
           tail += 1;
         }
 
@@ -521,11 +520,15 @@ epc_service_monitor_new (const gchar *application,
         service_types = g_new0 (gchar*, tail + 1);
     }
 
-  return g_object_new (EPC_TYPE_SERVICE_MONITOR,
+  self = g_object_new (EPC_TYPE_SERVICE_MONITOR,
                        "service-types", service_types,
                        "application", application,
                        "domain", domain,
                        NULL);
+
+  g_strfreev (service_types);
+
+  return self;
 }
 
 /**

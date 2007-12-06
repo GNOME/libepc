@@ -1,5 +1,12 @@
 2007-12-06  Mathias Hasselmann  <mathias@openismus.com>
 
+	Correctly interpret protocol list passed to epc_service_monitor_new.
+	Release the temporary service_types array.
+
+	* libepc/service-monitor.c: Fix the issues mentioned above.
+
+2007-12-06  Mathias Hasselmann  <mathias@openismus.com>
+
 	Fix test-consumer-by-info to terminate.
 
 	* tests/test-consumer-by-info.c: Remove epc_test_run() loop.
