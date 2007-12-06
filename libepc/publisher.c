@@ -28,6 +28,10 @@
 #include <glibconfig.h>
 #include <glib/gi18n-lib.h>
 
+#if GLIB_CHECK_VERSION(2,15,0)
+#include <gio/gcontenttype.h>
+#endif
+
 #include <libsoup/soup-address.h>
 #include <libsoup/soup-server.h>
 #include <libsoup/soup-server-auth.h>
@@ -306,7 +310,16 @@ epc_publisher_handle_file (EpcPublisher *publisher G_GNUC_UNUSED,
 
   /* TODO: use gio to determinate mime-type */
   if (g_file_get_contents (filename, &data, &length, NULL))
-    contents = epc_contents_new (NULL, data, length, g_free);
+    {
+      gchar *type = NULL;
+
+#if GLIB_CHECK_VERSION(2,15,0)
+      type = g_content_type_guess (filename, (gpointer) data, length, NULL);
+#endif
+      contents = epc_contents_new (type, data, length, g_free);
+
+      g_free (type);
+    }
 
   return contents;
 }

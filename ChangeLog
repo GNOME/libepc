@@ -1,5 +1,12 @@
 2007-12-06  Mathias Hasselmann  <mathias@openismus.com>
 
+	Get MIME type of files from gio when available.
+
+	* configure.ac: Check for gio-2.0 package.
+	* libepc/publisher.c: Call g_content_type_guess when possible.
+
+2007-12-06  Mathias Hasselmann  <mathias@openismus.com>
+
 	Put idle sockets the cleanup iterator finds into a list, instead of
 	directly disconnecting them. Disconnecting them triggers the
 	"disconnected" signal, which causes the currently inspected socket

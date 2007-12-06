@@ -28,6 +28,16 @@ PKG_CHECK_MODULES(LIBEPC,    [avahi-client >= 0.6
                               uuid         >= 1.36])
 PKG_CHECK_MODULES(LIBEPC_UI, [gtk+-2.0     >= 2.10])
 
+PKG_CHECK_MODULES(GIO,       [gio-2.0      >= 2.15],
+                             [have_gio=yes],
+                             [have_gio=no])
+
+if test "yes" == "$have_gio"
+then
+  LIBEPC_CFLAGS="$LIBEPC_CFLAGS $GIO_CFLAGS"
+  LIBEPC_LIBS="$LIBEPC_LIBS $GIO_LIBS"
+fi
+
 AM_CONDITIONAL([HAVE_AVAHI_UI_0_6_22],
                [$PKG_CONFIG avahi-ui --atleast-version 0.6.22])
 
