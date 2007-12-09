@@ -1,3 +1,10 @@
+2007-12-08  Brian Pepple  <bpepple@fedoraproject.org>
+
+	Fix so correct libdir is used on x86_64 (#502531).
+
+	* libepc-1.0.pc.in, libepc-ui-1.0.pc.in:
+	Use autoconf variables instead of hard-coded paths.
+
 2007-12-06  Mathias Hasselmann  <mathias@openismus.com>
 
 	Fix some minor glitches.
