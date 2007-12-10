@@ -1,3 +1,10 @@
+2007-12-10  Mathias Hasselmann  <mathias@openismus.com>
+
+	Improve parallel building of documentation
+
+	* Makefile.am: Make all-local as dependend on $(lib_LTLIBRARIES)
+	to make sure all libraries are built before documentation.
+
 2007-12-08  Brian Pepple  <bpepple@fedoraproject.org>
 
 	Fix so correct libdir is used on x86_64 (#502531).

@@ -17,9 +17,9 @@ gtkdoc_builddir=$(top_builddir)/docs/reference/libepc
 gtkdoc_distdir=$(top_distdir)/docs/reference/libepc
 gtkdoc_srcdir=$(top_srcdir)/docs/reference/libepc
 
-# =================
-# -- TARGET LIST --
-# =================
+# ==================
+# -- TARGET LISTS --
+# ==================
 
 lib_LTLIBRARIES = \
 	libepc/libepc-1.0.la \
@@ -211,7 +211,7 @@ libepc/enums.c: libepc/enums.c.stamp
 # -- GTK-DOC INTEGRATION --
 # =========================
 
-all-local:
+all-local: $(lib_LTLIBRARIES)
 	cd $(gtkdoc_builddir) && $(MAKE) $(AM_MAKEFLAGS) all
 clean-local:
 	cd $(gtkdoc_builddir) && $(MAKE) $(AM_MAKEFLAGS) clean
