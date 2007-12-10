@@ -420,11 +420,22 @@ epc_service_monitor_class_init (EpcServiceMonitorClass *cls)
   g_type_class_add_private (cls, sizeof (EpcServiceMonitorPrivate));
 }
 
+EpcServiceMonitor*
+epc_service_monitor_new_for_types_strv (const gchar  *domain,
+                                        gchar       **types)
+{
+  g_return_val_if_fail (NULL != types, NULL);
+
+  return g_object_new (EPC_TYPE_SERVICE_MONITOR,
+                       "service-types", types,
+                       "domain", domain,
+                       NULL);
+}
+
 /**
  * epc_service_monitor_new_for_types:
  * @domain: the DNS domain to monitor, or %NULL
- * @first_service_type: the first service type to monitor
- * @...: a %NULL terminated list of additional service types
+ * @...: a %NULL terminated list of service types to monitor
  *
  * Creates a new service monitor watching the specified @domain for the
  * service-types listed. Passing %NULL for @domain monitors the local network.
@@ -435,40 +446,40 @@ epc_service_monitor_class_init (EpcServiceMonitorClass *cls)
  */
 EpcServiceMonitor*
 epc_service_monitor_new_for_types (const gchar *domain,
-                                   const gchar *first_service_type,
                                                 ...)
 {
-  gchar **service_types = NULL;
+  EpcServiceMonitor *self = NULL;
+  gchar **types = NULL;
   va_list args;
   gint i;
 
   for (i = 0; i < 2; ++i)
     {
-      const gchar *type = first_service_type;
+      const gchar *type;
       gint tail = 0;
 
-      va_start (args, first_service_type);
+      va_start (args, domain);
 
-      while (NULL != type)
+      while (NULL != (type = va_arg (args, const gchar*)))
         {
-          type = va_arg (args, const gchar*);
-
-          if (service_types)
-            service_types[tail] = g_strdup (type);
+          if (types)
+            types[tail] = g_strdup (type);
 
           tail += 1;
         }
 
       va_end (args);
 
-      if (NULL == service_types)
-        service_types = g_new0 (gchar*, tail + 1);
+      if (NULL == types)
+        types = g_new0 (gchar*, tail + 1);
     }
 
-  return g_object_new (EPC_TYPE_SERVICE_MONITOR,
-                       "service-types", service_types,
-                       "domain", domain,
-                       NULL);
+  self = g_object_new (EPC_TYPE_SERVICE_MONITOR,
+                       "service-types", types,
+                       "domain", domain, NULL);
+
+  g_strfreev (types);
+  return self;
 }
 
 /**
@@ -494,7 +505,7 @@ epc_service_monitor_new (const gchar *application,
                                       ...)
 {
   EpcServiceMonitor* self = NULL;
-  gchar **service_types = NULL;
+  gchar **types = NULL;
   va_list args;
   gint i;
 
@@ -507,8 +518,8 @@ epc_service_monitor_new (const gchar *application,
 
       while (((gint) protocol) > EPC_PROTOCOL_UNKNOWN)
         {
-          if (service_types)
-            service_types[tail] = epc_service_type_new (protocol, application);
+          if (types)
+            types[tail] = epc_service_type_new (protocol, application);
 
           protocol = va_arg (args, EpcProtocol);
           tail += 1;
@@ -516,18 +527,17 @@ epc_service_monitor_new (const gchar *application,
 
       va_end (args);
 
-      if (NULL == service_types)
-        service_types = g_new0 (gchar*, tail + 1);
+      if (NULL == types)
+        types = g_new0 (gchar*, tail + 1);
     }
 
   self = g_object_new (EPC_TYPE_SERVICE_MONITOR,
-                       "service-types", service_types,
                        "application", application,
+                       "service-types", types,
                        "domain", domain,
                        NULL);
 
-  g_strfreev (service_types);
-
+  g_strfreev (types);
   return self;
 }
 

@@ -28,6 +28,7 @@
 
 #include <avahi-common/alternative.h>
 #include <avahi-common/error.h>
+#include <uuid/uuid.h>
 #include <string.h>
 
 /**
@@ -103,7 +104,8 @@ struct _EpcDispatcherPrivate
   guint                 watch_id;
 };
 
-static void epc_dispatcher_handle_collision (EpcDispatcher *self);
+static void epc_dispatcher_handle_collision (EpcDispatcher *self,
+                                             const gchar   *domain);
 static void epc_service_run                 (EpcService    *self);
 
 G_DEFINE_TYPE (EpcDispatcher, epc_dispatcher, G_TYPE_OBJECT);
@@ -195,7 +197,7 @@ epc_service_publish (EpcService *self)
                                                      self->details);
 
       if (AVAHI_ERR_COLLISION == result)
-        epc_dispatcher_handle_collision (self->dispatcher);
+        epc_dispatcher_handle_collision (self->dispatcher, self->domain);
       else if (AVAHI_OK != result)
         g_warning ("%s: Failed to publish service `%s' for `%s': %s (%d)",
                    G_STRLOC, self->type, self->dispatcher->priv->name,
@@ -251,7 +253,7 @@ epc_service_group_cb (AvahiEntryGroup      *group,
         break;
 
       case AVAHI_ENTRY_GROUP_COLLISION:
-        epc_dispatcher_handle_collision (self->dispatcher);
+        epc_dispatcher_handle_collision (self->dispatcher, self->domain);
         break;
 
       case AVAHI_ENTRY_GROUP_FAILURE:
@@ -435,7 +437,7 @@ epc_dispatcher_client_cb (AvahiClient      *client G_GNUC_UNUSED,
         if (EPC_DEBUG_LEVEL (1))
           g_debug ("%s: Collision detected...", G_STRLOC);
 
-        epc_dispatcher_handle_collision (self);
+        epc_dispatcher_handle_collision (self, NULL);
         break;
 
       case AVAHI_CLIENT_FAILURE:
@@ -456,7 +458,7 @@ epc_dispatcher_client_cb (AvahiClient      *client G_GNUC_UNUSED,
 }
 
 static void
-epc_dispatcher_republish_with_other_name (EpcDispatcher *self)
+epc_dispatcher_change_name (EpcDispatcher *self)
 {
   gchar *alternative = avahi_alternative_service_name (self->priv->name);
 
@@ -471,29 +473,97 @@ epc_dispatcher_republish_with_other_name (EpcDispatcher *self)
 }
 
 static void
-epc_dispatcher_service_removed_cb (EpcDispatcher *self,
-                                   const gchar   *name)
+epc_dispatcher_service_removed_cb (EpcServiceMonitor *monitor,
+                                   const gchar       *name,
+                                   const gchar       *type G_GNUC_UNUSED,
+                                   gpointer           data)
 {
+  EpcDispatcher *self = EPC_DISPATCHER (data);
+  g_return_if_fail (monitor == self->priv->monitor);
+
   if (g_str_equal (name, self->priv->name))
     {
       g_message ("%s: Conflicting service for `%s' disappeared, republishing.",
                  G_STRFUNC, self->priv->name);
+
+      g_object_unref (self->priv->monitor);
+      self->priv->monitor = NULL;
 
       epc_dispatcher_foreach_service (self, epc_service_reset);
     }
 }
 
 static void
-epc_dispatcher_watch_other_service (EpcDispatcher *self)
+epc_dispatcher_service_found_cb (EpcServiceMonitor *monitor,
+                                 const gchar       *name,
+                                 EpcServiceInfo    *info,
+                                 gpointer           data)
 {
-  epc_dispatcher_foreach_service (self, epc_service_suspend);
+  EpcDispatcher *self = EPC_DISPATCHER (data);
+  g_return_if_fail (monitor == self->priv->monitor);
 
-  if (NULL == self->priv->monitor) // XXX
-    self->priv->monitor = epc_service_monitor_new (NULL, NULL, EPC_PROTOCOL_UNKNOWN);
+  if (g_str_equal (name, self->priv->name))
+    {
+      const gchar *cookie = epc_service_info_get_detail (info, "cookie");
 
-  g_signal_connect_swapped (self->priv->monitor, "service-removed",
-                            G_CALLBACK (epc_dispatcher_service_removed_cb), 
-                            self);
+      if (EPC_DEBUG_LEVEL (1))
+        g_debug ("%s: foreign cookie: %s, own cookie: %s",
+                 G_STRFUNC, cookie, self->priv->cookie);
+
+      if (NULL == cookie || NULL == self->priv->cookie ||
+          strcmp (cookie, self->priv->cookie))
+        {
+          g_message ("%s: Conflicting service for `%s' has different cookie, "
+                     "resorting to rename strategy.", G_STRFUNC, self->priv->name);
+
+          g_signal_handlers_disconnect_by_func(monitor, epc_dispatcher_service_removed_cb, self);
+          g_signal_handlers_disconnect_by_func(monitor, epc_dispatcher_service_found_cb, self);
+
+          epc_dispatcher_change_name (self);
+        }
+    }
+}
+
+static void
+epc_dispatcher_get_service_types_cb (gpointer key,
+                                     gpointer value G_GNUC_UNUSED,
+                                     gpointer data)
+{
+  gchar ***types = data;
+  **types = key;
+  *types += 1;
+}
+
+static gchar**
+epc_dispatcher_get_service_types (EpcDispatcher *self)
+{
+  gchar **types, **iter;
+
+  types = iter = g_new0 (gchar*, g_hash_table_size (self->priv->services) + 1);
+  g_hash_table_foreach (self->priv->services, epc_dispatcher_get_service_types_cb, &iter);
+
+  return types;
+}
+
+static void
+epc_dispatcher_watch_other (EpcDispatcher *self,
+                            const gchar   *domain)
+{
+  gchar **types;
+
+  g_return_if_fail (NULL == self->priv->monitor);
+
+
+  types = epc_dispatcher_get_service_types (self);
+  self->priv->monitor = epc_service_monitor_new_for_types_strv (domain, types);
+  g_free (types);
+
+  g_signal_connect (self->priv->monitor, "service-found",
+                    G_CALLBACK (epc_dispatcher_service_found_cb),
+                    self);
+  g_signal_connect (self->priv->monitor, "service-removed",
+                    G_CALLBACK (epc_dispatcher_service_removed_cb),
+                    self);
 
   g_message ("%s: Service name collision for `%s', "
              "waiting for other service to disappear.",
@@ -501,9 +571,10 @@ epc_dispatcher_watch_other_service (EpcDispatcher *self)
 }
 
 static void
-epc_dispatcher_handle_collision (EpcDispatcher *self)
+epc_dispatcher_handle_collision (EpcDispatcher *self,
+                                 const gchar   *domain)
 {
-  epc_dispatcher_foreach_service (self, epc_service_reset);
+  epc_dispatcher_foreach_service (self, epc_service_suspend);
 
   switch (self->priv->collisions)
     {
@@ -511,11 +582,11 @@ epc_dispatcher_handle_collision (EpcDispatcher *self)
         break; /* nothing to do */
 
       case EPC_COLLISION_HANDLING_ALTERNATIVE_NAME:
-        epc_dispatcher_republish_with_other_name (self);
+        epc_dispatcher_change_name (self);
         break;
 
       case EPC_COLLISION_HANDLING_UNIQUE_SERVICE:
-        epc_dispatcher_watch_other_service (self);
+        epc_dispatcher_watch_other (self, domain);
         break;
     }
 }
@@ -587,6 +658,24 @@ epc_dispatcher_set_property (GObject      *object,
     }
 }
 
+static const gchar*
+epc_dispatcher_ensure_cookie (EpcDispatcher *self)
+{
+  if (EPC_COLLISION_HANDLING_UNIQUE_SERVICE == self->priv->collisions && NULL == self->priv->cookie)
+    {
+      uuid_t cookie;
+
+      self->priv->cookie = g_new0 (gchar, 37);
+
+      uuid_generate_time (cookie);
+      uuid_unparse_lower (cookie, self->priv->cookie);
+
+      g_debug ("%s: generating service cookie: %s", G_STRLOC, self->priv->cookie);
+    }
+
+  return self->priv->cookie;
+}
+
 static void
 epc_dispatcher_get_property (GObject    *object,
                              guint       prop_id,
@@ -602,7 +691,7 @@ epc_dispatcher_get_property (GObject    *object,
         break;
 
       case PROP_COOKIE:
-        g_value_set_string (value, self->priv->cookie);
+        g_value_set_string (value, epc_dispatcher_ensure_cookie (self));
         break;
 
       case PROP_COLLISION_HANDLING:
@@ -812,7 +901,7 @@ epc_dispatcher_add_service (EpcDispatcher    *self,
 
   va_end (args);
 
-  if (self->priv->cookie)
+  if (epc_dispatcher_ensure_cookie (self))
     epc_service_set_detail (service, "cookie", self->priv->cookie);
 
   g_hash_table_insert (self->priv->services, service->type, service);
@@ -946,10 +1035,10 @@ epc_dispatcher_get_name (EpcDispatcher *self)
 }
 
 G_CONST_RETURN gchar*
-epc_dispatcher_get_service_cookie (EpcDispatcher *self)
+epc_dispatcher_get_cookie (EpcDispatcher *self)
 {
   g_return_val_if_fail (EPC_IS_DISPATCHER (self), NULL);
-  return self->priv->cookie;
+  return epc_dispatcher_ensure_cookie (self);
 }
 
 EpcCollisionHandling

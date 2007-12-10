@@ -53,6 +53,9 @@ main (void)
     {
       dispatcher1 = epc_dispatcher_new (preferred_name);
 
+      g_assert (EPC_COLLISION_HANDLING_ALTERNATIVE_NAME ==
+                epc_dispatcher_get_collision_handling (dispatcher1));
+
       if (!epc_dispatcher_run (dispatcher1, &error))
         goto out;
 
@@ -60,6 +63,9 @@ main (void)
                                   test_type, NULL, NULL, 2007, NULL);
 
       dispatcher2 = epc_dispatcher_new (preferred_name);
+
+      g_assert (EPC_COLLISION_HANDLING_ALTERNATIVE_NAME ==
+                epc_dispatcher_get_collision_handling (dispatcher2));
 
       if (!epc_dispatcher_run (dispatcher2, &error))
         goto out;
