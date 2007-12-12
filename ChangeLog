@@ -1,5 +1,14 @@
 2007-12-12  Mathias Hasselmann  <mathias@openismus.com>
 
+	Document new functions and properties.
+
+	* docs/reference/libepc/libepc-1.0-sections.txt: Update symbols.
+	* libepc/dispatcher.c, libepc/publisher.c: Document "cookie"/
+	"service-cookie" and "collision-handling" properties, and accessors.
+	* libepc/service-monitor.c: epc_service_monitor_new_for_types_strv.
+
+2007-12-12  Mathias Hasselmann  <mathias@openismus.com>
+
 	Use shorter names for EpcCollisionHandling members.
 
 	* libepc/dispatcher.h: Rename EPC_COLLISION_HANDLING_NONE,

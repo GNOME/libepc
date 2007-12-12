@@ -1060,6 +1060,16 @@ epc_publisher_real_set_auth_flags (EpcPublisher *self,
     epc_publisher_install_handlers (self);
 }
 
+/**
+ * epc_publisher_set_service_cookie:
+ * @publisher: a #EpcPublisher
+ * @cookie: the new service identifier, or %NULL
+ *
+ * Changes the unique identifier of the service.
+ * See #EpcPublisher:service-cookie for details.
+ *
+ * Since: 0.3.1
+ */
 void
 epc_publisher_set_service_cookie (EpcPublisher *self,
                                   const gchar  *cookie)
@@ -1068,6 +1078,16 @@ epc_publisher_set_service_cookie (EpcPublisher *self,
   g_object_set (self, "service-cookie", cookie, NULL);
 }
 
+/**
+ * epc_publisher_set_collision_handling:
+ * @publisher: a #EpcPublisher
+ * @method: the new strategy
+ *
+ * Changes the collision handling strategy the publisher uses.
+ * See #EpcPublisher:collision-handling for details.
+ *
+ * Since: 0.3.1
+ */
 void
 epc_publisher_set_collision_handling (EpcPublisher         *self,
                                       EpcCollisionHandling  method)
@@ -1330,8 +1350,10 @@ epc_publisher_class_init (EpcPublisherClass *cls)
    * EpcPublisher:service-cookie:
    *
    * Unique identifier of the service. This cookie is used for implementing
-   * #EPC_COLLISION_HANDLING_UNIQUE_SERVICE, and usually is a UUID or the
-   * MD5/SHA1/... checksum of a central document.
+   * #EPC_COLLISIONS_UNIQUE_SERVICE, and usually is a UUID or the MD5/SHA1/...
+   * checksum of a central document. When passing %NULL, but using the
+   * #EPC_COLLISIONS_UNIQUE_SERVICE strategy a time based UUID is
+   * generated and used as service identifier.
    *
    * Since: 0.3.1
    */
@@ -1346,13 +1368,13 @@ epc_publisher_class_init (EpcPublisherClass *cls)
   /**
    * EpcPublisher:collision-handling:
    *
-   * The collision handling method to use.
+   * The collision handling strategy the publisher uses.
    *
    * Since: 0.3.1
    */
   g_object_class_install_property (oclass, PROP_COLLISION_HANDLING,
                                    g_param_spec_enum ("collision-handling", "Collision Handling",
-                                                      "The collision handling method to use",
+                                                      "The collision handling strategy to use",
                                                       EPC_TYPE_COLLISION_HANDLING,
                                                       EPC_COLLISIONS_CHANGE_NAME,
                                                       G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
@@ -2083,6 +2105,16 @@ epc_publisher_get_auth_flags (EpcPublisher *self)
   return self->priv->auth_flags;
 }
 
+/**
+ * epc_publisher_get_service_cookie:
+ * @publisher: a #EpcPublisher
+ *
+ * Queries the unique identifier of the service.
+ * See #EpcPublisher:service-cookie for details.
+ *
+ * Returns: The unique identifier of the service, or %NULL on error.
+ * Since: 0.3.1
+ */
 G_CONST_RETURN gchar*
 epc_publisher_get_service_cookie (EpcPublisher *self)
 {
@@ -2090,6 +2122,17 @@ epc_publisher_get_service_cookie (EpcPublisher *self)
   return self->priv->service_cookie;
 }
 
+/**
+ * epc_publisher_get_collision_handling:
+ * @publisher: a #EpcPublisher
+ *
+ * Queries the collision handling strategy the publisher uses.
+ * See #EpcPublisher:collision-handling for details.
+ *
+ * Returns: The publisher's collision handling strategy,
+ * or #EPC_COLLISIONS_IGNORE on error.
+ * Since: 0.3.1
+ */
 EpcCollisionHandling
 epc_publisher_get_collision_handling (EpcPublisher *self)
 {

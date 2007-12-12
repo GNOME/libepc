@@ -753,8 +753,10 @@ epc_dispatcher_class_init (EpcDispatcherClass *cls)
    * EpcConsumer:cookie:
    *
    * Unique identifier of the service. This cookie is used for implementing
-   * #EPC_COLLISION_HANDLING_UNIQUE_SERVICE, and usually is a UUID or the
-   * MD5/SHA1/... checksum of a central document.
+   * #EPC_COLLISIONS_UNIQUE_SERVICE, and usually is a UUID or the MD5/SHA1/...
+   * checksum of a central document. When passing %NULL, but using the
+   * #EPC_COLLISIONS_UNIQUE_SERVICE strategy a time based UUID is
+   * generated and used as service identifier.
    *
    * Since: 0.3.1
    */
@@ -1002,6 +1004,16 @@ epc_dispatcher_set_name (EpcDispatcher *self,
   g_object_set (self, "name", name, NULL);
 }
 
+/**
+ * epc_dispatcher_set_cookie:
+ * @dispatcher: a #EpcDispatcher
+ * @cookie: the new service identifier, or %NULL
+ *
+ * Changes the unique identifier of the service.
+ * See #EpcDispatcher:cookie for details.
+ *
+ * Since: 0.3.1
+ */
 void
 epc_dispatcher_set_cookie (EpcDispatcher *self,
                            const gchar   *cookie)
@@ -1010,6 +1022,16 @@ epc_dispatcher_set_cookie (EpcDispatcher *self,
   g_object_set (self, "cookie", cookie, NULL);
 }
 
+/**
+ * epc_dispatcher_set_collision_handling:
+ * @dispatcher: a #EpcDispatcher
+ * @method: the new strategy
+ *
+ * Changes the collision handling strategy the dispatcher uses.
+ * See #EpcDispatcher:collision-handling for details.
+ *
+ * Since: 0.3.1
+ */
 void
 epc_dispatcher_set_collision_handling (EpcDispatcher       *self,
                                        EpcCollisionHandling method)
@@ -1034,6 +1056,16 @@ epc_dispatcher_get_name (EpcDispatcher *self)
   return self->priv->name;
 }
 
+/**
+ * epc_dispatcher_get_cookie:
+ * @dispatcher: a #EpcDispatcher
+ *
+ * Queries the unique identifier of the service.
+ * See #EpcDispatcher:cookie for details.
+ *
+ * Returns: The unique identifier of the service, or %NULL on error.
+ * Since: 0.3.1
+ */
 G_CONST_RETURN gchar*
 epc_dispatcher_get_cookie (EpcDispatcher *self)
 {
@@ -1041,6 +1073,17 @@ epc_dispatcher_get_cookie (EpcDispatcher *self)
   return epc_dispatcher_ensure_cookie (self);
 }
 
+/**
+ * epc_dispatcher_get_collision_handling:
+ * @dispatcher: a #EpcDispatcher
+ *
+ * Queries the collision handling strategy the dispatcher uses.
+ * See #EpcDispatcher:collision-handling for details.
+ *
+ * Returns: The dispatcher's collision handling strategy,
+ * or #EPC_COLLISIONS_IGNORE on error.
+ * Since: 0.3.1
+ */
 EpcCollisionHandling
 epc_dispatcher_get_collision_handling (EpcDispatcher *self)
 {

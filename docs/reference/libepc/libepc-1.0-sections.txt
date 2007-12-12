@@ -1,6 +1,7 @@
 <SECTION>
 <FILE>dispatcher</FILE>
 EpcAddressFamily
+EpcCollisionHandling
 EpcDispatcherPrivate
 EpcDispatcherClass
 <TITLE>EpcDispatcher</TITLE>
@@ -10,17 +11,29 @@ epc_dispatcher_run
 epc_dispatcher_reset
 epc_dispatcher_add_service
 epc_dispatcher_add_service_subtype
-epc_dispatcher_set_service_details
+
+<SUBSECTION>
+epc_dispatcher_set_collision_handling
+epc_dispatcher_set_cookie
 epc_dispatcher_set_name
+epc_dispatcher_set_service_details
+
+<SUBSECTION>
+epc_dispatcher_get_collision_handling
+epc_dispatcher_get_cookie
 epc_dispatcher_get_name
 
 <SUBSECTION>
 epc_address_family_get_class
 epc_address_family_to_string
+epc_collision_handling_get_class
+epc_collision_handling_to_string
 
 <SUBSECTION Standard>
 EPC_TYPE_ADDRESS_FAMILY
+EPC_TYPE_COLLISION_HANDLING
 epc_address_family_get_type
+epc_collision_handling_get_type
 EPC_DISPATCHER
 EPC_IS_DISPATCHER
 EPC_TYPE_DISPATCHER
@@ -64,17 +77,21 @@ epc_publisher_expand_name
 <SUBSECTION>
 epc_publisher_set_auth_flags
 epc_publisher_set_auth_handler
+epc_publisher_set_collision_handling
 epc_publisher_set_contents_path
 epc_publisher_set_credentials
 epc_publisher_set_protocol
+epc_publisher_set_service_cookie
 epc_publisher_set_service_name
 
 <SUBSECTION>
 epc_publisher_get_auth_flags
 epc_publisher_get_certificate_file
+epc_publisher_get_collision_handling
 epc_publisher_get_contents_path
 epc_publisher_get_private_key_file
 epc_publisher_get_protocol
+epc_publisher_get_service_cookie
 epc_publisher_get_service_domain
 epc_publisher_get_service_name
 
@@ -310,6 +327,7 @@ EpcServiceMonitorPrivate
 EpcServiceMonitor
 epc_service_monitor_new
 epc_service_monitor_new_for_types
+epc_service_monitor_new_for_types_strv
 epc_service_monitor_set_skip_our_own
 epc_service_monitor_get_skip_our_own
 
