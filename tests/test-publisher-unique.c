@@ -92,13 +92,13 @@ main (void)
 
   publisher1 = epc_publisher_new (test_name, NULL, NULL);
   epc_publisher_add_handler (publisher1, "id", contents_handler_cb, test_value1, NULL);
-  epc_publisher_set_collision_handling (publisher1, EPC_COLLISION_HANDLING_UNIQUE_SERVICE);
+  epc_publisher_set_collision_handling (publisher1, EPC_COLLISIONS_UNIQUE_SERVICE);
   epc_publisher_set_service_cookie (publisher1, test_cookie);
   epc_publisher_set_protocol (publisher1, EPC_PROTOCOL_HTTP);
 
   publisher2 = epc_publisher_new (test_name, NULL, NULL);
   epc_publisher_add_handler (publisher2, "id", contents_handler_cb, test_value2, NULL);
-  epc_publisher_set_collision_handling (publisher2, EPC_COLLISION_HANDLING_UNIQUE_SERVICE);
+  epc_publisher_set_collision_handling (publisher2, EPC_COLLISIONS_UNIQUE_SERVICE);
   epc_publisher_set_service_cookie (publisher2, test_cookie);
   epc_publisher_set_protocol (publisher2, EPC_PROTOCOL_HTTP);
 

@@ -38,18 +38,18 @@ typedef struct _EpcDispatcherPrivate EpcDispatcherPrivate;
 
 /**
  * EpcCollisionHandling:
- * @NONE: Don't handle collisions at all, just fail silently.
- * @ALTERNATIVE_NAME: Try to announce the service with another name.
- * @UNIQUE_SERVICE: Defer own service announcement until the other service
+ * @EPC_COLLISIONS_IGNORE: Don't handle collisions at all, just fail silently.
+ * @EPC_COLLISIONS_CHANGE_NAME: Try to announce the service with another name.
+ * @EPC_COLLISIONS_UNIQUE_SERVICE: Defer own service announcement until the other service.
  * disappears.
  *
  * Various strategies for handling service name collisions.
  */
 typedef enum
 {
-  EPC_COLLISION_HANDLING_NONE,
-  EPC_COLLISION_HANDLING_ALTERNATIVE_NAME,
-  EPC_COLLISION_HANDLING_UNIQUE_SERVICE
+  EPC_COLLISIONS_IGNORE,
+  EPC_COLLISIONS_CHANGE_NAME,
+  EPC_COLLISIONS_UNIQUE_SERVICE
 }
 EpcCollisionHandling;
 

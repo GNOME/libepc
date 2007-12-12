@@ -578,14 +578,14 @@ epc_dispatcher_handle_collision (EpcDispatcher *self,
 
   switch (self->priv->collisions)
     {
-      case EPC_COLLISION_HANDLING_NONE:
+      case EPC_COLLISIONS_IGNORE:
         break; /* nothing to do */
 
-      case EPC_COLLISION_HANDLING_ALTERNATIVE_NAME:
+      case EPC_COLLISIONS_CHANGE_NAME:
         epc_dispatcher_change_name (self);
         break;
 
-      case EPC_COLLISION_HANDLING_UNIQUE_SERVICE:
+      case EPC_COLLISIONS_UNIQUE_SERVICE:
         epc_dispatcher_watch_other (self, domain);
         break;
     }
@@ -661,7 +661,7 @@ epc_dispatcher_set_property (GObject      *object,
 static const gchar*
 epc_dispatcher_ensure_cookie (EpcDispatcher *self)
 {
-  if (EPC_COLLISION_HANDLING_UNIQUE_SERVICE == self->priv->collisions && NULL == self->priv->cookie)
+  if (EPC_COLLISIONS_UNIQUE_SERVICE == self->priv->collisions && !self->priv->cookie)
     {
       uuid_t cookie;
 
@@ -777,7 +777,7 @@ epc_dispatcher_class_init (EpcDispatcherClass *cls)
                                    g_param_spec_enum ("collision-handling", "Collision Handling",
                                                       "The collision handling method to use",
                                                       EPC_TYPE_COLLISION_HANDLING,
-                                                      EPC_COLLISION_HANDLING_ALTERNATIVE_NAME,
+                                                      EPC_COLLISIONS_CHANGE_NAME,
                                                       G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
                                                       G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                       G_PARAM_STATIC_BLURB));
@@ -1044,9 +1044,7 @@ epc_dispatcher_get_cookie (EpcDispatcher *self)
 EpcCollisionHandling
 epc_dispatcher_get_collision_handling (EpcDispatcher *self)
 {
-  g_return_val_if_fail (EPC_IS_DISPATCHER (self),
-                        EPC_COLLISION_HANDLING_NONE);
-
+  g_return_val_if_fail (EPC_IS_DISPATCHER (self), EPC_COLLISIONS_IGNORE);
   return self->priv->collisions;
 }
 

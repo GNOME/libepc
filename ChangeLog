@@ -1,3 +1,15 @@
+2007-12-12  Mathias Hasselmann  <mathias@openismus.com>
+
+	Use shorter names for EpcCollisionHandling members.
+
+	* libepc/dispatcher.h: Rename EPC_COLLISION_HANDLING_NONE,
+	EPC_COLLISION_HANDLING_ALTERNATIVE_NAME and
+	EPC_COLLISION_HANDLING_UNIQUE_SERVICE to EPC_COLLISIONS_IGNORE,
+	EPC_COLLISIONS_CHANGE_NAME and EPC_COLLISIONS_UNIQUE_SERVICE.
+	* tests/test-dispatcher-unique.c, tests/test-publisher-unique.c,
+	tests/test-dispatcher-local-collision.c, libepc/dispatcher.c,
+	libepc/publisher.c: Use short EpcCollisionHandling names.
+
 2007-12-10  Mathias Hasselmann  <mathias@openismus.com>
 
 	Implement fall back to alternative serivce name strategy, when the

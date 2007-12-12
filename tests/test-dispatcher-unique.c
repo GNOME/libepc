@@ -77,13 +77,13 @@ main (void)
 
   dispatcher1 = epc_dispatcher_new (test_name1);
   epc_dispatcher_set_cookie (dispatcher1, test_cookie1);
-  epc_dispatcher_set_collision_handling (dispatcher1, EPC_COLLISION_HANDLING_UNIQUE_SERVICE);
+  epc_dispatcher_set_collision_handling (dispatcher1, EPC_COLLISIONS_UNIQUE_SERVICE);
   epc_dispatcher_add_service (dispatcher1, EPC_ADDRESS_IPV4, EPC_SERVICE_TYPE_HTTP,
                               NULL, NULL, 9000, "id=dispatcher1", NULL);
 
   dispatcher2 = epc_dispatcher_new (test_name1);
   epc_dispatcher_set_cookie (dispatcher2, test_cookie1);
-  epc_dispatcher_set_collision_handling (dispatcher2, EPC_COLLISION_HANDLING_UNIQUE_SERVICE);
+  epc_dispatcher_set_collision_handling (dispatcher2, EPC_COLLISIONS_UNIQUE_SERVICE);
   epc_dispatcher_add_service (dispatcher2, EPC_ADDRESS_IPV4, EPC_SERVICE_TYPE_HTTP,
                               NULL, NULL, 9001, "id=dispatcher2", NULL);
 
@@ -94,7 +94,7 @@ main (void)
       if (NULL == epc_dispatcher_get_cookie (dispatcher3))
         epc_test_pass_once (1 << 0);
 
-      epc_dispatcher_set_collision_handling (dispatcher3, EPC_COLLISION_HANDLING_UNIQUE_SERVICE);
+      epc_dispatcher_set_collision_handling (dispatcher3, EPC_COLLISIONS_UNIQUE_SERVICE);
 
       if (NULL != epc_dispatcher_get_cookie (dispatcher3) &&
           36 == strlen (epc_dispatcher_get_cookie (dispatcher3)))

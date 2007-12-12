@@ -1354,7 +1354,7 @@ epc_publisher_class_init (EpcPublisherClass *cls)
                                    g_param_spec_enum ("collision-handling", "Collision Handling",
                                                       "The collision handling method to use",
                                                       EPC_TYPE_COLLISION_HANDLING,
-                                                      EPC_COLLISION_HANDLING_ALTERNATIVE_NAME,
+                                                      EPC_COLLISIONS_CHANGE_NAME,
                                                       G_PARAM_READWRITE | G_PARAM_CONSTRUCT |
                                                       G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
                                                       G_PARAM_STATIC_BLURB));
@@ -2093,9 +2093,7 @@ epc_publisher_get_service_cookie (EpcPublisher *self)
 EpcCollisionHandling
 epc_publisher_get_collision_handling (EpcPublisher *self)
 {
-  g_return_val_if_fail (EPC_IS_PUBLISHER (self),
-                        EPC_COLLISION_HANDLING_NONE);
-
+  g_return_val_if_fail (EPC_IS_PUBLISHER (self), EPC_COLLISIONS_IGNORE);
   return self->priv->collisions;
 }
 
