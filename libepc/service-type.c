@@ -94,12 +94,12 @@ epc_service_type_normalize_name (const gchar *name,
  *
  * Builds the DNS-SD service type for the given transport @protocol and
  * application. When @application is %NULL, the application name is retrieved by
- * calling #g_get_prgname(). %NULL is returned in that case if #g_get_prgname() returns %NULL.
+ * calling g_get_prgname(). %NULL is returned in that case if g_get_prgname() returns %NULL.
  *
  * The string returned should be released when no longer needed.
  *
  * Returns: A newly allocated string holding the requested service-type,
- * or %NULL when @application is %NULL and #g_get_prgname fails.
+ * or %NULL when @application is %NULL and g_get_prgname() fails.
  */
 gchar*
 epc_service_type_new (EpcProtocol  protocol,
@@ -200,9 +200,9 @@ epc_service_type_get_protocol (const gchar *service_type)
  * Lists all service types supported by the library. When @application is %NULL
  * just the generic types, otherwise the service-subtypes for that application
  * are returned. The returned list is terminated by %NULL and must be released
- * by the caller with #g_strfreev.
+ * by the caller with g_strfreev().
  *
- * See also: #epc_service_type_new.
+ * See also: epc_service_type_new().
  *
  * Returns: The %NULL terminated list of all supported service types.
  */

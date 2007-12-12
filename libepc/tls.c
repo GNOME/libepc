@@ -97,8 +97,8 @@ epc_tls_get_filename (const gchar *hostname,
  *
  * Queries the preferred location for storing private X.509 keys for the server
  * identified by @hostname. This file is located in the current user's XDG
- * configuration folder (#g_get_user_config_dir). The filename also contains
- * program's name when specified by #g_set_prgname.
+ * configuration folder (g_get_user_config_dir()). The filename also contains
+ * program's name when specified by g_set_prgname().
  *
  * Returns: The preferred private key location for @hostname.
  */
@@ -114,8 +114,8 @@ epc_tls_get_private_key_filename (const gchar *hostname)
  *
  * Queries the preferred location for storing X.509 certificates for the server
  * identified by @hostname. This file is located in the current user's XDG
- * configuration folder (#g_get_user_config_dir). The filename also contains
- * program's name when specified by #g_set_prgname.
+ * configuration folder (g_get_user_config_dir()). The filename also contains
+ * program's name when specified by g_set_prgname().
  *
  * Returns: The preferred certificate location for @hostname.
  */
@@ -141,7 +141,7 @@ epc_tls_private_key_thread (gpointer data)
  * @error: return location for a #GError, or %NULL
  *
  * Creates a self private X.509 key. Generating secure keys needs quite
- * some time. Call #epc_tls_set_private_key_hooks to install hooks providing
+ * some time. Call epc_tls_set_private_key_hooks() to install hooks providing
  * some feedback to your users. Key generation takes place in a separate
  * background thread, whilst the calling thread waits in a GMainLoop. So
  * for instance the GTK+ widget system remains responsible during that
@@ -561,8 +561,8 @@ out:
  * @error: return location for a #GError, or %NULL
  *
  * Searches or creates X.509 certificate and key for the server identified
- * by @hostname. This function uses #epc_tls_get_certificate_filename and
- * #epc_tls_get_private_key_filename to locate existing certificates and
+ * by @hostname. This function uses epc_tls_get_certificate_filename() and
+ * epc_tls_get_private_key_filename() to locate existing certificates and
  * keys. New certificates and keys are generated, when the files cannot
  * be found, or the existing files contain invalid or expired information.
  *

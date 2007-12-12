@@ -51,7 +51,7 @@
  * the #EpcAuthHandler registered for the key in question, if any. Information about
  * that process is stored in the #EpcAuthContext structure.
  *
- * To register an authentication handler call #epc_publisher_set_auth_handler:
+ * To register an authentication handler call epc_publisher_set_auth_handler():
  *
  * <example id="register-auth-handler">
  *  <title>Register an authentication handler</title>
@@ -62,7 +62,7 @@
  * </example>
  *
  * To verify that the user password provided password matches
- * the expected one use #epc_auth_context_check_password:
+ * the expected one use epc_auth_context_check_password():
  *
  * <example id="check-password">
  *  <title>Verify a password</title>
@@ -117,12 +117,12 @@
  * a %NULL value essentially you say "this information does not exist". So
  * publishing %NULL values is not different from not publishing any value at
  * all or rejected access to some values. Without explicitly inspecting the
- * details for not receiving a value, a consumer calling #epc_consumer_lookup
+ * details for not receiving a value, a consumer calling epc_consumer_lookup()
  * has no chance to distinguish between the cases "never published", "network
  * problem", "authorization rejected", "no meaningful value available".
  *
  * So if  feel like publishing a %NULL value, just remove the key in question
- * from the #EpcPublisher by calling #epc_publisher_remove. When using a
+ * from the #EpcPublisher by calling epc_publisher_remove(). When using a
  * custom #EpcContentsHandler an alternate approach is returning %NULL from
  * that handler. In that case the #EpcPublisher will behave exactly the same,
  * as if the value has been removed.
@@ -152,7 +152,7 @@ enum
  *
  * This data structure describes a pending authentication request
  * which shall be verified by an #EpcAuthHandler installed by
- * #epc_publisher_set_auth_handler.
+ * epc_publisher_set_auth_handler().
  *
  * <note><para>
  *  There is no way to retrieve the password from the #EpcAuthContext, as
@@ -1426,8 +1426,8 @@ epc_publisher_class_init (EpcPublisherClass *cls)
  * Creates a new #EpcPublisher object. The publisher announces its service
  * per DNS-SD to the DNS domain specified by @domain, using @name as service
  * name. The service type is derived from @application. When %NULL is passed
- * for @application the value returned by #g_get_prgname is used. See
- * #epc_service_type_new for details.
+ * for @application the value returned by g_get_prgname() is used. See
+ * epc_service_type_new() for details.
  *
  * Returns: The newly created #EpcPublisher object.
  */
@@ -1670,9 +1670,9 @@ epc_publisher_remove (EpcPublisher *self,
  * @publisher: a #EcpPublisher
  * @key: the key for addressing contents
  *
- * Looks up the user_data passed to #epc_publisher_add_handler for @key.
+ * Looks up the user_data passed to epc_publisher_add_handler() for @key.
  * Returns %NULL if the specified @key doesn't exist or wasn't published
- * with #epc_publisher_add_handler.
+ * with epc_publisher_add_handler().
  *
  * This function allows to use the publisher as local key/value store,
  * which is useful for instance to prevent accidental key collisions.
@@ -1766,7 +1766,7 @@ epc_publisher_list_cb (gpointer key,
  *  g_list_free (keys);
  * </programlisting>
  *
- * See also #epc_consumer_list for builtin listing capabilities.
+ * See also epc_consumer_list() for builtin listing capabilities.
  *
  * Returns: A newly allocated list of keys, or %NULL when an error occurred.
  */
@@ -1818,10 +1818,10 @@ epc_publisher_list (EpcPublisher *self,
  *
  * <note><para>
  *  This should be called after adding the resource identified by @key,
- *  not before. For instance, after calling #epc_publisher_add.
+ *  not before. For instance, after calling epc_publisher_add().
  * </para></note>
  *
- * See also #epc_publisher_set_auth_flags.
+ * See also epc_publisher_set_auth_flags().
  */
 void
 epc_publisher_set_auth_handler (EpcPublisher   *self,
@@ -1869,7 +1869,7 @@ epc_publisher_set_auth_handler (EpcPublisher   *self,
  *
  * <note><para>
  *  This should be called after adding the resource identified by @key,
- *  not before. For instance, after calling #epc_publisher_add.
+ *  not before. For instance, after calling epc_publisher_add().
  * </para></note>
  */
 void
@@ -1980,7 +1980,7 @@ epc_publisher_set_contents_path (EpcPublisher *self,
  * @flags: new authentication settings
  *
  * Changes the authentication settings the publisher uses 
- * when #epc_publisher_set_auth_handler is used.
+ * when epc_publisher_set_auth_handler() is used.
  * See #EpcPublisher:auth-flags for details.
  */
 void
@@ -2146,20 +2146,20 @@ epc_publisher_get_collision_handling (EpcPublisher *self)
  * @error: return location for a #GError, or %NULL
  *
  * Starts the server component of the #EpcPublisher and blocks until it is
- * shutdown using #epc_publisher_quit. If the server could not be started, the
+ * shutdown using epc_publisher_quit(). If the server could not be started, the
  * function returns %FALSE and sets @error. The error domain is
  * #EPC_AVAHI_ERROR. Possible error codes are those of the
  * <citetitle>Avahi</citetitle> library.
  *
  * When starting the publisher in HTTPS mode for the first time self-signed
  * keys must be generated. Generating secure keys needs some time,
- * so it is recommended to call #epc_progress_window_install, or
- * #epc_shell_set_progress_hooks to provide visual feedback during that
+ * so it is recommended to call epc_progress_window_install(), or
+ * epc_shell_set_progress_hooks() to provide visual feedback during that
  * operation. Key generation takes place in a separate background thread and
  * the calling thread waits in a GMainLoop. Therefore the UI can remain
  * responsive when generating keys.
  *
- * To start the server without blocking call #epc_publisher_run_async.
+ * To start the server without blocking call epc_publisher_run_async().
  *
  * Returns: %TRUE when the publisher was successfully started,
  * %FALSE if an error occurred.
@@ -2196,8 +2196,8 @@ epc_publisher_run (EpcPublisher  *self,
  * error domain is #EPC_AVAHI_ERROR. Possible error codes are those of the
  * <citetitle>Avahi</citetitle> library.
  *
- * To stop the server component call #epc_publisher_quit.
- * See #epc_publisher_run for additional information.
+ * To stop the server component call epc_publisher_quit().
+ * See epc_publisher_run() for additional information.
  *
  * Returns: %TRUE when the publisher was successfully started,
  * %FALSE if an error occurred.
@@ -2244,7 +2244,7 @@ epc_publisher_disconnect_idle_cb (gpointer key,
  * @publisher: a #EpcPublisher
  *
  * Stops the server component of the #EpcPublisher started with
- * #epc_publisher_run or #epc_publisher_run_async. The functions
+ * epc_publisher_run() or #epc_publisher_run_async. The functions
  * returns %TRUE when the built-in server was running and had to
  * be stopped. If the server wasn't running the function returns
  * %FALSE.
@@ -2348,7 +2348,7 @@ epc_utf8_strtitle (const gchar *str,
  * Expands all known placeholders in @name. Supported placeholders are:
  *
  * <itemizedlist>
- *  <listitem>%%a: the program name as returned by #g_get_application_name</listitem>
+ *  <listitem>%%a: the program name as returned by g_get_application_name()</listitem>
  *  <listitem>%%h: the machine's host name in title case</listitem>
  *  <listitem>%%u: the user's login name in title case</listitem>
  *  <listitem>%%U: the user's real name</listitem>

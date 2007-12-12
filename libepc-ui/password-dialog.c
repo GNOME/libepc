@@ -358,7 +358,7 @@ epc_password_dialog_new (const gchar    *title,
  * support an aditional checkbox for requesting anonymous authentication is
  * shown. See #EpcPasswordDialog:anonymous-allowed for details.
  *
- * See also: #epc_password_dialog_set_anonymous
+ * See also: epc_password_dialog_set_anonymous()
  */
 void
 epc_password_dialog_set_anonymous_allowed (EpcPasswordDialog *self,
@@ -377,7 +377,7 @@ epc_password_dialog_set_anonymous_allowed (EpcPasswordDialog *self,
  * authentication is shown. See #EpcPasswordDialog:anonymous-allowed for
  * details.
  *
- * See also: #epc_password_dialog_is_anonymous
+ * See also: epc_password_dialog_is_anonymous()
  *
  * Returns: %TRUE if anonymous authentication is supported.
  */
@@ -393,7 +393,7 @@ epc_password_dialog_get_anonymous_allowed (EpcPasswordDialog *self)
  * @dialog: a #EpcPasswordDialog
  * @anonymous: the new anonymous authentication state
  *
- * See also: #epc_password_dialog_set_anonymous_allowed
+ * See also: epc_password_dialog_set_anonymous_allowed()
  *
  * Changes the anonymous authentication state.
  * See #EpcPasswordDialog:anonymous for details.
@@ -413,7 +413,7 @@ epc_password_dialog_set_anonymous (EpcPasswordDialog *self,
  * Queries if anonymous authentication is requested.
  * See #EpcPasswordDialog:anonymous for details.
  *
- * See also: #epc_password_dialog_get_anonymous_allowed
+ * See also: epc_password_dialog_get_anonymous_allowed()
  *
  * Returns: %TRUE if anonymous authentication is requested.
  */

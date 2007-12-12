@@ -33,7 +33,7 @@
  * @stability: Unstable
  *
  * #EpcContents is a reference counted structure for storing custom contents.
- * To publish custom content call #epc_publisher_add_handler to register a
+ * To publish custom content call epc_publisher_add_handler() to register a
  * #EpcContentsHandler like this:
  *
  * <example id="custom-contents-handler">
@@ -63,7 +63,7 @@
  * EpcContents:
  *
  * A reference counted buffer for storing contents to deliver by the
- * #EpcPublisher. Use #epc_contents_new or #epc_contents_new_dup to create
+ * #EpcPublisher. Use epc_contents_new() or #epc_contents_new_dup to create
  * instances of this buffer.
  */
 struct _EpcContents
@@ -162,7 +162,7 @@ epc_contents_new_dup (const gchar  *type,
  *
  * Passing %NULL for @type is equivalent to passing "application/octet-stream".
  *
- * See also: #epc_contents_stream_read, #epc_contents_is_stream
+ * See also: epc_contents_stream_read(), #epc_contents_is_stream
  *
  * Returns: The newly created #EpcContents buffer.
  */
@@ -247,7 +247,7 @@ epc_contents_unref (EpcContents *self)
  * Checks if stream routines can be used for retreiving
  * the contents of the buffer.
  *
- * See also: #epc_contents_stream_new, #epc_contents_stream_read
+ * See also: epc_contents_stream_new(), #epc_contents_stream_read
  *
  * Returns: Returns %TRUE when stream routines have to be used.
  */
@@ -262,7 +262,7 @@ epc_contents_is_stream (EpcContents *contents)
  * @contents: a #EpcContents buffer
  *
  * Queries the MIME type associated with the buffer. Returns the MIME
- * type specified for #epc_contents_new or #epc_contents_stream_new,
+ * type specified for epc_contents_new() or #epc_contents_stream_new,
  * or "application/octet-stream" when %NULL was passed.
  *
  * Returns: Returns the MIME type of the buffer.
@@ -284,10 +284,10 @@ epc_contents_get_mime_type (EpcContents *self)
  * @length: a location for storing the contents length
  *
  * Retrieves the contents of a static contents buffer created with
- * #epc_contents_new. Any other buffer returns %NULL. The data returned
+ * epc_contents_new(). Any other buffer returns %NULL. The data returned
  * is owned by the #EpcContents buffer and must not be freeded.
  *
- * See also: #epc_contents_stream_read.
+ * See also: epc_contents_stream_read().
  *
  * Returns: Returns the static buffer contents, or %NULL. This should not be freed or modified.
  */
@@ -312,7 +312,7 @@ epc_contents_get_data (EpcContents *contents,
  * @length: a location for storing the contents length
  *
  * Retrieves the next chunk of data for a streaming contents buffer created
- * with #epc_contents_stream_read. %NULL is returned, when the buffer has
+ * with epc_contents_stream_read(). %NULL is returned, when the buffer has
  * reached its end, or isn't a streaming contents buffer.
  *
  * The data returned is owned by the #EpcContents buffer and must not be
@@ -320,7 +320,7 @@ epc_contents_get_data (EpcContents *contents,
  * function again, as repeated calls to the function might return the
  * same buffer, but filled with new data.
  *
- * See also: #epc_contents_stream_new, #epc_contents_is_stream
+ * See also: epc_contents_stream_new(), #epc_contents_is_stream
  *
  * Returns: Returns the next chunk of data, or %NULL. The should not be freed or modified.
  */

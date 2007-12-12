@@ -1,5 +1,15 @@
 2007-12-12  Mathias Hasselmann  <mathias@openismus.com>
 
+	Use proper gtk-doc syntax for linking to functions.
+
+	* libepc/consumer.c, libepc/contents.c, libepc/dispatcher.c,
+	libepc/protocol.c, libepc/publisher.c, libepc/service-info.c,
+	libepc/service-monitor.c, libepc/service-type.c, libepc/shell.c,
+	libepc/tls.c, libepc-ui/password-dialog.c,
+	libepc-ui/progress-window.c: Use proper syntax.
+
+2007-12-12  Mathias Hasselmann  <mathias@openismus.com>
+
 	Document new functions and properties.
 
 	* docs/reference/libepc/libepc-1.0-sections.txt: Update symbols.

@@ -28,7 +28,7 @@
 /**
  * SECTION:protocol
  * @short_description: transport protocols
- * @see_also: #epc_service_type_new
+ * @see_also: epc_service_type_new()
  * @include: libepc/protcol.h
  * @stability: Unstable
  *
@@ -141,7 +141,7 @@ epc_protocol_get_service_type (EpcProtocol protocol)
  * @protocol: a #EpcProtocol
  *
  * Queries the URI scheme associated with a #EpcProtocol.
- * See #epc_service_type_build_uri.
+ * See epc_service_type_build_uri().
  *
  * Returns: Returns the URI scheme associated with @protocol,
  * or %NULL on unknown protocols.

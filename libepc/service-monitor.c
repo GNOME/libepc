@@ -428,9 +428,9 @@ epc_service_monitor_class_init (EpcServiceMonitorClass *cls)
  * Creates a new service monitor watching the specified @domain for the
  * service-types listed. Passing %NULL for @domain monitors the local network.
  * Passing an empty service list requests monitoring of all service-types
- * supported by the library (see #epc_service_type_list_supported).
+ * supported by the library (see epc_service_type_list_supported()).
  *
- * See also: #epc_service_monitor_new_for_types
+ * See also: epc_service_monitor_new_for_types()
  *
  * Returns: The newly created service monitor.
  */
@@ -454,9 +454,9 @@ epc_service_monitor_new_for_types_strv (const gchar  *domain,
  * Creates a new service monitor watching the specified @domain for the
  * service-types listed. Passing %NULL for @domain monitors the local network.
  * Passing an empty service list requests monitoring of all service-types
- * supported by the library (see #epc_service_type_list_supported).
+ * supported by the library (see epc_service_type_list_supported()).
  *
- * See also: #epc_service_monitor_new_for_types_strv
+ * See also: epc_service_monitor_new_for_types_strv()
  *
  * Returns: The newly created service monitor.
  * Since: 0.3.1
@@ -511,7 +511,7 @@ epc_service_monitor_new_for_types (const gchar *domain,
  * @application lists all libepc based applications. Passing %NULL for @domain
  * monitors the local network. Passing an empty protocol list requests
  * monitoring of all service-types supported by the library (see
- * #epc_service_type_list_supported).
+ * epc_service_type_list_supported()).
  *
  * Returns: The newly created service monitor.
  */

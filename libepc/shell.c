@@ -181,7 +181,7 @@ epc_shell_watch_add (GCallback      callback,
  *
  * Removes the watching callback identified by @id.
  *
- * See also: #epc_shell_watch_avahi_client
+ * See also: epc_shell_watch_avahi_client()
  */
 void
 epc_shell_watch_remove (guint id)
@@ -277,7 +277,7 @@ epc_shell_get_avahi_client (GError **error)
  *
  * Registers a function to watch state changes of the library's #AvahiClient.
  * On success the identifier of the newly created watch is returned. Pass it
- * to #epc_shell_watch_remove to remove the watch. On failure it returns 0 and
+ * to epc_shell_watch_remove() to remove the watch. On failure it returns 0 and
  * sets @error. The error domain is #EPC_AVAHI_ERROR. Possible error codes are
  * those of the <citetitle>Avahi</citetitle> library.
  *
@@ -527,8 +527,8 @@ epc_shell_set_progress_hooks (const EpcShellProgressHooks *hooks,
  * This function calls your #EpcShellProgressHooks::begin hook with @title
  * as argument and #EpcShellProgressHooks::update with @message.
  *
- * See also: #epc_shell_set_progress_hooks, #epc_progress_window_install,
- * #epc_shell_progress_update, #epc_shell_progress_end
+ * See also: epc_shell_set_progress_hooks(), #epc_progress_window_install,
+ * epc_shell_progress_update(), #epc_shell_progress_end
  */
 void
 epc_shell_progress_begin (const gchar *title,
@@ -554,8 +554,8 @@ epc_shell_progress_begin (const gchar *title,
  * The progress is expressed as @percentage in the range [0..1], or -1 if the
  * progress cannot be estimated.
  *
- * See also: #epc_shell_set_progress_hooks, #epc_progress_window_install,
- * epc_shell_progress_begin, #epc_shell_progress_end
+ * See also: epc_shell_set_progress_hooks(), #epc_progress_window_install,
+ * epc_shell_progress_begin, epc_shell_progress_end()
  */
 void
 epc_shell_progress_update (gdouble      percentage,
@@ -575,8 +575,8 @@ epc_shell_progress_update (gdouble      percentage,
  *
  * Call this function when your lengthy operation has finished.
  *
- * See also: #epc_shell_set_progress_hooks, #epc_progress_window_install,
- * #epc_shell_progress_begin, #epc_shell_progress_update
+ * See also: epc_shell_set_progress_hooks(), #epc_progress_window_install,
+ * epc_shell_progress_begin(), #epc_shell_progress_update
  */
 void
 epc_shell_progress_end (void)

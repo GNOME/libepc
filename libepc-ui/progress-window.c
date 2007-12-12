@@ -34,7 +34,7 @@
  * The #EpcProgressWindow can be used to provide some feedback during
  * lengthly operations, like generating server keys.
  *
- * See also: #epc_tls_private_key_new
+ * See also: epc_tls_private_key_new()
  */
 
 enum
@@ -394,7 +394,7 @@ epc_progress_window_context_free (gpointer data)
  * Configures the hooks provided by libepc to use #EpcProgressWindow when for
  * performing long standing tasks like for instance generating private keys.
  *
- * See also: #epc_tls_set_private_key_hooks
+ * See also: epc_tls_set_private_key_hooks()
  */
 void
 epc_progress_window_install (GtkWindow *parent)

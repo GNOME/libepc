@@ -577,15 +577,15 @@ epc_consumer_class_init (EpcConsumerClass *cls)
    * @port:  the publisher's TCP/IP port
    *
    * This signal is emitted when a #EpcConsumer created with
-   * #epc_consumer_new_for_name or #epc_consumer_new_for_name_full
+   * epc_consumer_new_for_name() or #epc_consumer_new_for_name_full
    * has found its #EpcPublisher.
    *
    * Publisher detection is integrated with the GLib main loop. Therefore the
-   * signal will not be emitted before a main loop is run (#g_main_loop_run,
-   * #gtk_main). So to reliably consume this signal connect to it directly
+   * signal will not be emitted before a main loop is run (g_main_loop_run(),
+   * gtk_main()). So to reliably consume this signal connect to it directly
    * after creating the #EpcConsumer.
    *
-   * See also: #epc_consumer_resolve_publisher, #epc_consumer_is_pulisher_resolved
+   * See also: epc_consumer_resolve_publisher(), #epc_consumer_is_pulisher_resolved
    */
   signals[SIGNAL_PUBLISHER_RESOLVED] = g_signal_new ("publisher-resolved", EPC_TYPE_CONSUMER, G_SIGNAL_RUN_FIRST,
                                                      G_STRUCT_OFFSET (EpcConsumerClass, publisher_resolved), NULL, NULL,
@@ -604,8 +604,8 @@ epc_consumer_class_init (EpcConsumerClass *cls)
  * by using #EpcServiceMonitor, or by using the service selection dialog
  * of <citetitle>avahi-ui</citetitle> (#AuiServiceDialog).
  *
- * The connection is not established until functions like #epc_consumer_lookup,
- * #epc_consumer_list or #epc_consumer_resolve_publisher are called.
+ * The connection is not established until functions like epc_consumer_lookup(),
+ * epc_consumer_list() or #epc_consumer_resolve_publisher are called.
  *
  * Returns: The newly created #EpcConsumer object
  */
@@ -637,9 +637,9 @@ epc_consumer_new (const EpcServiceInfo *service)
  * Creates a new #EpcConsumer object and associates it with the #EpcPublisher
  * announcing itself with @name on the local network. The DNS-SD service name
  * used for searching the #EpcPublisher is derived from the application's
- * program name as returned by #g_get_prgname.
+ * program name as returned by g_get_prgname().
  *
- * See #epc_consumer_new_for_name_full for additional notes
+ * See epc_consumer_new_for_name_full() for additional notes
  * and a method allowing better control over the search process.
  *
  * Returns: The newly created #EpcConsumer object
@@ -658,12 +658,12 @@ epc_consumer_new_for_name (const gchar *name)
  *
  * Creates a new #EpcConsumer object and associates it with the #EpcPublisher
  * announcing itself with @name on @domain. The DNS-SD service of the
- * #EpcPublisher is derived from @application using #epc_service_type_new.
+ * #EpcPublisher is derived from @application using epc_service_type_new().
  *
  * <note><para>
  *  This function shall be used to re-connect to a formerly used #EpcPublisher,
  *  selected for instance from a list for recently used services. Therefore
- *  using #epc_consumer_new_for_name_full is a quite optimistic approach for
+ *  using epc_consumer_new_for_name_full() is a quite optimistic approach for
  *  contacting a publisher: You call it without really knowing if the
  *  publisher you requested really exists. You only know that it existed
  *  in the past when you added it to your list of recently used publishers,
@@ -672,14 +672,14 @@ epc_consumer_new_for_name (const gchar *name)
  *  To let your users choose from an up-to-date service list, you have to
  *  use a dynamic service list as provided by avahi-ui for choosing a service
  *  and pass the information this widget provides (hostname, port, protocol)
- *  to #epc_consumer_new.
+ *  to epc_consumer_new().
  * </para></note>
  *
  * <note><para>
  *  The connection is not established until a function retrieving
- *  data, like for instance #epc_consumer_lookup, is called.
+ *  data, like for instance epc_consumer_lookup(), is called.
  *
- *  Explicitly call #epc_consumer_resolve_publisher or connect to
+ *  Explicitly call epc_consumer_resolve_publisher() or connect to
  *  the #EpcConsumer::publisher-resolved signal, when your application
  *  needs reliable information about the existance of the #EpcPublisher
  *  described by @name.
@@ -843,7 +843,7 @@ epc_consumer_resolve_publisher (EpcConsumer *self,
  * Checks if the host name of this consumer's #EpcPublisher
  * has been resolved already.
  *
- * See also: #epc_consumer_resolve_publisher, #EpcPublisher::publisher-resolved
+ * See also: epc_consumer_resolve_publisher(), #EpcPublisher::publisher-resolved
  *
  * Returns: %TRUE when the host name has been resolved, and %FALSE otherwise.
  */
@@ -916,7 +916,7 @@ epc_consumer_set_http_error (GError     **error,
  * enumeration.
  *
  * For instance, the error code will be #SOUP_STATUS_FORBIDDEN if
- * authentication failed (see #epc_publisher_set_auth_handler). You must
+ * authentication failed (see epc_publisher_set_auth_handler()). You must
  * include <filename class="headerfile">libsoup/soup-status.h</filename>
  * to use this error code.
  *
@@ -1101,7 +1101,7 @@ epc_consumer_list_parser_text (GMarkupParseContext *context G_GNUC_UNUSED,
  *  g_list_free (keys);
  * </programlisting>
  *
- * See also #epc_publisher_list for creating custom listings.
+ * See also epc_publisher_list() for creating custom listings.
  *
  * Returns: A newly allocated list of keys, or %NULL when an error occurred.
  */

@@ -36,7 +36,7 @@
  * EpcServiceInfo:
  *
  * Description of a network service.
- * See also: #epc_service_monitor_new.
+ * See also: epc_service_monitor_new().
  */
 struct _EpcServiceInfo
 {
@@ -77,8 +77,8 @@ epc_service_info_get_type (void)
  * Creates a new service description using the information provided. The
  * @details list usually is retrieved from the TXT record the dynamic naming
  * system (DNS) provides for the service. When using Avahi's service chooser
- * #aui_service_dialog_get_txt_data can be used for getting a @details list.
- * To create an ad-hoc list use #avahi_string_list_new and related functions.
+ * aui_service_dialog_get_txt_data() can be used for getting a @details list.
+ * To create an ad-hoc list use avahi_string_list_new() and related functions.
  *
  * Returns: The newly created service description, or %NULL on error.
  */
@@ -124,8 +124,8 @@ epc_service_info_new_full (const gchar           *type,
  * Creates a new service description using the information provided. The
  * @details list usually is retrieved from the TXT record the dynamic naming
  * system (DNS) provides for the service. When using Avahi's service chooser
- * #aui_service_dialog_get_txt_data can be used for getting a @details list.
- * To create an ad-hoc list use #avahi_string_list_new and related functions.
+ * aui_service_dialog_get_txt_data() can be used for getting a @details list.
+ * To create an ad-hoc list use avahi_string_list_new() and related functions.
  *
  * Returns: The newly created service description, or %NULL on error.
  */
@@ -143,7 +143,7 @@ epc_service_info_new (const gchar           *type,
  * @info: a #EpcServiceInfo
  *
  * Increases the reference count of @info by one.
- * See also: #epc_service_info_unref
+ * See also: epc_service_info_unref()
  *
  * Returns: The same @info object.
  */
@@ -162,7 +162,7 @@ epc_service_info_ref (EpcServiceInfo *self)
  * Decreases the reference count of @info by one. When its reference count
  * drops to 0, the object is finalized (i.e. its memory is freed).
  *
- * See also: #epc_service_info_ref
+ * See also: epc_service_info_ref()
  */
 void
 epc_service_info_unref (EpcServiceInfo *self)

@@ -794,7 +794,7 @@ epc_dispatcher_class_init (EpcDispatcherClass *cls)
  * Creates a new #EpcDispatcher object for announcing a DNS-SD service.
  * The service is announced on all network interfaces.
  *
- * Call #epc_dispatcher_add_service to actually announce a service.
+ * Call epc_dispatcher_add_service() to actually announce a service.
  *
  * Returns: the newly created #EpcDispatcher object.
  */
