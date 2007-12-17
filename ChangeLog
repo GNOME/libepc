@@ -1,3 +1,9 @@
+2007-12-17  Mathias Hasselmann  <mathias@openismus.com>
+
+	=== Release 0.3.1 ===
+
+	* NEWS: Updated for release 0.3.1
+
 2007-12-12  Mathias Hasselmann  <mathias@openismus.com>
 
 	Use proper gtk-doc syntax for linking to functions.
@@ -31,13 +37,13 @@
 
 2007-12-10  Mathias Hasselmann  <mathias@openismus.com>
 
-	Implement fall back to alternative serivce name strategy, when the
+	Implement fall back to alternative service name strategy, when the
 	conflicting service has another service cookie, in unique service mode.
 
 	* libepc/dispatcher.c, libepc/dispatcher.h: Ensure that dispatchers
 	with unique service strategy have a service cookie. Rename
 	epc_dispatcher_get_service_cookie to epc_dispatcher_get_cookie.
-	Fall back to alternative serivce name strategy, when conflicting
+	Fall back to alternative service name strategy, when conflicting
 	service has another service cookie, in unique service mode.
 	* libepc/service-monitor.c, libepc/service-monitor.h: Add
 	epc_service_monitor_new_for_types_strv and release local variables.

@@ -1,3 +1,17 @@
+Release 0.3.1
+=============
+
+	* Alternate collision handling strategy, that establishes illusion
+	  of a single service, when the same resource is available multiple
+	  times.
+
+	* Use correct libdir on x86_64 (#502531, Brian Pepple).
+	* Use proper gtk-doc syntax for linking to functions.
+	* Improve parallel building of documentation.
+	* Get MIME type of files from gio when available.
+	* Correctly interpret protocol list passed to epc_service_monitor_new.
+	* Fix some minor memory leaks.
+
 Release 0.3
 ===========
 
