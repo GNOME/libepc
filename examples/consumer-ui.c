@@ -1,4 +1,5 @@
-/* This program demonstrates UI integration of the EpcConsumer.
+/* The program demonstrates UI integration of the EpcConsumer.
+ * This example (consumer-ui.c) is in the public domain.
  */
 #include <libepc/consumer.h>
 #include <libepc-ui/password-dialog.h>

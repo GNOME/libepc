@@ -1,3 +1,6 @@
+/* Demonstration of a UI driven publisher.
+ * This example (publisher-ui.c) is in the public domain.
+ */
 #include <glib/gstdio.h>
 #include <gtk/gtk.h>
 

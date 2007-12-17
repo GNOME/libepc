@@ -1,4 +1,5 @@
-/* This example demonstrates how to retreive SSL/TLS server credentials.
+/* Example of how to retreive SSL/TLS server credentials.
+ * This example (server-credentials.c) is in the public domain.
  */
 #include <libepc/tls.h>
 #include <libepc-ui/progress-window.h>

@@ -10,6 +10,8 @@
  *
  * To access the default resource called "sensitive"
  * use your login name as user name and the word "secret" as password.
+ *
+ * This example (simple-publisher.c) is in the public domain.
  */
 #include <libepc/publisher.h>
 

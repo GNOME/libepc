@@ -1,3 +1,6 @@
+/* Example for using the service monitor.
+ * This example (service-browser.c) is in the public domain.
+ */
 #include <libepc/service-monitor.h>
 #include <glib/gi18n.h>
 

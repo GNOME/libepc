@@ -1,6 +1,8 @@
 /* This example demonstrates listing of Easy Publisher resources.
  * Expects file globbing patterns describing the keys to list on command line.
  * Without any globbing pattern all resources are listed.
+ *
+ * This example (list-resources.c) is in the public domain.
  */
 #include <libepc/consumer.h>
 #include <glib/gi18n.h>

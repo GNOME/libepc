@@ -1,5 +1,15 @@
 2007-12-17  Mathias Hasselmann  <mathias@openismus.com>
 
+	Explictly add copyright statements to make licensecheck happy.
+	Reported by Pedro Fragoso.
+
+	* libepc/enums.c.in, libepc/enums.h.in, Makefile.am:
+	Mark libepc/enums.[ch] and libepc/marshal.[ch] as generated.
+	* tests/*: Explictly add LGPL header to test-cases.
+	* examples/*: Put examples into public domain.
+
+2007-12-17  Mathias Hasselmann  <mathias@openismus.com>
+
 	* configure.ac: Bump version number.
 
 2007-12-17  Mathias Hasselmann  <mathias@openismus.com>

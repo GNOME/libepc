@@ -1,6 +1,8 @@
 /* This example demonstrates looking up Easy Publisher resources.
  * Expects the keys of the resources to lookup on command line.
  * Without any keys the `date-time' resource is looked up.
+ *
+ * This example (lookup-resource.c) is in the public domain.
  */
 #include <libepc/consumer.h>
 #include <glib/gi18n.h>
