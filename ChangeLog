@@ -1,3 +1,10 @@
+2008-01-09  Mathias Hasselmann  <mathias@openismus.com>
+
+	Build with latest gio version (#508272, Emilio Pozuelo Monfort).
+
+	* libepc/publisher.c: Include <gio/gio.h> instead of
+	<gio/gcontenttype.h>.
+
 2007-12-17  Mathias Hasselmann  <mathias@openismus.com>
 
 	Explictly add copyright statements to make licensecheck happy.

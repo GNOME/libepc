@@ -28,8 +28,8 @@
 #include <glibconfig.h>
 #include <glib/gi18n-lib.h>
 
-#if GLIB_CHECK_VERSION(2,15,0)
-#include <gio/gcontenttype.h>
+#if GLIB_CHECK_VERSION(2,15,1)
+#include <gio/gio.h>
 #endif
 
 #include <libsoup/soup-address.h>
@@ -312,7 +312,7 @@ epc_publisher_handle_file (EpcPublisher *publisher G_GNUC_UNUSED,
     {
       gchar *type = NULL;
 
-#if GLIB_CHECK_VERSION(2,15,0)
+#if GLIB_CHECK_VERSION(2,15,1)
       type = g_content_type_guess (filename, (gpointer) data, length, NULL);
 #endif
       contents = epc_contents_new (type, data, length, g_free);
