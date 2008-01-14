@@ -1,3 +1,10 @@
+Release 0.3.2
+=============
+
+	* Build with latest gio version (#508272, Emilio Pozuelo Monfort).
+	* Explictly add copyright statements to make licensecheck happy.
+	  Reported by Pedro Fragoso.
+
 Release 0.3.1
 =============
 
