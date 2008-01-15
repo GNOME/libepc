@@ -1,5 +1,11 @@
 2008-01-15  Mathias Hasselmann  <mathias@openismus.com>
 
+	=== Release 0.3.3 ===
+
+	* NEWS: Updated for release 0.3.3
+
+2008-01-15  Mathias Hasselmann  <mathias@openismus.com>
+
 	Use correct libtool version information (#509503).
 
 	* configure.ac: Bump version number and correct LT_VERSION_INFO.
