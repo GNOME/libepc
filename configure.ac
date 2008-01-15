@@ -1,6 +1,19 @@
-AC_INIT([libepc], [0.3.3], [mathias@openismus.com])
+AC_INIT([libepc], [0.3.4], [mathias@openismus.com])
 AM_INIT_AUTOMAKE([-Wall dist-bzip2 subdir-objects])
 
+dnl LT_VERSION_INFO=CURRENT:REVISION:AGE
+dnl
+dnl Updating that variable is neccessary, but complicated.
+dnl Therefore some rules, taken from the libtool manual.
+dnl
+dnl 1. Update only immediately before a public release.
+dnl 2. If the library source code has changed at all since the last
+dnl    update, then increment REVISION (`C:R:A' becomes `C:r+1:A').
+dnl 3. If any interfaces have been added, removed, or changed since
+dnl    the last update, increment CURRENT, and set REVISION to 0.
+dnl 4. If any interfaces have been added, then increment AGE.
+dnl 5. If any interfaces have been removed, then set AGE to 0.
+dnl
 LT_VERSION_INFO="1:2:0"
 AC_SUBST(LT_VERSION_INFO)
 

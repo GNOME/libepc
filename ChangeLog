@@ -1,5 +1,11 @@
 2008-01-15  Mathias Hasselmann  <mathias@openismus.com>
 
+	Document LT_VERSION_INFO rules.
+
+	* configure.ac: Bump version number. Document LT_VERSION_INFO rules.
+
+2008-01-15  Mathias Hasselmann  <mathias@openismus.com>
+
 	=== Release 0.3.3 ===
 
 	* NEWS: Updated for release 0.3.3
