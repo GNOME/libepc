@@ -1,7 +1,7 @@
-AC_INIT([libepc], [0.3.2], [mathias@openismus.com])
+AC_INIT([libepc], [0.3.3], [mathias@openismus.com])
 AM_INIT_AUTOMAKE([-Wall dist-bzip2 subdir-objects])
 
-LT_VERSION_INFO="1:1:1"
+LT_VERSION_INFO="1:2:0"
 AC_SUBST(LT_VERSION_INFO)
 
 AC_CONFIG_HEADER([config.h])
