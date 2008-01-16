@@ -4,6 +4,7 @@
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
 TESTS_ENVIRONMENT = $(top_srcdir)/tests/test-runner.sh
+ACLOCAL_AMFLAGS = -I m4
 
 # ============================
 # -- DIRECTORY DECLARATIONS --
@@ -68,6 +69,8 @@ libepc_headers = \
 	$(srcdir)/libepc/service-type.h \
 	$(srcdir)/libepc/shell.h \
 	$(srcdir)/libepc/tls.h
+noinst_HEADERS = \
+	$(srcdir)/libepc/i18n.h
 libepc_include_HEADERS = \
 	$(libepc_headers) \
 	libepc/enums.h \
@@ -78,7 +81,7 @@ libepc_ui_include_HEADERS = \
 pkgconfig_DATA = \
 	libepc-1.0.pc \
 	libepc-ui-1.0.pc
-EXTRA_DIST = \
+EXTRA_DIST = config.rpath  \
 	$(srcdir)/gtk-doc.make \
 	$(gtkdoc_srcdir)/libepc-1.0-docs.xml \
 	$(gtkdoc_srcdir)/libepc-1.0-sections.txt \
@@ -97,6 +100,7 @@ libepc_libepc_1_0_la_SOURCES = \
 	libepc/enums.c \
 	libepc/enums.c.in \
 	libepc/enums.h.in \
+	libepc/i18n.c \
 	libepc/marshal.c \
 	libepc/marshal.list \
 	libepc/protocol.c \
@@ -122,7 +126,8 @@ AM_CFLAGS = \
 	-Wall \
 	-DG_DISABLE_DEPRECATED=1 \
 	-DGDK_DISABLE_DEPRECATED=1 \
-	-DGTK_DISABLE_DEPRECATED=1
+	-DGTK_DISABLE_DEPRECATED=1 \
+	-DLOCALEDIR=\"$(localedir)\"
 
 libepc_libepc_1_0_la_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS) -DGETTEXT_PACKAGE=\"libepc\" -DG_LOG_DOMAIN=\"libepc\"
 libepc_libepc_1_0_la_LDFLAGS			= $(LIBEPC_LIBS) -version-info $(LT_VERSION_INFO)
@@ -237,6 +242,7 @@ dist-hook:
           dist-hook
 
 .PHONY: docs
+SUBDIRS = po
 
 # =====================
 # -- LOCAL OVERRIDES --

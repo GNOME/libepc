@@ -18,10 +18,11 @@
  * Authors:
  *      Mathias Hasselmann
  */
+
 #include "progress-window.h"
+#include "libepc/i18n.h"
 
 #include <libepc/shell.h>
-#include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
 #include <string.h>
 

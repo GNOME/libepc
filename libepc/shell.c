@@ -19,13 +19,13 @@
  *      Mathias Hasselmann
  */
 #include "libepc/shell.h"
+#include "libepc/i18n.h"
 
 #include <avahi-common/error.h>
 #include <avahi-glib/glib-malloc.h>
 #include <avahi-glib/glib-watch.h>
 
 #include <glib-object.h>
-#include <glib/gi18n-lib.h>
 #include <gmodule.h>
 
 #include <gnutls/gnutls.h>
@@ -452,7 +452,7 @@ epc_shell_progress_update_default (gdouble      progress,
   title = *context;
 
   if (NULL == title)
-    title = _("Progress Changed");
+    title = _("Operation Proceeded");
   if (NULL == message)
     message = _("No details known");
 

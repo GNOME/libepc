@@ -1,0 +1,13 @@
+# List of source files which contain translatable strings.
+libepc/consumer.c
+libepc/contents.c
+libepc/dispatcher.c
+libepc/protocol.c
+libepc/publisher.c
+libepc/service-info.c
+libepc/service-monitor.c
+libepc/service-type.c
+libepc/shell.c
+libepc/tls.c
+libepc-ui/password-dialog.c
+libepc-ui/progress-window.c

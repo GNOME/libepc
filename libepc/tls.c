@@ -19,6 +19,7 @@
  *      Mathias Hasselmann
  */
 #include "libepc/tls.h"
+#include "libepc/i18n.h"
 #include "libepc/shell.h"
 
 #include <sys/types.h>
@@ -28,7 +29,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <glib/gi18n-lib.h>
 #include <glib/gstdio.h>
 
 #include <uuid/uuid.h>

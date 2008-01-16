@@ -19,7 +19,9 @@ AC_SUBST(LT_VERSION_INFO)
 
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_FILES([
-  Makefile docs/reference/libepc/Makefile
+  Makefile
+  po/Makefile.in
+  docs/reference/libepc/Makefile
   libepc-1.0.pc libepc-ui-1.0.pc
 ])
 
@@ -27,6 +29,7 @@ AC_PROG_CC
 AM_PROG_CC_C_O
 AM_PROG_LIBTOOL
 
+AM_GNU_GETTEXT([external])
 GTK_DOC_CHECK([1.4])
 
 PKG_PROG_PKG_CONFIG([0.14])

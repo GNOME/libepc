@@ -22,11 +22,11 @@
 #include "libepc/consumer.h"
 
 #include "libepc/enums.h"
+#include "libepc/i18n.h"
 #include "libepc/marshal.h"
 #include "libepc/service-monitor.h"
 #include "libepc/shell.h"
 
-#include <glib/gi18n-lib.h>
 #include <libsoup/soup.h>
 #include <string.h>
 
@@ -1018,7 +1018,7 @@ epc_consumer_list_parser_start_element (GMarkupParseContext *context G_GNUC_UNUS
   else
     g_set_error (error, G_MARKUP_ERROR,
                  G_MARKUP_ERROR_INVALID_CONTENT,
-                 _("Unexpected element: `%s'"),
+                 _("Unexpected element: '%s'"),
                 element_name);
 }
 

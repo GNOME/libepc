@@ -18,8 +18,10 @@
  * Authors:
  *      Mathias Hasselmann
  */
+
 #include "password-dialog.h"
-#include <glib/gi18n-lib.h>
+#include "libepc/i18n.h"
+
 #include <gtk/gtk.h>
 
 /**
