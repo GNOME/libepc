@@ -1,5 +1,14 @@
 2008-01-16  Mathias Hasselmann  <mathias@openismus.com>
 
+	Include just <libsoup/soup.h> when possible.
+
+	* libepc/consumer.c: Include just <libsoup/soup.h>.
+	* libepc/publisher.c: Include <libsoup/soup.h> instead of
+	<libsoup/soup-socket.h>. All the other API isn't exported by
+	<libsoup/soup.h> for some reason.
+
+2008-01-16  Mathias Hasselmann  <mathias@openismus.com>
+
 	Update year in copyright information.
 
 2008-01-16  Mathias Hasselmann  <mathias@openismus.com>

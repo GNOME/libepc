@@ -27,8 +27,7 @@
 #include "shell.h"
 
 #include <glib/gi18n-lib.h>
-#include <libsoup/soup-session-async.h>
-#include <libsoup/soup-uri.h>
+#include <libsoup/soup.h>
 #include <string.h>
 
 /**

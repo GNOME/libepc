@@ -27,18 +27,16 @@
 
 #include <glibconfig.h>
 #include <glib/gi18n-lib.h>
-
-#if GLIB_CHECK_VERSION(2,15,1)
-#include <gio/gio.h>
-#endif
-
+#include <libsoup/soup.h>
 #include <libsoup/soup-address.h>
 #include <libsoup/soup-server.h>
 #include <libsoup/soup-server-auth.h>
 #include <libsoup/soup-server-message.h>
-#include <libsoup/soup-socket.h>
-
 #include <string.h>
+
+#if GLIB_CHECK_VERSION(2,15,1)
+#include <gio/gio.h>
+#endif
 
 /**
  * SECTION:auth-context
