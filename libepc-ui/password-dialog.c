@@ -91,7 +91,7 @@ password_changed_cb (EpcPasswordDialog *self)
 static void
 epc_password_dialog_init (EpcPasswordDialog *self)
 {
-  GtkWidget *icon, *table;
+  GtkWidget *icon, *title, *table;
 
   self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self, EPC_TYPE_PASSWORD_DIALOG, EpcPasswordDialogPrivate);
 
@@ -99,20 +99,26 @@ epc_password_dialog_init (EpcPasswordDialog *self)
                                    GTK_ICON_SIZE_DIALOG);
   gtk_misc_set_alignment (GTK_MISC (icon), 0.5, 0.0);
 
+  title = gtk_label_new (_("<big><b>Authentication required.</b></big>"));
+  gtk_misc_set_alignment (GTK_MISC (title), 0.0, 0.5);
+  gtk_label_set_use_markup (GTK_LABEL (title), TRUE);
+
   self->priv->heading = gtk_label_new (NULL);
   gtk_label_set_justify (GTK_LABEL (self->priv->heading), GTK_JUSTIFY_LEFT);
   gtk_label_set_line_wrap (GTK_LABEL (self->priv->heading), TRUE);
-  gtk_label_set_width_chars (GTK_LABEL (self->priv->heading), 40);
+  gtk_label_set_width_chars (GTK_LABEL (self->priv->heading), 45);
   gtk_misc_set_alignment (GTK_MISC (self->priv->heading), 0.0, 0.0);
 
   self->priv->username = gtk_entry_new ();
   self->priv->username_label = gtk_label_new_with_mnemonic (_("_Username:"));
   gtk_label_set_mnemonic_widget (GTK_LABEL (self->priv->username_label), self->priv->username);
+  gtk_misc_set_alignment (GTK_MISC (self->priv->username_label), 0.0, 0.5);
   g_signal_connect_swapped (self->priv->username, "changed", G_CALLBACK (username_changed_cb), self);
 
   self->priv->password = gtk_entry_new ();
   self->priv->password_label = gtk_label_new_with_mnemonic (_("_Password:"));
   gtk_label_set_mnemonic_widget (GTK_LABEL (self->priv->password_label), self->priv->password);
+  gtk_misc_set_alignment (GTK_MISC (self->priv->password_label), 0.0, 0.5);
   gtk_entry_set_visibility (GTK_ENTRY (self->priv->password), FALSE);
   g_signal_connect_swapped (self->priv->password, "changed", G_CALLBACK (password_changed_cb), self);
 
@@ -123,20 +129,29 @@ epc_password_dialog_init (EpcPasswordDialog *self)
                     "swapped-signal::notify::visible", anonymous_toggled_cb, self,
                     NULL);
 
-  table = gtk_table_new (4, 3, FALSE);
+  table = gtk_table_new (5, 3, FALSE);
 
   gtk_container_set_border_width (GTK_CONTAINER (table), 6);
   gtk_table_set_col_spacing (GTK_TABLE (table), 0, 12);
   gtk_table_set_col_spacing (GTK_TABLE (table), 1, 6);
   gtk_table_set_row_spacings (GTK_TABLE (table), 6);
 
-  gtk_table_attach (GTK_TABLE (table), icon, 0, 1, 0, 4, GTK_FILL, GTK_FILL | GTK_EXPAND, 0, 0);
-  gtk_table_attach (GTK_TABLE (table), self->priv->heading, 1, 3, 0, 1, GTK_FILL | GTK_EXPAND, GTK_FILL, 0, 0);
-  gtk_table_attach (GTK_TABLE (table), self->priv->username_label, 1, 2, 1, 2, GTK_FILL, GTK_FILL, 0, 0);
-  gtk_table_attach (GTK_TABLE (table), self->priv->username, 2, 3, 1, 2, GTK_FILL | GTK_EXPAND, GTK_FILL, 0, 0);
-  gtk_table_attach (GTK_TABLE (table), self->priv->password_label, 1, 2, 2, 3, GTK_FILL, GTK_FILL, 0, 0);
-  gtk_table_attach (GTK_TABLE (table), self->priv->password, 2, 3, 2, 3, GTK_FILL | GTK_EXPAND, GTK_FILL, 0, 0);
-  gtk_table_attach (GTK_TABLE (table), self->priv->anonymous, 2, 3, 3, 4, GTK_FILL | GTK_EXPAND, GTK_FILL, 0, 0);
+  gtk_table_attach (GTK_TABLE (table), icon,
+                    0, 1, 0, 5, GTK_FILL, GTK_FILL | GTK_EXPAND, 0, 0);
+  gtk_table_attach (GTK_TABLE (table), title,
+                    1, 3, 0, 1, GTK_FILL | GTK_EXPAND, GTK_FILL, 0, 0);
+  gtk_table_attach (GTK_TABLE (table), self->priv->heading,
+                    1, 3, 1, 2, GTK_FILL | GTK_EXPAND, GTK_FILL, 0, 0);
+  gtk_table_attach (GTK_TABLE (table), self->priv->username_label,
+                    1, 2, 2, 3, GTK_FILL, GTK_FILL, 0, 0);
+  gtk_table_attach (GTK_TABLE (table), self->priv->username,
+                    2, 3, 2, 3, GTK_FILL | GTK_EXPAND, GTK_FILL, 0, 0);
+  gtk_table_attach (GTK_TABLE (table), self->priv->password_label,
+                    1, 2, 3, 4, GTK_FILL, GTK_FILL, 0, 0);
+  gtk_table_attach (GTK_TABLE (table), self->priv->password,
+                    2, 3, 3, 4, GTK_FILL | GTK_EXPAND, GTK_FILL, 0, 0);
+  gtk_table_attach (GTK_TABLE (table), self->priv->anonymous,
+                    2, 3, 4, 5, GTK_FILL | GTK_EXPAND, GTK_FILL, 0, 0);
 
   gtk_widget_show_all (table);
 
@@ -181,12 +196,14 @@ epc_password_dialog_get_property (GObject    *object,
 
 static void
 epc_password_dialog_real_set_realm (EpcPasswordDialog *self,
-			            const gchar       *realm)
+                                    const gchar       *realm)
 {
   gchar *markup;
 
   if (realm)
-    markup = g_markup_printf_escaped (_("Authentication required for <b>%s</b>."), realm);
+    markup = g_markup_printf_escaped (_(
+      "Data source <b>%s</b> requires authentication "
+      "before permitting access."), realm);
   else
     markup = _("Authentication required.");
 
@@ -364,7 +381,7 @@ epc_password_dialog_new (const gchar    *title,
  */
 void
 epc_password_dialog_set_anonymous_allowed (EpcPasswordDialog *self,
-					   gboolean           allowed)
+                                           gboolean           allowed)
 {
   g_return_if_fail (EPC_IS_PASSWORD_DIALOG (self));
   g_object_set (self, "anonymous-allowed", allowed, NULL);
@@ -437,7 +454,7 @@ epc_password_dialog_is_anonymous (EpcPasswordDialog *self)
  */
 void
 epc_password_dialog_set_username (EpcPasswordDialog *self,
-				  const gchar       *username)
+                                  const gchar       *username)
 {
   g_return_if_fail (EPC_IS_PASSWORD_DIALOG (self));
   g_object_set (self, "username", username, NULL);
@@ -473,7 +490,7 @@ epc_password_dialog_get_username (EpcPasswordDialog *self)
  */
 void
 epc_password_dialog_set_password (EpcPasswordDialog *self,
-				  const gchar       *password)
+                                  const gchar       *password)
 {
   g_return_if_fail (EPC_IS_PASSWORD_DIALOG (self));
   g_object_set (self, "password", password, NULL);
@@ -509,7 +526,7 @@ epc_password_dialog_get_password (EpcPasswordDialog *self)
  */
 void
 epc_password_dialog_set_realm (EpcPasswordDialog *self,
-			       const gchar       *realm)
+                               const gchar       *realm)
 {
   g_return_if_fail (EPC_IS_PASSWORD_DIALOG (self));
   g_object_set (self, "realm", realm, NULL);
