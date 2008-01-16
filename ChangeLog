@@ -1,5 +1,13 @@
 2008-01-16  Mathias Hasselmann  <mathias@openismus.com>
 
+	Support building with srcdir != builddir - as far as possible:
+	gtk-doc seems to be totaly broken regarding that topic.
+
+	* libepc/*.c: Prefix local includes with libepc/.
+	* Makefile.am: Use $(srcdir) where needed.
+
+2008-01-16  Mathias Hasselmann  <mathias@openismus.com>
+
 	Include just <libsoup/soup.h> when possible.
 
 	* libepc/consumer.c: Include just <libsoup/soup.h>.

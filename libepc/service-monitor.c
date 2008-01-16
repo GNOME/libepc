@@ -19,11 +19,11 @@
  *      Mathias Hasselmann
  */
 
-#include "service-monitor.h"
+#include "libepc/service-monitor.h"
 
-#include "marshal.h"
-#include "service-type.h"
-#include "shell.h"
+#include "libepc/marshal.h"
+#include "libepc/service-type.h"
+#include "libepc/shell.h"
 
 #include <avahi-common/error.h>
 #include <net/if.h>

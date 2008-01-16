@@ -18,8 +18,8 @@
  * Authors:
  *      Mathias Hasselmann
  */
-#include "tls.h"
-#include "shell.h"
+#include "libepc/tls.h"
+#include "libepc/shell.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>

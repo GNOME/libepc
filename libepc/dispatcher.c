@@ -19,12 +19,12 @@
  *      Mathias Hasselmann
  */
 
-#include "dispatcher.h"
+#include "libepc/dispatcher.h"
 
-#include "enums.h"
-#include "service-monitor.h"
-#include "service-type.h"
-#include "shell.h"
+#include "libepc/enums.h"
+#include "libepc/service-monitor.h"
+#include "libepc/service-type.h"
+#include "libepc/shell.h"
 
 #include <avahi-common/alternative.h>
 #include <avahi-common/error.h>

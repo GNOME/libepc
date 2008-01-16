@@ -19,9 +19,9 @@
  *      Mathias Hasselmann
  */
 
-#include "protocol.h"
-#include "service-type.h"
-#include "enums.h"
+#include "libepc/protocol.h"
+#include "libepc/service-type.h"
+#include "libepc/enums.h"
 
 #include <glib-object.h>
 

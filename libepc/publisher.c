@@ -19,11 +19,11 @@
  *      Mathias Hasselmann
  */
 
-#include "publisher.h"
-#include "dispatcher.h"
-#include "enums.h"
-#include "shell.h"
-#include "tls.h"
+#include "libepc/publisher.h"
+#include "libepc/dispatcher.h"
+#include "libepc/enums.h"
+#include "libepc/shell.h"
+#include "libepc/tls.h"
 
 #include <glibconfig.h>
 #include <glib/gi18n-lib.h>

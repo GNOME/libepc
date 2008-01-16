@@ -19,12 +19,12 @@
  *      Mathias Hasselmann
  */
 
-#include "consumer.h"
+#include "libepc/consumer.h"
 
-#include "enums.h"
-#include "marshal.h"
-#include "service-monitor.h"
-#include "shell.h"
+#include "libepc/enums.h"
+#include "libepc/marshal.h"
+#include "libepc/service-monitor.h"
+#include "libepc/shell.h"
 
 #include <glib/gi18n-lib.h>
 #include <libsoup/soup.h>

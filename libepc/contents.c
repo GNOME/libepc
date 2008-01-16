@@ -19,8 +19,8 @@
  *      Mathias Hasselmann
  */
 
-#include "contents.h"
-#include "shell.h"
+#include "libepc/contents.h"
+#include "libepc/shell.h"
 
 #include <string.h>
 #include <unistd.h>

@@ -18,7 +18,7 @@
  * Authors:
  *      Mathias Hasselmann
  */
-#include "shell.h"
+#include "libepc/shell.h"
 
 #include <avahi-common/error.h>
 #include <avahi-glib/glib-malloc.h>

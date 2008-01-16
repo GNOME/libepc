@@ -19,8 +19,8 @@
  *      Mathias Hasselmann
  */
 
-#include "service-type.h"
-#include "enums.h"
+#include "libepc/service-type.h"
+#include "libepc/enums.h"
 
 #include <string.h>
 

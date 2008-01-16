@@ -19,7 +19,7 @@
  *      Mathias Hasselmann
  */
 
-#include "service-info.h"
+#include "libepc/service-info.h"
 
 #include <string.h>
 
