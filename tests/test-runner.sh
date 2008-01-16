@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Easy Publish and Consume Library
-# Copyright (C) 2007  Openismus GmbH
+# Copyright (C) 2007, 2008  Openismus GmbH
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public

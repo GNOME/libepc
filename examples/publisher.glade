@@ -340,7 +340,7 @@
     <property name="destroy_with_parent">True</property>
     <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
     <property name="has_separator">False</property>
-    <property name="copyright" translatable="yes">Copyright © 2007 Openismus GmbH</property>
+    <property name="copyright" translatable="yes">Copyright © 2007, 2008 Openismus GmbH</property>
     <property name="website">http://live.gnome.org/libepc</property>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox1">

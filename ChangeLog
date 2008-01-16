@@ -1,5 +1,9 @@
 2008-01-16  Mathias Hasselmann  <mathias@openismus.com>
 
+	Update year in copyright information.
+
+2008-01-16  Mathias Hasselmann  <mathias@openismus.com>
+
 	Check for aui_service_dialog_set_service_type_name by feature,
 	instead of checking the pkg-config version.
 
