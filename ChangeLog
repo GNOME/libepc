@@ -1,3 +1,8 @@
+2008-01-16  Daniel Nylander <po@danielnylander.se>
+
+	* po/sv.po: Added Swedish translation.
+	* po/LINGUAS: Added sv
+
 2008-01-16  Mathias Hasselmann  <mathias@openismus.com>
 
 	Separate between primary and secondary message in EpcPasswordDialog to
