@@ -51,8 +51,12 @@ then
   LIBEPC_LIBS="$LIBEPC_LIBS $GIO_LIBS"
 fi
 
-AM_CONDITIONAL([HAVE_AVAHI_UI_0_6_22],
-               [$PKG_CONFIG avahi-ui --atleast-version 0.6.22])
+AC_CHECK_LIB([avahi-ui],
+             [aui_service_dialog_set_service_type_name],
+             [AC_DEFINE([HAVE_SET_SERVICE_TYPE_NAME], [1],
+                        [Define to 1 if you have aui_service_dialog_set_service_type_name.])],
+             [],
+             [${AVAHI_UI_LIBS}])
 
 GLIB_GENMARSHAL=`$PKG_CONFIG --variable=glib_genmarshal glib-2.0`
 GLIB_MKENUMS=`$PKG_CONFIG --variable=glib_mkenums glib-2.0`

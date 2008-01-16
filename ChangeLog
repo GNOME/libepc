@@ -1,3 +1,14 @@
+2008-01-16  Mathias Hasselmann  <mathias@openismus.com>
+
+	Check for aui_service_dialog_set_service_type_name by feature,
+	instead of checking the pkg-config version.
+
+	* configure.ac: Use AC_CHECK_LIB instead of pkg-config to detect
+	aui_service_dialog_set_service_type_name.
+	* examples/consumer-ui.c: Use HAVE_SET_SERVICE_TYPE_NAME macro,
+	instead of HAVE_AVAHI_UI_0_6_22. Include "config.h"".
+	* Makefile.am: Drop HAVE_AVAHI_UI_0_6_22 hackery.
+
 2008-01-15  Mathias Hasselmann  <mathias@openismus.com>
 
 	Document LT_VERSION_INFO rules.

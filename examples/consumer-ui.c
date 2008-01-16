@@ -1,6 +1,8 @@
 /* The program demonstrates UI integration of the EpcConsumer.
  * This example (consumer-ui.c) is in the public domain.
  */
+#include "config.h"
+
 #include <libepc/consumer.h>
 #include <libepc-ui/password-dialog.h>
 
@@ -238,9 +240,7 @@ main (int   argc,
   g_free (service_type_https);
   g_free (service_type_http);
 
-#ifdef HAVE_AVAHI_UI_0_6_22
-
-  /* Setup pretty service names */
+#ifdef HAVE_SET_SERVICE_TYPE_NAME /* Setup pretty service names */
 
   aui_service_dialog_set_service_type_name (AUI_SERVICE_DIALOG (dialog),
                                             EPC_SERVICE_TYPE_HTTPS,
