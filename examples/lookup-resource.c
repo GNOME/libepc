@@ -46,6 +46,8 @@ main (int   argc,
 
   gchar *service_name = "Easy Publisher Test";
   gchar *application = "test-publisher";
+  gchar *username = NULL;
+  gchar *password = NULL;
   gchar *domain = NULL;
 
   GOptionEntry entries[] =
@@ -56,6 +58,10 @@ main (int   argc,
         N_("Application name of the publisher"), N_("NAME") },
       { "domain", 'd', 0, G_OPTION_ARG_STRING, &domain,
         N_("DNS domain of the publisher"), N_("DOMAIN") },
+      { "username", 'u', 0, G_OPTION_ARG_STRING, &username,
+        N_("The username to use for authenication"), N_("USERNAME") },
+      { "password", 'p', 0, G_OPTION_ARG_STRING, &password,
+        N_("The password to use for authenication"), N_("PASSWORD") },
       { NULL, 0, 0, 0, NULL, NULL, NULL }
     };
 
@@ -78,9 +84,18 @@ main (int   argc,
 
   g_option_context_free (options);
 
-  /* Create an consumer and lookup the request items. */
+  /* Create the consumer */
 
   consumer = epc_consumer_new_for_name_full (service_name, application, domain);
+
+  /* Attach default credentials for authentication, when provided. */
+
+  if (username)
+    epc_consumer_set_username (consumer, username);
+  if (password)
+    epc_consumer_set_password (consumer, password);
+
+  /* Query the resources specified on command line. */
 
   if (argc > 1)
     for (i = 1; i < argc; ++i)

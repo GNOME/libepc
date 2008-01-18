@@ -1,3 +1,10 @@
+2008-01-18  Mathias Hasselmann  <mathias@openismus.com>
+
+	Support authentication credentials in lookup-resource example.
+
+	* examples/lookup-resource.c: Add --username and --password
+	command line switches for passing authentication credentials.
+
 2008-01-16  Daniel Nylander <po@danielnylander.se>
 
 	* po/sv.po: Added Swedish translation.
