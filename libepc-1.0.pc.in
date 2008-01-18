@@ -6,7 +6,7 @@ includedir=@includedir@
 Name: Easy Publish and Consume Library
 Description: a library to easily publish and consume values on networks
 Version: @VERSION@
-Requires: avahi-client avahi-glib libsoup-2.2
+Requires: avahi-client avahi-glib libsoup-@LIBSOUP_API@
 Cflags: -I${includedir}/libepc-1.0
 Libs: -L${libdir} -lepc-1.0
 

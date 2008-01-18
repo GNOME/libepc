@@ -44,15 +44,15 @@ PKG_CHECK_MODULES(LIBEPC,    [avahi-client >= 0.6
 PKG_CHECK_MODULES(LIBEPC_UI, [gtk+-2.0     >= 2.10])
 
 PKG_CHECK_MODULES(LIBSOUP,   [libsoup-2.4  >= 2.3],
-                             [libsoup_api=2.4],[
+                             [LIBSOUP_API=2.4],[
 PKG_CHECK_MODULES(LIBSOUP,   [libsoup-2.2  >= 2.2],
-                             [libsoup_api=2.2])])
+                             [LIBSOUP_API=2.2])])
 
 PKG_CHECK_MODULES(GIO,       [gio-2.0      >= 2.15.1],
                              [have_gio=yes],
                              [have_gio=no])
 
-if test "2.2" == "$libsoup_api"
+if test "2.2" == "$LIBSOUP_API"
 then
   AC_DEFINE([HAVE_LIBSOUP22], [1], [Define to 1 if you still want to use libsoup 2.2.])
 fi
@@ -85,9 +85,11 @@ AC_SUBST(LIBEPC_LIBS)
 AC_SUBST(GLIB_GENMARSHAL)
 AC_SUBST(GLIB_MKENUMS)
 
+AC_SUBST(LIBSOUP_API)
+
 AC_OUTPUT
 
 AC_MSG_NOTICE([============================================])
-AC_MSG_NOTICE([  libsoup API ........................ $libsoup_api])
+AC_MSG_NOTICE([  libsoup API ........................ $LIBSOUP_API])
 AC_MSG_NOTICE([  gio support ........................ $have_gio])
 AC_MSG_NOTICE([============================================])

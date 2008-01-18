@@ -1,5 +1,12 @@
 2008-01-18  Mathias Hasselmann  <mathias@openismus.com>
 
+	Announce proper libsoup API in libepc-1.0.pc (#509699).
+
+	* configure.ac: Export LIBSOUP_API variable.
+	* libepc-1.0.pc.in: Use LIBSOUP_API variable.
+
+2008-01-18  Mathias Hasselmann  <mathias@openismus.com>
+
 	Support libsoup 2.4, which will be part of GNOME 2.22 (#509699).
 	Original patch by Dan Winship.
 
