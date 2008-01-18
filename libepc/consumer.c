@@ -173,6 +173,8 @@ static guint signals[SIGNAL_LAST];
 
 G_DEFINE_TYPE (EpcConsumer, epc_consumer, G_TYPE_OBJECT);
 
+#ifdef HAVE_LIBSOUP22
+
 static void
 epc_consumer_authenticate_cb (SoupSession  *session G_GNUC_UNUSED,
                               SoupMessage  *message,
@@ -231,6 +233,54 @@ epc_consumer_reauthenticate_cb (SoupSession  *session,
                                   auth_type, username, password, data);
 }
 
+#else
+
+static void
+epc_consumer_authenticate_cb (SoupSession  *session G_GNUC_UNUSED,
+                              SoupMessage  *message,
+                              SoupAuth     *auth,
+                              gboolean      retrying,
+                              gpointer      data)
+{
+  EpcConsumer *self = EPC_CONSUMER (data);
+  const char *username, *password;
+  gboolean handled = FALSE;
+
+  if (EPC_DEBUG_LEVEL (1))
+    g_debug ("%s: path=%s, realm=%s, retrying=%d",
+             G_STRLOC, soup_message_get_uri (message)->path,
+             soup_auth_get_realm (auth), retrying);
+
+  if (retrying)
+    {
+      g_signal_emit (self, signals[SIGNAL_AUTHENTICATE],
+                     0, soup_auth_get_realm (auth), &handled);
+
+      if (EPC_DEBUG_LEVEL (1))
+        g_debug ("%s: path=%s, realm=%s, handled=%d",
+                 G_STRLOC, soup_message_get_uri (message)->path,
+                 soup_auth_get_realm (auth), handled);
+    }
+  else
+    handled = TRUE;
+
+  if (handled)
+    {
+      username = (self->priv->username ? self->priv->username : "");
+      password = (self->priv->password ? self->priv->password : "");
+
+      soup_auth_authenticate (auth, username, password);
+
+      if (EPC_DEBUG_LEVEL (1))
+        g_debug ("%s: path=%s, realm=%s, retrying=%d, username=%s, password=%s",
+                 G_STRLOC, soup_message_get_uri (message)->path,
+                 soup_auth_get_realm (auth), retrying,
+                 username, password);
+    }
+}
+
+#endif
+
 static void
 epc_consumer_init (EpcConsumer *self)
 {
@@ -240,8 +290,10 @@ epc_consumer_init (EpcConsumer *self)
 
   g_signal_connect (self->priv->session, "authenticate",
                     G_CALLBACK (epc_consumer_authenticate_cb), self);
+#ifdef HAVE_LIBSOUP22
   g_signal_connect (self->priv->session, "reauthenticate",
                     G_CALLBACK (epc_consumer_reauthenticate_cb), self);
+#endif
 }
 
 static void
@@ -959,15 +1011,21 @@ epc_consumer_lookup (EpcConsumer  *self,
 
   if (SOUP_STATUS_IS_SUCCESSFUL (status))
     {
+#ifdef HAVE_LIBSOUP22
+      const gsize response_length = request->response.length;
+      gconstpointer response_data = request->response.body;
+#else
+      const gsize response_length = request->response_body->length;
+      gconstpointer response_data = request->response_body->data;
+#endif
+
       if (length)
-        *length = request->response.length;
+        *length = response_length;
 
-      contents = g_malloc (request->response.length + 1);
-      contents[request->response.length] = '\0';
+      contents = g_malloc (response_length + 1);
+      contents[response_length] = '\0';
 
-      memcpy (contents,
-              request->response.body,
-              request->response.length);
+      memcpy (contents, response_data, response_length);
     }
   else
     epc_consumer_set_http_error (error, request, status);
@@ -1145,15 +1203,25 @@ epc_consumer_list (EpcConsumer  *self,
                                             G_MARKUP_TREAT_CDATA_AS_TEXT,
                                             &state, NULL);
 
+#ifdef HAVE_LIBSOUP22
       g_markup_parse_context_parse (context,
                                     request->response.body,
                                     request->response.length,
                                     error);
+#else
+      g_markup_parse_context_parse (context,
+                                    request->response_body->data,
+                                    request->response_body->length,
+                                    error);
+#endif
 
       g_markup_parse_context_free (context);
     }
   else
     epc_consumer_set_http_error (error, request, status);
+
+  if (request)
+    g_object_unref (request);
 
   return state.items;
 }

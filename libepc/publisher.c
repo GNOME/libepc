@@ -28,11 +28,21 @@
 
 #include <glibconfig.h>
 #include <libsoup/soup.h>
+#include <string.h>
+
+#if HAVE_LIBSOUP22
 #include <libsoup/soup-address.h>
 #include <libsoup/soup-server.h>
 #include <libsoup/soup-server-auth.h>
 #include <libsoup/soup-server-message.h>
-#include <string.h>
+
+#define SOUP_MEMORY_COPY SOUP_BUFFER_USER_OWNED
+#define SOUP_MEMORY_TAKE SOUP_BUFFER_SYSTEM_OWNED
+
+#define SoupServerCallback SoupServerCallbackFn
+#define SoupURI            SoupUri
+
+#endif
 
 #if GLIB_CHECK_VERSION(2,15,1)
 #include <gio/gio.h>
@@ -160,9 +170,17 @@ enum
 struct _EpcAuthContext
 {
   /*< private >*/
-  SoupServerAuth *auth;
+  EpcResource    *resource;
   EpcPublisher   *publisher;
   const gchar    *key;
+
+#if HAVE_LIBSOUP22
+  SoupServerAuth *auth;
+#else
+  SoupMessage    *message;
+  const char     *username;
+  const char     *password;
+#endif
 
   /*< public >*/
 };
@@ -201,8 +219,13 @@ struct _EpcPublisherPrivate
 
   gboolean               server_started;
   GMainLoop             *server_loop;
-  SoupServerAuthContext  server_auth;
   SoupServer            *server;
+
+#if HAVE_LIBSOUP22
+  SoupServerAuthContext  server_auth;
+#else
+  SoupAuthDomain        *server_auth;
+#endif
 
   GHashTable            *clients;
 
@@ -352,14 +375,23 @@ epc_publisher_chunk_cb (SoupMessage *message,
       if (EPC_DEBUG_LEVEL (1))
         g_debug ("%s: writing %d bytes", G_STRLOC, length);
 
-      soup_message_add_chunk (message, SOUP_BUFFER_USER_OWNED, chunk, length);
+#ifdef HAVE_LIBSOUP22
+      soup_message_add_chunk (message, SOUP_MEMORY_COPY, chunk, length);
+#else
+      soup_message_body_append (message->response_body,
+                                SOUP_MEMORY_COPY, chunk, length);
+#endif
     }
   else
     {
       if (EPC_DEBUG_LEVEL (1))
         g_debug ("%s: done", G_STRLOC);
 
+#ifdef HAVE_LIBSOUP22
       soup_message_add_final_chunk (message);
+#else
+      soup_message_body_complete (message->response_body);
+#endif
     }
 }
 
@@ -377,33 +409,36 @@ epc_publisher_trace_client (const gchar *strfunc,
 
 static gboolean
 epc_publisher_check_client (EpcPublisher      *self,
-                            SoupServerContext *context)
+                            SoupServer        *server,
+                            SoupSocket        *socket)
 {
-  if (context->server == self->priv->server)
+  if (server == self->priv->server)
     return TRUE;
 
   if (EPC_DEBUG_LEVEL (1))
-    epc_publisher_trace_client (G_STRFUNC, "stale client", context->sock);
+    epc_publisher_trace_client (G_STRFUNC, "stale client", socket);
 
-  soup_socket_disconnect (context->sock);
+  soup_socket_disconnect (socket);
+
   return FALSE;
 }
 
-static G_GNUC_WARN_UNUSED_RESULT gboolean
-epc_publisher_track_client (EpcPublisher      *self,
-                            SoupServerContext *context)
+G_GNUC_WARN_UNUSED_RESULT static gboolean
+epc_publisher_track_client (EpcPublisher *self,
+                            SoupServer   *server,
+                            SoupSocket   *socket)
 {
   g_static_rec_mutex_lock (&epc_publisher_lock);
 
-  if (epc_publisher_check_client (self, context))
+  if (epc_publisher_check_client (self, server, socket))
     {
       gpointer tag;
 
-      tag = g_hash_table_lookup (self->priv->clients, context->sock);
+      tag = g_hash_table_lookup (self->priv->clients, socket);
       tag = GINT_TO_POINTER (GPOINTER_TO_INT (tag) + 1);
 
-      g_object_ref (context->sock);
-      g_hash_table_replace (self->priv->clients, context->sock, tag);
+      g_object_ref (socket);
+      g_hash_table_replace (self->priv->clients, socket, tag);
 
       return TRUE;
     }
@@ -414,46 +449,68 @@ epc_publisher_track_client (EpcPublisher      *self,
 }
 
 static void
-epc_publisher_untrack_client (EpcPublisher      *self,
-                              SoupServerContext *context)
+epc_publisher_untrack_client (EpcPublisher *self,
+                              SoupServer   *server,
+                              SoupSocket   *socket)
 {
-  if (epc_publisher_check_client (self, context))
+  if (epc_publisher_check_client (self, server, socket))
     {
       gpointer tag;
 
-      tag = g_hash_table_lookup (self->priv->clients, context->sock);
+      tag = g_hash_table_lookup (self->priv->clients, socket);
       tag = GINT_TO_POINTER (GPOINTER_TO_INT (tag) - 1);
 
-      g_object_ref (context->sock);
-      g_hash_table_replace (self->priv->clients, context->sock, tag);
+      g_object_ref (socket);
+      g_hash_table_replace (self->priv->clients, socket, tag);
     }
 
   g_static_rec_mutex_unlock (&epc_publisher_lock);
 }
 
 static void
+#ifdef HAVE_LIBSOUP22
 epc_publisher_handle_contents (SoupServerContext *context,
                                SoupMessage       *message,
                                gpointer           data)
+#else
+epc_publisher_handle_contents (SoupServer        *server,
+                               SoupMessage       *message,
+                               const gchar       *path,
+                               GHashTable        *query,
+                               SoupClientContext *context,
+                               gpointer           data)
+#endif
 {
+#ifdef HAVE_LIBSOUP22
+  SoupServer *server = context->server;
+  SoupSocket *socket = context->sock;
+  const gchar *path = context->path;
+#else
+  SoupSocket *socket = soup_client_context_get_socket (context);
+#endif
+
   EpcPublisher *self = EPC_PUBLISHER (data);
   EpcResource *resource = NULL;
   EpcContents *contents = NULL;
   const gchar *key = NULL;
 
   if (EPC_DEBUG_LEVEL (1))
-    g_debug ("%s: method=%s, path=%s", G_STRFUNC, message->method, context->path);
+    g_debug ("%s: method=%s, path=%s", G_STRFUNC, message->method, path);
 
+#ifdef HAVE_LIBSOUP22
   if (SOUP_METHOD_ID_GET != context->method_id)
+#else
+  if (SOUP_METHOD_GET != message->method)
+#endif
     {
       soup_message_set_status (message, SOUP_STATUS_METHOD_NOT_ALLOWED);
       return;
     }
 
-  if (!epc_publisher_track_client (self, context))
+  if (!epc_publisher_track_client (self, server, socket))
     return;
 
-  key = epc_publisher_get_key (context->path);
+  key = epc_publisher_get_key (path);
 
   if (key)
     resource = g_hash_table_lookup (self->priv->resources, key);
@@ -473,7 +530,7 @@ epc_publisher_handle_contents (SoupServerContext *context,
 
       if (data)
         {
-          soup_message_set_response (message, type, SOUP_BUFFER_USER_OWNED, (gpointer) data, length);
+          soup_message_set_response (message, type, SOUP_MEMORY_COPY, (gpointer) data, length);
           soup_message_set_status (message, SOUP_STATUS_OK);
         }
       else if (epc_contents_is_stream (contents))
@@ -481,21 +538,42 @@ epc_publisher_handle_contents (SoupServerContext *context,
           g_signal_connect (message, "wrote-chunk", G_CALLBACK (epc_publisher_chunk_cb), contents);
           g_signal_connect (message, "wrote-headers", G_CALLBACK (epc_publisher_chunk_cb), contents);
 
+#ifdef HAVE_LIBSOUP22
           soup_server_message_set_encoding (SOUP_SERVER_MESSAGE (message), SOUP_TRANSFER_CHUNKED);
+#else
+          soup_message_headers_set_encoding (message->response_headers, SOUP_ENCODING_CHUNKED);
+#endif
           soup_message_set_status (message, SOUP_STATUS_OK);
         }
 
       g_signal_connect_swapped (message, "finished", G_CALLBACK (epc_contents_unref), contents);
     }
 
-  epc_publisher_untrack_client (self, context);
+  epc_publisher_untrack_client (self, server, socket);
 }
 
 static void
+#ifdef HAVE_LIBSOUP22
 epc_publisher_handle_list (SoupServerContext *context,
                            SoupMessage       *message,
                            gpointer           data)
+#else
+epc_publisher_handle_list (SoupServer        *server,
+                           SoupMessage       *message,
+                           const char        *path,
+                           GHashTable        *query,
+                           SoupClientContext *context,
+                           gpointer           data)
+#endif
 {
+#ifdef HAVE_LIBSOUP22
+  SoupServer *server = context->server;
+  SoupSocket *socket = context->sock;
+  const gchar *path = context->path;
+#else
+  SoupSocket *socket = soup_client_context_get_socket (context);
+#endif
+
   const gchar *pattern = NULL;
   EpcPublisher *self = data;
   GList *files = NULL;
@@ -503,11 +581,11 @@ epc_publisher_handle_list (SoupServerContext *context,
 
   GString *contents = g_string_new (NULL);
 
-  if (!epc_publisher_track_client (self, context))
+  if (!epc_publisher_track_client (self, server, socket))
     return;
 
-  if (g_str_has_prefix (context->path, "/list/") && '\0' != context->path[6])
-    pattern = context->path + 6;
+  if (g_str_has_prefix (path, "/list/") && '\0' != path[6])
+    pattern = path + 6;
 
   files = epc_publisher_list (self, pattern);
   g_string_append (contents, "<list>");
@@ -526,30 +604,42 @@ epc_publisher_handle_list (SoupServerContext *context,
 
   g_string_append (contents, "</list>");
 
-  soup_message_set_response (message, "text/xml",
-                             SOUP_BUFFER_USER_OWNED,
+  soup_message_set_response (message, "text/xml", SOUP_MEMORY_TAKE,
                              contents->str, contents->len);
   soup_message_set_status (message, SOUP_STATUS_OK);
-
-  g_signal_connect_swapped (message, "finished",
-                            G_CALLBACK (g_free),
-                            contents->str);
 
   g_string_free (contents, FALSE);
   g_list_free (files);
 
-  epc_publisher_untrack_client (self, context);
+  epc_publisher_untrack_client (self, server, socket);
 }
 
 static void
+#ifdef HAVE_LIBSOUP22
 epc_publisher_handle_root (SoupServerContext *context,
                            SoupMessage       *message,
                            gpointer           data)
+#else
+epc_publisher_handle_root (SoupServer        *server,
+                           SoupMessage       *message,
+                           const char        *path,
+                           GHashTable        *query,
+                           SoupClientContext *context,
+                           gpointer           data)
+#endif
 {
+#ifdef HAVE_LIBSOUP22
+  SoupServer *server = context->server;
+  SoupSocket *socket = context->sock;
+  const gchar *path = context->path;
+#else
+  SoupSocket *socket = soup_client_context_get_socket (context);
+#endif
+
   EpcPublisher *self = data;
 
-  if (g_str_equal (context->path, "/") &&
-      epc_publisher_track_client (self, context))
+  if (g_str_equal (path, "/") &&
+      epc_publisher_track_client (self, server, socket))
     {
       GString *contents = g_string_new (NULL);
       gchar *markup;
@@ -607,23 +697,54 @@ epc_publisher_handle_root (SoupServerContext *context,
 
       g_string_append (contents, "</ul></body></html>");
 
-      soup_message_set_response (message, "text/html",
-                                 SOUP_BUFFER_USER_OWNED,
+      soup_message_set_response (message, "text/html", SOUP_MEMORY_TAKE,
                                  contents->str, contents->len);
       soup_message_set_status (message, SOUP_STATUS_OK);
-
-      g_signal_connect_swapped (message, "finished",
-                                G_CALLBACK (g_free),
-                                contents->str);
 
       g_string_free (contents, FALSE);
       g_list_free (files);
 
-      epc_publisher_untrack_client (self, context);
+      epc_publisher_untrack_client (self, server, socket);
     }
   else
     soup_message_set_status (message, SOUP_STATUS_NOT_FOUND);
 }
+
+static void
+#if HAVE_LIBSOUP22
+epc_auth_context_init (EpcAuthContext *context,
+                       EpcPublisher   *publisher,
+                       SoupMessage    *message,
+                       SoupServerAuth *auth)
+#else
+epc_auth_context_init (EpcAuthContext *context,
+                       EpcPublisher   *publisher,
+                       SoupMessage    *message,
+                       const gchar    *username,
+                       const gchar    *password)
+#endif
+{
+  const SoupURI *uri = soup_message_get_uri (message);
+
+  context->publisher = publisher;
+  context->key = epc_publisher_get_key (uri->path);
+  context->resource = NULL;
+
+#if HAVE_LIBSOUP22
+  context->auth = auth;
+#else
+  context->message  = message;
+  context->username = username;
+  context->password = password;
+#endif
+
+  if (context->key)
+    context->resource = g_hash_table_lookup (publisher->priv->resources, context->key);
+  if (!context->resource)
+    context->resource = publisher->priv->default_resource;
+}
+
+#if HAVE_LIBSOUP22
 
 static gboolean
 epc_publisher_server_auth_cb (SoupServerAuthContext *auth_ctx G_GNUC_UNUSED,
@@ -631,48 +752,118 @@ epc_publisher_server_auth_cb (SoupServerAuthContext *auth_ctx G_GNUC_UNUSED,
                               SoupMessage           *message,
                               gpointer               data)
 {
-  EpcResource *resource = NULL;
   gboolean authorized = TRUE;
   const char *user = NULL;
   EpcAuthContext context;
-  const SoupUri *uri;
-
-  uri = soup_message_get_uri (message);
 
   g_static_rec_mutex_lock (&epc_publisher_lock);
-
-  context.auth = auth;
-  context.publisher = EPC_PUBLISHER (data);
-  context.key = epc_publisher_get_key (uri->path);
+  epc_auth_context_init (&context, EPC_PUBLISHER (data), message, auth);
 
   if (NULL != auth)
     user = soup_server_auth_get_user (auth);
-  if (NULL != context.key)
-    resource = g_hash_table_lookup (context.publisher->priv->resources, context.key);
-  if (NULL == resource)
-    resource = context.publisher->priv->default_resource;
 
-  if (resource && resource->auth_handler)
-    authorized = resource->auth_handler (&context, user, resource->auth_user_data);
+  if (context.resource && context.resource->auth_handler)
+    authorized = context.resource->auth_handler (&context, user,
+                                                 context.resource->auth_user_data);
 
   if (EPC_DEBUG_LEVEL (1))
-    g_debug ("%s: path=%s, resource=%p, auth_handler=%p, authorized=%d", G_STRLOC,
-             uri->path, resource, resource ? resource->auth_handler : NULL, authorized);
+    g_debug ("%s: key=%s, resource=%p, auth_handler=%p, authorized=%d", G_STRLOC,
+             context.key, context.resource, context.resource ? context.resource->auth_handler : NULL,
+             authorized);
 
   g_static_rec_mutex_unlock (&epc_publisher_lock);
 
   return authorized;
 }
 
+#else
+
+static gboolean
+epc_publisher_auth_filter (SoupAuthDomain *domain,
+                           SoupMessage    *message,
+                           gpointer        data)
+{
+  gboolean authorized = TRUE;
+  EpcAuthContext context;
+
+  g_static_rec_mutex_lock (&epc_publisher_lock);
+  epc_auth_context_init (&context, EPC_PUBLISHER (data), message, NULL, NULL);
+  authorized = (!context.resource || !context.resource->auth_handler);
+
+  if (EPC_DEBUG_LEVEL (1))
+    g_debug ("%s: key=%s, resource=%p, auth_handler=%p, authorized=%d", G_STRLOC,
+             context.key, context.resource, context.resource ? context.resource->auth_handler : NULL,
+             authorized);
+
+  g_static_rec_mutex_unlock (&epc_publisher_lock);
+
+  return !authorized;
+}
+
+static gboolean
+epc_publisher_basic_auth_cb (SoupAuthDomain *domain,
+                             SoupMessage    *message,
+                             const gchar    *username,
+                             const gchar    *password,
+                             gpointer        data)
+{
+  gboolean authorized = TRUE;
+  EpcAuthContext context;
+
+  g_static_rec_mutex_lock (&epc_publisher_lock);
+  epc_auth_context_init (&context, EPC_PUBLISHER (data), message, username, password);
+
+  if (context.resource && context.resource->auth_handler)
+    authorized = context.resource->auth_handler (&context, username, context.resource->auth_user_data);
+
+  if (EPC_DEBUG_LEVEL (1))
+    g_debug ("%s: key=%s, resource=%p, auth_handler=%p, authorized=%d", G_STRLOC,
+             context.key, context.resource, context.resource ? context.resource->auth_handler : NULL,
+             authorized);
+
+  g_static_rec_mutex_unlock (&epc_publisher_lock);
+
+  return authorized;
+}
+
+static gboolean
+epc_publisher_generic_auth_cb (SoupAuthDomain *domain,
+                               SoupMessage    *message,
+                               const char     *username,
+                               gpointer        data)
+{
+  gboolean authorized = TRUE;
+  EpcAuthContext context;
+
+  g_static_rec_mutex_lock (&epc_publisher_lock);
+  epc_auth_context_init (&context, EPC_PUBLISHER (data), message, username, NULL);
+
+  if (context.resource && context.resource->auth_handler)
+    authorized = context.resource->auth_handler (&context, username, context.resource->auth_user_data);
+
+  if (EPC_DEBUG_LEVEL (1))
+    g_debug ("%s: key=%s, resource=%p, auth_handler=%p, authorized=%d", G_STRLOC,
+             context.key, context.resource, context.resource ? context.resource->auth_handler : NULL,
+             authorized);
+
+  g_static_rec_mutex_unlock (&epc_publisher_lock);
+
+  return authorized;
+}
+
+#endif
+
 static void
 epc_publisher_init (EpcPublisher *self)
 {
   self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self, EPC_TYPE_PUBLISHER, EpcPublisherPrivate);
-
   self->priv->protocol = EPC_PROTOCOL_HTTPS;
+
+#if HAVE_LIBSOUP22
   self->priv->server_auth.types = SOUP_AUTH_TYPE_DIGEST;
   self->priv->server_auth.callback = epc_publisher_server_auth_cb;
   self->priv->server_auth.user_data = self;
+#endif
 
   self->priv->resources = g_hash_table_new_full (g_str_hash, g_str_equal,
                                                  g_free, epc_resource_free);
@@ -881,8 +1072,16 @@ epc_publisher_compute_name (EpcPublisher *self)
 static void
 epc_publisher_remove_handlers (EpcPublisher *self)
 {
+#if HAVE_LIBSOUP22
   memset (&self->priv->server_auth.digest_info, 0,
           sizeof self->priv->server_auth.digest_info);
+#else
+  if (self->priv->server_auth)
+    {
+      soup_server_remove_auth_domain (self->priv->server, self->priv->server_auth);
+      self->priv->server_auth = NULL;
+    }
+#endif
 
   soup_server_remove_handler (self->priv->server, self->priv->contents_path);
   soup_server_remove_handler (self->priv->server, "/list");
@@ -890,8 +1089,25 @@ epc_publisher_remove_handlers (EpcPublisher *self)
 }
 
 static void
+epc_publisher_add_server_callback (EpcPublisher       *self,
+                                   const gchar        *path,
+                                   SoupServerCallback  callback)
+{
+#if HAVE_LIBSOUP22
+  soup_server_add_handler (self->priv->server, path,
+                           &self->priv->server_auth,
+                           callback, NULL, self);
+#else
+  soup_server_add_handler (self->priv->server, path,
+                           callback, self, NULL);
+#endif
+}
+
+static void
 epc_publisher_install_handlers (EpcPublisher *self)
 {
+#if HAVE_LIBSOUP22
+
   memset (&self->priv->server_auth.digest_info, 0,
           sizeof self->priv->server_auth.digest_info);
 
@@ -908,19 +1124,41 @@ epc_publisher_install_handlers (EpcPublisher *self)
         break;
     }
 
-  soup_server_add_handler (self->priv->server,
-                           self->priv->contents_path,
-                           &self->priv->server_auth,
-                           epc_publisher_handle_contents,
-                           NULL, self);
-  soup_server_add_handler (self->priv->server, "/list",
-                           &self->priv->server_auth,
-                           epc_publisher_handle_list,
-                           NULL, self);
-  soup_server_add_handler (self->priv->server, "/",
-                           &self->priv->server_auth,
-                           epc_publisher_handle_root,
-                           NULL, self);
+#else
+
+  g_assert (NULL == self->priv->server_auth);
+
+  if (self->priv->auth_flags & EPC_AUTH_PASSWORD_TEXT_NEEDED)
+    {
+      self->priv->server_auth =
+        soup_auth_domain_basic_new (SOUP_AUTH_DOMAIN_REALM,
+                                    self->priv->service_name,
+                                    SOUP_AUTH_DOMAIN_BASIC_AUTH_CALLBACK,
+                                    epc_publisher_basic_auth_cb,
+                                    SOUP_AUTH_DOMAIN_BASIC_AUTH_DATA,
+                                    self, NULL);
+    }
+  else
+    {
+      self->priv->server_auth =
+        soup_auth_domain_digest_new (SOUP_AUTH_DOMAIN_REALM,
+                                     self->priv->service_name,
+                                     SOUP_AUTH_DOMAIN_GENERIC_AUTH_CALLBACK,
+                                     epc_publisher_generic_auth_cb,
+                                     SOUP_AUTH_DOMAIN_GENERIC_AUTH_DATA,
+                                     self, NULL);
+    }
+
+  soup_auth_domain_set_filter (self->priv->server_auth, epc_publisher_auth_filter, self, NULL);
+  soup_auth_domain_add_path (self->priv->server_auth, self->priv->contents_path);
+
+  soup_server_add_auth_domain (self->priv->server, self->priv->server_auth);
+
+#endif
+
+  epc_publisher_add_server_callback (self, self->priv->contents_path, epc_publisher_handle_contents);
+  epc_publisher_add_server_callback (self, "/list", epc_publisher_handle_list);
+  epc_publisher_add_server_callback (self, "/", epc_publisher_handle_root);
 }
 
 static void
@@ -1050,9 +1288,13 @@ epc_publisher_real_set_auth_flags (EpcPublisher *self,
   if (self->priv->server)
     epc_publisher_remove_handlers (self);
 
+#if HAVE_LIBSOUP22
   self->priv->server_auth.types =
     flags & EPC_AUTH_PASSWORD_TEXT_NEEDED ?
     SOUP_AUTH_TYPE_BASIC : SOUP_AUTH_TYPE_DIGEST;
+#else
+  self->priv->auth_flags = flags;
+#endif
 
   if (self->priv->server)
     epc_publisher_install_handlers (self);
@@ -2213,7 +2455,9 @@ epc_publisher_run_async (EpcPublisher  *self,
   if (!self->priv->server_started)
     {
       soup_server_run_async (self->priv->server);
+#if HAVE_LIBSOUP22
       g_object_unref (self->priv->server); /* work arround bug #494128 */
+#endif
       self->priv->server_started = TRUE;
     }
 
@@ -2485,11 +2729,19 @@ epc_auth_context_get_password (const EpcAuthContext *context)
 {
   g_return_val_if_fail (NULL != context, NULL);
 
+#if HAVE_LIBSOUP22
+
   if (NULL != context->auth &&
       SOUP_AUTH_TYPE_BASIC == context->auth->type)
     return context->auth->basic.passwd;
 
   return NULL;
+
+#else
+
+  return context->password;
+
+#endif
 }
 
 /**
@@ -2511,10 +2763,19 @@ epc_auth_context_check_password (const EpcAuthContext *context,
   g_return_val_if_fail (NULL != context, FALSE);
   g_return_val_if_fail (NULL != password, FALSE);
 
+#if HAVE_LIBSOUP22
+
   return
     NULL != context->auth &&
     soup_server_auth_check_passwd (context->auth, (gchar*) password);
-    /* TODO: libsoup bug #493686 */
+
+#else
+
+  return soup_auth_domain_check_password (context->publisher->priv->server_auth,
+                                          context->message, context->username,
+                                          password);
+
+#endif
 }
 
 /* vim: set sw=2 sta et spl=en spell: */

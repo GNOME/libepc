@@ -40,19 +40,31 @@ PKG_CHECK_MODULES(LIBEPC,    [avahi-client >= 0.6
                               gmodule-2.0  >= 2.0
                               gobject-2.0  >= 2.4
                               gnutls       >= 1.4
-                              libsoup-2.2  >= 2.2
                               uuid         >= 1.36])
 PKG_CHECK_MODULES(LIBEPC_UI, [gtk+-2.0     >= 2.10])
 
-PKG_CHECK_MODULES(GIO,       [gio-2.0      >= 2.15],
+PKG_CHECK_MODULES(LIBSOUP,   [libsoup-2.4  >= 2.3],
+                             [libsoup_api=2.4],[
+PKG_CHECK_MODULES(LIBSOUP,   [libsoup-2.2  >= 2.2],
+                             [libsoup_api=2.2])])
+
+PKG_CHECK_MODULES(GIO,       [gio-2.0      >= 2.15.1],
                              [have_gio=yes],
                              [have_gio=no])
+
+if test "2.2" == "$libsoup_api"
+then
+  AC_DEFINE([HAVE_LIBSOUP22], [1], [Define to 1 if you still want to use libsoup 2.2.])
+fi
 
 if test "yes" == "$have_gio"
 then
   LIBEPC_CFLAGS="$LIBEPC_CFLAGS $GIO_CFLAGS"
   LIBEPC_LIBS="$LIBEPC_LIBS $GIO_LIBS"
 fi
+
+LIBEPC_CFLAGS="$LIBEPC_CFLAGS $LIBSOUP_CFLAGS"
+LIBEPC_LIBS="$LIBEPC_LIBS $LIBSOUP_LIBS"
 
 AC_CHECK_LIB([avahi-ui],
              [aui_service_dialog_set_service_type_name],
@@ -74,3 +86,8 @@ AC_SUBST(GLIB_GENMARSHAL)
 AC_SUBST(GLIB_MKENUMS)
 
 AC_OUTPUT
+
+AC_MSG_NOTICE([============================================])
+AC_MSG_NOTICE([  libsoup API ........................ $libsoup_api])
+AC_MSG_NOTICE([  gio support ........................ $have_gio])
+AC_MSG_NOTICE([============================================])

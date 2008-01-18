@@ -1,5 +1,16 @@
 2008-01-18  Mathias Hasselmann  <mathias@openismus.com>
 
+	Support libsoup 2.4, which will be part of GNOME 2.22 (#509699).
+	Original patch by Dan Winship.
+
+	* configure.ac: Also check for libsoup 2.4.
+	Define HAVE_LIBSOUP22, when still building for libsoup 2.2.
+	* libepc/consumer.c, libepc/publisher.c: Update for libsoup 2.4.
+	* examples/simple-publisher.c: Print source code position in debug
+	message to reduce confusion.
+
+2008-01-18  Mathias Hasselmann  <mathias@openismus.com>
+
 	Support authentication credentials in lookup-resource example.
 
 	* examples/lookup-resource.c: Add --username and --password

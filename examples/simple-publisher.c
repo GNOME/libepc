@@ -51,7 +51,7 @@ authentication_handler (EpcAuthContext *context,
    * See: EPC_AUTH_PASSWORD_TEXT_NEEDED */
 
   if (NULL != (password = epc_auth_context_get_password (context)))
-    g_debug ("The password: %s", password);
+    g_print ("%s: password='%s'\n", G_STRLOC, password);
 
   /* Check if he password supplied matches @user_data */
 
