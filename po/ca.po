@@ -1,0 +1,138 @@
+# Catalan translation of libepc.
+# Copyright (C) 2008 The Free Software Foundation, Inc.
+# This file is distributed under the same license as the libepc package.
+# Gil Forcada <gilforcada@guifi.net>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libepc\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=libepc\n"
+"POT-Creation-Date: 2008-01-19 13:35+0100\n"
+"PO-Revision-Date: 2008-01-19 13:36+0100\n"
+"Last-Translator: Gil Forcada <gilforcada@guifi.net>\n"
+"Language-Team: Catalan <tradgnome@softcatala.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../libepc/consumer.c:1079
+#, c-format
+msgid "Unexpected element: '%s'"
+msgstr "Element inesperat: «%s»"
+
+#: ../libepc/publisher.c:660
+msgid "Table of Contents"
+msgstr "Taula de continguts"
+
+#: ../libepc/publisher.c:694
+msgid "Sorry, no resources published yet."
+msgstr "Encara no hi ha cap recurs publicat."
+
+#: ../libepc/publisher.c:2617
+msgid "%a of %u on %h"
+msgstr "%a de %u a %h"
+
+#: ../libepc/shell.c:264
+#, c-format
+msgid "Cannot create Avahi client: %s"
+msgstr "No s'ha pogut crear el client d'Avahi: %s"
+
+#: ../libepc/shell.c:455
+msgid "Operation Proceeded"
+msgstr "L'operació s'ha dut a terme"
+
+#: ../libepc/shell.c:457
+msgid "No details known"
+msgstr "Es desconeixen els detalls"
+
+#: ../libepc/tls.c:165
+msgid "Generating Server Key"
+msgstr "S'està generant la clau del servidor"
+
+#: ../libepc/tls.c:166
+msgid ""
+"This may take some time. Type on the keyboard, move your mouse, or browse "
+"the web to generate some entropy."
+msgstr ""
+"Pot trigar força temps. Feu servir el teclat, moveu el ratolí o navegueu "
+"per Internet per a generar entropia."
+
+#: ../libepc/tls.c:191
+#, c-format
+msgid "Cannot create private server key: %s"
+msgstr "No s'ha pogut crear la clau privada del servidor: %s"
+
+#: ../libepc/tls.c:244
+#, c-format
+msgid "Cannot import private server key '%s': %s"
+msgstr "No s'ha pogut importar la clau privada del servidor «%s»: %s"
+
+#: ../libepc/tls.c:300
+#, c-format
+msgid "Cannot export private key to PEM format: %s"
+msgstr "No s'ha pogut exportar la clau privada del servidor al format PEM: %s"
+
+#: ../libepc/tls.c:314
+#, c-format
+msgid "Failed to create private key folder '%s': %s"
+msgstr "No s'ha pogut crear la carpeta «%s» per a la clau privada: %s"
+
+#: ../libepc/tls.c:330
+#, c-format
+msgid "Failed to create private key file '%s': %s"
+msgstr "No s'ha pogut crear el fitxer «%s» de la clau privada: %s"
+
+#: ../libepc/tls.c:344
+#, c-format
+msgid "Failed to write private key file '%s': %s"
+msgstr "No s'ha pogut escriure el fitxer «%s» de la clau privada: %s"
+
+#: ../libepc/tls.c:416
+#, c-format
+msgid "Cannot create self signed server key for '%s': %s"
+msgstr ""
+"No s'ha pogut crear la clau del servidor signada per ell mateix per a «%s»: %"
+"s"
+
+#: ../libepc/tls.c:470
+#, c-format
+msgid "Cannot import server certificate '%s': %s"
+msgstr "No s'ha pogut importar el certificat del servidor «%s»: %s"
+
+#: ../libepc/tls.c:525
+#, c-format
+msgid "Cannot export server certificate to PEM format: %s"
+msgstr "No s'ha pogut exportar el certificat del servidor al format PEM: %s"
+
+#: ../libepc/tls.c:539
+#, c-format
+msgid "Failed to create server certificate folder '%s': %s"
+msgstr "No s'ha pogut crear la carpeta «%s» per al certificat del servidor: %s"
+
+#: ../libepc-ui/password-dialog.c:102
+msgid "<big><b>Authentication required.</b></big>"
+msgstr "<big><b>Es necessita autenticació.</b></big>"
+
+#: ../libepc-ui/password-dialog.c:113
+msgid "_Username:"
+msgstr "_Nom d'usuari:"
+
+#: ../libepc-ui/password-dialog.c:119
+msgid "_Password:"
+msgstr "_Contrasenya:"
+
+#: ../libepc-ui/password-dialog.c:125
+msgid "Anonymous Authentication"
+msgstr "Autenticació anònima"
+
+#: ../libepc-ui/password-dialog.c:205
+#, c-format
+msgid "Data source <b>%s</b> requires authentication before permitting access."
+msgstr ""
+"La font de dades <b>%s</b> demana que us autentiqueu abans de permetre "
+"accedir-hi."
+
+#: ../libepc-ui/password-dialog.c:208
+msgid "Authentication required."
+msgstr "Es necessita autenticació."

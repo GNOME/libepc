@@ -1,3 +1,7 @@
+2008-01-19  Gil Forcada  <gforcada@gnome.org>
+
+	* po/ca.po: Added Catalan translation.
+
 2008-01-18  Mathias Hasselmann  <mathias@openismus.com>
 
 	Announce proper libsoup API in libepc-1.0.pc (#509699).
