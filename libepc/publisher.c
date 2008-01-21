@@ -2503,6 +2503,9 @@ epc_publisher_quit (EpcPublisher *self)
 
   was_running = self->priv->server_started;
 
+  /* prevent new requests, and also cleanup auth handlers (#510435) */
+  epc_publisher_remove_handlers (self);
+
   if (self->priv->server_loop)
     g_main_loop_quit (self->priv->server_loop);
 

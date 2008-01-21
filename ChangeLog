@@ -1,5 +1,12 @@
 2008-01-21  Mathias Hasselmann  <mathias@openismus.com>
 
+	Cleanup authentication handlers in epc_publisher_quit (#510435).
+
+	* libepc/publisher.c: Call epc_publisher_remove_handlers() in
+	epc_publisher_quit() to get rid of authentication handlers.
+
+2008-01-21  Mathias Hasselmann  <mathias@openismus.com>
+
 	* po/LINGUAS: Added ca
 
 2008-01-21  Mathias Hasselmann  <mathias@openismus.com>
