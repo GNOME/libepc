@@ -1083,9 +1083,12 @@ epc_publisher_remove_handlers (EpcPublisher *self)
     }
 #endif
 
-  soup_server_remove_handler (self->priv->server, self->priv->contents_path);
-  soup_server_remove_handler (self->priv->server, "/list");
-  soup_server_remove_handler (self->priv->server, "/");
+  if (self->priv->server)
+    {
+      soup_server_remove_handler (self->priv->server, self->priv->contents_path);
+      soup_server_remove_handler (self->priv->server, "/list");
+      soup_server_remove_handler (self->priv->server, "/");
+    }
 }
 
 static void

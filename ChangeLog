@@ -1,5 +1,12 @@
 2008-01-21  Mathias Hasselmann  <mathias@openismus.com>
 
+	Avoid failed SOUP_IS_SERVER (server) assertions.
+
+	* libepc/publisher.c: Call soup_server_remove_handler() only,
+	when self->priv->server is set in epc_publisher_remove_handlers().
+
+2008-01-21  Mathias Hasselmann  <mathias@openismus.com>
+
 	Cleanup authentication handlers in epc_publisher_quit (#510435).
 
 	* libepc/publisher.c: Call epc_publisher_remove_handlers() in
