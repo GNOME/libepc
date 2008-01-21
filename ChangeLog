@@ -1,5 +1,9 @@
 2008-01-21  Mathias Hasselmann  <mathias@openismus.com>
 
+	* po/LINGUAS: Added ca
+
+2008-01-21  Mathias Hasselmann  <mathias@openismus.com>
+
 	Migrate from GNU gettext to intltool (#510465, Luca Ferretti).
 
 	* autogen.sh: Invoke gnome-autogen.sh, instead of shipping a copy.
@@ -9,6 +13,11 @@
 	* ABOUT-NLS, config.rpath, gtk-doc.make, m4/*, po/Makefile.in.in,
 	po/Rules-quot, po/libepc.pot, po/*.header, po/*.sed, po/*.sin:
 	Remove generated files from repository.
+
+2008-01-21  Jorge González  <jorgegonz@svn.gnome.org>
+
+	* po/es.po: Added Spanish translation.
+	* po/LINGUAS: Added es
 
 2008-01-19  Gil Forcada  <gforcada@gnome.org>
 
