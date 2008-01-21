@@ -1,3 +1,15 @@
+2008-01-21  Mathias Hasselmann  <mathias@openismus.com>
+
+	Migrate from GNU gettext to intltool (#510465, Luca Ferretti).
+
+	* autogen.sh: Invoke gnome-autogen.sh, instead of shipping a copy.
+	* configure.ac, Makefile.am: Migrate from GNU gettext to intltool.
+	* .gitignore, po/.gitignore: Update for intltool.
+	* po/POTFILES.skip: Hide examples from intltool.
+	* ABOUT-NLS, config.rpath, gtk-doc.make, m4/*, po/Makefile.in.in,
+	po/Rules-quot, po/libepc.pot, po/*.header, po/*.sed, po/*.sin:
+	Remove generated files from repository.
+
 2008-01-19  Gil Forcada  <gforcada@gnome.org>
 
 	* po/ca.po: Added Catalan translation.

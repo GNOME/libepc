@@ -1,5 +1,4 @@
+Makefile.in.in
 POTFILES
-Makefile
-Makefile.in
-stamp-po
+stamp-it
 *.gmo

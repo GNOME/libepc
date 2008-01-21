@@ -1,6 +1,8 @@
 AC_INIT([libepc], [0.3.4], [mathias@openismus.com])
 AM_INIT_AUTOMAKE([-Wall dist-bzip2 subdir-objects])
 
+GNOME_COMMON_INIT
+
 dnl LT_VERSION_INFO=CURRENT:REVISION:AGE
 dnl
 dnl Updating that variable is neccessary, but complicated.
@@ -25,12 +27,16 @@ AC_CONFIG_FILES([
   libepc-1.0.pc libepc-ui-1.0.pc
 ])
 
+GETTEXT_PACKAGE=libepc
+AC_SUBST([GETTEXT_PACKAGE])
+AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE],["$GETTEXT_PACKAGE"],[The gettext domain name])
+
 AC_PROG_CC
 AM_PROG_CC_C_O
 AM_PROG_LIBTOOL
-
-AM_GNU_GETTEXT([external])
+IT_PROG_INTLTOOL([0.35.0])
 GTK_DOC_CHECK([1.4])
+AM_GLIB_GNU_GETTEXT
 
 PKG_PROG_PKG_CONFIG([0.14])
 PKG_CHECK_MODULES(AVAHI_UI,  [avahi-ui     >= 0.6])

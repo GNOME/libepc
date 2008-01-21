@@ -1,0 +1,14 @@
+examples/consumer-ui.c
+examples/consumer-ui.c
+examples/list-resources.c
+examples/list-resources.c
+examples/lookup-resource.c
+examples/lookup-resource.c
+examples/publisher.glade
+examples/publisher.glade
+examples/publisher.ui
+examples/publisher.ui
+examples/service-browser.c
+examples/service-browser.c
+examples/simple-publisher.c
+examples/simple-publisher.c
