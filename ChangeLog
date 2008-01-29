@@ -1,5 +1,11 @@
 2008-01-29  Mathias Hasselmann  <mathias@openismus.com>
 
+	=== Release 0.3.4 ===
+
+	* NEWS: Updated for release 0.3.4
+
+2008-01-29  Mathias Hasselmann  <mathias@openismus.com>
+
 	Small tweaks to make distcheck happy.
 
 	* Makefile.am: Update EXTRA_DIST and add DISTCLEANFILES.

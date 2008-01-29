@@ -1,3 +1,27 @@
+Release 0.3.4
+=============
+
+Major Changes
+-------------
+
+	* Optional support for libsoup 2.4. Initial patch by Dan Winship.
+	* Localization support via intltool (#510465, Luca Ferretti).
+
+Minor Changes
+-------------
+
+	* Support authentication credentials in lookup-resource example.
+	* Separate between primary and secondary message in EpcPasswordDialog to
+	  match appearance of GtkMessageDialog. Correct label alignment issues.
+
+Translation Updates
+-------------------
+
+	Catalan (Gil Forcada)
+	German (Mathias Hasselmann)
+	Spanish (Jorge González)
+	Swedish (Daniel Nylander)
+
 Release 0.3.3
 =============
 
