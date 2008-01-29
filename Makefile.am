@@ -81,11 +81,18 @@ libepc_ui_include_HEADERS = \
 pkgconfig_DATA = \
 	libepc-1.0.pc \
 	libepc-ui-1.0.pc
-EXTRA_DIST = config.rpath  \
+EXTRA_DIST = \
 	$(srcdir)/gtk-doc.make \
 	$(gtkdoc_srcdir)/libepc-1.0-docs.xml \
 	$(gtkdoc_srcdir)/libepc-1.0-sections.txt \
-	$(srcdir)/tests/test-runner.sh
+	$(srcdir)/tests/test-runner.sh \
+	$(srcdir)/intltool-extract.in \
+	$(srcdir)/intltool-merge.in \
+	$(srcdir)/intltool-update.in
+DISTCLEANFILES = \
+	intltool-extract \
+	intltool-merge \
+	intltool-update
 
 BUILT_SOURCES = \
 	libepc/enums.c \

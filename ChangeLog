@@ -1,3 +1,10 @@
+2008-01-29  Mathias Hasselmann  <mathias@openismus.com>
+
+	Small tweaks to make distcheck happy.
+
+	* Makefile.am: Update EXTRA_DIST and add DISTCLEANFILES.
+	* po/ChangeLog: Update toplevel ChangeLog please.
+
 2008-01-21  Mathias Hasselmann  <mathias@openismus.com>
 
 	Avoid failed SOUP_IS_SERVER (server) assertions.
