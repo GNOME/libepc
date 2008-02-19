@@ -1,0 +1,136 @@
+# Finnish messages for libpec.
+# Copyright (C) 2008 Free Software Foundation.
+# Suomennos: http://gnome.fi/
+#
+# Ilkka Tuohela <hile@iki.fi>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libepc\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-09-07 20:27+0300\n"
+"PO-Revision-Date: 2007-06-09 20:14+0300\n"
+"Last-Translator: Ilkka Tuohela <hile@iki.fi>\n"
+"Language-Team: Finnish <gnome-fi-laatu@lists.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../libepc/consumer.c:1079
+#, c-format
+msgid "Unexpected element: '%s'"
+msgstr "Odottamaton elementti: \"%s\""
+
+#: ../libepc/publisher.c:660
+msgid "Table of Contents"
+msgstr "Sisällysluettelo"
+
+#: ../libepc/publisher.c:694
+msgid "Sorry, no resources published yet."
+msgstr "Valitettavasti mitään ei ole vielä julkaistu."
+
+#: ../libepc/publisher.c:2623
+msgid "%a of %u on %h"
+msgstr "%a / %u laitteella %h"
+
+#: ../libepc/shell.c:264
+#, c-format
+msgid "Cannot create Avahi client: %s"
+msgstr "Avahi-asiakasta ei voi luoda: %s"
+
+#: ../libepc/shell.c:455
+msgid "Operation Proceeded"
+msgstr "Toiminto käsitelty"
+
+#: ../libepc/shell.c:457
+msgid "No details known"
+msgstr "Yksityiskohtia ei tunneta"
+
+#: ../libepc/tls.c:165
+msgid "Generating Server Key"
+msgstr "Luodaan palvelinavainta"
+
+#: ../libepc/tls.c:166
+msgid ""
+"This may take some time. Type on the keyboard, move your mouse, or browse "
+"the web to generate some entropy."
+msgstr ""
+"Tämä kestää hetken. kirjoita jotain, liikuttele hiirtä tai selaa verkkosivuja "
+"luonnin aikana kasvattaaksesi entropiaa."
+
+#: ../libepc/tls.c:191
+#, c-format
+msgid "Cannot create private server key: %s"
+msgstr "Ei voitu luoda yksityistä palvelinavainta: %s"
+
+#: ../libepc/tls.c:244
+#, c-format
+msgid "Cannot import private server key '%s': %s"
+msgstr "Ei voitu tuoda yksityistä palvelinavainta \"%s\": %s"
+
+#: ../libepc/tls.c:300
+#, c-format
+msgid "Cannot export private key to PEM format: %s"
+msgstr "Ei voi viedä yksityistä avainta PEM-muotoon: %s"
+
+#: ../libepc/tls.c:314
+#, c-format
+msgid "Failed to create private key folder '%s': %s"
+msgstr "Yksityisen avaimen kansion \"%s\" luonti epäonnistui: %s"
+
+#: ../libepc/tls.c:330
+#, c-format
+msgid "Failed to create private key file '%s': %s"
+msgstr "Yksityisen avaimen tiedoston \"%s\" luonti epäonnistui: %s"
+
+#: ../libepc/tls.c:344
+#, c-format
+msgid "Failed to write private key file '%s': %s"
+msgstr "Yksityisen avaimen tiedoston \"%s\" kirjoitus epäonnistui: %s"
+
+#: ../libepc/tls.c:416
+#, c-format
+msgid "Cannot create self signed server key for '%s': %s"
+msgstr "Itseallekirjoitettua palvelimen avainta \"%s\" ei voi luoda: %s"
+
+#: ../libepc/tls.c:470
+#, c-format
+msgid "Cannot import server certificate '%s': %s"
+msgstr "Palvelimen varmennetta \"%s\" ei voi tuoda: %s"
+
+#: ../libepc/tls.c:525
+#, c-format
+msgid "Cannot export server certificate to PEM format: %s"
+msgstr "Palvelimen varmennetta ei voi viedä PEM-muotoon: %s"
+
+#: ../libepc/tls.c:539
+#, c-format
+msgid "Failed to create server certificate folder '%s': %s"
+msgstr "Ei voitu luoda palvelinvarmenteen kansiota \"%s\": %s"
+
+#: ../libepc-ui/password-dialog.c:102
+msgid "<big><b>Authentication required.</b></big>"
+msgstr "<big><b>Tunnistautuminen vaaditaan</b></big>"
+
+#: ../libepc-ui/password-dialog.c:113
+msgid "_Username:"
+msgstr "_Käyttäjätunnus:"
+
+#: ../libepc-ui/password-dialog.c:119
+msgid "_Password:"
+msgstr "_Salasana:"
+
+#: ../libepc-ui/password-dialog.c:125
+msgid "Anonymous Authentication"
+msgstr "Anonyymi tunnistautuminen"
+
+#: ../libepc-ui/password-dialog.c:205
+#, c-format
+msgid "Data source <b>%s</b> requires authentication before permitting access."
+msgstr "Tietolähde <b>%s</b> vaatii tunnistatumisen ennen pääsyn sallimista."
+
+#: ../libepc-ui/password-dialog.c:208
+msgid "Authentication required."
+msgstr "Tunnistautuminen vaaditaan."
+
