@@ -1,14 +1,14 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Swedish translation for libepc.
+# Copyright (C) 2008 Free Software Foundation, Inc.
+# This file is distributed under the same license as the libepc package.
+# Daniel Nylander <po@danielnylander.se>, 2008.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: libepc\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=libepc\n"
-"POT-Creation-Date: 2008-01-16 23:35+0100\n"
-"PO-Revision-Date: 2008-01-16 23:46+0100\n"
+"POT-Creation-Date: 2008-03-07 20:51+0100\n"
+"PO-Revision-Date: 2008-03-07 20:52+0100\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "MIME-Version: 1.0\n"
@@ -16,151 +16,22 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
-#: ../examples/consumer-ui.c:85
-msgid "byte"
-msgid_plural "bytes"
-msgstr[0] "byte"
-msgstr[1] "byte"
-
-#: ../examples/consumer-ui.c:199
-#: ../examples/list-resources.c:59
-#: ../examples/lookup-resource.c:56
-msgid "Application name of the publisher"
-msgstr "Programnamn för publiceraren"
-
-#: ../examples/consumer-ui.c:199
-#: ../examples/list-resources.c:57
-#: ../examples/list-resources.c:59
-#: ../examples/lookup-resource.c:54
-#: ../examples/lookup-resource.c:56
-#: ../examples/service-browser.c:47
-#: ../examples/service-browser.c:48
-msgid "NAME"
-msgstr "NAMN"
-
-#: ../examples/consumer-ui.c:201
-msgid "Browse all easy publishers"
-msgstr "Bläddra bland alla publicerare"
-
-#: ../examples/list-resources.c:57
-#: ../examples/lookup-resource.c:54
-msgid "Service name of the publisher"
-msgstr "Tjänstenamn för publiceraren"
-
-#: ../examples/list-resources.c:61
-#: ../examples/lookup-resource.c:58
-msgid "DNS domain of the publisher"
-msgstr "DNS-domänen för publiceraren"
-
-#: ../examples/list-resources.c:61
-#: ../examples/lookup-resource.c:58
-msgid "DOMAIN"
-msgstr "DOMÄN"
-
-#. Parse command line options.
-#: ../examples/list-resources.c:72
-msgid "[PATTERNS...] - list Easy Publisher resources"
-msgstr "[MÖNSTER...] - lista Easy Publisher-resurser"
-
-#. Parse command line options.
-#: ../examples/lookup-resource.c:69
-msgid "[KEYS...] - looks up Easy Publisher resources"
-msgstr "[NYCKLAR...] - slår upp Easy Publisher-resurser"
-
-#: ../examples/publisher.glade.h:2
-#: ../libepc/publisher.c:2373
-#, no-c-format
-msgid "%a of %u on %h"
-msgstr "%a av %u på %h"
-
-#: ../examples/publisher.glade.h:3
-msgid "<b>_Bookmark</b>"
-msgstr "<b>_Bokmärk</b>"
-
-#: ../examples/publisher.glade.h:4
-msgid "<b>_Credentials</b>"
-msgstr ""
-
-#: ../examples/publisher.glade.h:5
-msgid "Copyright © 2007, 2008 Openismus GmbH"
-msgstr "Copyright © 2007, 2008 Openismus GmbH"
-
-#: ../examples/publisher.glade.h:6
-msgid "Encryption"
-msgstr "Kryptering"
-
-#: ../examples/publisher.glade.h:7
-msgid "Publish"
-msgstr "Publicera"
-
-#: ../examples/publisher.glade.h:8
-msgid "Service _Name:"
-msgstr "Tjänste_namn:"
-
-#: ../examples/publisher.glade.h:9
-#: ../libepc-ui/password-dialog.c:119
-msgid "_Password:"
-msgstr "_Lösenord:"
-
-#: ../examples/publisher.glade.h:10
-#: ../libepc-ui/password-dialog.c:113
-msgid "_Username:"
-msgstr "_Användarnamn:"
-
-#: ../examples/service-browser.c:47
-msgid "Application to look for"
-msgstr "Program att leta efter"
-
-#: ../examples/service-browser.c:48
-msgid "The DNS domain to monitor"
-msgstr "DNS-domänen att övervaka"
-
-#: ../examples/simple-publisher.c:82
-#, c-format
-msgid "Invalid transport protocol: '%s'"
-msgstr "Ogiltigt transportprotokoll: \"%s\""
-
-#: ../examples/simple-publisher.c:101
-msgid "Transport protocol"
-msgstr "Transportprotokoll"
-
-#: ../examples/simple-publisher.c:101
-msgid "PROTOCOL"
-msgstr "PROTOKOLL"
-
-#: ../examples/simple-publisher.c:102
-msgid "Use plain text authentication"
-msgstr "Använd vanlig textautentisering"
-
-#: ../libepc-ui/password-dialog.c:102
-msgid "<big><b>Authentication required.</b></big>"
-msgstr "<big><b>Autentisering krävs.</b></big>"
-
-#: ../libepc-ui/password-dialog.c:125
-msgid "Anonymous Authentication"
-msgstr "Anonym autentisering"
-
-#: ../libepc-ui/password-dialog.c:205
-#, c-format
-msgid "Data source <b>%s</b> requires authentication before permitting access."
-msgstr "Datakällan <b>%s</b> kräver autentisering innan åtkomst tillåtas."
-
-#: ../libepc-ui/password-dialog.c:208
-msgid "Authentication required."
-msgstr "Autentisering krävs."
-
-#: ../libepc/consumer.c:1021
+#: ../libepc/consumer.c:1079
 #, c-format
 msgid "Unexpected element: '%s'"
 msgstr "Oväntat element: \"%s\""
 
-#: ../libepc/publisher.c:570
+#: ../libepc/publisher.c:660
 msgid "Table of Contents"
 msgstr "Innehållsförteckning"
 
-#: ../libepc/publisher.c:604
+#: ../libepc/publisher.c:694
 msgid "Sorry, no resources published yet."
 msgstr "Tyvärr, inga resurser publicerade än."
+
+#: ../libepc/publisher.c:2623
+msgid "%a of %u on %h"
+msgstr "%a av %u på %h"
 
 #: ../libepc/shell.c:264
 #, c-format
@@ -169,7 +40,7 @@ msgstr "Kan inte skapa Avahi-klient: %s"
 
 #: ../libepc/shell.c:455
 msgid "Operation Proceeded"
-msgstr ""
+msgstr "Åtgärden fortsätter"
 
 #: ../libepc/shell.c:457
 msgid "No details known"
@@ -232,4 +103,72 @@ msgstr "Kan inte exportera servercertifikatet till PEM-format: %s"
 #, c-format
 msgid "Failed to create server certificate folder '%s': %s"
 msgstr "Misslyckades med att skapa mappen \"%s\" för servercertifikat: %s"
+
+#: ../libepc-ui/password-dialog.c:102
+msgid "<big><b>Authentication required.</b></big>"
+msgstr "<big><b>Autentisering krävs.</b></big>"
+
+#: ../libepc-ui/password-dialog.c:113
+msgid "_Username:"
+msgstr "An_vändarnamn:"
+
+#: ../libepc-ui/password-dialog.c:119
+msgid "_Password:"
+msgstr "_Lösenord:"
+
+#: ../libepc-ui/password-dialog.c:125
+msgid "Anonymous Authentication"
+msgstr "Anonym autentisering"
+
+#: ../libepc-ui/password-dialog.c:205
+#, c-format
+msgid "Data source <b>%s</b> requires authentication before permitting access."
+msgstr "Datakällan <b>%s</b> kräver autentisering innan åtkomst tillåtas."
+
+#: ../libepc-ui/password-dialog.c:208
+msgid "Authentication required."
+msgstr "Autentisering krävs."
+
+#~ msgid "byte"
+#~ msgid_plural "bytes"
+#~ msgstr[0] "byte"
+#~ msgstr[1] "byte"
+#~ msgid "Application name of the publisher"
+#~ msgstr "Programnamn för publiceraren"
+#~ msgid "NAME"
+#~ msgstr "NAMN"
+#~ msgid "Browse all easy publishers"
+#~ msgstr "Bläddra bland alla publicerare"
+#~ msgid "Service name of the publisher"
+#~ msgstr "Tjänstenamn för publiceraren"
+#~ msgid "DNS domain of the publisher"
+#~ msgstr "DNS-domänen för publiceraren"
+#~ msgid "DOMAIN"
+#~ msgstr "DOMÄN"
+#~ msgid "[PATTERNS...] - list Easy Publisher resources"
+#~ msgstr "[MÖNSTER...] - lista Easy Publisher-resurser"
+#~ msgid "[KEYS...] - looks up Easy Publisher resources"
+#~ msgstr "[NYCKLAR...] - slår upp Easy Publisher-resurser"
+#~ msgid "<b>_Bookmark</b>"
+#~ msgstr "<b>_Bokmärk</b>"
+#~ msgid "Copyright © 2007, 2008 Openismus GmbH"
+#~ msgstr "Copyright © 2007, 2008 Openismus GmbH"
+#~ msgid "Encryption"
+#~ msgstr "Kryptering"
+#~ msgid "Publish"
+#~ msgstr "Publicera"
+#~ msgid "Service _Name:"
+#~ msgstr "Tjänste_namn:"
+#~ msgid "Application to look for"
+#~ msgstr "Program att leta efter"
+#~ msgid "The DNS domain to monitor"
+#~ msgstr "DNS-domänen att övervaka"
+#~ msgid "Invalid transport protocol: '%s'"
+#~ msgstr "Ogiltigt transportprotokoll: \"%s\""
+#~ msgid "Transport protocol"
+#~ msgstr "Transportprotokoll"
+#~ msgid "PROTOCOL"
+#~ msgstr "PROTOKOLL"
+#~ msgid "Use plain text authentication"
+#~ msgstr "Använd vanlig textautentisering"
 
