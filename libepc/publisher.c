@@ -476,7 +476,7 @@ epc_publisher_handle_contents (SoupServerContext *context,
 epc_publisher_handle_contents (SoupServer        *server,
                                SoupMessage       *message,
                                const gchar       *path,
-                               GHashTable        *query,
+                               GHashTable        *query G_GNUC_UNUSED,
                                SoupClientContext *context,
                                gpointer           data)
 #endif
@@ -561,7 +561,7 @@ epc_publisher_handle_list (SoupServerContext *context,
 epc_publisher_handle_list (SoupServer        *server,
                            SoupMessage       *message,
                            const char        *path,
-                           GHashTable        *query,
+                           GHashTable        *query G_GNUC_UNUSED,
                            SoupClientContext *context,
                            gpointer           data)
 #endif
@@ -623,7 +623,7 @@ epc_publisher_handle_root (SoupServerContext *context,
 epc_publisher_handle_root (SoupServer        *server,
                            SoupMessage       *message,
                            const char        *path,
-                           GHashTable        *query,
+                           GHashTable        *query G_GNUC_UNUSED,
                            SoupClientContext *context,
                            gpointer           data)
 #endif
@@ -779,7 +779,7 @@ epc_publisher_server_auth_cb (SoupServerAuthContext *auth_ctx G_GNUC_UNUSED,
 #else
 
 static gboolean
-epc_publisher_auth_filter (SoupAuthDomain *domain,
+epc_publisher_auth_filter (SoupAuthDomain *domain G_GNUC_UNUSED,
                            SoupMessage    *message,
                            gpointer        data)
 {
@@ -801,7 +801,7 @@ epc_publisher_auth_filter (SoupAuthDomain *domain,
 }
 
 static gboolean
-epc_publisher_basic_auth_cb (SoupAuthDomain *domain,
+epc_publisher_basic_auth_cb (SoupAuthDomain *domain G_GNUC_UNUSED,
                              SoupMessage    *message,
                              const gchar    *username,
                              const gchar    *password,
@@ -827,7 +827,7 @@ epc_publisher_basic_auth_cb (SoupAuthDomain *domain,
 }
 
 static gboolean
-epc_publisher_generic_auth_cb (SoupAuthDomain *domain,
+epc_publisher_generic_auth_cb (SoupAuthDomain *domain G_GNUC_UNUSED,
                                SoupMessage    *message,
                                const char     *username,
                                gpointer        data)
