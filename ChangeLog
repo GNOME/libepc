@@ -1,3 +1,8 @@
+2008-03-24  Kostas Papadimas <pkst@gnome.org>
+
+	* po/el.po: Added Greek translation by Giannis Katsampiris.
+	* po/LINGUAS: Added 'el'. 
+
 2008-03-22  Mathias Hasselmann  <mathias@openismus.com>
 
 	Make libsoup-2.4 variant build with -Werror again.
