@@ -697,8 +697,12 @@ epc_publisher_handle_root (SoupServer        *server,
 
       g_string_append (contents, "</ul></body></html>");
 
-      soup_message_set_response (message, "text/html", SOUP_MEMORY_TAKE,
-                                 contents->str, contents->len);
+      soup_message_set_response (message,
+                                 "text/html; charset=utf-8",
+                                 SOUP_MEMORY_TAKE,
+                                 contents->str,
+                                 contents->len);
+
       soup_message_set_status (message, SOUP_STATUS_OK);
 
       g_string_free (contents, FALSE);

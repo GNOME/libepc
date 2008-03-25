@@ -1,3 +1,9 @@
+2008-03-25  Mathias Hasselmann  <mathias@openismus.com>
+
+	Specify charset for the publisher's TOC (#523992).
+
+	* libepc/publisher.c: Add charset to content-type header of TOC.
+
 2008-03-24  Kostas Papadimas <pkst@gnome.org>
 
 	* po/el.po: Added Greek translation by Giannis Katsampiris.
