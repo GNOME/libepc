@@ -1,3 +1,8 @@
+2008-03-27  Claude Paroz  <claude@2xlibre.net>
+
+	* po/fr.po: Added French translation by Quevi Jessye <qjessye@yahoo.fr>.
+	* po/LINGUAS: Added fr.
+
 2008-03-25  Mathias Hasselmann  <mathias@openismus.com>
 
 	Specify charset for the publisher's TOC (#523992).

@@ -1,0 +1,140 @@
+# French translation of libepc.
+# Copyright (C) 2008 Free Software Foundation, Inc.
+# This file is distributed under the same license as the libepc package.
+#
+# Quevi Jessye <qjessye@yahoo.fr>, 2008.
+# Claude Paroz <claude@2xlibre.net>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version:libepc HEAD fr\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=libepc\n"
+"POT-Creation-Date: 2008-03-27 09:22+0100\n"
+"PO-Revision-Date: 2008-03-27 09:18+0100\n"
+"Last-Translator: Claude Paroz <claude@2xlibre.net>\n"
+"Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: ../libepc/consumer.c:1079
+#, c-format
+msgid "Unexpected element: '%s'"
+msgstr "Élément inattendu : « %s »"
+
+#: ../libepc/publisher.c:660
+msgid "Table of Contents"
+msgstr "Table des matières"
+
+#: ../libepc/publisher.c:694
+msgid "Sorry, no resources published yet."
+msgstr "Désolé, aucune ressource n'a été publiée."
+
+#: ../libepc/publisher.c:2627
+msgid "%a of %u on %h"
+msgstr "%a de %u sur %h"
+
+#: ../libepc/shell.c:264
+#, c-format
+msgid "Cannot create Avahi client: %s"
+msgstr "Impossible de créer le client Avahi : %s"
+
+#: ../libepc/shell.c:455
+msgid "Operation Proceeded"
+msgstr "Opération en cours"
+
+#: ../libepc/shell.c:457
+msgid "No details known"
+msgstr "Aucun détail connu"
+
+#: ../libepc/tls.c:165
+msgid "Generating Server Key"
+msgstr "Génération de la clé du serveur"
+
+#: ../libepc/tls.c:166
+msgid ""
+"This may take some time. Type on the keyboard, move your mouse, or browse "
+"the web to generate some entropy."
+msgstr ""
+"Cela peut prendre un peu de temps. Tapez sur le clavier, bougez votre souris "
+"ou naviguez sur le Web pour produire quelque entropie (données aléatoires)."
+
+#: ../libepc/tls.c:191
+#, c-format
+msgid "Cannot create private server key: %s"
+msgstr "Impossible de créer la clé privée du serveur : %s"
+
+#: ../libepc/tls.c:244
+#, c-format
+msgid "Cannot import private server key '%s': %s"
+msgstr "Impossible d'importer la clé privée du serveur « %s » : %s"
+
+#: ../libepc/tls.c:300
+#, c-format
+msgid "Cannot export private key to PEM format: %s"
+msgstr "Impossible d'exporter la clé privée au format PEM : %s"
+
+#: ../libepc/tls.c:314
+#, c-format
+msgid "Failed to create private key folder '%s': %s"
+msgstr "Échec lors de la création du dossier de clé privée « %s » : %s"
+
+#: ../libepc/tls.c:330
+#, c-format
+msgid "Failed to create private key file '%s': %s"
+msgstr "Échec lors de la création du fichier de clé privée « %s » : %s"
+
+#: ../libepc/tls.c:344
+#, c-format
+msgid "Failed to write private key file '%s': %s"
+msgstr "Échec lors de l'écriture dans le fichier de clé privée « %s » : %s"
+
+#: ../libepc/tls.c:416
+#, c-format
+msgid "Cannot create self signed server key for '%s': %s"
+msgstr "Impossible de créer la clé auto-signée du serveur pour « %s » : %s"
+
+#: ../libepc/tls.c:470
+#, c-format
+msgid "Cannot import server certificate '%s': %s"
+msgstr "Impossible d'importer le certificat du serveur « %s » : %s"
+
+#: ../libepc/tls.c:525
+#, c-format
+msgid "Cannot export server certificate to PEM format: %s"
+msgstr "Impossible d'exporter le certificat du serveur au format PEM : %s"
+
+#: ../libepc/tls.c:539
+#, c-format
+msgid "Failed to create server certificate folder '%s': %s"
+msgstr ""
+"Échec lors de la création du dossier de certificat du serveur « %s » : %s"
+
+#: ../libepc-ui/password-dialog.c:102
+msgid "<big><b>Authentication required.</b></big>"
+msgstr "<big><b>Authentification obligatoire.</b></big>"
+
+#: ../libepc-ui/password-dialog.c:113
+msgid "_Username:"
+msgstr "_Nom d'utilisateur :"
+
+#: ../libepc-ui/password-dialog.c:119
+msgid "_Password:"
+msgstr "_Mot de passe :"
+
+#: ../libepc-ui/password-dialog.c:125
+msgid "Anonymous Authentication"
+msgstr "Authentification anonyme"
+
+#: ../libepc-ui/password-dialog.c:205
+#, c-format
+msgid "Data source <b>%s</b> requires authentication before permitting access."
+msgstr ""
+"La source de données <b>%s</b> exige une authentification pour pouvoir y "
+"accéder."
+
+#: ../libepc-ui/password-dialog.c:208
+msgid "Authentication required."
+msgstr "Authentification obligatoire."
