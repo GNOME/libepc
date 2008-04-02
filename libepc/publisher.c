@@ -1540,6 +1540,9 @@ epc_publisher_dispose (GObject *object)
   g_free (self->priv->service_domain);
   self->priv->service_domain = NULL;
 
+  g_free (self->priv->service_cookie);
+  self->priv->service_cookie = NULL;
+
   g_free (self->priv->application);
   self->priv->application = NULL;
 

@@ -1,3 +1,10 @@
+2008-04-02  Mathias Hasselmann  <mathias@openismus.com>
+
+	Plug a small memory leak in EpcPublisher.
+
+	* libepc/publisher.c (epc_publisher_dispose()):
+	  Release service_cookie field.
+
 2008-03-27  Claude Paroz  <claude@2xlibre.net>
 
 	* po/fr.po: Added French translation by Quevi Jessye <qjessye@yahoo.fr>.
