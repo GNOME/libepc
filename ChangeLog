@@ -1,3 +1,10 @@
+2008-04-04  Murray Cumming  <murrayc@murrayc.com>
+
+	Plug a small memory leak in EpcDispatcher.
+
+	* libepc/dispatcher.c (epc_dispatcher_dispose):
+	Free priv->cookie.
+
 2008-04-02  Mathias Hasselmann  <mathias@openismus.com>
 
 	Plug a small memory leak in EpcPublisher.

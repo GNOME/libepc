@@ -730,6 +730,9 @@ epc_dispatcher_dispose (GObject *object)
   g_free (self->priv->name);
   self->priv->name = NULL;
 
+  g_free (self->priv->cookie);
+  self->priv->cookie = NULL;
+
   G_OBJECT_CLASS (epc_dispatcher_parent_class)->dispose (object);
 }
 
