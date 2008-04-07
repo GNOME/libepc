@@ -1,5 +1,9 @@
 2008-04-07  Mathias Hasselmann  <mathias@openismus.com>
 
+	=== Release 0.3.5 ===
+
+2008-04-07  Mathias Hasselmann  <mathias@openismus.com>
+
 	Make test suite build with -Werror again.
 
 	* tests/framework.c (_epc_test_match_any(), _epc_test_match_one(),
