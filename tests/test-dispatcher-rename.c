@@ -31,7 +31,7 @@ static gchar *third_name = NULL;
 
 static void
 service_browser_cb (AvahiServiceBrowser     *browser G_GNUC_UNUSED,
-                    AvahiIfIndex             interface G_GNUC_UNUSED,
+                    AvahiIfIndex             interface,
                     AvahiProtocol            protocol G_GNUC_UNUSED,
                     AvahiBrowserEvent        event,
                     const char              *name G_GNUC_UNUSED,
@@ -49,27 +49,27 @@ service_browser_cb (AvahiServiceBrowser     *browser G_GNUC_UNUSED,
           case AVAHI_BROWSER_NEW:
             if (g_str_equal (name, first_name))
               {
-                epc_test_pass_once (1 << 0);
+                epc_test_pass_once_per_iface (1 << 0, interface);
                 epc_dispatcher_set_name (dispatcher, second_name);
               }
 
             if (g_str_equal (name, second_name))
               {
-                epc_test_pass_once (1 << 2);
+                epc_test_pass_once_per_iface (1 << 2, interface);
                 epc_dispatcher_set_name (dispatcher, third_name);
               }
 
             if (g_str_equal (name, third_name))
-              epc_test_pass_once (1 << 4);
+              epc_test_pass_once_per_iface (1 << 4, interface);
 
             break;
 
           case AVAHI_BROWSER_REMOVE:
             if (g_str_equal (name, first_name))
-              epc_test_pass_once (1 << 1);
+              epc_test_pass_once_per_iface (1 << 1, interface);
 
             if (g_str_equal (name, second_name))
-              epc_test_pass_once (1 << 3);
+              epc_test_pass_once_per_iface (1 << 3, interface);
 
             break;
 

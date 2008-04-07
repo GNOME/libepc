@@ -61,7 +61,8 @@ service_found_cb (EpcServiceMonitor *monitor G_GNUC_UNUSED,
       cookie && g_str_equal (cookie, test_cookie1) &&
       dispatcher && g_str_equal (dispatcher, "dispatcher1"))
     {
-      epc_test_pass_once (1 << 3);
+g_debug ("%s", epc_service_info_get_interface (info));
+      epc_test_pass_once_for_each_iface (1 << 3);
       g_timeout_add (500, stop_dispatcher_cb, NULL);
     }
 
@@ -73,7 +74,7 @@ service_found_cb (EpcServiceMonitor *monitor G_GNUC_UNUSED,
   if (g_str_equal (name, test_name2) &&
       cookie && g_str_equal (cookie, test_cookie2) &&
       dispatcher && g_str_equal (dispatcher, "dispatcher3"))
-    epc_test_pass_once (1 << 5);
+    epc_test_pass_once_for_each_iface (1 << 5);
 }
 
 int

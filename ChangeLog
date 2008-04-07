@@ -1,3 +1,25 @@
+2008-04-07  Mathias Hasselmann  <mathias@openismus.com>
+
+	Upgrade the test suite to handle multiple active network interfaces.
+
+	* tests/framework.c, tests/framework.h (EpcIfTestStatus,
+	  epc_test_list_ifaces(), _epc_test_match_any(), _epc_test_match_one(),
+	  _epc_test_pass_once_per_iface(), epc_test_pass_once_for_each_iface(),
+	  epc_test_pass_once_per_iface()): Provide infrastructure for handling
+	  tests, that match once for each active network interface.
+
+	* tests/test-dispatcher-rename.c (service_browser_cb()),
+	  tests/test-dispatcher-reset.c (service_browser_cb()),
+	  tests/test-publisher-bookmarks.c (service_browser_cb()),
+	  tests/test-publisher-change-name.c (service_browser_cb()):
+	  Replace epc_test_pass_once() by epc_test_pass_once_per_iface()
+	  were needed.
+
+	* tests/test-dispatcher-unique.c (service_found_cb()),
+	  tests/test-publisher-unique.c (contents_handler_cb(),
+	  service_found_cb()): Replace epc_test_pass_once() by
+	  epc_test_pass_once_for_each_iface() were needed.
+
 2008-04-04  Murray Cumming  <murrayc@murrayc.com>
 
 	Plug a small memory leak in EpcDispatcher.

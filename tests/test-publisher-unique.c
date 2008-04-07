@@ -52,9 +52,9 @@ service_found_cb (EpcServiceMonitor *monitor G_GNUC_UNUSED,
       value = epc_consumer_lookup (consumer, "id", NULL, &error);
 
       if (value && g_str_equal (value, test_value1))
-        epc_test_pass_once (1 << 4);
+        epc_test_pass_once_for_each_iface (1 << 4);
       if (value && g_str_equal (value, test_value2))
-        epc_test_pass_once (1 << 6);
+        epc_test_pass_once_for_each_iface (1 << 6);
       if (error)
         g_warning ("%s: %s", G_STRLOC, error->message);
 
@@ -80,9 +80,9 @@ contents_handler_cb (EpcPublisher *publisher,
                      gpointer      data)
 {
   if (data == test_value1)
-    epc_test_pass_once (1 << 3);
+    epc_test_pass_once_for_each_iface (1 << 3);
   if (data == test_value2)
-    epc_test_pass_once (1 << 5);
+    epc_test_pass_once_for_each_iface (1 << 5);
 
   g_timeout_add (250, quit_publisher_cb, g_object_ref (publisher));
 

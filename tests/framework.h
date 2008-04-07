@@ -26,9 +26,16 @@
 
 G_BEGIN_DECLS
 
-#define epc_test_pass_many(mask) (_epc_test_pass (G_STRLOC, FALSE, (mask)))
-#define epc_test_pass_once(mask) (_epc_test_pass (G_STRLOC, TRUE, (mask)))
-#define epc_test_quit()          (_epc_test_quit (G_STRLOC))
+#define epc_test_pass_many(mask) \
+  (_epc_test_pass (G_STRLOC, FALSE, (mask)))
+#define epc_test_pass_once(mask) \
+  (_epc_test_pass (G_STRLOC, TRUE, (mask)))
+#define epc_test_pass_once_per_iface(mask, ifidx) \
+  (_epc_test_pass_once_per_iface (G_STRLOC, (mask), (ifidx), FALSE))
+#define epc_test_pass_once_for_each_iface(mask) \
+  (_epc_test_pass_once_per_iface (G_STRLOC, (mask), 0, TRUE))
+#define epc_test_quit() \
+  (_epc_test_quit (G_STRLOC))
 
 #define epc_test_goto_if_fail(Test, Label) G_STMT_START{        \
   if (!(Test))                                                  \
@@ -42,7 +49,7 @@ enum
 {
   EPC_TEST_MASK_INIT = 128,
   EPC_TEST_MASK_USER = 127,
-  EPC_TEST_MASK_ALL = 255
+  EPC_TEST_MASK_ALL  = 255
 };
 
 gboolean epc_test_init                 (gint                         tests);
@@ -55,6 +62,11 @@ gint    _epc_test_quit                 (const gchar                 *strloc);
 void    _epc_test_pass                 (const gchar                 *strloc,
                                         gboolean                     once,
                                         gint                         mask);
+
+void    _epc_test_pass_once_per_iface  (const gchar                 *strloc,
+                                        gint                         mask,
+                                        guint                        ifidx,
+                                        gboolean                     any);
 
 G_END_DECLS
 

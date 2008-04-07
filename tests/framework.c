@@ -24,6 +24,21 @@
 #include <avahi-client/client.h>
 #include <avahi-common/error.h>
 
+#include <net/if.h>
+#include <sys/ioctl.h>
+
+#include <errno.h>
+#include <unistd.h>
+
+typedef struct _EpcIfTestStatus EpcIfTestStatus;
+
+struct _EpcIfTestStatus
+{
+  guint  ifidx;
+  gchar *name;
+  gint   mask;
+};
+
 static GSList *epc_test_service_browsers = NULL;
 static GMainLoop *epc_test_loop = NULL;
 static guint epc_test_timeout = 0;
@@ -119,6 +134,159 @@ _epc_test_pass (const gchar *strloc,
 
   if (0 == epc_test_result)
     epc_test_quit ();
+}
+
+static EpcIfTestStatus*
+epc_test_list_ifaces (void)
+{
+  EpcIfTestStatus *ifaces = NULL;
+  gsize n_ifaces = 0, i, j;
+  struct ifconf ifc;
+  char buf[4096];
+  gint fd = -1;
+
+  fd = socket (AF_INET, SOCK_DGRAM, 0);
+
+  if (fd < 0)
+    {
+      g_warning ("%s: socket(AF_INET, SOCK_DGRAM): %s",
+                 G_STRLOC, g_strerror (errno));
+      goto out;
+    }
+
+  ifc.ifc_buf = buf;
+  ifc.ifc_len = sizeof buf;
+
+  if (ioctl (fd, SIOCGIFCONF, &ifc) < 0)
+    {
+      g_warning ("%s: ioctl(SIOCGIFCONF): %s",
+                 G_STRLOC, g_strerror (errno));
+      goto out;
+    }
+
+  n_ifaces = ifc.ifc_len / sizeof(struct ifreq);
+  ifaces = g_new0 (EpcIfTestStatus, n_ifaces + 1);
+
+  for (i = 0, j = 0; i < n_ifaces; ++i)
+    {
+      struct ifreq *req = &ifc.ifc_req[i];
+
+      ifaces[j].name = g_strdup (req->ifr_name);
+
+      if (ioctl (fd, SIOCGIFFLAGS, req) < 0)
+        {
+          g_warning ("%s: ioctl(SIOCGIFFLAGS): %s",
+                     G_STRLOC, g_strerror (errno));
+          goto out;
+        }
+
+      if (req->ifr_flags & (IFF_LOOPBACK | IFF_POINTOPOINT))
+        {
+          g_free (ifaces[j].name);
+          ifaces[j].name = NULL;
+          continue;
+        }
+
+      if (ioctl (fd, SIOCGIFINDEX, req) < 0)
+        {
+          g_warning ("%s: ioctl(SIOCGIFINDEX): %s",
+                     G_STRLOC, g_strerror (errno));
+          goto out;
+        }
+
+      ifaces[j].ifidx = req->ifr_ifindex;
+      ifaces[j].mask = epc_test_result;
+
+      g_print ("%s: name=%s, ifidx=%u, \n",
+               G_STRLOC, ifaces[j].name,
+               ifaces[j].ifidx);
+
+      ++j;
+    }
+
+out:
+  if (fd >= 0)
+    close (fd);
+
+  return ifaces;
+}
+
+static gboolean
+_epc_test_match_any (const gchar           *strloc,
+                     const EpcIfTestStatus *status,
+                     gint                   ifidx,
+                     gint                   i)
+{
+  const gint mask = (1 << i);
+
+  if (!(status->mask & mask))
+    return FALSE;
+
+  g_print ("%s: Test #%d passed for some network interface\n", strloc, i + 1);
+  return TRUE;
+}
+
+static gboolean
+_epc_test_match_one (const gchar           *strloc,
+                     const EpcIfTestStatus *status,
+                     gint                   ifidx,
+                     gint                   i)
+{
+  if (status->ifidx != ifidx)
+    return FALSE;
+
+  g_print ("%s: Test #%d passed for %s\n", strloc, i + 1, status->name);
+  return TRUE;
+}
+
+void
+_epc_test_pass_once_per_iface (const gchar *strloc,
+                               gint         mask,
+                               guint        ifidx,
+                               gboolean     any)
+{
+  gboolean (*match)(const gchar           *strloc,
+                    const EpcIfTestStatus *status,
+                    gint                   ifidx,
+                    gint                   i);
+
+  static EpcIfTestStatus *ifaces = NULL;
+  gint pending;
+  guint i, j;
+
+  if (!ifaces)
+    ifaces = epc_test_list_ifaces ();
+
+  g_assert (NULL != ifaces);
+  mask &= EPC_TEST_MASK_USER;
+
+  if (any)
+    match = _epc_test_match_any;
+  else
+    match = _epc_test_match_one;
+
+  for (i = 0; (1 << i) < EPC_TEST_MASK_USER; ++i)
+    {
+      if (0 == (mask & (1 << i)))
+        continue;
+
+      pending = 0;
+
+      for (j = 0; ifaces[j].name; ++j)
+        {
+          if (match (strloc, &ifaces[j], ifidx, i))
+            {
+              ifaces[j].mask &= ~(1 << i);
+              break;
+            }
+        }
+
+      for (j = 0; ifaces[j].name; ++j)
+        pending |= (ifaces[j].mask & (1 << i));
+
+      if (!pending)
+        _epc_test_pass (strloc, TRUE, 1 << i);
+    }
 }
 
 gboolean
