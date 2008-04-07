@@ -1,5 +1,12 @@
 2008-04-07  Mathias Hasselmann  <mathias@openismus.com>
 
+	=== Release 0.3.5 ===
+
+	* NEWS: Updated from ChangeLog
+	* configure.ac: Bump version number.
+
+2008-04-07  Mathias Hasselmann  <mathias@openismus.com>
+
 	Upgrade the test suite to handle multiple active network interfaces.
 
 	* tests/framework.c, tests/framework.h (EpcIfTestStatus,

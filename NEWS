@@ -1,3 +1,20 @@
+Release 0.3.5
+=============
+
+	* Upgrade the test suite to handle multiple active network interfaces.
+	* Plugged two small memory leaks in EpcDispatcher and EpcPublisher.
+	* Specify charset for the publisher's TOC (#523992).
+	* Small build fixes.
+
+Translation Updates
+-------------------
+
+	British English (Philip Withnall)
+	Finnish (Ilkka Tuohela)
+	French (Quevi Jessye)
+	Greek (Giannis Katsampiris)
+	Swedish (Daniel Nylander)
+
 Release 0.3.4
 =============
 
