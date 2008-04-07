@@ -214,7 +214,7 @@ out:
 static gboolean
 _epc_test_match_any (const gchar           *strloc,
                      const EpcIfTestStatus *status,
-                     gint                   ifidx,
+                     guint                  ifidx G_GNUC_UNUSED,
                      gint                   i)
 {
   const gint mask = (1 << i);
@@ -229,7 +229,7 @@ _epc_test_match_any (const gchar           *strloc,
 static gboolean
 _epc_test_match_one (const gchar           *strloc,
                      const EpcIfTestStatus *status,
-                     gint                   ifidx,
+                     guint                  ifidx,
                      gint                   i)
 {
   if (status->ifidx != ifidx)
@@ -247,7 +247,7 @@ _epc_test_pass_once_per_iface (const gchar *strloc,
 {
   gboolean (*match)(const gchar           *strloc,
                     const EpcIfTestStatus *status,
-                    gint                   ifidx,
+                    guint                  ifidx,
                     gint                   i);
 
   static EpcIfTestStatus *ifaces = NULL;

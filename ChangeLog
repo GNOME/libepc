@@ -1,6 +1,14 @@
 2008-04-07  Mathias Hasselmann  <mathias@openismus.com>
 
-	=== Release 0.3.5 ===
+	Make test suite build with -Werror again.
+
+	* tests/framework.c (_epc_test_match_any(), _epc_test_match_one(),
+	  _epc_test_pass_once_per_iface()): Mark unused arguments and change
+	  type of ifidx argument from gint to guint.
+
+2008-04-07  Mathias Hasselmann  <mathias@openismus.com>
+
+	Prepare release.
 
 	* NEWS: Updated from ChangeLog
 	* configure.ac: Bump version number.
