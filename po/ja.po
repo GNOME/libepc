@@ -1,0 +1,134 @@
+# libepc ja.po.
+# Copyright (C) 2008 Free Software Foundation.
+# This file is distributed under the same license as the libepc package.
+# Takeshi AIHANA <takeshi.aihana@gmail.com>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libepc trunk\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=libepc\n"
+"POT-Creation-Date: 2008-04-12 11:43+0900\n"
+"PO-Revision-Date: 2008-04-12 11:43+0900\n"
+"Last-Translator: Takeshi AIHANA <takeshi.aihana@gmail.com>\n"
+"Language-Team: Japanese <takeshi.aihana@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../libepc/consumer.c:1079
+#, c-format
+msgid "Unexpected element: '%s'"
+msgstr "想定外の要素: '%s'"
+
+#: ../libepc/publisher.c:660
+msgid "Table of Contents"
+msgstr "目次"
+
+#: ../libepc/publisher.c:694
+msgid "Sorry, no resources published yet."
+msgstr "すみません、未だ公開しているリソースはありません。"
+
+#: ../libepc/publisher.c:2630
+msgid "%a of %u on %h"
+msgstr "%a (%u) @%h"
+
+#: ../libepc/shell.c:264
+#, c-format
+msgid "Cannot create Avahi client: %s"
+msgstr "Avahi のクライアントを生成できません: %s"
+
+#: ../libepc/shell.c:455
+msgid "Operation Proceeded"
+msgstr "実行中"
+
+#: ../libepc/shell.c:457
+msgid "No details known"
+msgstr "詳細は不明です"
+
+#: ../libepc/tls.c:165
+msgid "Generating Server Key"
+msgstr "サーバ側の鍵を生成しています"
+
+#: ../libepc/tls.c:166
+msgid ""
+"This may take some time. Type on the keyboard, move your mouse, or browse "
+"the web to generate some entropy."
+msgstr ""
+"この処理は時間がかかります。任意のエントロピーを生成するためにキーボードから"
+"何か入力したりマウスを動かしたり、あるいはウェブを参照してみて下さい。"
+
+#: ../libepc/tls.c:191
+#, c-format
+msgid "Cannot create private server key: %s"
+msgstr "サーバ側の秘密鍵を生成できません: %s"
+
+#: ../libepc/tls.c:244
+#, c-format
+msgid "Cannot import private server key '%s': %s"
+msgstr "サーバ側の秘密鍵である '%s' を取り込めません: %s"
+
+#: ../libepc/tls.c:300
+#, c-format
+msgid "Cannot export private key to PEM format: %s"
+msgstr "秘密鍵を PEM 形式に変換できません: %s"
+
+#: ../libepc/tls.c:314
+#, c-format
+msgid "Failed to create private key folder '%s': %s"
+msgstr "'%s' という秘密鍵のフォルダの生成に失敗しました: %s"
+
+#: ../libepc/tls.c:330
+#, c-format
+msgid "Failed to create private key file '%s': %s"
+msgstr "'%s' という秘密鍵のファイルの生成に失敗しました: %s"
+
+#: ../libepc/tls.c:344
+#, c-format
+msgid "Failed to write private key file '%s': %s"
+msgstr "'%s' という秘密鍵のファイルへの書き込みに失敗しました: %s"
+
+#: ../libepc/tls.c:416
+#, c-format
+msgid "Cannot create self signed server key for '%s': %s"
+msgstr "'%s' という Self-Signed なサーバの鍵を生成できません: %s"
+
+#: ../libepc/tls.c:470
+#, c-format
+msgid "Cannot import server certificate '%s': %s"
+msgstr "'%s' というサーバ側の証明書を取り込めません: %s"
+
+#: ../libepc/tls.c:525
+#, c-format
+msgid "Cannot export server certificate to PEM format: %s"
+msgstr "サーバ側の証明書を PEM 形式に変換できません: %s"
+
+#: ../libepc/tls.c:539
+#, c-format
+msgid "Failed to create server certificate folder '%s': %s"
+msgstr "サーバ側で '%s' という証明書用フォルダの生成に失敗しました: %s"
+
+#: ../libepc-ui/password-dialog.c:102
+msgid "<big><b>Authentication required.</b></big>"
+msgstr "<big><b>認証が必要です</b></big>"
+
+#: ../libepc-ui/password-dialog.c:113
+msgid "_Username:"
+msgstr "ユーザ名(_U):"
+
+#: ../libepc-ui/password-dialog.c:119
+msgid "_Password:"
+msgstr "パスワード(_P):"
+
+#: ../libepc-ui/password-dialog.c:125
+msgid "Anonymous Authentication"
+msgstr "匿名の認証"
+
+#: ../libepc-ui/password-dialog.c:205
+#, c-format
+msgid "Data source <b>%s</b> requires authentication before permitting access."
+msgstr "<b>%s</b> というデータにアクセスするには認証が必要です。"
+
+#: ../libepc-ui/password-dialog.c:208
+msgid "Authentication required."
+msgstr "認証が必要です"
