@@ -1,3 +1,11 @@
+2008-05-09  Mathias Hasselmann  <mathias@openismus.com>
+
+	Properly express dependencies of libepc-ui-1.0.la.
+
+	* Makefile.am:
+	  Remove libepc/libepc-1.0.la from libepc_ui_libepc_ui_1_0_la_LDFLAGS
+	  and properly add it to libepc_ui_libepc_ui_1_0_la_LIBADD.
+
 2008-04-07  Mathias Hasselmann  <mathias@openismus.com>
 
 	=== Release 0.3.5 ===

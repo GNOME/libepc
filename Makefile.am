@@ -140,7 +140,8 @@ libepc_libepc_1_0_la_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS) -DG_LOG_DOMAIN=\"l
 libepc_libepc_1_0_la_LDFLAGS			= $(LIBEPC_LIBS) -version-info $(LT_VERSION_INFO)
 
 libepc_ui_libepc_ui_1_0_la_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_UI_CFLAGS) -DG_LOG_DOMAIN=\"libepc-ui\"
-libepc_ui_libepc_ui_1_0_la_LDFLAGS		= $(LIBEPC_UI_LIBS) -version-info $(LT_VERSION_INFO) libepc/libepc-1.0.la
+libepc_ui_libepc_ui_1_0_la_LDFLAGS		= $(LIBEPC_UI_LIBS) -version-info $(LT_VERSION_INFO)
+libepc_ui_libepc_ui_1_0_la_LIBADD		= libepc/libepc-1.0.la
 
 examples_list_resources_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 examples_list_resources_LDADD			= libepc/libepc-1.0.la
