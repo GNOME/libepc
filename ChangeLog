@@ -1,3 +1,8 @@
+2008-06-07  Jonh Wendell <jwendell@gnome.org>
+
+	* po/pt_BR.po: Brazilian Portuguese translation by Rodrigo Braga.
+	* po/LINGUAS: Added pt_BR
+
 2008-05-09  Mathias Hasselmann  <mathias@openismus.com>
 
 	Properly express dependencies of libepc-ui-1.0.la.
