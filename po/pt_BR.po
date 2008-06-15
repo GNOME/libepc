@@ -1,15 +1,17 @@
 # Brazilian Team translation of libepc.
-# Copyright (C) 2008 THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the libepc package.
 # Rodrigo Braga de Abreu <tiopasin@gmail.com>, 2008.
+# Henrique P Machado <zehrique@gmail.com>, 2008.
+# Leonardo Ferreira Fontenelle <leonardof@gnome.org>, 2008.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: libepc\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=libepc\n"
-"POT-Creation-Date: 2008-06-07 08:57-0300\n"
-"PO-Revision-Date: 2008-06-05 07:52-0300\n"
-"Last-Translator: Rodrigo Braga de Abreu <tiopasin@gmail.com>\n"
+"POT-Creation-Date: 2008-06-07 12:00+0000\n"
+"PO-Revision-Date: 2008-06-14 22:43-0300\n"
+"Last-Translator: Henrique P Machado <zehrique@gmail.com>\n"
 "Language-Team: Brazilian Team <gnome-l10n-br@listas.cipsga.org.br>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -17,8 +19,8 @@ msgstr ""
 
 #: ../libepc/consumer.c:1079
 #, c-format
-msgid "Unexpected element: '%s'"
-msgstr "Elemento não esperado: '%s'"
+msgid "Unexpected element: \"%s\""
+msgstr "Elemento não esperado: \"%s\""
 
 #: ../libepc/publisher.c:660
 msgid "Table of Contents"
@@ -35,7 +37,7 @@ msgstr "%a de %u em %h"
 #: ../libepc/shell.c:264
 #, c-format
 msgid "Cannot create Avahi client: %s"
-msgstr "Não foi possível criar o client Avahi: %s"
+msgstr "Não foi possível criar o cliente Avahi: %s"
 
 #: ../libepc/shell.c:455
 msgid "Operation Proceeded"
@@ -64,8 +66,8 @@ msgstr "Não foi possível criar a chave privada do servidor: %s"
 
 #: ../libepc/tls.c:244
 #, c-format
-msgid "Cannot import private server key '%s': %s"
-msgstr "Não foi possível importar a chave privada do servidor %s: %s"
+msgid "Cannot import private server key \"%s\": %s"
+msgstr "Não foi possível importar a chave privada de servidor \"%s\": %s"
 
 #: ../libepc/tls.c:300
 #, c-format
@@ -74,28 +76,28 @@ msgstr "Não foi possível exportar a chave privada para o formato PEM: %s"
 
 #: ../libepc/tls.c:314
 #, c-format
-msgid "Failed to create private key folder '%s': %s"
-msgstr "Falha ao criar a pasta da chave privada '%s': %s"
+msgid "Failed to create private key folder \"%s\": %s"
+msgstr "Falha ao criar a pasta da chave privada \"%s\": %s"
 
 #: ../libepc/tls.c:330
 #, c-format
-msgid "Failed to create private key file '%s': %s"
-msgstr "Falha ao criar arquivo de chave privada '%s': %s"
+msgid "Failed to create private key file \"%s\": %s"
+msgstr "Falha ao criar arquivo de chave privada \"%s\": %s"
 
 #: ../libepc/tls.c:344
 #, c-format
-msgid "Failed to write private key file '%s': %s"
-msgstr "Falha ao gravar o arquivo da chave privada '%s': %s"
+msgid "Failed to write private key file \"%s\": %s"
+msgstr "Falha ao gravar o arquivo da chave privada \"%s\": %s"
 
 #: ../libepc/tls.c:416
 #, c-format
-msgid "Cannot create self signed server key for '%s': %s"
-msgstr "Não foi possível criar chave do servidor para '%s': %s"
+msgid "Cannot create self signed server key for \"%s\": %s"
+msgstr "Não foi possível criar chave do servidor para \"%s\": %s"
 
 #: ../libepc/tls.c:470
 #, c-format
-msgid "Cannot import server certificate '%s': %s"
-msgstr "Não foi possível importar o certificado do servidor '%s': %s"
+msgid "Cannot import server certificate \"%s\": %s"
+msgstr "Não foi possível importar o certificado do servidor \"%s\": %s"
 
 #: ../libepc/tls.c:525
 #, c-format
@@ -105,8 +107,8 @@ msgstr ""
 
 #: ../libepc/tls.c:539
 #, c-format
-msgid "Failed to create server certificate folder '%s': %s"
-msgstr "Falha ao criar a pasta do certificado do servidor '%s': %s"
+msgid "Failed to create server certificate folder \"%s\": %s"
+msgstr "Falha ao criar a pasta do certificado do servidor \"%s\": %s"
 
 #: ../libepc-ui/password-dialog.c:102
 msgid "<big><b>Authentication required.</b></big>"
