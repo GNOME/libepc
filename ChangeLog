@@ -1,3 +1,15 @@
+2008-06-22  Mathias Hasselmann  <mathias@openismus.com>
+
+	Try to prevent crash after avahi_service_browser_free (#539630).
+
+	* libepc/service-monitor.c (epc_service_monitor_constructed()):
+	  Really never add NULL pointer to internal browser list when
+	  epc_shell_create_service_browser() returns NULL, but forgets
+	  to raise an exception (set the error variable).
+
+	* libepc/shell.c (epc_shell_create_service_browser()):
+	  Set error variable when avahi_service_browser_new() returns NULL.
+
 2008-06-07  Jonh Wendell <jwendell@gnome.org>
 
 	* po/pt_BR.po: Brazilian Portuguese translation by Rodrigo Braga.

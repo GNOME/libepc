@@ -368,6 +368,10 @@ epc_shell_create_service_browser (AvahiIfIndex                interface,
     browser = avahi_service_browser_new (client, interface, protocol, type,
                                          domain, flags, callback, user_data);
 
+  if (G_UNLIKELY (!browser))
+    g_set_error (error, EPC_AVAHI_ERROR, AVAHI_ERR_FAILURE,
+                 _("Cannot create Avahi service browser."));
+
   return browser;
 }
 

@@ -290,6 +290,9 @@ epc_service_monitor_constructed (GObject *object)
           continue;
       }
 
+      if (G_UNLIKELY (!browser))
+        continue;
+
       if (EPC_DEBUG_LEVEL (1))
         g_debug ("%s: watching %s", G_STRLOC, *iter);
 
