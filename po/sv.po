@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libepc\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=libepc\n"
-"POT-Creation-Date: 2008-03-07 20:51+0100\n"
-"PO-Revision-Date: 2008-03-07 20:52+0100\n"
+"POT-Creation-Date: 2008-06-24 11:40+0200\n"
+"PO-Revision-Date: 2008-06-24 11:40+0100\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "MIME-Version: 1.0\n"
@@ -29,7 +29,7 @@ msgstr "Innehållsförteckning"
 msgid "Sorry, no resources published yet."
 msgstr "Tyvärr, inga resurser publicerade än."
 
-#: ../libepc/publisher.c:2623
+#: ../libepc/publisher.c:2630
 msgid "%a of %u on %h"
 msgstr "%a av %u på %h"
 
@@ -38,11 +38,16 @@ msgstr "%a av %u på %h"
 msgid "Cannot create Avahi client: %s"
 msgstr "Kan inte skapa Avahi-klient: %s"
 
-#: ../libepc/shell.c:455
+#: ../libepc/shell.c:373
+#, c-format
+msgid "Cannot create Avahi service browser."
+msgstr "Kan inte skapa Avahi-tjänstebläddrare."
+
+#: ../libepc/shell.c:459
 msgid "Operation Proceeded"
 msgstr "Åtgärden fortsätter"
 
-#: ../libepc/shell.c:457
+#: ../libepc/shell.c:461
 msgid "No details known"
 msgstr "Inga detaljer är kända"
 

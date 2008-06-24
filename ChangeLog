@@ -1,3 +1,7 @@
+2008-06-24  Daniel Nylander <po@danielnylander.se>
+
+	* po/sv.po: Updated Swedish translation.
+
 2008-06-22  Mathias Hasselmann  <mathias@openismus.com>
 
 	Try to prevent crash after avahi_service_browser_free (#539630).
