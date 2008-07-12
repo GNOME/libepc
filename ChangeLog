@@ -1,6 +1,10 @@
-2008-06-24  Daniel Nylander <po@danielnylander.se>
+2008-07-12  Mathias Hasselmann  <mathias@openismus.com>
 
-	* po/sv.po: Updated Swedish translation.
+	Moved localization related ChangeLog messages to po folder
+	to fit translation team's needs.
+
+	* ChangeLog: Removed localization related messages.
+	* po/ChangeLog: Added localization related messages.
 
 2008-06-22  Mathias Hasselmann  <mathias@openismus.com>
 
@@ -13,11 +17,6 @@
 
 	* libepc/shell.c (epc_shell_create_service_browser()):
 	  Set error variable when avahi_service_browser_new() returns NULL.
-
-2008-06-07  Jonh Wendell <jwendell@gnome.org>
-
-	* po/pt_BR.po: Brazilian Portuguese translation by Rodrigo Braga.
-	* po/LINGUAS: Added pt_BR
 
 2008-05-09  Mathias Hasselmann  <mathias@openismus.com>
 
@@ -82,41 +81,17 @@
 	* libepc/publisher.c (epc_publisher_dispose()):
 	  Release service_cookie field.
 
-2008-03-27  Claude Paroz  <claude@2xlibre.net>
-
-	* po/fr.po: Added French translation by Quevi Jessye <qjessye@yahoo.fr>.
-	* po/LINGUAS: Added fr.
-
 2008-03-25  Mathias Hasselmann  <mathias@openismus.com>
 
 	Specify charset for the publisher's TOC (#523992).
 
 	* libepc/publisher.c: Add charset to content-type header of TOC.
 
-2008-03-24  Kostas Papadimas <pkst@gnome.org>
-
-	* po/el.po: Added Greek translation by Giannis Katsampiris.
-	* po/LINGUAS: Added 'el'. 
-
 2008-03-22  Mathias Hasselmann  <mathias@openismus.com>
 
 	Make libsoup-2.4 variant build with -Werror again.
 
 	* libepc/publisher.c: Mark some arguments as unused.
-
-2008-03-08  Philip Withnall  <pwithnall@svn.gnome.org>
-
-	* LINGUAS: Added en_GB (British English) translation.
-	* en_GB.po: Added British English translation.
-
-2008-03-07  Daniel Nylander <po@danielnylander.se>
-
-	* po/sv.po: Updated Swedish translation.
-
-2008-02-19  Ilkka Tuohela <hile@iki.fi>
-
-	* po/fi.po: Added Finnish translation.
-	* po/LINGUAS: Added 'fi'. 
 
 2008-01-29  Mathias Hasselmann  <mathias@openismus.com>
 
@@ -147,10 +122,6 @@
 
 2008-01-21  Mathias Hasselmann  <mathias@openismus.com>
 
-	* po/LINGUAS: Added ca
-
-2008-01-21  Mathias Hasselmann  <mathias@openismus.com>
-
 	Migrate from GNU gettext to intltool (#510465, Luca Ferretti).
 
 	* autogen.sh: Invoke gnome-autogen.sh, instead of shipping a copy.
@@ -160,15 +131,6 @@
 	* ABOUT-NLS, config.rpath, gtk-doc.make, m4/*, po/Makefile.in.in,
 	po/Rules-quot, po/libepc.pot, po/*.header, po/*.sed, po/*.sin:
 	Remove generated files from repository.
-
-2008-01-21  Jorge González  <jorgegonz@svn.gnome.org>
-
-	* po/es.po: Added Spanish translation.
-	* po/LINGUAS: Added es
-
-2008-01-19  Gil Forcada  <gforcada@gnome.org>
-
-	* po/ca.po: Added Catalan translation.
 
 2008-01-18  Mathias Hasselmann  <mathias@openismus.com>
 
@@ -195,11 +157,6 @@
 	* examples/lookup-resource.c: Add --username and --password
 	command line switches for passing authentication credentials.
 
-2008-01-16  Daniel Nylander <po@danielnylander.se>
-
-	* po/sv.po: Added Swedish translation.
-	* po/LINGUAS: Added sv
-
 2008-01-16  Mathias Hasselmann  <mathias@openismus.com>
 
 	Separate between primary and secondary message in EpcPasswordDialog to
@@ -208,7 +165,6 @@
 	* libepc-ui/password-dialog.c: Add separate title label for primary
 	message. Left-align username and password label. Give more space to
 	characters to secondary label.
-	* po/libepc.pot, po/de.po: Updating messages.
 
 2008-01-16  Mathias Hasselmann  <mathias@openismus.com>
 
@@ -223,7 +179,6 @@
 	* libepc/i18n.c, libepc/i18n.h: Add epc_gettext.
 	* examples/simple-publisher.c: Call setlocale for localization.
 	* ABOUT-NLS, config.rpath, m4/*, po/*: Various gettextize artifacts.
-	* po/de.po, po/LINGUAS: Add German translation.
 
 2008-01-16  Mathias Hasselmann  <mathias@openismus.com>
 

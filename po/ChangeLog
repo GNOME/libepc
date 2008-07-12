@@ -7,9 +7,63 @@
 	* pt_BR.po: Fixes in Brazilian Portuguese translation by Henrique P
 	Machado and myself.
 
-Update the top-level folder please.
+2008-06-24  Daniel Nylander <po@danielnylander.se>
 
-Well, or convince me that wildly spread ChangeLog files make any sense.
-Specially since ChangeLog files are redundant with the commit log already.
+	* sv.po: Updated Swedish translation.
 
-Mathias
+2008-06-07  Jonh Wendell <jwendell@gnome.org>
+
+	* pt_BR.po: Brazilian Portuguese translation by Rodrigo Braga.
+	* LINGUAS: Added pt_BR
+
+2008-03-27  Claude Paroz  <claude@2xlibre.net>
+
+	* fr.po: Added French translation by Quevi Jessye <qjessye@yahoo.fr>.
+	* LINGUAS: Added fr.
+
+2008-03-24  Kostas Papadimas <pkst@gnome.org>
+
+	* el.po: Added Greek translation by Giannis Katsampiris.
+	* LINGUAS: Added 'el'. 
+
+2008-03-08  Philip Withnall  <pwithnall@svn.gnome.org>
+
+	* LINGUAS: Added en_GB (British English) translation.
+	* en_GB.po: Added British English translation.
+
+2008-03-07  Daniel Nylander <po@danielnylander.se>
+
+	* sv.po: Updated Swedish translation.
+
+2008-02-19  Ilkka Tuohela <hile@iki.fi>
+
+	* fi.po: Added Finnish translation.
+	* LINGUAS: Added 'fi'. 
+
+2008-01-21  Mathias Hasselmann  <mathias@openismus.com>
+
+	* LINGUAS: Added ca
+
+2008-01-21  Jorge González  <jorgegonz@svn.gnome.org>
+
+	* es.po: Added Spanish translation.
+	* LINGUAS: Added es
+
+2008-01-19  Gil Forcada  <gforcada@gnome.org>
+
+	* ca.po: Added Catalan translation.
+
+2008-01-16  Daniel Nylander <po@danielnylander.se>
+
+	* sv.po: Added Swedish translation.
+	* LINGUAS: Added sv
+
+2008-01-16  Mathias Hasselmann  <mathias@openismus.com>
+
+	* de.po: Updated German translation.
+
+2008-01-16  Mathias Hasselmann  <mathias@openismus.com>
+
+	* de.po: Added German translation.
+	* LINGUAS: Added de
+
