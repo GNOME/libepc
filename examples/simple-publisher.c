@@ -41,9 +41,9 @@ timestamp_handler (EpcPublisher *publisher G_GNUC_UNUSED,
 }
 
 static gboolean
-authentication_handler (EpcAuthContext *context,
-                        const gchar    *user_name,
-                        gpointer        user_data)
+authorization_handler (EpcAuthContext *context,
+                       const gchar    *user_name,
+                       gpointer        user_data)
 {
   const gchar *password;
 
@@ -150,7 +150,7 @@ main (int   argc,
       epc_publisher_add (publisher, "sensitive",
                          "This value is top secret.", -1);
       epc_publisher_set_auth_handler (publisher, "sensitive",
-                                      authentication_handler,
+                                      authorization_handler,
                                       "secret" /* user_data */, NULL);
 
       epc_publisher_add_file (publisher, "source-code", __FILE__);

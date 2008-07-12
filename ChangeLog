@@ -1,5 +1,13 @@
 2008-07-12  Mathias Hasselmann  <mathias@openismus.com>
 
+	Do some small code cleanups.
+
+	* examples/simple-publisher.c: Rename authentication_handler()
+	  to authorization_handler() which is the proper name.
+	* libepc-ui/password-dialog.h: Convert tabs to space.
+
+2008-07-12  Mathias Hasselmann  <mathias@openismus.com>
+
 	Moved localization related ChangeLog messages to po folder
 	to fit translation team's needs.
 

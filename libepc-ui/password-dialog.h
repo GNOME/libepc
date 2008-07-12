@@ -72,7 +72,7 @@ GtkWidget*            epc_password_dialog_new                   (const gchar    
                                                                  ...) G_GNUC_NULL_TERMINATED;
 
 void                  epc_password_dialog_set_anonymous_allowed (EpcPasswordDialog *dialog,
-								 gboolean           allowed);
+                                                                 gboolean           allowed);
 gboolean              epc_password_dialog_get_anonymous_allowed (EpcPasswordDialog *dialog);
 
 void                  epc_password_dialog_set_anonymous         (EpcPasswordDialog *dialog,
@@ -80,15 +80,15 @@ void                  epc_password_dialog_set_anonymous         (EpcPasswordDial
 gboolean              epc_password_dialog_is_anonymous          (EpcPasswordDialog *dialog);
 
 void                  epc_password_dialog_set_username          (EpcPasswordDialog *dialog,
-								 const gchar       *username);
+                                                                 const gchar       *username);
 G_CONST_RETURN gchar* epc_password_dialog_get_username          (EpcPasswordDialog *dialog);
 
 void                  epc_password_dialog_set_password          (EpcPasswordDialog *dialog,
-								 const gchar       *password);
+                                                                 const gchar       *password);
 G_CONST_RETURN gchar* epc_password_dialog_get_password          (EpcPasswordDialog *dialog);
 
 void                  epc_password_dialog_set_realm             (EpcPasswordDialog *dialog,
-								 const gchar       *realm);
+                                                                 const gchar       *realm);
 G_CONST_RETURN gchar* epc_password_dialog_get_realm             (EpcPasswordDialog *dialog);
 
 void                  epc_password_dialog_attach                (EpcPasswordDialog *dialog,
