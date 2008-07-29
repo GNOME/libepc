@@ -1147,13 +1147,22 @@ epc_publisher_install_handlers (EpcPublisher *self)
     }
   else
     {
-      self->priv->server_auth =
-        soup_auth_domain_digest_new (SOUP_AUTH_DOMAIN_REALM,
-                                     self->priv->service_name,
-                                     SOUP_AUTH_DOMAIN_GENERIC_AUTH_CALLBACK,
-                                     epc_publisher_generic_auth_cb,
-                                     SOUP_AUTH_DOMAIN_GENERIC_AUTH_DATA,
-                                     self, NULL);
+      /* Check for NULL, to avoid a crash, 
+       * though we do not yet know why this would be NULL.
+       * See bug #540631.
+       */
+      if(NULL == self->priv->service_name)
+        g_warning("libepc: epc_publisher_install_handlers() service_name was NULL.");
+      else
+      {
+        self->priv->server_auth =
+          soup_auth_domain_digest_new (SOUP_AUTH_DOMAIN_REALM,
+                                       self->priv->service_name,
+                                       SOUP_AUTH_DOMAIN_GENERIC_AUTH_CALLBACK,
+                                       epc_publisher_generic_auth_cb,
+                                       SOUP_AUTH_DOMAIN_GENERIC_AUTH_DATA,
+                                       self, NULL);
+      }
     }
 
   soup_auth_domain_set_filter (self->priv->server_auth, epc_publisher_auth_filter, self, NULL);

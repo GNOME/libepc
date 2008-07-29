@@ -1,3 +1,11 @@
+2008-07-29  Murray Cumming  <murrayc@murrayc.com>
+
+	* libepc/publisher.c: epc_publisher_install_handlers(): Check for 
+	a NULL service_name before calling soup_auth_domain_digest_new() to 
+	avoid a crash. However, we need to know why it can be NULL and 
+	prevent that instead.
+	Bug #540631.
+
 2008-07-12  Mathias Hasselmann  <mathias@openismus.com>
 
 	Do some small code cleanups.
