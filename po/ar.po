@@ -1,0 +1,140 @@
+# Arabic translations for PACKAGE package.
+# Copyright (C) 2008 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libepc\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=libepc\n"
+"POT-Creation-Date: 2008-07-31 11:07+0100\n"
+"PO-Revision-Date: 2008-08-02 10:41+0100\n"
+"Last-Translator: Djihed Afifi <djihed@gmail.com>\n"
+"Language-Team: Arabeyes <doc@arabeyes.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Arabic\n"
+
+#: ../libepc/consumer.c:1079
+#, c-format
+msgid "Unexpected element: '%s'"
+msgstr "عنصر غير متوقّع '%s'"
+
+#: ../libepc/publisher.c:660
+msgid "Table of Contents"
+msgstr "فهرس"
+
+#: ../libepc/publisher.c:694
+msgid "Sorry, no resources published yet."
+msgstr ""
+
+#: ../libepc/publisher.c:2639
+msgid "%a of %u on %h"
+msgstr "%a من %u على %h"
+
+#: ../libepc/shell.c:264
+#, c-format
+msgid "Cannot create Avahi client: %s"
+msgstr "لا يمكن انشاء عميل أفاهي: %s"
+
+#: ../libepc/shell.c:373
+#, c-format
+msgid "Cannot create Avahi service browser."
+msgstr ""
+
+#: ../libepc/shell.c:459
+#, fuzzy
+msgid "Operation Proceeded"
+msgstr "عمليّة غير مدعومة"
+
+#: ../libepc/shell.c:461
+msgid "No details known"
+msgstr "لا تفاصيل معروفة"
+
+#: ../libepc/tls.c:165
+#, fuzzy
+msgid "Generating Server Key"
+msgstr "اضف خادم مفاتيح"
+
+#: ../libepc/tls.c:166
+msgid "This may take some time. Type on the keyboard, move your mouse, or browse the web to generate some entropy."
+msgstr ""
+
+#: ../libepc/tls.c:191
+#, c-format
+msgid "Cannot create private server key: %s"
+msgstr ""
+
+#: ../libepc/tls.c:244
+#, c-format
+msgid "Cannot import private server key '%s': %s"
+msgstr ""
+
+#: ../libepc/tls.c:300
+#, c-format
+msgid "Cannot export private key to PEM format: %s"
+msgstr ""
+
+#: ../libepc/tls.c:314
+#, c-format
+msgid "Failed to create private key folder '%s': %s"
+msgstr ""
+
+#: ../libepc/tls.c:330
+#, c-format
+msgid "Failed to create private key file '%s': %s"
+msgstr ""
+
+#: ../libepc/tls.c:344
+#, fuzzy, c-format
+msgid "Failed to write private key file '%s': %s"
+msgstr "فشلت كتابة عنوان العميل في ملف الحالة المحفوظ: %s"
+
+#: ../libepc/tls.c:416
+#, c-format
+msgid "Cannot create self signed server key for '%s': %s"
+msgstr ""
+
+#: ../libepc/tls.c:470
+#, fuzzy, c-format
+msgid "Cannot import server certificate '%s': %s"
+msgstr "إنتق شهادة لاستيرادها..."
+
+#: ../libepc/tls.c:525
+#, c-format
+msgid "Cannot export server certificate to PEM format: %s"
+msgstr ""
+
+#: ../libepc/tls.c:539
+#, c-format
+msgid "Failed to create server certificate folder '%s': %s"
+msgstr ""
+
+#: ../libepc-ui/password-dialog.c:102
+#, fuzzy
+msgid "<big><b>Authentication required.</b></big>"
+msgstr "تخويل البروكسي مطلوب"
+
+#: ../libepc-ui/password-dialog.c:113
+msgid "_Username:"
+msgstr "إ_سم المستخدم:"
+
+#: ../libepc-ui/password-dialog.c:119
+msgid "_Password:"
+msgstr "_كلمة المرور:"
+
+#: ../libepc-ui/password-dialog.c:125
+#, fuzzy
+msgid "Anonymous Authentication"
+msgstr "شاشة الدخول:"
+
+#: ../libepc-ui/password-dialog.c:205
+#, c-format
+msgid "Data source <b>%s</b> requires authentication before permitting access."
+msgstr ""
+
+#: ../libepc-ui/password-dialog.c:208
+msgid "Authentication required."
+msgstr "التّوثيق مطلوب."
+
