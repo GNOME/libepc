@@ -7,9 +7,10 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libepc\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-09-07 20:27+0300\n"
-"PO-Revision-Date: 2007-06-09 20:14+0300\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=libepc\n"
+"POT-Creation-Date: 2008-09-18 16:09+0300\n"
+"PO-Revision-Date: 2008-09-18 16:00+0300\n"
 "Last-Translator: Ilkka Tuohela <hile@iki.fi>\n"
 "Language-Team: Finnish <gnome-fi-laatu@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -30,7 +31,7 @@ msgstr "Sisällysluettelo"
 msgid "Sorry, no resources published yet."
 msgstr "Valitettavasti mitään ei ole vielä julkaistu."
 
-#: ../libepc/publisher.c:2623
+#: ../libepc/publisher.c:2639
 msgid "%a of %u on %h"
 msgstr "%a / %u laitteella %h"
 
@@ -39,11 +40,16 @@ msgstr "%a / %u laitteella %h"
 msgid "Cannot create Avahi client: %s"
 msgstr "Avahi-asiakasta ei voi luoda: %s"
 
-#: ../libepc/shell.c:455
+#: ../libepc/shell.c:373
+#, c-format
+msgid "Cannot create Avahi service browser."
+msgstr "Avahi-palveluselainta ei voi luoda."
+
+#: ../libepc/shell.c:459
 msgid "Operation Proceeded"
 msgstr "Toiminto käsitelty"
 
-#: ../libepc/shell.c:457
+#: ../libepc/shell.c:461
 msgid "No details known"
 msgstr "Yksityiskohtia ei tunneta"
 
@@ -56,8 +62,8 @@ msgid ""
 "This may take some time. Type on the keyboard, move your mouse, or browse "
 "the web to generate some entropy."
 msgstr ""
-"Tämä kestää hetken. kirjoita jotain, liikuttele hiirtä tai selaa verkkosivuja "
-"luonnin aikana kasvattaaksesi entropiaa."
+"Tämä kestää hetken. kirjoita jotain, liikuttele hiirtä tai selaa "
+"verkkosivuja luonnin aikana kasvattaaksesi entropiaa."
 
 #: ../libepc/tls.c:191
 #, c-format
@@ -133,4 +139,3 @@ msgstr "Tietolähde <b>%s</b> vaatii tunnistatumisen ennen pääsyn sallimista."
 #: ../libepc-ui/password-dialog.c:208
 msgid "Authentication required."
 msgstr "Tunnistautuminen vaaditaan."
-
