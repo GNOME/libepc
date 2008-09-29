@@ -1,0 +1,140 @@
+# This file is distributed under the same license as the package.
+#
+# Matej Urbančič <mateju@svn.gnome.org>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libepc\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-09-26 04:25+0000\n"
+"PO-Revision-Date: 2008-09-29 10:13+0100\n"
+"Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
+"Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || n%100==4 ? 3 : 0);\n"
+"X-Launchpad-Export-Date: 2007-10-05 05:48+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
+"X-Poedit-Country: SLOVENIA\n"
+"X-Poedit-Language: Slovenian\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: ../libepc/consumer.c:1079
+#, c-format
+msgid "Unexpected element: '%s'"
+msgstr "Nepričakovan element: '%s'"
+
+#: ../libepc/publisher.c:660
+msgid "Table of Contents"
+msgstr "Kazalo vsebine"
+
+#: ../libepc/publisher.c:694
+msgid "Sorry, no resources published yet."
+msgstr ""
+
+#: ../libepc/publisher.c:2639
+msgid "%a of %u on %h"
+msgstr "%a od %u na %h"
+
+#: ../libepc/shell.c:264
+#, c-format
+msgid "Cannot create Avahi client: %s"
+msgstr ""
+
+#: ../libepc/shell.c:373
+#, c-format
+msgid "Cannot create Avahi service browser."
+msgstr "Ni mogoče ustvariti Avahi brskalnika storitev."
+
+#: ../libepc/shell.c:459
+msgid "Operation Proceeded"
+msgstr "Prednostno izvedena naloga"
+
+#: ../libepc/shell.c:461
+msgid "No details known"
+msgstr "Ni znanih podrobnosti"
+
+#: ../libepc/tls.c:165
+msgid "Generating Server Key"
+msgstr "Ustvarjanje strežniškega ključa"
+
+#: ../libepc/tls.c:166
+msgid "This may take some time. Type on the keyboard, move your mouse, or browse the web to generate some entropy."
+msgstr "Opravilo lahko traja nekaj časa. Pritiskajte na tipkovnico, premikajte miško ali pa brskajte po spletu, da ustvarite čim več entropije."
+
+#: ../libepc/tls.c:191
+#, c-format
+msgid "Cannot create private server key: %s"
+msgstr "Ni mogoče ustvariti osebnega strežniškega ključa: %s"
+
+#: ../libepc/tls.c:244
+#, c-format
+msgid "Cannot import private server key '%s': %s"
+msgstr "Ni mogoče uvoziti osebnega strežniškega ključa '%s': %s"
+
+#: ../libepc/tls.c:300
+#, c-format
+msgid "Cannot export private key to PEM format: %s"
+msgstr "Ni mogoče izvoziti osebnega ključa v PEM zapis: %s"
+
+#: ../libepc/tls.c:314
+#, c-format
+msgid "Failed to create private key folder '%s': %s"
+msgstr "Napaka med ustvarjanjem mape osebnega ključa '%s': %s"
+
+#: ../libepc/tls.c:330
+#, c-format
+msgid "Failed to create private key file '%s': %s"
+msgstr "Napaka med ustvarjanjem datoteke osebnega ključa '%s': %s"
+
+#: ../libepc/tls.c:344
+#, c-format
+msgid "Failed to write private key file '%s': %s"
+msgstr "Napaka med pisanjem datoteke osebnega ključa '%s': %s"
+
+#: ../libepc/tls.c:416
+#, c-format
+msgid "Cannot create self signed server key for '%s': %s"
+msgstr "Napaka med ustvarjanjem samodejnega podpisa osebnega ključa za '%s': %s"
+
+#: ../libepc/tls.c:470
+#, c-format
+msgid "Cannot import server certificate '%s': %s"
+msgstr "Ni mogoče uvoziti potrdila strežnika '%s': %s"
+
+#: ../libepc/tls.c:525
+#, c-format
+msgid "Cannot export server certificate to PEM format: %s"
+msgstr "Ni mogoča izvoziti potrdila strežnika v PEM zapis: %s"
+
+#: ../libepc/tls.c:539
+#, c-format
+msgid "Failed to create server certificate folder '%s': %s"
+msgstr "Napaka med ustvarjanjem mape potrdila strežnika '%s': %s"
+
+#: ../libepc-ui/password-dialog.c:102
+msgid "<big><b>Authentication required.</b></big>"
+msgstr "<big><b>Zahtevana overitev.</b></big>"
+
+#: ../libepc-ui/password-dialog.c:113
+msgid "_Username:"
+msgstr "_Uporabniško ime:"
+
+#: ../libepc-ui/password-dialog.c:119
+msgid "_Password:"
+msgstr "_Geslo:"
+
+#: ../libepc-ui/password-dialog.c:125
+msgid "Anonymous Authentication"
+msgstr "Nepodpisana overitev"
+
+#: ../libepc-ui/password-dialog.c:205
+#, c-format
+msgid "Data source <b>%s</b> requires authentication before permitting access."
+msgstr "Podatkovni vir <b>%s</b> zahteva overitev preden bo odobren dostop."
+
+#: ../libepc-ui/password-dialog.c:208
+msgid "Authentication required."
+msgstr "Zahtevana je overovitev"
+
