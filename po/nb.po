@@ -1,0 +1,139 @@
+# Norwegian (bokmål) translation of totem.
+# Copyright (C) 2002-2005 Free Software Foundation, Inc.
+# Kjartan Maraas  <kmaraas@gnome.org>, 2002-2008.
+# Terance Edward Sola <terance@lyse.net>, 2005.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: totem 2.23.x\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=libepc\n"
+"POT-Creation-Date: 2008-10-08 20:23+0200\n"
+"PO-Revision-Date: 2008-10-08 20:25+0200\n"
+"Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
+"Language-Team: Norwegian Bokmal <i18n-nb@lister.ping.uio.no>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../libepc/consumer.c:1079
+#, c-format
+msgid "Unexpected element: '%s'"
+msgstr ""
+
+#: ../libepc/publisher.c:660
+msgid "Table of Contents"
+msgstr "Innholdsfortegnelse"
+
+#: ../libepc/publisher.c:694
+msgid "Sorry, no resources published yet."
+msgstr ""
+
+#: ../libepc/publisher.c:2639
+msgid "%a of %u on %h"
+msgstr "%a av %u på %h"
+
+#: ../libepc/shell.c:264
+#, c-format
+msgid "Cannot create Avahi client: %s"
+msgstr ""
+
+#: ../libepc/shell.c:373
+#, c-format
+msgid "Cannot create Avahi service browser."
+msgstr ""
+
+#: ../libepc/shell.c:459
+msgid "Operation Proceeded"
+msgstr ""
+
+#: ../libepc/shell.c:461
+msgid "No details known"
+msgstr "Ingen detaljer kjent"
+
+#: ../libepc/tls.c:165
+msgid "Generating Server Key"
+msgstr ""
+
+#: ../libepc/tls.c:166
+msgid ""
+"This may take some time. Type on the keyboard, move your mouse, or browse "
+"the web to generate some entropy."
+msgstr ""
+
+#: ../libepc/tls.c:191
+#, c-format
+msgid "Cannot create private server key: %s"
+msgstr ""
+
+#: ../libepc/tls.c:244
+#, c-format
+msgid "Cannot import private server key '%s': %s"
+msgstr ""
+
+#: ../libepc/tls.c:300
+#, c-format
+msgid "Cannot export private key to PEM format: %s"
+msgstr ""
+
+#: ../libepc/tls.c:314
+#, c-format
+msgid "Failed to create private key folder '%s': %s"
+msgstr ""
+
+#: ../libepc/tls.c:330
+#, c-format
+msgid "Failed to create private key file '%s': %s"
+msgstr ""
+
+#: ../libepc/tls.c:344
+#, c-format
+msgid "Failed to write private key file '%s': %s"
+msgstr ""
+
+#: ../libepc/tls.c:416
+#, c-format
+msgid "Cannot create self signed server key for '%s': %s"
+msgstr ""
+
+#: ../libepc/tls.c:470
+#, c-format
+msgid "Cannot import server certificate '%s': %s"
+msgstr ""
+
+#: ../libepc/tls.c:525
+#, c-format
+msgid "Cannot export server certificate to PEM format: %s"
+msgstr ""
+
+#: ../libepc/tls.c:539
+#, c-format
+msgid "Failed to create server certificate folder '%s': %s"
+msgstr ""
+
+#: ../libepc-ui/password-dialog.c:102
+msgid "<big><b>Authentication required.</b></big>"
+msgstr "<big><b>Autentisering kreves.</b></big>"
+
+#: ../libepc-ui/password-dialog.c:113
+msgid "_Username:"
+msgstr "Br_ukernavn:"
+
+#: ../libepc-ui/password-dialog.c:119
+msgid "_Password:"
+msgstr "_Passord:"
+
+#: ../libepc-ui/password-dialog.c:125
+msgid "Anonymous Authentication"
+msgstr "Anonym autentisering"
+
+#: ../libepc-ui/password-dialog.c:205
+#, c-format
+msgid "Data source <b>%s</b> requires authentication before permitting access."
+msgstr "Datakilde <b>%s</b> krever autentisering før du kan få tilgang."
+
+#: ../libepc-ui/password-dialog.c:208
+msgid "Authentication required."
+msgstr "Autentisering kreves."
+
