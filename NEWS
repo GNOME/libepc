@@ -1,5 +1,5 @@
 Release 0.3.6
-===========
+=============
 
 	* Build Fixes:
 	  - Add check for gthread. (Brian Pepple) Bug #553181.
