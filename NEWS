@@ -1,3 +1,13 @@
+Release 0.3.6
+===========
+
+	* Build Fixes:
+	  - Add check for gthread. (Brian Pepple) Bug #553181.
+          - Properly express dependencies of libepc-ui-1.0.la.
+            (Mathias Hasselmann)
+	* Avoid a crash. (Murray Cumming) Bug #540631.
+	* Avoid a crash. (Mathias Hasselmann) Bug #539630.
+
 Release 0.3.5
 =============
 
