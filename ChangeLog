@@ -1,3 +1,8 @@
+2008-09-21  Brian Pepple  <bpepple@fedoraproject.org>
+
+	* configure.ac: add missing gthread module check to fix build.
+	Bug #553181.
+
 2008-07-29  Murray Cumming  <murrayc@murrayc.com>
 
 	* libepc/publisher.c: epc_publisher_install_handlers(): Check for 

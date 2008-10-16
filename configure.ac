@@ -43,6 +43,7 @@ PKG_CHECK_MODULES(AVAHI_UI,  [avahi-ui     >= 0.6])
 PKG_CHECK_MODULES(LIBEPC,    [avahi-client >= 0.6
                               avahi-glib   >= 0.6
                               glib-2.0     >= 2.12
+                              gthread-2.0  >= 2.12
                               gmodule-2.0  >= 2.0
                               gobject-2.0  >= 2.4
                               gnutls       >= 1.4
