@@ -1,6 +1,10 @@
-2008-10-16  Murray Cumming  <murrayc@murrayc.com>
+2008-10-17  Murray Cumming  <murrayc@murrayc.com>
 
 	=== Release 0.3.6 ===
+
+2008-10-17  Murray Cumming  <murrayc@murrayc.com>
+
+	* configure.ac: Really increase the version.
 
 2008-09-21  Brian Pepple  <bpepple@fedoraproject.org>
 

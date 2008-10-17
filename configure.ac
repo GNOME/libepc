@@ -1,4 +1,4 @@
-AC_INIT([libepc], [0.3.5], [mathias@openismus.com])
+AC_INIT([libepc], [0.3.6], [mathias@openismus.com])
 AM_INIT_AUTOMAKE([-Wall dist-bzip2 subdir-objects])
 
 GNOME_COMMON_INIT
@@ -34,7 +34,7 @@ AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE],["$GETTEXT_PACKAGE"],[The gettext domain na
 AC_PROG_CC
 AM_PROG_CC_C_O
 AM_PROG_LIBTOOL
-IT_PROG_INTLTOOL([0.36.0])
+IT_PROG_INTLTOOL([0.35.0])
 GTK_DOC_CHECK([1.4])
 AM_GLIB_GNU_GETTEXT
 
