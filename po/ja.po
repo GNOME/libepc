@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: libepc trunk\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=libepc\n"
-"POT-Creation-Date: 2008-04-12 11:43+0900\n"
-"PO-Revision-Date: 2008-04-12 11:43+0900\n"
+"POT-Creation-Date: 2008-10-18 16:06+0900\n"
+"PO-Revision-Date: 2008-10-18 14:47+0900\n"
 "Last-Translator: Takeshi AIHANA <takeshi.aihana@gmail.com>\n"
 "Language-Team: Japanese <takeshi.aihana@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -29,7 +29,7 @@ msgstr "目次"
 msgid "Sorry, no resources published yet."
 msgstr "すみません、未だ公開しているリソースはありません。"
 
-#: ../libepc/publisher.c:2630
+#: ../libepc/publisher.c:2639
 msgid "%a of %u on %h"
 msgstr "%a (%u) @%h"
 
@@ -38,11 +38,16 @@ msgstr "%a (%u) @%h"
 msgid "Cannot create Avahi client: %s"
 msgstr "Avahi のクライアントを生成できません: %s"
 
-#: ../libepc/shell.c:455
+#: ../libepc/shell.c:373
+#, c-format
+msgid "Cannot create Avahi service browser."
+msgstr "Avahi サービス・ブラウザを生成できません"
+
+#: ../libepc/shell.c:459
 msgid "Operation Proceeded"
 msgstr "実行中"
 
-#: ../libepc/shell.c:457
+#: ../libepc/shell.c:461
 msgid "No details known"
 msgstr "詳細は不明です"
 
