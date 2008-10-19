@@ -1,5 +1,9 @@
 2008-10-19  Murray Cumming  <murrayc@murrayc.com>
 
+	=== Release 0.3.7 ===
+
+2008-10-19  Murray Cumming  <murrayc@murrayc.com>
+
 	* Makefile.am: Specify LIBEPC_LIBS for the examples, 
 	because not all (such as gthread-2.0) are implicitly provided 
 	by the build library.

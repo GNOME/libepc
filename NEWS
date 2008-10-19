@@ -1,3 +1,9 @@
+Release 0.3.7
+=============
+
+	* Fix the examples and tests build on some platforms.
+	(Götz Waschk, Murray Cumming) Bug #556689
+
 Release 0.3.6
 =============
 
