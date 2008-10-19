@@ -1,3 +1,10 @@
+2008-10-19  Murray Cumming  <murrayc@murrayc.com>
+
+	* Makefile.am: Specify LIBEPC_LIBS for the examples, 
+	because not all (such as gthread-2.0) are implicitly provided 
+	by the build library.
+	Bug #556689 (Götz Waschk).
+
 2008-10-17  Murray Cumming  <murrayc@murrayc.com>
 
 	=== Release 0.3.6 ===

@@ -144,55 +144,55 @@ libepc_ui_libepc_ui_1_0_la_LDFLAGS		= $(LIBEPC_UI_LIBS) -version-info $(LT_VERSI
 libepc_ui_libepc_ui_1_0_la_LIBADD		= libepc/libepc-1.0.la
 
 examples_list_resources_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-examples_list_resources_LDADD			= libepc/libepc-1.0.la
+examples_list_resources_LDADD			= libepc/libepc-1.0.la $(LIBEPC_LIBS)
 examples_lookup_resource_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-examples_lookup_resource_LDADD			= libepc/libepc-1.0.la
+examples_lookup_resource_LDADD			= libepc/libepc-1.0.la $(LIBEPC_LIBS)
 examples_service_browser_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 examples_service_browser_LDADD			= libepc/libepc-1.0.la
 examples_simple_publisher_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-examples_simple_publisher_LDADD			= libepc/libepc-1.0.la
+examples_simple_publisher_LDADD			= libepc/libepc-1.0.la $(LIBEPC_LIBS)
 
 examples_consumer_ui_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS) $(AVAHI_UI_CFLAGS)
-examples_consumer_ui_LDADD			= libepc/libepc-1.0.la libepc-ui/libepc-ui-1.0.la $(AVAHI_UI_LIBS)
+examples_consumer_ui_LDADD			= libepc/libepc-1.0.la libepc-ui/libepc-ui-1.0.la $(AVAHI_UI_LIBS) $(LIBEPC_LIBS)
 examples_publisher_ui_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS) $(AVAHI_UI_CFLAGS) -rdynamic
-examples_publisher_ui_LDADD			= libepc/libepc-1.0.la libepc-ui/libepc-ui-1.0.la $(AVAHI_UI_LIBS)
+examples_publisher_ui_LDADD			= libepc/libepc-1.0.la libepc-ui/libepc-ui-1.0.la $(AVAHI_UI_LIBS) $(LIBEPC_LIBS)
 examples_server_credentials_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS)
-examples_server_credentials_LDADD		= libepc/libepc-1.0.la libepc-ui/libepc-ui-1.0.la
+examples_server_credentials_LDADD		= libepc/libepc-1.0.la libepc-ui/libepc-ui-1.0.la $(LIBEPC_LIBS)
 
 tests_libepc_tests_la_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 
 tests_test_consumer_by_info_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_consumer_by_info_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la
+tests_test_consumer_by_info_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la $(LIBEPC_LIBS)
 tests_test_consumer_by_name_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_consumer_by_name_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la
+tests_test_consumer_by_name_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la $(LIBEPC_LIBS)
 tests_test_dispatcher_local_collision_CFLAGS	= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_dispatcher_local_collision_LDADD	= libepc/libepc-1.0.la tests/libepc-tests.la
+tests_test_dispatcher_local_collision_LDADD	= libepc/libepc-1.0.la tests/libepc-tests.la $(LIBEPC_LIBS)
 tests_test_dispatcher_multiple_services_CFLAGS	= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_dispatcher_multiple_services_LDADD	= libepc/libepc-1.0.la tests/libepc-tests.la
+tests_test_dispatcher_multiple_services_LDADD	= libepc/libepc-1.0.la tests/libepc-tests.la $(LIBEPC_LIBS)
 tests_test_dispatcher_rename_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_dispatcher_rename_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la
+tests_test_dispatcher_rename_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la $(LIBEPC_LIBS)
 tests_test_dispatcher_reset_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_dispatcher_reset_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la
+tests_test_dispatcher_reset_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la $(LIBEPC_LIBS)
 tests_test_dispatcher_simple_service_CFLAGS	= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_dispatcher_simple_service_LDADD	= libepc/libepc-1.0.la tests/libepc-tests.la
+tests_test_dispatcher_simple_service_LDADD	= libepc/libepc-1.0.la tests/libepc-tests.la $(LIBEPC_LIBS)
 tests_test_dispatcher_subtypes_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_dispatcher_subtypes_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la
+tests_test_dispatcher_subtypes_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la $(LIBEPC_LIBS)
 tests_test_dispatcher_unique_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_dispatcher_unique_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la
+tests_test_dispatcher_unique_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la $(LIBEPC_LIBS)
 tests_test_expand_name_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_expand_name_LDADD			= libepc/libepc-1.0.la tests/libepc-tests.la
+tests_test_expand_name_LDADD			= libepc/libepc-1.0.la tests/libepc-tests.la $(LIBEPC_LIBS)
 tests_test_progress_hooks_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS)
-tests_test_progress_hooks_LDADD			= libepc/libepc-1.0.la libepc-ui/libepc-ui-1.0.la tests/libepc-tests.la
+tests_test_progress_hooks_LDADD			= libepc/libepc-1.0.la libepc-ui/libepc-ui-1.0.la tests/libepc-tests.la $(LIBEPC_LIBS)
 tests_test_publisher_bookmarks_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_publisher_bookmarks_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la
+tests_test_publisher_bookmarks_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la $(LIBEPC_LIBS)
 tests_test_publisher_change_name_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_publisher_change_name_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la
+tests_test_publisher_change_name_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la $(LIBEPC_LIBS)
 tests_test_publisher_libsoup_494128_CFLAGS	= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_publisher_libsoup_494128_LDADD	= libepc/libepc-1.0.la tests/libepc-tests.la
+tests_test_publisher_libsoup_494128_LDADD	= libepc/libepc-1.0.la tests/libepc-tests.la $(LIBEPC_LIBS)
 tests_test_publisher_unique_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_publisher_unique_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la
+tests_test_publisher_unique_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la $(LIBEPC_LIBS)
 tests_test_service_type_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-tests_test_service_type_LDADD			= libepc/libepc-1.0.la tests/libepc-tests.la
+tests_test_service_type_LDADD			= libepc/libepc-1.0.la tests/libepc-tests.la $(LIBEPC_LIBS)
 
 # ==================
 # -- CUSTOM RULES --
