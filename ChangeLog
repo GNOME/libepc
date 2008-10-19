@@ -1,3 +1,10 @@
+2008-10-19  Mathias Hasselmann  <mathias@taschenorakel.de>
+
+	Don't expect Avahi to announce services on interfaces named "*:avahi".
+
+	* tests/framework.c (epc_test_list_ifaces()):
+	  Ignore interfaces with ":avahi" suffix.
+
 2008-10-19  Mathias Hasselmann  <mathias@openismus.com>
 
 	Remove redundant epc_gettext() function.

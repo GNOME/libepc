@@ -180,7 +180,8 @@ epc_test_list_ifaces (void)
           goto out;
         }
 
-      if (req->ifr_flags & (IFF_LOOPBACK | IFF_POINTOPOINT))
+      if (req->ifr_flags & (IFF_LOOPBACK | IFF_POINTOPOINT) ||
+          g_str_has_suffix (ifaces[j].name, ":avahi"))
         {
           g_free (ifaces[j].name);
           ifaces[j].name = NULL;
