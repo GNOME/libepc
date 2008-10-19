@@ -22,11 +22,11 @@
 #include "libepc/consumer.h"
 
 #include "libepc/enums.h"
-#include "libepc/i18n.h"
 #include "libepc/marshal.h"
 #include "libepc/service-monitor.h"
 #include "libepc/shell.h"
 
+#include <glib/gi18n-lib.h>
 #include <libsoup/soup.h>
 #include <string.h>
 

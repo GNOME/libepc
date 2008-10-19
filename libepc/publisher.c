@@ -22,11 +22,10 @@
 #include "libepc/publisher.h"
 #include "libepc/dispatcher.h"
 #include "libepc/enums.h"
-#include "libepc/i18n.h"
 #include "libepc/shell.h"
 #include "libepc/tls.h"
 
-#include <glibconfig.h>
+#include <glib/gi18n-lib.h>
 #include <libsoup/soup.h>
 #include <string.h>
 

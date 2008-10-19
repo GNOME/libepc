@@ -1,8 +1,13 @@
+Release 0.3.x
+=============
+
+	* Drop redundant epc_gettext() function (Mathias Hasselmann).
+
 Release 0.3.7
 =============
 
-	* Fix the examples and tests build on some platforms.
-	(Götz Waschk, Murray Cumming) Bug #556689
+	* Fix the examples and tests build on some platforms
+	  (Götz Waschk, Murray Cumming) Bug #556689.
 
 Release 0.3.6
 =============

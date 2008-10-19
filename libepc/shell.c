@@ -19,12 +19,12 @@
  *      Mathias Hasselmann
  */
 #include "libepc/shell.h"
-#include "libepc/i18n.h"
 
 #include <avahi-common/error.h>
 #include <avahi-glib/glib-malloc.h>
 #include <avahi-glib/glib-watch.h>
 
+#include <glib/gi18n-lib.h>
 #include <glib-object.h>
 #include <gmodule.h>
 
@@ -121,6 +121,9 @@ epc_shell_init (void)
 
       epc_shell_avahi_poll = avahi_glib_poll_new (NULL, G_PRIORITY_DEFAULT);
       g_assert (NULL != epc_shell_avahi_poll);
+
+      bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+      bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
     }
 }
 

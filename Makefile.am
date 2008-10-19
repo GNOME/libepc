@@ -69,8 +69,6 @@ libepc_headers = \
 	$(srcdir)/libepc/service-type.h \
 	$(srcdir)/libepc/shell.h \
 	$(srcdir)/libepc/tls.h
-noinst_HEADERS = \
-	$(srcdir)/libepc/i18n.h
 libepc_include_HEADERS = \
 	$(libepc_headers) \
 	libepc/enums.h \
@@ -107,7 +105,6 @@ libepc_libepc_1_0_la_SOURCES = \
 	libepc/enums.c \
 	libepc/enums.c.in \
 	libepc/enums.h.in \
-	libepc/i18n.c \
 	libepc/marshal.c \
 	libepc/marshal.list \
 	libepc/protocol.c \
@@ -134,7 +131,8 @@ AM_CFLAGS = \
 	-DG_DISABLE_DEPRECATED=1 \
 	-DGDK_DISABLE_DEPRECATED=1 \
 	-DGTK_DISABLE_DEPRECATED=1 \
-	-DLOCALEDIR=\"$(localedir)\"
+	-DLOCALEDIR=\"$(localedir)\" \
+	-DGETTEXT_PACKAGE=\"@GETTEXT_PACKAGE@\"
 
 libepc_libepc_1_0_la_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS) -DG_LOG_DOMAIN=\"libepc\"
 libepc_libepc_1_0_la_LDFLAGS			= $(LIBEPC_LIBS) -version-info $(LT_VERSION_INFO)

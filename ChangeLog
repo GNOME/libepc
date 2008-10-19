@@ -1,3 +1,21 @@
+2008-10-19  Mathias Hasselmann  <mathias@openismus.com>
+
+	Remove redundant epc_gettext() function.
+
+	* Makefile.am:
+	* libepc/i18n.c:
+	* libepc/i18n.h:
+	  Remove libepc/i18n.[ch].
+
+	* libepc/consumer.c:
+	* libepc/publisher.c:
+	* libepc/tls.c:
+	* libepc-ui/password-dialog.c:
+	* libepc-ui/progress-window.c:
+	* libepc/shell.c (epc_shell_init()):
+	  Include <glib/gi18n-lib.h> instead of "libepc/i18n.h".
+	  Bind localedir in epc_shell_init() instead of epc_gettext().
+
 2008-10-19  Murray Cumming  <murrayc@murrayc.com>
 
 	=== Release 0.3.7 ===
