@@ -92,7 +92,7 @@ main (void)
         goto out;
 
       epc_dispatcher_add_service (dispatcher2, EPC_ADDRESS_UNSPEC,
-                                  test_type, NULL, NULL, 2007, NULL);
+                                  test_type, NULL, NULL, 2008, NULL);
 
       result = epc_test_run ();
 

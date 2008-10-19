@@ -1,5 +1,13 @@
 2008-10-19  Mathias Hasselmann  <mathias@taschenorakel.de>
 
+	Use different service ports for dispatchers since new Avahi only
+	report local collisions under that condition. Might be a bug in Avahi.
+
+	* tests/test-dispatcher-local-collision.c (main()):
+	  Use port 2008 for dispatcher2.
+
+2008-10-19  Mathias Hasselmann  <mathias@taschenorakel.de>
+
 	Don't expect Avahi to announce services on interfaces named "*:avahi".
 
 	* tests/framework.c (epc_test_list_ifaces()):
