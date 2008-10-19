@@ -24,6 +24,7 @@ test -n "$EPC_DEBUG" && echo "$0: running $1..."
 
 EPC_DEBUG="${EPC_DEBUG:-1}" \
 G_DEBUG="${G_DEBUG:-fatal-warnings}" \
+DBUS_SYSTEM_BUS_ADDRESS="${DBUS_SYSTEM_BUS_ADDRESS:-unix:abstract=/var/run/dbus/system_bus_socket}" \
 "$@" 2> "$1.err" > "$1.out"
 
 result=$?

@@ -1,7 +1,8 @@
-Release 0.3.x
+Release 0.3.8
 =============
 
 	* Drop redundant epc_gettext() function (Mathias Hasselmann).
+	* Make unit tests more robust (Mathias Hasselmann).
 
 Release 0.3.7
 =============
