@@ -1,3 +1,7 @@
+2008-10-19  Murray Cumming  <murrayc@murrayc.com>
+
+	=== Release 0.3.8 ===
+
 2008-10-19  Mathias Hasselmann  <mathias@taschenorakel.de>
 
 	Provide a default value for DBUS_SYSTEM_BUS_ADDRESS.

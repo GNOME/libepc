@@ -1,4 +1,4 @@
-AC_INIT([libepc], [0.3.7], [mathias@openismus.com])
+AC_INIT([libepc], [0.3.8], [mathias@openismus.com])
 AM_INIT_AUTOMAKE([-Wall dist-bzip2 subdir-objects])
 
 GNOME_COMMON_INIT
@@ -16,7 +16,7 @@ dnl    the last update, increment CURRENT, and set REVISION to 0.
 dnl 4. If any interfaces have been added, then increment AGE.
 dnl 5. If any interfaces have been removed, then set AGE to 0.
 dnl
-LT_VERSION_INFO="1:2:0"
+LT_VERSION_INFO="2:0:0"
 AC_SUBST(LT_VERSION_INFO)
 
 AC_CONFIG_HEADER([config.h])
