@@ -367,6 +367,9 @@ epc_shell_create_service_browser (AvahiIfIndex                interface,
   AvahiClient *client = epc_shell_get_avahi_client (error);
   AvahiServiceBrowser *browser = NULL;
 
+  if (error && *error)
+    return;
+
   if (NULL != client)
     browser = avahi_service_browser_new (client, interface, protocol, type,
                                          domain, flags, callback, user_data);
