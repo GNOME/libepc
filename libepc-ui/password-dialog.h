@@ -21,7 +21,7 @@
 #ifndef __EPC_PASSWORD_DIALOG_H__
 #define __EPC_PASSWORD_DIALOG_H__
 
-#include <gtk/gtkdialog.h>
+#include <gtk/gtk.h>
 #include <libepc/consumer.h>
 
 G_BEGIN_DECLS

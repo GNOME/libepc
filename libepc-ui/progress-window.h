@@ -21,7 +21,7 @@
 #ifndef __EPC_PROGRESS_WINDOW_H__
 #define __EPC_PROGRESS_WINDOW_H__
 
-#include <gtk/gtkwindow.h>
+#include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 

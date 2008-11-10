@@ -1,3 +1,9 @@
+2008-11-10  Cosimo Cecchi  <cosimoc@gnome.org>
+
+	* libepc-ui/password-dialog.h:
+	* libepc-ui/progress-window.h:
+	Use single GTK+ includes.
+
 2008-11-02  Murray Cumming  <murrayc@murrayc.com>
 
 	* libepc/shell.c (epc_shell_create_service_browser): 
