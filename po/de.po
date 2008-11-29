@@ -1,136 +1,141 @@
 # German libepc translation
 # Copyright (C) 2008 Openismus GmbH
-# This file is distributed under the same license as the PACKAGE package.
+# This file is distributed under the same license as the libepc package.
 # Mathias Hasselmann <mathias@openismus.com>, 2008.
+# Mario Blättermann <mariobl@gnome.org>, 2008.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: libepc HEAD\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=libepc\n"
-"POT-Creation-Date: 2008-01-16 15:16+0100\n"
-"PO-Revision-Date: 2008-01-16 15:20+0100\n"
-"Last-Translator: Mathias Hasselmann <mathias@openismus.com>\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=libepc\n"
+"POT-Creation-Date: 2008-11-29 12:20+0100\n"
+"PO-Revision-Date: 2008-11-29 12:25+0100\n"
+"Last-Translator: Mario Blättermann <mariobl@gnome.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: libepc/consumer.c:1021
+#: ../libepc/consumer.c:1079
 #, c-format
 msgid "Unexpected element: '%s'"
-msgstr "Unerwartetes element: '%s'"
+msgstr "Unerwartetes Element: '%s'"
 
-#: libepc/publisher.c:570
+#: ../libepc/publisher.c:659
 msgid "Table of Contents"
 msgstr "Inhaltsverzeichnis"
 
-#: libepc/publisher.c:604
+#: ../libepc/publisher.c:693
 msgid "Sorry, no resources published yet."
-msgstr "Es wurden bislang keine Dokumente veröffenticht."
+msgstr "Es wurden bislang keine Dokumente veröffentlicht."
 
-#: libepc/publisher.c:2373
+#: ../libepc/publisher.c:2638
 msgid "%a of %u on %h"
 msgstr "%a von %u auf %h"
 
-#: libepc/shell.c:264
+#: ../libepc/shell.c:267
 #, c-format
 msgid "Cannot create Avahi client: %s"
-msgstr "Fehler beim Verbinden mit dem Avahi-Dienst: %s"
+msgstr "Fehler beim Erstellen des Avahi-Clients: %s"
 
-#: libepc/shell.c:455
+#: ../libepc/shell.c:379
+#, c-format
+msgid "Cannot create Avahi service browser."
+msgstr "Fehler beim Erstellen des Avahi-Dienstbrowsers."
+
+#: ../libepc/shell.c:465
 msgid "Operation Proceeded"
-msgstr "Vorgang Fortgeschritten"
+msgstr "Vorgang fortgeschritten"
 
-#: libepc/shell.c:457
+#: ../libepc/shell.c:467
 msgid "No details known"
 msgstr "Keine weiteren Details bekannt"
 
-#: libepc/tls.c:165
+#: ../libepc/tls.c:165
 msgid "Generating Server Key"
-msgstr "Erzeuge Server-Schlüssel"
+msgstr "Server-Schlüssel wird erzeugt"
 
-#: libepc/tls.c:166
+#: ../libepc/tls.c:166
 msgid ""
-"This may take some time. Type on the keyboard, move your mouse, or browse "
-"the web to generate some entropy."
+"This may take some time. Type on the keyboard, move your mouse, or browse the "
+"web to generate some entropy."
 msgstr ""
-"Dies wird eine Weile dauern. Benutzen Sie bitte die Tastatur und Mouse, oder "
+"Dies wird eine Weile dauern. Benutzen Sie bitte die Tastatur und Maus, oder "
 "besuchen Sie Web-Seiten, um Zufallswerte zu erzeugen."
 
-#: libepc/tls.c:191
+#: ../libepc/tls.c:191
 #, c-format
 msgid "Cannot create private server key: %s"
 msgstr "Fehler beim Erzeugen des geheimen Server-Schlüssels: %s"
 
-#: libepc/tls.c:244
+#: ../libepc/tls.c:244
 #, c-format
 msgid "Cannot import private server key '%s': %s"
 msgstr "Fehler beim Lesen des privaten Server-Schlüssels '%s': %s"
 
-#: libepc/tls.c:300
+#: ../libepc/tls.c:300
 #, c-format
 msgid "Cannot export private key to PEM format: %s"
 msgstr "Fehler beim Umwandeln des privaten Schlüssels ins PEM-Format: %s"
 
-#: libepc/tls.c:314
+#: ../libepc/tls.c:314
 #, c-format
 msgid "Failed to create private key folder '%s': %s"
 msgstr "Fehler beim Anlegen des Ordners '%s' für private Schlüssel: %s"
 
-#: libepc/tls.c:330
+#: ../libepc/tls.c:330
 #, c-format
 msgid "Failed to create private key file '%s': %s"
 msgstr "Fehler beim Anlegen des privaten Schlüssels '%s': %s"
 
-#: libepc/tls.c:344
+#: ../libepc/tls.c:344
 #, c-format
 msgid "Failed to write private key file '%s': %s"
 msgstr "Fehler beim Schreiben des privaten Schlüssels '%s': %s"
 
-#: libepc/tls.c:416
+#: ../libepc/tls.c:416
 #, c-format
 msgid "Cannot create self signed server key for '%s': %s"
 msgstr ""
-"Fehler beim Erzeugen des selbst unterschriebenen Server-Schlüssels für '%s': "
-"%s"
+"Fehler beim Erzeugen des selbstsignierten Server-Schlüssels für '%s': %s"
 
-#: libepc/tls.c:470
+#: ../libepc/tls.c:470
 #, c-format
 msgid "Cannot import server certificate '%s': %s"
 msgstr "Fehler beim Lesen des Server-Zertifikates '%s': %s"
 
-#: libepc/tls.c:525
+#: ../libepc/tls.c:525
 #, c-format
 msgid "Cannot export server certificate to PEM format: %s"
 msgstr "Fehler beim Umwandeln des Server-Zertifikates ins PEM-Format: %s"
 
-#: libepc/tls.c:539
+#: ../libepc/tls.c:539
 #, c-format
 msgid "Failed to create server certificate folder '%s': %s"
 msgstr "Fehler beim Anlegen des Ordners '%s' für Server-Zertifikate: %s"
 
-#: libepc-ui/password-dialog.c:102
+#: ../libepc-ui/password-dialog.c:102
 msgid "<big><b>Authentication required.</b></big>"
-msgstr "<big><b>Authentifizierung erforderlich.</b></big>"
+msgstr "<big><b>Legitimierung erforderlich.</b></big>"
 
-#: libepc-ui/password-dialog.c:113
+#: ../libepc-ui/password-dialog.c:113
 msgid "_Username:"
-msgstr "_Nutzername:"
+msgstr "_Benutzername:"
 
-#: libepc-ui/password-dialog.c:119
+#: ../libepc-ui/password-dialog.c:119
 msgid "_Password:"
 msgstr "_Passwort:"
 
-#: libepc-ui/password-dialog.c:125
+#: ../libepc-ui/password-dialog.c:125
 msgid "Anonymous Authentication"
 msgstr "Anonyme Nutzung"
 
-#: libepc-ui/password-dialog.c:205
+#: ../libepc-ui/password-dialog.c:205
 #, c-format
 msgid "Data source <b>%s</b> requires authentication before permitting access."
-msgstr "Sie müssen sich authentifizieren, um auf die Datenquelle <b>%s</b> zuzugreifen."
+msgstr ""
+"Sie müssen sich legitimieren, um auf die Datenquelle <b>%s</b> zuzugreifen."
 
-#: libepc-ui/password-dialog.c:208
+#: ../libepc-ui/password-dialog.c:208
 msgid "Authentication required."
-msgstr "Authentifizierung erforderlich."
+msgstr "Legitimierung erforderlich."
