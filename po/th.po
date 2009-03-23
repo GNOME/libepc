@@ -1,0 +1,137 @@
+# Thai translation of libepc.
+# Copyright (C) 2009 Free Software Foundation, Inc.
+# This file is distributed under the same license as the libepc package.
+# Akom C. <knight2000@gmail.com>, 2009.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libepc\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=libepc&component=general\n"
+"POT-Creation-Date: 2009-02-07 17:02+0000\n"
+"PO-Revision-Date: 2009-03-23 11:46+0700\n"
+"Last-Translator: Akom C. <knight2000@gmail.com>\n"
+"Language-Team: Thai <thai-l10n@googlegroups.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../libepc/consumer.c:1079
+#, c-format
+msgid "Unexpected element: '%s'"
+msgstr "พบอิลิเมนต์ที่ไม่คาดหมาย: '%s'"
+
+#: ../libepc/publisher.c:659
+msgid "Table of Contents"
+msgstr "สารบัญ"
+
+#: ../libepc/publisher.c:693
+msgid "Sorry, no resources published yet."
+msgstr "ขออภัย ยังไม่เผยแพร่ทรัพยากร"
+
+#: ../libepc/publisher.c:2638
+msgid "%a of %u on %h"
+msgstr "%a ของ %u ที่ %h"
+
+#: ../libepc/shell.c:267
+#, c-format
+msgid "Cannot create Avahi client: %s"
+msgstr "ไม่สามารถสร้างลูกข่าย Avahi: %s"
+
+#: ../libepc/shell.c:379
+#, c-format
+msgid "Cannot create Avahi service browser."
+msgstr "ไม่สามารถสร้างเบราว์เซอร์บริการของ Avahi ได้"
+
+#: ../libepc/shell.c:465
+msgid "Operation Proceeded"
+msgstr "ดำเนินการการกระทำแล้ว"
+
+#: ../libepc/shell.c:467
+msgid "No details known"
+msgstr "ไม่ทราบรายละเอียด"
+
+#: ../libepc/tls.c:165
+msgid "Generating Server Key"
+msgstr "กำลังสร้างกุญแจเซิร์ฟเวอร์"
+
+#: ../libepc/tls.c:166
+msgid ""
+"This may take some time. Type on the keyboard, move your mouse, or browse "
+"the web to generate some entropy."
+msgstr "การกระทำนี้อาจใช้เวลา กรุณาพิมพ์บนแป้นพิมพ์ เลื่อนเมาส์ หรือเรียกดูเว็บ เพื่อสร้างข้อมูลสุ่ม"
+
+#: ../libepc/tls.c:191
+#, c-format
+msgid "Cannot create private server key: %s"
+msgstr "ไม่สามารถสร้างกุญแจส่วนตัวของเซิร์ฟเวอร์: %s"
+
+#: ../libepc/tls.c:244
+#, c-format
+msgid "Cannot import private server key '%s': %s"
+msgstr "ไม่สามารถนำเข้ากุญแจส่วนตัวของเซิร์ฟเวอร์ '%s': %s"
+
+#: ../libepc/tls.c:300
+#, c-format
+msgid "Cannot export private key to PEM format: %s"
+msgstr "ไม่สามารถส่งออกกุญแจส่วนตัวในรูปแบบ PEM: %s"
+
+#: ../libepc/tls.c:314
+#, c-format
+msgid "Failed to create private key folder '%s': %s"
+msgstr "สร้างโฟลเดอร์กุญแจส่วนตัว '%s' ไม่สำเร็จ: %s"
+
+#: ../libepc/tls.c:330
+#, c-format
+msgid "Failed to create private key file '%s': %s"
+msgstr "สร้างแฟ้มกุญแจส่วนตัว '%s' ไม่สำเร็จ: %s"
+
+#: ../libepc/tls.c:344
+#, c-format
+msgid "Failed to write private key file '%s': %s"
+msgstr "เขียนแฟ้มกุญแจส่วนตัว '%s' ไม่สำเร็จ: %s"
+
+#: ../libepc/tls.c:416
+#, c-format
+msgid "Cannot create self signed server key for '%s': %s"
+msgstr "ไม่สามารถสร้างกุญแจเซิร์ฟเวอร์ที่เซ็นกำกับเองสำหรับ '%s': %s"
+
+#: ../libepc/tls.c:470
+#, c-format
+msgid "Cannot import server certificate '%s': %s"
+msgstr "ไม่สามารถนำเข้าใบรับรองเซิร์ฟเวอร์ '%s': %s"
+
+#: ../libepc/tls.c:525
+#, c-format
+msgid "Cannot export server certificate to PEM format: %s"
+msgstr "ไม่สามารถส่งออกใบรับรองเซิร์ฟเวอร์ในรูปแบบ PEM: %s"
+
+#: ../libepc/tls.c:539
+#, c-format
+msgid "Failed to create server certificate folder '%s': %s"
+msgstr "สร้างโฟลเดอร์ใบรับรองเซิร์ฟเวอร์ '%s' ไม่สำเร็จ: %s"
+
+#: ../libepc-ui/password-dialog.c:102
+msgid "<big><b>Authentication required.</b></big>"
+msgstr "<big><b>ต้องยืนยันตัวบุคคล</b></big>"
+
+#: ../libepc-ui/password-dialog.c:113
+msgid "_Username:"
+msgstr "_ชื่อผู้ใช้:"
+
+#: ../libepc-ui/password-dialog.c:119
+msgid "_Password:"
+msgstr "_รหัสผ่าน:"
+
+#: ../libepc-ui/password-dialog.c:125
+msgid "Anonymous Authentication"
+msgstr "การยืนยันตัวบุคคลนิรนาม"
+
+#: ../libepc-ui/password-dialog.c:205
+#, c-format
+msgid "Data source <b>%s</b> requires authentication before permitting access."
+msgstr "แหล่งข้อมูล <b>%s</b> ต้องยืนยันตัวบุคคลก่อนอนุญาตให้เข้าใช้"
+
+#: ../libepc-ui/password-dialog.c:208
+msgid "Authentication required."
+msgstr "ต้องยืนยันตัวบุคคล"
