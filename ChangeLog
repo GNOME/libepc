@@ -1,3 +1,8 @@
+2009-05-18  Murray Cumming  <murrayc@murrayc.com>
+
+	* libepc/shell.c (epc_shell_create_service_browser): Fix a warning about 
+	no return value. Bug #583000 (Vincent Untz).
+
 	=== Release 0.3.9 ===
 
 2008-11-10  Cosimo Cecchi  <cosimoc@gnome.org>
