@@ -1,3 +1,5 @@
+	=== Release 0.3.10 ===
+
 2009-05-18  Murray Cumming  <murrayc@murrayc.com>
 
 	* libepc/shell.c (epc_shell_create_service_browser): Fix a warning about 

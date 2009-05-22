@@ -1,4 +1,4 @@
-AC_INIT([libepc], [0.3.9], [mathias@openismus.com])
+AC_INIT([libepc], [0.3.10], [mathias@openismus.com])
 AM_INIT_AUTOMAKE([-Wall dist-bzip2 subdir-objects])
 
 GNOME_COMMON_INIT

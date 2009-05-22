@@ -1,3 +1,10 @@
+Release 0.3.10
+=============
+
+	* epc_shell_create_service_browser(): Fix a warning about 
+	no return value, possibly avoiding a crash elsewhere.
+        (Murray Cumming) Bug #583000 (Vincent Untz).
+
 Release 0.3.9
 =============
 
