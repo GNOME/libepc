@@ -462,7 +462,11 @@ epc_shell_progress_update_default (gdouble      progress,
   title = *context;
 
   if (NULL == title)
-    title = _("Operation Proceeded");
+  {
+    // Translators: This is just a generic default message for a progress bar.
+    title = _("Operation in Progress");
+  }
+
   if (NULL == message)
     message = _("No details known");
 

@@ -1,3 +1,10 @@
+2009-08-21  Murray Cumming  <murrayc@murrayc.com>
+
+	* libepc/shell.c (epc_shell_progress_update_default):
+	Change the Operation Proceeded string to the more correct Operation in 
+	Progress and added a translator comment, to fix bug #589339.
+	(Luca Ferretti)
+
 	=== Release 0.3.10 ===
 
 2009-05-18  Murray Cumming  <murrayc@murrayc.com>
