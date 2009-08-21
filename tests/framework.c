@@ -195,6 +195,12 @@ epc_test_list_ifaces (void)
           goto out;
         }
 
+/* The following allows to fall back to ifr_index on kFreeBSD, where 
+   ifr_ifindex does not exist. See bug #592474. */
+#if !defined(ifr_ifindex) && defined(ifr_index)
+#define ifr_ifindex ifr_index
+#endif
+
       ifaces[j].ifidx = req->ifr_ifindex;
       ifaces[j].mask = epc_test_result;
 

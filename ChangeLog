@@ -1,3 +1,11 @@
+2009-08-21  Josselin Mouette  <joss@malsain.org>
+
+	Patch by Petr Salinger.
+
+	* tests/framework.c (epc_test_list_ifaces):
+	Use ifr_index if ifr_ifindex does not exist. Fixes build failure 
+	on GNU/kFreeBSD. Bug #592474.
+
 2009-08-21  Murray Cumming  <murrayc@murrayc.com>
 
 	* libepc/shell.c (epc_shell_progress_update_default):
