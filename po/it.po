@@ -1,15 +1,15 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Italian translation for libepc	.
+# Copyright (C) 2009, Free Software Foundation, Inc.
+# This file is distributed under the same license as the libepc package.
+# Luca Ferretti <elle.uca@libero.it>, 2009.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: libepc\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=libepc\n"
-"POT-Creation-Date: 2008-09-10 10:34+0200\n"
-"PO-Revision-Date: 2008-09-10 10:40+0200\n"
+"product=libepc&component=general\n"
+"POT-Creation-Date: 2009-08-21 08:13+0000\n"
+"PO-Revision-Date: 2009-08-21 10:43+0200\n"
 "Last-Translator: Luca Ferretti <elle.uca@libero.it>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
 "MIME-Version: 1.0\n"
@@ -22,43 +22,43 @@ msgid "Unexpected element: '%s'"
 msgstr "Elemento inatteso: \"%s\""
 
 # usato per creare una pagina html
-#: ../libepc/publisher.c:660
+#: ../libepc/publisher.c:659
 msgid "Table of Contents"
 msgstr "Indice"
 
-#: ../libepc/publisher.c:694
+#: ../libepc/publisher.c:693
 msgid "Sorry, no resources published yet."
 msgstr "Nessuna risorsa pubblicata."
 
 # %a nome del programma
 # %u nome dell'utente
 # %h nome dell'host
-#: ../libepc/publisher.c:2639
+#: ../libepc/publisher.c:2638
 msgid "%a of %u on %h"
 msgstr "%a di %u su %h"
 
-#: ../libepc/shell.c:264
+#: ../libepc/shell.c:267
 #, c-format
 msgid "Cannot create Avahi client: %s"
 msgstr "Impossibile creare il client Avahi: %s"
 
-#: ../libepc/shell.c:373
+#: ../libepc/shell.c:379
 #, c-format
 msgid "Cannot create Avahi service browser."
 msgstr "Impossibile creare l'esploratore di servizi Avahi."
 
-#: ../libepc/shell.c:459
-#, fuzzy
-msgid "Operation Proceeded"
+#. Translators: This is just a generic default message for a progress bar.
+#: ../libepc/shell.c:467
+msgid "Operation in Progress"
 msgstr "Operazione in corso"
 
-#: ../libepc/shell.c:461
+#: ../libepc/shell.c:471
 msgid "No details known"
 msgstr "Nessun dettaglio noto"
 
 #: ../libepc/tls.c:165
 msgid "Generating Server Key"
-msgstr "Generazione server di chiavi"
+msgstr "Generazione chiave server"
 
 #: ../libepc/tls.c:166
 msgid ""
@@ -101,7 +101,7 @@ msgstr "Scrittura del file «%s» di chiave privata non riuscita: %s"
 #: ../libepc/tls.c:416
 #, c-format
 msgid "Cannot create self signed server key for '%s': %s"
-msgstr ""
+msgstr "Impossibile creare chiave server auto-firmata per «%s»: %s"
 
 #: ../libepc/tls.c:470
 #, c-format
@@ -116,7 +116,8 @@ msgstr "Impossibile esportare il certificato del server nel formato PEM: %s"
 #: ../libepc/tls.c:539
 #, c-format
 msgid "Failed to create server certificate folder '%s': %s"
-msgstr "Creazione della cartella «%s» del certificato del server non riuscita: %s"
+msgstr ""
+"Creazione della cartella «%s» del certificato del server non riuscita: %s"
 
 #: ../libepc-ui/password-dialog.c:102
 msgid "<big><b>Authentication required.</b></big>"
@@ -128,7 +129,7 @@ msgstr "Nome _utente:"
 
 #: ../libepc-ui/password-dialog.c:119
 msgid "_Password:"
-msgstr "_Password:"
+msgstr "Pass_word:"
 
 #: ../libepc-ui/password-dialog.c:125
 msgid "Anonymous Authentication"
