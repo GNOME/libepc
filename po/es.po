@@ -2,18 +2,19 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jorge González <jorgegonz@svn.gnome.org>, 2008.
+# Jorge González <jorgegonz@svn.gnome.org>, 2008, 2009.
 msgid ""
 msgstr ""
 "Project-Id-Version: libepc.HEAD\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=libepc\n"
-"POT-Creation-Date: 2008-06-22 20:13+0000\n"
-"PO-Revision-Date: 2008-06-27 14:48+0200\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=libepc&component=general\n"
+"POT-Creation-Date: 2009-08-21 08:13+0000\n"
+"PO-Revision-Date: 2009-08-22 13:22+0200\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: UTF-8\n"
 "X-Generator: KBabel 1.11.4\n"
 "Plural-Forms:  nplurals=2; plural=(n != 1);\n"
 
@@ -22,33 +23,35 @@ msgstr ""
 msgid "Unexpected element: '%s'"
 msgstr "Elemento no esperado: «%s»"
 
-#: ../libepc/publisher.c:660
+#: ../libepc/publisher.c:659
 msgid "Table of Contents"
 msgstr "Tabla de contenidos"
 
-#: ../libepc/publisher.c:694
+#: ../libepc/publisher.c:693
 msgid "Sorry, no resources published yet."
 msgstr "Aún no hay recursos publicados."
 
-#: ../libepc/publisher.c:2630
+#: ../libepc/publisher.c:2638
 msgid "%a of %u on %h"
 msgstr "%a de %u en %h"
 
-#: ../libepc/shell.c:264
+#: ../libepc/shell.c:267
 #, c-format
 msgid "Cannot create Avahi client: %s"
 msgstr "No se puede crear el cliente Avahi: %s"
 
-#: ../libepc/shell.c:373
+#: ../libepc/shell.c:379
 #, c-format
 msgid "Cannot create Avahi service browser."
 msgstr "No se puede crear el cliente examinador del servicio Avahi."
 
-#: ../libepc/shell.c:459
-msgid "Operation Proceeded"
-msgstr "Operación en proceso"
+#. Translators: This is just a generic default message for a progress bar.
+#: ../libepc/shell.c:467
+#| msgid "Operation Proceeded"
+msgid "Operation in Progress"
+msgstr "Operación en progreso"
 
-#: ../libepc/shell.c:461
+#: ../libepc/shell.c:471
 msgid "No details known"
 msgstr "Sin detalles conocidos"
 
@@ -140,4 +143,3 @@ msgstr ""
 #: ../libepc-ui/password-dialog.c:208
 msgid "Authentication required."
 msgstr "Se requiere autenticación."
-
