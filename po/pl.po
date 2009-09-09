@@ -9,10 +9,10 @@ msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=libepc\n"
-"POT-Creation-Date: 2009-01-12 22:53+0100\n"
-"PO-Revision-Date: 2008-12-12 23:55+0100\n"
+"POT-Creation-Date: 2009-09-09 02:47+0200\n"
+"PO-Revision-Date: 2009-09-09 02:43+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
-"Language-Team: Aviary.pl <gnomepl@aviary.pl>\n"
+"Language-Team: Polish <gnomepl@aviary.pl>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -44,11 +44,12 @@ msgstr "Nie można utworzyć klienta Avahi: %s"
 msgid "Cannot create Avahi service browser."
 msgstr "Nie można utworzyć przeglądarki usług Avahi."
 
-#: ../libepc/shell.c:465
-msgid "Operation Proceeded"
-msgstr "Przeprowadzono działanie"
-
+#. Translators: This is just a generic default message for a progress bar.
 #: ../libepc/shell.c:467
+msgid "Operation in Progress"
+msgstr "Trwa działanie"
+
+#: ../libepc/shell.c:471
 msgid "No details known"
 msgstr "Brak znanych szczegółów"
 
