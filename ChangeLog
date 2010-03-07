@@ -1,3 +1,11 @@
+2010-03-07  Andre Klapper  <a9016009@gmx.de>
+
+	Replace deprecated GTK_WIDGET_VISIBLE, fixing bug #612108
+
+	* libepc-ui/password-dialog.c: Use new gtk_widget_get_visible() rather
+	than the deprecated GTK_WIDGET_VISIBLE.
+	* configure.ac: Bump GTK+ requirement to 2.18.
+
 2009-08-21  Josselin Mouette  <joss@malsain.org>
 
 	Patch by Petr Salinger.
