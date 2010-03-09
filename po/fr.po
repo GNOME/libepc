@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version:libepc HEAD fr\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=libepc\n"
-"POT-Creation-Date: 2008-11-06 09:41+0100\n"
+"product=libepc&component=general\n"
+"POT-Creation-Date: 2009-08-21 08:13+0000\n"
 "PO-Revision-Date: 2008-08-13 16:26:18+0200\n"
 "Last-Translator: Robert-André Mauchin <zebob.m@pengzone.org>\n"
 "Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
@@ -46,11 +46,12 @@ msgstr "Impossible de créer le client Avahi : %s"
 msgid "Cannot create Avahi service browser."
 msgstr "Impossible de créer le navigateur de services Avahi."
 
-#: ../libepc/shell.c:465
-msgid "Operation Proceeded"
-msgstr "Opération effectuée"
-
+#. Translators: This is just a generic default message for a progress bar.
 #: ../libepc/shell.c:467
+msgid "Operation in Progress"
+msgstr "Opération en cours"
+
+#: ../libepc/shell.c:471
 msgid "No details known"
 msgstr "Aucun détail connu"
 
