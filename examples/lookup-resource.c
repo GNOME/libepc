@@ -23,7 +23,7 @@ lookup (EpcConsumer *consumer,
   /* print the retreived value */
 
   if (value)
-    g_print ("%s\n%d byte(s)\n", value, length);
+    g_print ("%s\n%" G_GSIZE_FORMAT " byte(s)\n", value, length);
   else
     g_print ("%s: %s\n", key, error->message);
 

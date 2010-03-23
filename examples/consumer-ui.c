@@ -81,7 +81,7 @@ keys_combo_changed_cb (GtkComboBox *combo_box,
       /* display the resource content */
 
       markup = g_markup_printf_escaped (
-        "Length of <b>%s</b>: %d %s", key, length,
+        "Length of <b>%s</b>: %" G_GSIZE_FORMAT " %s", key, length,
         ngettext ("byte", "bytes", length));
 
       gtk_text_buffer_set_text (buffer, value, length);

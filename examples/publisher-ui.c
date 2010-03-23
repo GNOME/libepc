@@ -37,6 +37,17 @@ static guint auto_save_id = 0;
 static GtkBuilder *builder = NULL;
 static GtkWidget *item_view = NULL;
 
+void about_button_clicked_cb (GtkWidget *widget);
+void add_item_clicked_cb (void);
+void remove_item_clicked_cb (void);
+void username_changed_cb (GtkEntry *entry);
+void password_changed_cb (GtkEntry *entry);
+void bookmark_changed_cb (GtkEntry *entry);
+void service_name_changed_cb (GtkEntry *entry);
+void publish_state_toggled_cb (GtkToggleToolButton *button);
+void encryption_state_toggled_cb (GtkToggleToolButton *button);
+void main_window_destroy_cb (void);
+
 static EpcDemoItem*
 epc_demo_item_new (const gchar *name,
                    const gchar *text)

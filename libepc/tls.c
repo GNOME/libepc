@@ -226,7 +226,7 @@ epc_tls_private_key_load (const gchar *filename,
 
   g_return_val_if_fail (NULL != filename, NULL);
 
-  if (g_file_get_contents (filename, &contents, &buffer.size, error))
+  if (g_file_get_contents (filename, &contents, (gsize*) &buffer.size, error))
     {
       if (EPC_DEBUG_LEVEL (1))
         g_debug ("%s: Loading private key `%s'", G_STRLOC, filename);
@@ -452,7 +452,7 @@ epc_tls_certificate_load (const gchar *filename,
 
   g_return_val_if_fail (NULL != filename, NULL);
 
-  if (g_file_get_contents (filename, &contents, &buffer.size, error))
+  if (g_file_get_contents (filename, &contents, (gsize*) &buffer.size, error))
     {
       if (EPC_DEBUG_LEVEL (1))
         g_debug ("%s: Loading server certificate `%s'", G_STRLOC, filename);

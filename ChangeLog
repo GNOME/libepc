@@ -1,5 +1,18 @@
 2010-03-23  David King  <davidk@openismus.com>
 
+	Fix several compiler warnings
+
+	* libepc/publisher.c:
+	* examples/lookup-resource.c:
+	* examples/consumer-ui.c: Use G_GSIZE_FORMAT for a gsize parameter in
+	printf format strings.
+
+	* libepc/tls.c: Use gsize* as third parameter to g_file_get_contents().
+
+	* examples/publisher-ui.c: Add prototypes for GtkBuilder callbacks.
+
+2010-03-23  David King  <davidk@openismus.com>
+
 	Modernise autotools configuration
 
 	* configure.ac: Require autoconf 2.63 and automake 1.10.3. Change bug

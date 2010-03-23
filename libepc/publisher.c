@@ -372,7 +372,7 @@ epc_publisher_chunk_cb (SoupMessage *message,
   if (chunk && length)
     {
       if (EPC_DEBUG_LEVEL (1))
-        g_debug ("%s: writing %d bytes", G_STRLOC, length);
+        g_debug ("%s: writing %" G_GSIZE_FORMAT " bytes", G_STRLOC, length);
 
 #ifdef HAVE_LIBSOUP22
       soup_message_add_chunk (message, SOUP_MEMORY_COPY, chunk, length);
