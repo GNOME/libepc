@@ -4,7 +4,7 @@
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
 TESTS_ENVIRONMENT = $(top_srcdir)/tests/test-runner.sh
-ACLOCAL_AMFLAGS = -I m4
+ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 
 # ============================
 # -- DIRECTORY DECLARATIONS --
@@ -79,11 +79,13 @@ libepc_ui_include_HEADERS = \
 pkgconfig_DATA = \
 	libepc-1.0.pc \
 	libepc-ui-1.0.pc
-EXTRA_DIST = \
+dist_noinst_SCRIPTS = \
+	$(srcdir)/tests/test-runner.sh
+dist_noinst_DATA = \
+	$(srcdir)/examples/publisher.ui
 	$(srcdir)/gtk-doc.make \
 	$(gtkdoc_srcdir)/libepc-1.0-docs.xml \
 	$(gtkdoc_srcdir)/libepc-1.0-sections.txt \
-	$(srcdir)/tests/test-runner.sh \
 	$(srcdir)/intltool-extract.in \
 	$(srcdir)/intltool-merge.in \
 	$(srcdir)/intltool-update.in
@@ -127,10 +129,8 @@ tests_libepc_tests_la_SOURCES = \
 # ====================
 
 AM_CFLAGS = \
-	-Wall \
-	-DG_DISABLE_DEPRECATED=1 \
-	-DGDK_DISABLE_DEPRECATED=1 \
-	-DGTK_DISABLE_DEPRECATED=1 \
+	$(WARN_CFLAGS) \
+	$(DISABLE_DEPRECATED) \
 	-DLOCALEDIR=\"$(localedir)\" \
 	-DGETTEXT_PACKAGE=\"@GETTEXT_PACKAGE@\"
 

@@ -4,7 +4,6 @@ srcdir=`dirname $0`
 [ -z "$srcdir" ] && srcdir=.
 
 PKG_NAME=libepc
-REQUIRED_AUTOMAKE_VERSION=1.10
 
 if [ ! -f "$srcdir/libepc/publisher.c" ]; then
  echo "$srcdir doesn't look like source directory for $PKG_NAME" >&2

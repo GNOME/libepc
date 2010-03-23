@@ -1,5 +1,38 @@
 2010-03-23  David King  <davidk@openismus.com>
 
+	Modernise autotools configuration
+
+	* configure.ac: Require autoconf 2.63 and automake 1.10.3. Change bug
+	report link to bugzilla product. Add no-define option to automake
+	configuration. Do not use GNOME_COMMON_INIT. Reorder to the ‘standard
+	configure.ac layout’ as per the autoconf manual. Check deprecation
+	flags with GNOME_MAINTAINER_MODE_DEFINES, to avoid deprecations
+	affecting tarball releases. Enable warnings with
+	GNOME_COMPILE_WARNINGS. Require libtool 2.2.6 for much faster builds.
+	Check for uint16 type. Reduce the duplication of CFLAGS and LDFLAGS
+	by checking for the existence of gio and libsoup separately to
+	pkg-config invocation. Check for existence of glib-2.0 before
+	attempting to use the pkg-config variables.
+
+	* Makefile.am: Adapt to configure.ac changes. Do not use EXTRA_DIST.
+	Distribute examples/publisher.ui.
+
+	* examples/publisher.glade: Remove unused file.
+
+	* libepc-1.0.pc.in:
+	* libepc-ui-1.0.pc.in: Use modern autoconf variable names.
+
+	* INSTALL: Remove generated file from repository.
+
+	* .gitignore: Add INSTALL.
+
+	* m4/.gitignore: Placeholder file so that git creates this ‘empty
+	directory’.
+
+	* autogen.sh: Remove autoconf version check.
+
+2010-03-23  David King  <davidk@openismus.com>
+
 	Drop GTK+ requirement back to 2.10
 
 	* libepc-ui/password-dialog.c: Wrap gtk_widget_get_visible() call in
