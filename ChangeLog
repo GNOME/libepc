@@ -1,3 +1,11 @@
+2010-03-23  David King  <davidk@openismus.com>
+
+	Drop GTK+ requirement back to 2.10
+
+	* libepc-ui/password-dialog.c: Wrap gtk_widget_get_visible() call in
+	an ifdef, so that a newer version of GTK+ is not required.
+	* configure.ac: Drop GTK+ requirement to 2.10.
+
 2010-03-07  Andre Klapper  <a9016009@gmx.de>
 
 	Replace deprecated GTK_WIDGET_VISIBLE, fixing bug #612108

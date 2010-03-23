@@ -404,7 +404,11 @@ gboolean
 epc_password_dialog_get_anonymous_allowed (EpcPasswordDialog *self)
 {
   g_return_val_if_fail (EPC_IS_PASSWORD_DIALOG (self), FALSE);
-  return gtk_widget_get_visible (self->priv->anonymous);
+#if GTK_CHECK_VERSION (2, 19, 7)
+    return gtk_widget_get_visible (self->priv->anonymous);
+#else
+    return GTK_WIDGET_VISIBLE (self->priv->anonymous);
+#endif
 }
 
 /**

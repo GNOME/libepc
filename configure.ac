@@ -48,7 +48,7 @@ PKG_CHECK_MODULES(LIBEPC,    [avahi-client >= 0.6
                               gobject-2.0  >= 2.4
                               gnutls       >= 1.4
                               uuid         >= 1.36])
-PKG_CHECK_MODULES(LIBEPC_UI, [gtk+-2.0     >= 2.18])
+PKG_CHECK_MODULES(LIBEPC_UI, [gtk+-2.0     >= 2.10])
 
 PKG_CHECK_MODULES(LIBSOUP,   [libsoup-2.4  >= 2.3],
                              [LIBSOUP_API=2.4],[
