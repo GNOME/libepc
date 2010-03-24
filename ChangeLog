@@ -1,3 +1,12 @@
+2010-03-24  David King  <davidk@openismus.com>
+
+	Fix compilation with GSEAL_ENABLE defined
+
+	* examples/consumer-ui.c:
+	* libepc-ui/password-dialog.c:
+	* libepc-ui/progress-window.c: Update for compilation with GSEAL_ENABLE
+	defined.
+
 	=== Release 0.3.10 ===
 
 2010-03-23  David King  <davidk@openismus.com>

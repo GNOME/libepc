@@ -118,7 +118,11 @@ static void
 epc_progress_window_realize (GtkWidget *widget)
 {
   GTK_WIDGET_CLASS (epc_progress_window_parent_class)->realize (widget);
+#ifdef GTK_CHECK_VERSION (2, 14, 0)
+  gdk_window_set_decorations (gtk_widget_get_window (widget), GDK_DECOR_BORDER);
+#else
   gdk_window_set_decorations (widget->window, GDK_DECOR_BORDER);
+#endif
 }
 
 static void

@@ -155,7 +155,12 @@ epc_password_dialog_init (EpcPasswordDialog *self)
 
   gtk_widget_show_all (table);
 
+#if GTK_CHECK_VERSION (2, 14, 0)
+  gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (self))),
+                      table, TRUE, TRUE, 0);
+#else
   gtk_box_pack_start (GTK_BOX (GTK_DIALOG (self)->vbox), table, TRUE, TRUE, 0);
+#endif
 }
 
 static void
@@ -404,7 +409,7 @@ gboolean
 epc_password_dialog_get_anonymous_allowed (EpcPasswordDialog *self)
 {
   g_return_val_if_fail (EPC_IS_PASSWORD_DIALOG (self), FALSE);
-#if GTK_CHECK_VERSION (2, 19, 7)
+#if GTK_CHECK_VERSION (2, 19, 7) || GTK_CHECK_VERSION (2, 14, 0) && GSEAL_ENABLE
     return gtk_widget_get_visible (self->priv->anonymous);
 #else
     return GTK_WIDGET_VISIBLE (self->priv->anonymous);
