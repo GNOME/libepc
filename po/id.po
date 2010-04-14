@@ -1,0 +1,144 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Imam Musthaqim <userindesign@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libepc.HEAD\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=libepc&component=general\n"
+"POT-Creation-Date: 2010-03-24 16:01+0000\n"
+"PO-Revision-Date: 2009-04-14 19:20+0700\n"
+"Last-Translator: Imam Musthaqim <userindesign@gmail.com>\n"
+"Language-Team: INDONESIA <userindesign@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Indonesian\n"
+"X-Poedit-Country: INDONESIA\n"
+
+#: ../libepc/consumer.c:1079
+#, c-format
+msgid "Unexpected element: '%s'"
+msgstr "Elemen yang tidak diharapkan: '%s' "
+
+#: ../libepc/publisher.c:659
+msgid "Table of Contents"
+msgstr "Daftar Isi"
+
+#: ../libepc/publisher.c:693
+msgid "Sorry, no resources published yet."
+msgstr "Maaf, belum ada sumber daya yang dipublikasikan."
+
+#: ../libepc/publisher.c:2638
+msgid "%a of %u on %h"
+msgstr "%a dari %u pada %h"
+
+#: ../libepc/shell.c:267
+#, c-format
+msgid "Cannot create Avahi client: %s"
+msgstr "Tidak dapat membuat klien Avahi: %s"
+
+#: ../libepc/shell.c:379
+#, c-format
+msgid "Cannot create Avahi service browser."
+msgstr "Tidak dapat membuat browser layanan Avahi."
+
+#. Translators: This is just a generic default message for a progress bar.
+#: ../libepc/shell.c:467
+#, fuzzy
+#| msgid "Operation Proceeded"
+msgid "Operation in Progress"
+msgstr "Operasi Dilanjutkan"
+
+#: ../libepc/shell.c:471
+msgid "No details known"
+msgstr "Tidak ada rincian yang diketahui"
+
+#: ../libepc/tls.c:165
+msgid "Generating Server Key"
+msgstr "Membuat Kunci Server"
+
+#: ../libepc/tls.c:166
+msgid ""
+"This may take some time. Type on the keyboard, move your mouse, or browse "
+"the web to generate some entropy."
+msgstr ""
+"Ini mungkin memerlukan waktu sejenak. Ketik pada keyboard, gerakkan mouse "
+"Anda, atau jelajahi web untuk membuat beberapa entropi."
+
+#: ../libepc/tls.c:191
+#, c-format
+msgid "Cannot create private server key: %s"
+msgstr "Tidak dapat membuat kunci server privat: %s"
+
+#: ../libepc/tls.c:244
+#, c-format
+msgid "Cannot import private server key '%s': %s"
+msgstr "Tidak dapat mengimpor kunci server privat '%s': %s"
+
+#: ../libepc/tls.c:300
+#, c-format
+msgid "Cannot export private key to PEM format: %s"
+msgstr "Tidak dapat mengekspor kunci privat ke format PEM: %s"
+
+#: ../libepc/tls.c:314
+#, c-format
+msgid "Failed to create private key folder '%s': %s"
+msgstr "Gagal membuat folder kunci privat '%s': %s"
+
+#: ../libepc/tls.c:330
+#, c-format
+msgid "Failed to create private key file '%s': %s"
+msgstr "Gagal membuat file kunci privat '%s': %s"
+
+#: ../libepc/tls.c:344
+#, c-format
+msgid "Failed to write private key file '%s': %s"
+msgstr "Gagal menulis file kunci privat '%s': %s"
+
+#: ../libepc/tls.c:416
+#, c-format
+msgid "Cannot create self signed server key for '%s': %s"
+msgstr "Tidak dapat membuat kunci server bertanda-sendiri untuk '%s': %s"
+
+#: ../libepc/tls.c:470
+#, c-format
+msgid "Cannot import server certificate '%s': %s"
+msgstr "Tidak dapat mengimpor sertifikat server '%s': %s"
+
+#: ../libepc/tls.c:525
+#, c-format
+msgid "Cannot export server certificate to PEM format: %s"
+msgstr "Tidak dapat mengekspor sertifikat server ke format PEM: %s"
+
+#: ../libepc/tls.c:539
+#, c-format
+msgid "Failed to create server certificate folder '%s': %s"
+msgstr "Gagal membuat folder sertifikat server '%s': %s"
+
+#: ../libepc-ui/password-dialog.c:102
+msgid "<big><b>Authentication required.</b></big>"
+msgstr "<big><b>Pengesahan diperlukan.</b></big>"
+
+#: ../libepc-ui/password-dialog.c:113
+msgid "_Username:"
+msgstr "_Nama pengguna:"
+
+#: ../libepc-ui/password-dialog.c:119
+msgid "_Password:"
+msgstr "_Kata sandi:"
+
+#: ../libepc-ui/password-dialog.c:125
+msgid "Anonymous Authentication"
+msgstr "Pengesahan Anonim"
+
+#: ../libepc-ui/password-dialog.c:210
+#, c-format
+msgid "Data source <b>%s</b> requires authentication before permitting access."
+msgstr "Sumber data <b>%s</b> memerlukan pengesahan sebelum mengizinkan akses."
+
+#: ../libepc-ui/password-dialog.c:213
+msgid "Authentication required."
+msgstr "Pengesahan diperlukan."
