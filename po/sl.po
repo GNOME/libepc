@@ -1,13 +1,15 @@
-# This file is distributed under the same license as the package.
+# Slovenian translation for libepc.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the libepc package.
 #
 # Matej Urbančič <mateju@svn.gnome.org>, 2008 - 2010.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: libepc\n"
+"Project-Id-Version: libepc master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=libepc&component=general\n"
 "POT-Creation-Date: 2009-11-11 17:20+0000\n"
-"PO-Revision-Date: 2010-01-05 09:49+0100\n"
+"PO-Revision-Date: 2010-04-24 08:06+0100\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -21,7 +23,7 @@ msgstr ""
 #: ../libepc/consumer.c:1079
 #, c-format
 msgid "Unexpected element: '%s'"
-msgstr "Nepričakovan element: '%s'"
+msgstr "Nepričakovan predmet: '%s'"
 
 #: ../libepc/publisher.c:659
 msgid "Table of Contents"
@@ -136,4 +138,3 @@ msgstr "Podatkovni vir <b>%s</b> zahteva overitev pred odobritvijo dostopa."
 #: ../libepc-ui/password-dialog.c:208
 msgid "Authentication required."
 msgstr "Zahtevana je overitev."
-
