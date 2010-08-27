@@ -1,15 +1,14 @@
-# Czech translation for libpeas.
-# Copyright (C) 2010 libpeas's COPYRIGHT HOLDER
-# This file is distributed under the same license as the libpeas package.
-#
-# Marek Černocký <marek@manet.cz>, 2009, 2010.
-#
+# Czech translation for libepc.
+# Copyright (C) 2009 libepc's COPYRIGHT HOLDER
+# This file is distributed under the same license as the libepc package.
+# Marek Černocký <marek@manet.cz>, 2009.
 msgid ""
 msgstr ""
-"Project-Id-Version: libpeas master\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-08-18 18:50+0000\n"
-"PO-Revision-Date: 2010-07-22 22:35+0200\n"
+"Project-Id-Version: libepc master\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=libepc&component=general\n"
+"POT-Creation-Date: 2009-10-21 20:21+0000\n"
+"PO-Revision-Date: 2009-11-09 10:55+0100\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -19,47 +18,126 @@ msgstr ""
 "X-Poedit-Language: Czech\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:177
-msgid "There was an error displaying the help."
-msgstr "Vyskytla se chyba při zobrazení nápovědy."
+#: ../libepc/consumer.c:1079
+#, c-format
+msgid "Unexpected element: '%s'"
+msgstr "Neočekávaný element: „%s“"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:335
-msgid "C_onfigure"
-msgstr "Na_stavit"
+#: ../libepc/publisher.c:659
+msgid "Table of Contents"
+msgstr "Tabulka obsahu"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:343
-msgid "_About"
-msgstr "O _aplikaci"
+#: ../libepc/publisher.c:693
+msgid "Sorry, no resources published yet."
+msgstr "Lituji, zatím nebyl vydán žádný zdroj."
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager.c:364
-msgid "_Plugins:"
-msgstr "Zásuvné _moduly:"
+#: ../libepc/publisher.c:2638
+msgid "%a of %u on %h"
+msgstr "%a z %u na %h"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:295
-msgid "_Enabled"
-msgstr "Povol_en"
+#: ../libepc/shell.c:267
+#, c-format
+msgid "Cannot create Avahi client: %s"
+msgstr "Nelze vytvořit klienta Avahi: %s"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:306
-msgid "E_nable All"
-msgstr "Po_volit vše"
+#: ../libepc/shell.c:379
+#, c-format
+msgid "Cannot create Avahi service browser."
+msgstr "Nelze vytvořit prohlížeč služby Avahi."
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:310
-msgid "_Disable All"
-msgstr "Za_kázat vše"
+#. Translators: This is just a generic default message for a progress bar.
+#: ../libepc/shell.c:467
+msgid "Operation in Progress"
+msgstr "Operace probíhá"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:467
-msgid "Enabled"
-msgstr "Povolen"
+#: ../libepc/shell.c:471
+msgid "No details known"
+msgstr "Podrobnosti nejsou známy"
 
-#: ../libpeas-gtk/peas-gtk-plugin-manager-view.c:488
-msgid "Plugin"
-msgstr "Zásuvný modul"
+#: ../libepc/tls.c:165
+msgid "Generating Server Key"
+msgstr "Generuje se klíč serveru"
 
-#: ../peas-demo/peas-demo.c:39
-msgid "Run from build directory"
-msgstr "Spustit ze složky, ve které bylo sestaveno"
+#: ../libepc/tls.c:166
+msgid ""
+"This may take some time. Type on the keyboard, move your mouse, or browse "
+"the web to generate some entropy."
+msgstr ""
+"Toto může zabrat nějaký čas. Pro vygenerování náhodných dat pište prosím na "
+"klávesnici, pohybujte myší nebo prohlížejte webové stránky."
 
-#: ../peas-demo/peas-demo.c:130
-msgid "- libpeas demo application"
-msgstr "- ukázková aplikace libpeas"
+#: ../libepc/tls.c:191
+#, c-format
+msgid "Cannot create private server key: %s"
+msgstr "Nelze vytvořit soukromý klíč serveru: %s"
+
+#: ../libepc/tls.c:244
+#, c-format
+msgid "Cannot import private server key '%s': %s"
+msgstr "Nelze importovat soukromý klíč serveru „%s“: %s"
+
+#: ../libepc/tls.c:300
+#, c-format
+msgid "Cannot export private key to PEM format: %s"
+msgstr "Nelze exportovat soukromý klíč ve formátu PEM: %s"
+
+#: ../libepc/tls.c:314
+#, c-format
+msgid "Failed to create private key folder '%s': %s"
+msgstr "Selhalo vytvoření složky pro soukromý klíč „%s“: %s"
+
+#: ../libepc/tls.c:330
+#, c-format
+msgid "Failed to create private key file '%s': %s"
+msgstr "Selhalo vytvoření souboru se soukromým klíčem „%s“: %s"
+
+#: ../libepc/tls.c:344
+#, c-format
+msgid "Failed to write private key file '%s': %s"
+msgstr "Selhal zápis soukromého klíče do souboru „%s“: %s"
+
+#: ../libepc/tls.c:416
+#, c-format
+msgid "Cannot create self signed server key for '%s': %s"
+msgstr "Nelze vytvořit samopodepsaný klíč serveru pro „%s“: %s"
+
+#: ../libepc/tls.c:470
+#, c-format
+msgid "Cannot import server certificate '%s': %s"
+msgstr "Nelze importovat certifikát serveru „%s“: %s"
+
+#: ../libepc/tls.c:525
+#, c-format
+msgid "Cannot export server certificate to PEM format: %s"
+msgstr "Nelze exportovat certifikát serveru ve formátu PEM: %s"
+
+#: ../libepc/tls.c:539
+#, c-format
+msgid "Failed to create server certificate folder '%s': %s"
+msgstr "Selhalo vytvoření složky pro certifikát serveru „%s“: %s"
+
+#: ../libepc-ui/password-dialog.c:102
+msgid "<big><b>Authentication required.</b></big>"
+msgstr "<big><b>Vyžadováno ověření.</b></big>"
+
+#: ../libepc-ui/password-dialog.c:113
+msgid "_Username:"
+msgstr "Jméno _uživatele:"
+
+#: ../libepc-ui/password-dialog.c:119
+msgid "_Password:"
+msgstr "_Heslo:"
+
+#: ../libepc-ui/password-dialog.c:125
+msgid "Anonymous Authentication"
+msgstr "Anonymní ověření"
+
+#: ../libepc-ui/password-dialog.c:205
+#, c-format
+msgid "Data source <b>%s</b> requires authentication before permitting access."
+msgstr "Datový zdroj <b>%s</b> vyžaduje před povolením přístupu ověření."
+
+#: ../libepc-ui/password-dialog.c:208
+msgid "Authentication required."
+msgstr "Vyžadováno ověření."
 
