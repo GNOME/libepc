@@ -9,10 +9,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libepc\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=libepc\n"
-"POT-Creation-Date: 2008-11-07 14:28+0100\n"
-"PO-Revision-Date: 2009-01-05 19:13-0300\n"
-"Last-Translator: Enrico Nicoletto <liverig@gmail.com>\n"
+"product=libepc&component=general\n"
+"POT-Creation-Date: 2010-08-27 17:39+0000\n"
+"PO-Revision-Date: 2010-12-29 13:03-0300\n"
+"Last-Translator: Mateus Zenaide <matzenh@gmail.com>\n"
 "Language-Team: Brazilian Portuguese Team <gnome-l10n-br@listas.cipsga.org."
 "br>\n"
 "MIME-Version: 1.0\n"
@@ -49,11 +49,12 @@ msgstr "Não foi possível criar o cliente Avahi: %s"
 msgid "Cannot create Avahi service browser."
 msgstr "Não foi possível criar o navegador do serviço Avahi."
 
-#: ../libepc/shell.c:465
-msgid "Operation Proceeded"
-msgstr "Operação procedida"
-
+#. Translators: This is just a generic default message for a progress bar.
 #: ../libepc/shell.c:467
+msgid "Operation in Progress"
+msgstr "Operação em progresso"
+
+#: ../libepc/shell.c:471
 msgid "No details known"
 msgstr "Sem detalhes"
 
@@ -137,11 +138,11 @@ msgstr "_Senha:"
 msgid "Anonymous Authentication"
 msgstr "Autenticação anônima"
 
-#: ../libepc-ui/password-dialog.c:205
+#: ../libepc-ui/password-dialog.c:210
 #, c-format
 msgid "Data source <b>%s</b> requires authentication before permitting access."
 msgstr "Fonte de dados <b>%s</b> requer autenticação antes de permitir acesso."
 
-#: ../libepc-ui/password-dialog.c:208
+#: ../libepc-ui/password-dialog.c:213
 msgid "Authentication required."
 msgstr "Autenticação necessária."
