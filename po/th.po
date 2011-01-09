@@ -1,16 +1,16 @@
 # Thai translation of libepc.
-# Copyright (C) 2009 Free Software Foundation, Inc.
+# Copyright (C) 2009-2011 Free Software Foundation, Inc.
 # This file is distributed under the same license as the libepc package.
-# Akom C. <knight2000@gmail.com>, 2009.
+# Akom Chotiphantawanon <knight2000@gmail.com>, 2009-2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: libepc\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=libepc&component=general\n"
-"POT-Creation-Date: 2009-02-07 17:02+0000\n"
-"PO-Revision-Date: 2009-03-23 11:46+0700\n"
-"Last-Translator: Akom C. <knight2000@gmail.com>\n"
+"POT-Creation-Date: 2010-12-29 16:30+0000\n"
+"PO-Revision-Date: 2011-01-09 21:13+0700\n"
+"Last-Translator: Akom Chotiphantawanon <knight2000@gmail.com>\n"
 "Language-Team: Thai <thai-l10n@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -43,11 +43,12 @@ msgstr "ไม่สามารถสร้างลูกข่าย Avahi: %
 msgid "Cannot create Avahi service browser."
 msgstr "ไม่สามารถสร้างเบราว์เซอร์บริการของ Avahi ได้"
 
-#: ../libepc/shell.c:465
-msgid "Operation Proceeded"
-msgstr "ดำเนินการการกระทำแล้ว"
-
+#. Translators: This is just a generic default message for a progress bar.
 #: ../libepc/shell.c:467
+msgid "Operation in Progress"
+msgstr "กำลังทำงาน"
+
+#: ../libepc/shell.c:471
 msgid "No details known"
 msgstr "ไม่ทราบรายละเอียด"
 
@@ -127,11 +128,11 @@ msgstr "_รหัสผ่าน:"
 msgid "Anonymous Authentication"
 msgstr "การยืนยันตัวบุคคลนิรนาม"
 
-#: ../libepc-ui/password-dialog.c:205
+#: ../libepc-ui/password-dialog.c:210
 #, c-format
 msgid "Data source <b>%s</b> requires authentication before permitting access."
 msgstr "แหล่งข้อมูล <b>%s</b> ต้องยืนยันตัวบุคคลก่อนอนุญาตให้เข้าใช้"
 
-#: ../libepc-ui/password-dialog.c:208
+#: ../libepc-ui/password-dialog.c:213
 msgid "Authentication required."
 msgstr "ต้องยืนยันตัวบุคคล"
