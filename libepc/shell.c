@@ -18,6 +18,11 @@
  * Authors:
  *      Mathias Hasselmann
  */
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "libepc/shell.h"
 
 #include <avahi-common/error.h>
