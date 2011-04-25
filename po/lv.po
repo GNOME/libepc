@@ -1,0 +1,143 @@
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Rūdofls Mazurs <rudolfs.mazurs@gmail.com>, 2011.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug."
+"cgi?product=libepc&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2011-03-29 08:54+0000\n"
+"PO-Revision-Date: 2011-04-20 12:30+0300\n"
+"Last-Translator: Rūdofls Mazurs <rudolfs.mazurs@gmail.com>\n"
+"Language-Team: Latvian <lata-l10n@googlegroups.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Lokalize 1.1\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : "
+"2);\n"
+
+#: ../libepc/consumer.c:1083
+#, c-format
+msgid "Unexpected element: '%s'"
+msgstr "Negaidīts elements: '%s'"
+
+#: ../libepc/publisher.c:663
+msgid "Table of Contents"
+msgstr "Satura rādītājs"
+
+#: ../libepc/publisher.c:697
+msgid "Sorry, no resources published yet."
+msgstr "Diemžēl resursi vēl nav publicēti."
+
+#: ../libepc/publisher.c:2642
+msgid "%a of %u on %h"
+msgstr "%a no %u uz %h"
+
+#: ../libepc/shell.c:272
+#, c-format
+msgid "Cannot create Avahi client: %s"
+msgstr "Nevar izveidot Avahi klientu: %s"
+
+#: ../libepc/shell.c:384
+#, c-format
+msgid "Cannot create Avahi service browser."
+msgstr "Neizdevās izveidot Avahi servisa pārlūku."
+
+#. Translators: This is just a generic default message for a progress bar.
+#: ../libepc/shell.c:472
+msgid "Operation in Progress"
+msgstr "Notiek darbība"
+
+#: ../libepc/shell.c:476
+msgid "No details known"
+msgstr "Nav zināma sīkāka informācija"
+
+#: ../libepc/tls.c:170
+msgid "Generating Server Key"
+msgstr "Ģenerē servera atslēgu"
+
+#: ../libepc/tls.c:171
+msgid ""
+"This may take some time. Type on the keyboard, move your mouse, or browse "
+"the web to generate some entropy."
+msgstr ""
+"Uzgaidiet dažas minūtes. Rakstiet kaut ko uz tastatūras, kustiniet peli vai "
+"pārlūkojiet tīmekli, lai radītu kaut kādu entropiju."
+
+#: ../libepc/tls.c:196
+#, c-format
+msgid "Cannot create private server key: %s"
+msgstr "Nevar izveidot privātu servera atslēgu: %s"
+
+#: ../libepc/tls.c:249
+#, c-format
+msgid "Cannot import private server key '%s': %s"
+msgstr "Nevar importēt privātu servera atslēgu '%s': %s"
+
+#: ../libepc/tls.c:305
+#, c-format
+msgid "Cannot export private key to PEM format: %s"
+msgstr "Nevar eksportēt privāto atslēgu uz PEM formātu: %s"
+
+#: ../libepc/tls.c:319
+#, c-format
+msgid "Failed to create private key folder '%s': %s"
+msgstr "Neizdevās izveidot privātās atslēgas mapi '%s': %s"
+
+#: ../libepc/tls.c:335
+#, c-format
+msgid "Failed to create private key file '%s': %s"
+msgstr "Neizdevās izveidot privātās atslēgas failu '%s': %s"
+
+#: ../libepc/tls.c:349
+#, c-format
+msgid "Failed to write private key file '%s': %s"
+msgstr "Neizdevās rakstīt privātās atslēgas failu '%s': %s"
+
+#: ../libepc/tls.c:421
+#, c-format
+msgid "Cannot create self signed server key for '%s': %s"
+msgstr "Nevar izveidot pašparakstītu atslēgu priekš '%s': %s"
+
+#: ../libepc/tls.c:475
+#, c-format
+msgid "Cannot import server certificate '%s': %s"
+msgstr "Nevar importēt servera sertifikātu '%s': %s"
+
+#: ../libepc/tls.c:530
+#, c-format
+msgid "Cannot export server certificate to PEM format: %s"
+msgstr "Nevar eksportēt servera sertifikātu uz PEM formātu: %s"
+
+#: ../libepc/tls.c:544
+#, c-format
+msgid "Failed to create server certificate folder '%s': %s"
+msgstr "Neizdevās izveidot servera sertifikāta mapi '%s': %s"
+
+#: ../libepc-ui/password-dialog.c:106
+msgid "<big><b>Authentication required.</b></big>"
+msgstr "<big><b>Nepieciešama autentifikācija</b></big>"
+
+#: ../libepc-ui/password-dialog.c:117
+msgid "_Username:"
+msgstr "_Lietotājvārds:"
+
+#: ../libepc-ui/password-dialog.c:123
+msgid "_Password:"
+msgstr "_Parole:"
+
+#: ../libepc-ui/password-dialog.c:129
+msgid "Anonymous Authentication"
+msgstr "Anonīma autentifikācija"
+
+#: ../libepc-ui/password-dialog.c:214
+#, c-format
+msgid "Data source <b>%s</b> requires authentication before permitting access."
+msgstr "Datu avots <b>%s</b> pieprasa autentificēšanos pirms ļaut piekļūt."
+
+#: ../libepc-ui/password-dialog.c:217
+msgid "Authentication required."
+msgstr "Nepieciešama autentifikācija."
+
