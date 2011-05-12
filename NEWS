@@ -1,3 +1,13 @@
+Release 0.4.0
+==============
+
+        * Use avahi-ui-gtk3, and therefore GTK+ 3, instead of avahi-ui, which 
+	used GTK+ 2. This is an ABI change, but libepc is still an unstable 
+	library anyway.
+	Bug #649404 (Christopher Dale)
+	* Fix compilation with GSEAL_ENABLE defined.
+	(David King)
+
 Release 0.3.11
 ==============
 

@@ -1,5 +1,5 @@
 AC_PREREQ([2.63])
-AC_INIT([libepc], [0.3.11], [https://bugzilla.gnome.org/enter_bug.cgi?product=libepc], [libepc], [http://live.gnome.org/libepc])
+AC_INIT([libepc], [0.4.0], [https://bugzilla.gnome.org/enter_bug.cgi?product=libepc], [libepc], [http://live.gnome.org/libepc])
 AM_INIT_AUTOMAKE([1.10.3 -Wall dist-bzip2 no-define subdir-objects])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
@@ -20,7 +20,7 @@ dnl    the last update, increment CURRENT, and set REVISION to 0.
 dnl 4. If any interfaces have been added, then increment AGE.
 dnl 5. If any interfaces have been removed, then set AGE to 0.
 dnl
-LT_VERSION_INFO="2:0:0"
+LT_VERSION_INFO="3:0:0"
 AC_SUBST(LT_VERSION_INFO)
 
 GETTEXT_PACKAGE=libepc
