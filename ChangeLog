@@ -1,3 +1,10 @@
+2010-05-12  Christopher Dale  <chrelad@gmail.com>
+
+	Use avahi-ui-gtk3 rather than avahi-ui-gtk.
+	Bug #649404
+
+	This breaks ABI, but this is an unstable library anyway (murrayc).
+
 2010-03-24  David King  <davidk@openismus.com>
 
 	Fix compilation with GSEAL_ENABLE defined

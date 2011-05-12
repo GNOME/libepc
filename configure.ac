@@ -69,7 +69,7 @@ PKG_CHECK_EXISTS([$GIO_REQUIREMENT],
                   GIO=$GIO_REQUIREMENT],
                  [AC_MSG_RESULT([no])])
 
-PKG_CHECK_MODULES(AVAHI_UI,  [avahi-ui     >= 0.6])
+PKG_CHECK_MODULES(AVAHI_UI,  [avahi-ui-gtk3     >= 0.6])
 PKG_CHECK_MODULES(LIBEPC,    [avahi-client >= 0.6
                               avahi-glib   >= 0.6
                               glib-2.0     >= 2.12
@@ -92,7 +92,7 @@ AC_SUBST(LIBEPC_LIBS)
 AC_TYPE_UINT16_T
  
 #AC_CHECK_FUNCS([memset setlocale socket strchr])
-AC_CHECK_LIB([avahi-ui],
+AC_CHECK_LIB([avahi-ui-gtk3],
              [aui_service_dialog_set_service_type_name],
              [AC_DEFINE([HAVE_SET_SERVICE_TYPE_NAME], [1],
                         [Define to 1 if you have aui_service_dialog_set_service_type_name.])],
