@@ -1,3 +1,12 @@
+2010-05-12  Murray Cumming  <murrayc@murrayc.com>
+
+	Fix the build with --enable-compiler-warnings=error
+
+	* libepc-ui/progress-window.c
+	* examples/consumer-ui.c: Remove ifdefed code for older versions
+	of GTK+. We use GTK+ 3 now anyway. This was causing a compiler 
+	warning about extra tokens after #ifdef.
+
 2010-05-12  Christopher Dale  <chrelad@gmail.com>
 
 	Use avahi-ui-gtk3 rather than avahi-ui-gtk.

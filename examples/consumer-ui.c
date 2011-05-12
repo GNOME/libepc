@@ -169,12 +169,8 @@ create_lookup_dialog (EpcConsumer *consumer,
                                         GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
                                         NULL);
 
-#ifdef GTK_CHECK_VERSION (2, 14, 0) && GSEAL_ENABLE
   gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))),
                       vbox, TRUE, TRUE, 0);
-#else
-  gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), vbox, TRUE, TRUE, 0);
-#endif
   gtk_window_set_default_size (GTK_WINDOW (dialog), 500, 350);
 
   return dialog;
