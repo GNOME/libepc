@@ -110,9 +110,9 @@ void                  epc_dispatcher_set_cookie             (EpcDispatcher      
 void                  epc_dispatcher_set_collision_handling (EpcDispatcher        *dispatcher,
                                                              EpcCollisionHandling  method);
 
-G_CONST_RETURN gchar* epc_dispatcher_get_name               (EpcDispatcher        *dispatcher);
+const gchar* epc_dispatcher_get_name               (EpcDispatcher        *dispatcher);
 EpcCollisionHandling  epc_dispatcher_get_collision_handling (EpcDispatcher        *dispatcher);
-G_CONST_RETURN gchar* epc_dispatcher_get_cookie             (EpcDispatcher        *dispatcher);
+const gchar* epc_dispatcher_get_cookie             (EpcDispatcher        *dispatcher);
 
 G_END_DECLS
 

@@ -43,7 +43,7 @@ G_BEGIN_DECLS
 
 gchar*                epc_service_type_new            (EpcProtocol  protocol,
                                                        const gchar *application);
-G_CONST_RETURN gchar* epc_service_type_get_base       (const gchar *type) G_GNUC_PURE;
+const gchar* epc_service_type_get_base       (const gchar *type) G_GNUC_PURE;
 EpcProtocol           epc_service_type_get_protocol   (const gchar *service_type) G_GNUC_PURE;
 gchar**               epc_service_type_list_supported (const gchar *application);
 

@@ -267,7 +267,7 @@ epc_contents_is_stream (EpcContents *contents)
  *
  * Returns: Returns the MIME type of the buffer.
  */
-G_CONST_RETURN gchar*
+const gchar*
 epc_contents_get_mime_type (EpcContents *self)
 {
   g_return_val_if_fail (NULL != self, NULL);

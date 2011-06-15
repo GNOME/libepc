@@ -118,7 +118,7 @@ epc_protocol_from_name (const gchar *name,
  * Returns: Returns the DNS-SD service type associated
  * with @protocol, or %NULL on unknown protocols.
  */
-G_CONST_RETURN gchar*
+const gchar*
 epc_protocol_get_service_type (EpcProtocol protocol)
 {
   switch (protocol)
@@ -146,7 +146,7 @@ epc_protocol_get_service_type (EpcProtocol protocol)
  * Returns: Returns the URI scheme associated with @protocol,
  * or %NULL on unknown protocols.
  */
-G_CONST_RETURN gchar*
+const gchar*
 epc_protocol_get_uri_scheme (EpcProtocol  protocol)
 {
   switch (protocol)

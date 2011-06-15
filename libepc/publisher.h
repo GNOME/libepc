@@ -156,15 +156,15 @@ void                  epc_publisher_set_collision_handling (EpcPublisher        
 void                  epc_publisher_set_service_cookie     (EpcPublisher          *publisher,
                                                             const gchar           *cookie);
 
-G_CONST_RETURN gchar* epc_publisher_get_service_name       (EpcPublisher          *publisher);
-G_CONST_RETURN gchar* epc_publisher_get_service_domain     (EpcPublisher          *publisher);
-G_CONST_RETURN gchar* epc_publisher_get_certificate_file   (EpcPublisher          *publisher);
-G_CONST_RETURN gchar* epc_publisher_get_private_key_file   (EpcPublisher          *publisher);
+const gchar* epc_publisher_get_service_name       (EpcPublisher          *publisher);
+const gchar* epc_publisher_get_service_domain     (EpcPublisher          *publisher);
+const gchar* epc_publisher_get_certificate_file   (EpcPublisher          *publisher);
+const gchar* epc_publisher_get_private_key_file   (EpcPublisher          *publisher);
 EpcProtocol           epc_publisher_get_protocol           (EpcPublisher          *publisher);
-G_CONST_RETURN gchar* epc_publisher_get_contents_path      (EpcPublisher          *publisher);
+const gchar* epc_publisher_get_contents_path      (EpcPublisher          *publisher);
 EpcAuthFlags          epc_publisher_get_auth_flags         (EpcPublisher          *publisher);
 EpcCollisionHandling  epc_publisher_get_collision_handling (EpcPublisher          *publisher);
-G_CONST_RETURN gchar* epc_publisher_get_service_cookie     (EpcPublisher          *publisher);
+const gchar* epc_publisher_get_service_cookie     (EpcPublisher          *publisher);
 
 void                  epc_publisher_add                    (EpcPublisher          *publisher,
                                                             const gchar           *key,
@@ -214,8 +214,8 @@ gchar*                epc_publisher_expand_name            (const gchar         
                                                             GError               **error);
 
 EpcPublisher*         epc_auth_context_get_publisher       (const EpcAuthContext  *context);
-G_CONST_RETURN gchar* epc_auth_context_get_key             (const EpcAuthContext  *context);
-G_CONST_RETURN gchar* epc_auth_context_get_password        (const EpcAuthContext  *context);
+const gchar* epc_auth_context_get_key             (const EpcAuthContext  *context);
+const gchar* epc_auth_context_get_password        (const EpcAuthContext  *context);
 gboolean              epc_auth_context_check_password      (const EpcAuthContext  *context,
                                                             const gchar           *password);
 

@@ -69,7 +69,7 @@ EpcContents*          epc_contents_ref           (EpcContents         *contents)
 void                  epc_contents_unref         (EpcContents         *contents);
 
 gboolean              epc_contents_is_stream     (EpcContents         *contents);
-G_CONST_RETURN gchar* epc_contents_get_mime_type (EpcContents         *contents);
+const gchar* epc_contents_get_mime_type (EpcContents         *contents);
 
 gconstpointer         epc_contents_get_data      (EpcContents         *contents,
                                                   gsize               *length);

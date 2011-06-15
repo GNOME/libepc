@@ -482,7 +482,7 @@ epc_password_dialog_set_username (EpcPasswordDialog *self,
  *
  * Returns: the current user name of the dialog.
  */
-G_CONST_RETURN gchar*
+const gchar*
 epc_password_dialog_get_username (EpcPasswordDialog *self)
 {
   g_return_val_if_fail (EPC_IS_PASSWORD_DIALOG (self), NULL);
@@ -518,7 +518,7 @@ epc_password_dialog_set_password (EpcPasswordDialog *self,
  *
  * Returns: the current password of the dialog.
  */
-G_CONST_RETURN gchar*
+const gchar*
 epc_password_dialog_get_password (EpcPasswordDialog *self)
 {
   g_return_val_if_fail (EPC_IS_PASSWORD_DIALOG (self), NULL);
@@ -554,7 +554,7 @@ epc_password_dialog_set_realm (EpcPasswordDialog *self,
  *
  * Returns: the current realm of the dialog.
  */
-G_CONST_RETURN gchar*
+const gchar*
 epc_password_dialog_get_realm (EpcPasswordDialog *self)
 {
   g_return_val_if_fail (EPC_IS_PASSWORD_DIALOG (self), NULL);

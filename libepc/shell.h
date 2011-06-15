@@ -101,7 +101,7 @@ AvahiServiceBrowser*  epc_shell_create_service_browser   (AvahiIfIndex          
                                                           GError                     **error);
 void                  epc_shell_restart_avahi_client     (const gchar                 *strloc);
 
-G_CONST_RETURN gchar* epc_shell_get_host_name            (GError                     **error);
+const gchar* epc_shell_get_host_name            (GError                     **error);
 
 void                  epc_shell_set_progress_hooks       (const EpcShellProgressHooks *hooks,
                                                           gpointer                     user_data,

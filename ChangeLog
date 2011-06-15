@@ -1,3 +1,17 @@
+2011-06-15  Murray Cumming  <murrayc@murrayc.com>
+
+	Avoid use of deprecated G_CONST_RETURN.
+
+	* libepc-ui/password-dialog.[h|cc]:
+	* libepc/consumer.[h|cc]:
+	* libepc/contents.[h|cc]:
+	* libepc/dispatcher.[h|cc]:
+	* libepc/protocol.[h|cc]:
+	* libepc/publisher.[h|cc]:
+	* libepc/service-info.[h|cc]:
+	* libepc/service-type.[h|cc]:
+	* libepc/shell.[h|cc]: Use const instead.
+
 	=== Release 0.4.0 ===
 
 2010-05-12  Murray Cumming  <murrayc@murrayc.com>
@@ -6,7 +20,7 @@
 
 	* libepc-ui/progress-window.c
 	* examples/consumer-ui.c: Remove ifdefed code for older versions
-	of GTK+. We use GTK+ 3 now anyway. This was causing a compiler 
+	of GTK+. We use GTK+ 3 now anyway. This was causing a compiler
 	warning about extra tokens after #ifdef.
 
 2010-05-12  Christopher Dale  <chrelad@gmail.com>
@@ -94,13 +108,13 @@
 	Patch by Petr Salinger.
 
 	* tests/framework.c (epc_test_list_ifaces):
-	Use ifr_index if ifr_ifindex does not exist. Fixes build failure 
+	Use ifr_index if ifr_ifindex does not exist. Fixes build failure
 	on GNU/kFreeBSD. Bug #592474.
 
 2009-08-21  Murray Cumming  <murrayc@murrayc.com>
 
 	* libepc/shell.c (epc_shell_progress_update_default):
-	Change the Operation Proceeded string to the more correct Operation in 
+	Change the Operation Proceeded string to the more correct Operation in
 	Progress and added a translator comment, to fix bug #589339.
 	(Luca Ferretti)
 
@@ -108,7 +122,7 @@
 
 2009-05-18  Murray Cumming  <murrayc@murrayc.com>
 
-	* libepc/shell.c (epc_shell_create_service_browser): Fix a warning about 
+	* libepc/shell.c (epc_shell_create_service_browser): Fix a warning about
 	no return value. Bug #583000 (Vincent Untz).
 
 	=== Release 0.3.9 ===
@@ -121,8 +135,8 @@
 
 2008-11-02  Murray Cumming  <murrayc@murrayc.com>
 
-	* libepc/shell.c (epc_shell_create_service_browser): 
-	Return if epc_shell_get_avahi_client() returns a GError, instead of 
+	* libepc/shell.c (epc_shell_create_service_browser):
+	Return if epc_shell_get_avahi_client() returns a GError, instead of
 	then setting the already-set GError later.
 
 2008-10-23  Mathias Hasselmann  <mathias@taschenorakel.de>
@@ -180,8 +194,8 @@
 
 2008-10-19  Murray Cumming  <murrayc@murrayc.com>
 
-	* Makefile.am: Specify LIBEPC_LIBS for the examples, 
-	because not all (such as gthread-2.0) are implicitly provided 
+	* Makefile.am: Specify LIBEPC_LIBS for the examples,
+	because not all (such as gthread-2.0) are implicitly provided
 	by the build library.
 	Bug #556689 (Götz Waschk).
 
@@ -200,9 +214,9 @@
 
 2008-07-29  Murray Cumming  <murrayc@murrayc.com>
 
-	* libepc/publisher.c: epc_publisher_install_handlers(): Check for 
-	a NULL service_name before calling soup_auth_domain_digest_new() to 
-	avoid a crash. However, we need to know why it can be NULL and 
+	* libepc/publisher.c: epc_publisher_install_handlers(): Check for
+	a NULL service_name before calling soup_auth_domain_digest_new() to
+	avoid a crash. However, we need to know why it can be NULL and
 	prevent that instead.
 	Bug #540631.
 
@@ -931,21 +945,21 @@
 
 	* docs/reference/libepc/libepc-1.0-sections.txt, libepc/shell.c,
 	libepc/shell.h: Remove epc_shell_ref and epc_shell_unref.
-	* libepc/consumer.c, libepc/dispatcher.c, libepc/publisher.c, 
+	* libepc/consumer.c, libepc/dispatcher.c, libepc/publisher.c,
 	libepc/service-monitor.c, tests/framework.c:
 	Don't call epc_shell_ref and epc_shell_unref.
 
 2007-11-27  Murray Cumming  <murrayc@murrayc.com>
 
-	* libepc/publisher.c: epc_publisher_set_auth_handler() documentation: 
+	* libepc/publisher.c: epc_publisher_set_auth_handler() documentation:
 	Note that this should be used _after_ adding the key.
 
 2007-11-27  Murray Cumming  <murrayc@murrayc.com>
 
-	* libepc/consumer.c: epc_consumer_lookup(): Mention the specific error 
+	* libepc/consumer.c: epc_consumer_lookup(): Mention the specific error
 	code that is relevant when using authentication.
 	* libepc/publisher.c:
-	* libepc/publisher.h: EpcAuthHandler: mention the two different 
+	* libepc/publisher.h: EpcAuthHandler: mention the two different
 	auth methods (and what to do) in the documentation.
 	EpcAuthFlags: Some minor changes to the documention.
 
@@ -1105,7 +1119,7 @@
 
 2007-11-22  Murray Cumming  <murrayc@murrayc.com>
 
-	* examples/consumer-ui.c: (main): Rename the transport 
+	* examples/consumer-ui.c: (main): Rename the transport
 	variable to service_type because that is what it is.
 
 2007-11-21  Mathias Hasselmann  <mathias@openismus.com>
@@ -2040,4 +2054,3 @@
 2007-10-31  Mathias Hasselmann  <mathias@openismus.com>
 
 	Initial commit of the Easy Publish and Consume library.
-

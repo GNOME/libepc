@@ -1052,7 +1052,7 @@ epc_dispatcher_set_collision_handling (EpcDispatcher       *self,
  *
  * Returns: The user friendly name of the service.
  */
-G_CONST_RETURN gchar*
+const gchar*
 epc_dispatcher_get_name (EpcDispatcher *self)
 {
   g_return_val_if_fail (EPC_IS_DISPATCHER (self), NULL);
@@ -1069,7 +1069,7 @@ epc_dispatcher_get_name (EpcDispatcher *self)
  * Returns: The unique identifier of the service, or %NULL on error.
  * Since: 0.3.1
  */
-G_CONST_RETURN gchar*
+const gchar*
 epc_dispatcher_get_cookie (EpcDispatcher *self)
 {
   g_return_val_if_fail (EPC_IS_DISPATCHER (self), NULL);

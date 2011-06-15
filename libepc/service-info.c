@@ -191,7 +191,7 @@ epc_service_info_unref (EpcServiceInfo *self)
  *
  * Returns: A DNS-SD service type.
  */
-G_CONST_RETURN gchar*
+const gchar*
 epc_service_info_get_service_type (const EpcServiceInfo *self)
 {
   g_return_val_if_fail (NULL != self, NULL);
@@ -206,7 +206,7 @@ epc_service_info_get_service_type (const EpcServiceInfo *self)
  *
  * Returns: A DNS host name.
  */
-G_CONST_RETURN gchar*
+const gchar*
 epc_service_info_get_host (const EpcServiceInfo *self)
 {
   g_return_val_if_fail (NULL != self, NULL);
@@ -238,7 +238,7 @@ epc_service_info_get_port (const EpcServiceInfo *self)
  *
  * Returns: The requested service detail, or %NULL.
  */
-G_CONST_RETURN gchar*
+const gchar*
 epc_service_info_get_detail (const EpcServiceInfo *self,
                              const gchar          *name)
 {
@@ -273,7 +273,7 @@ epc_service_info_get_detail (const EpcServiceInfo *self,
  *
  * Returns: A network interface name, or %NULL.
  */
-G_CONST_RETURN gchar*
+const gchar*
 epc_service_info_get_interface (const EpcServiceInfo *self)
 {
   g_return_val_if_fail (NULL != self, NULL);
@@ -309,7 +309,7 @@ epc_service_info_get_address_family (const EpcServiceInfo *self)
  *
  * Returns: A IP address, or %NULL.
  */
-G_CONST_RETURN AvahiAddress*
+const AvahiAddress*
 epc_service_info_get_address (const EpcServiceInfo *self)
 {
   g_return_val_if_fail (NULL != self, NULL);

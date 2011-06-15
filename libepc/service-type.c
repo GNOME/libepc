@@ -149,7 +149,7 @@ epc_service_type_new (EpcProtocol  protocol,
  *
  * Returns: The base-service-type.
  */
-G_CONST_RETURN gchar*
+const gchar*
 epc_service_type_get_base (const gchar *type)
 {
   const gchar *base;

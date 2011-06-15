@@ -66,15 +66,15 @@ EpcServiceInfo*              epc_service_info_new_full           (const gchar   
 EpcServiceInfo*              epc_service_info_ref                (EpcServiceInfo        *info);
 void                         epc_service_info_unref              (EpcServiceInfo        *info);
 
-G_CONST_RETURN gchar*        epc_service_info_get_service_type   (const EpcServiceInfo  *info);
-G_CONST_RETURN gchar*        epc_service_info_get_host           (const EpcServiceInfo  *info);
+const gchar*        epc_service_info_get_service_type   (const EpcServiceInfo  *info);
+const gchar*        epc_service_info_get_host           (const EpcServiceInfo  *info);
 guint                        epc_service_info_get_port           (const EpcServiceInfo  *info);
-G_CONST_RETURN gchar*        epc_service_info_get_detail         (const EpcServiceInfo  *info,
+const gchar*        epc_service_info_get_detail         (const EpcServiceInfo  *info,
                                                                   const gchar           *name);
 
-G_CONST_RETURN gchar*        epc_service_info_get_interface      (const EpcServiceInfo  *info);
+const gchar*        epc_service_info_get_interface      (const EpcServiceInfo  *info);
 EpcAddressFamily             epc_service_info_get_address_family (const EpcServiceInfo  *info);
-G_CONST_RETURN AvahiAddress* epc_service_info_get_address        (const EpcServiceInfo  *info);
+const AvahiAddress* epc_service_info_get_address        (const EpcServiceInfo  *info);
 
 G_END_DECLS
 

@@ -828,7 +828,7 @@ epc_consumer_get_protocol (EpcConsumer *self)
  *
  * Returns: The user name this consumer uses.
  */
-G_CONST_RETURN gchar*
+const gchar*
 epc_consumer_get_username (EpcConsumer *self)
 {
   g_return_val_if_fail (EPC_IS_CONSUMER (self), NULL);
@@ -844,7 +844,7 @@ epc_consumer_get_username (EpcConsumer *self)
  *
  * Returns: The password this consumer uses.
  */
-G_CONST_RETURN gchar*
+const gchar*
 epc_consumer_get_password (EpcConsumer *self)
 {
   g_return_val_if_fail (EPC_IS_CONSUMER (self), NULL);

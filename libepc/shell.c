@@ -433,7 +433,7 @@ epc_shell_restart_avahi_client (const gchar *strloc G_GNUC_UNUSED)
  *
  * Returns: The official host name, or %NULL on error.
  */
-G_CONST_RETURN gchar*
+const gchar*
 epc_shell_get_host_name (GError **error)
 {
   AvahiClient *client = epc_shell_get_avahi_client (error);

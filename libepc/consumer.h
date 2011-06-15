@@ -98,8 +98,8 @@ void                  epc_consumer_set_password          (EpcConsumer          *
                                                           const gchar          *password);
 
 EpcProtocol           epc_consumer_get_protocol          (EpcConsumer          *consumer);
-G_CONST_RETURN gchar* epc_consumer_get_username          (EpcConsumer          *consumer);
-G_CONST_RETURN gchar* epc_consumer_get_password          (EpcConsumer          *consumer);
+const gchar* epc_consumer_get_username          (EpcConsumer          *consumer);
+const gchar* epc_consumer_get_password          (EpcConsumer          *consumer);
 
 gboolean              epc_consumer_resolve_publisher     (EpcConsumer          *consumer,
                                                           guint                 timeout);

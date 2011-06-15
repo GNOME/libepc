@@ -347,7 +347,7 @@ epc_publisher_handle_file (EpcPublisher *publisher G_GNUC_UNUSED,
   return contents;
 }
 
-static G_CONST_RETURN gchar*
+static const gchar*
 epc_publisher_get_key (const gchar *path)
 {
   const gchar *key;
@@ -1046,7 +1046,7 @@ epc_publisher_is_server_created (EpcPublisher *self)
   return (NULL != self->priv->server);
 }
 
-static G_CONST_RETURN gchar*
+static const gchar*
 epc_publisher_compute_name (EpcPublisher *self)
 {
   const gchar *name = self->priv->service_name;
@@ -2262,7 +2262,7 @@ epc_publisher_set_auth_flags (EpcPublisher *self,
  *
  * Returns: The human friendly name of this #EpcPublisher.
  */
-G_CONST_RETURN gchar*
+const gchar*
 epc_publisher_get_service_name (EpcPublisher *self)
 {
   g_return_val_if_fail (EPC_IS_PUBLISHER (self), NULL);
@@ -2278,7 +2278,7 @@ epc_publisher_get_service_name (EpcPublisher *self)
  *
  * Returns: The DNS-SD domain of this #EpcPublisher, or %NULL.
  */
-G_CONST_RETURN gchar*
+const gchar*
 epc_publisher_get_service_domain (EpcPublisher *self)
 {
   g_return_val_if_fail (EPC_IS_PUBLISHER (self), NULL);
@@ -2294,7 +2294,7 @@ epc_publisher_get_service_domain (EpcPublisher *self)
  *
  * Returns: The certificate's file name, or %NULL.
  */
-G_CONST_RETURN gchar*
+const gchar*
 epc_publisher_get_certificate_file (EpcPublisher *self)
 {
   g_return_val_if_fail (EPC_IS_PUBLISHER (self), NULL);
@@ -2310,7 +2310,7 @@ epc_publisher_get_certificate_file (EpcPublisher *self)
  *
  * Returns: The private key's file name, or %NULL.
  */
-G_CONST_RETURN gchar*
+const gchar*
 epc_publisher_get_private_key_file (EpcPublisher *self)
 {
   g_return_val_if_fail (EPC_IS_PUBLISHER (self), NULL);
@@ -2343,7 +2343,7 @@ epc_publisher_get_protocol (EpcPublisher *self)
  *
  * Returns: The server's contents path.
  */
-G_CONST_RETURN gchar*
+const gchar*
 epc_publisher_get_contents_path (EpcPublisher *self)
 {
   g_return_val_if_fail (EPC_IS_PUBLISHER (self), NULL);
@@ -2377,7 +2377,7 @@ epc_publisher_get_auth_flags (EpcPublisher *self)
  * Returns: The unique identifier of the service, or %NULL on error.
  * Since: 0.3.1
  */
-G_CONST_RETURN gchar*
+const gchar*
 epc_publisher_get_service_cookie (EpcPublisher *self)
 {
   g_return_val_if_fail (EPC_IS_PUBLISHER (self), NULL);
@@ -2731,7 +2731,7 @@ epc_auth_context_get_publisher (const EpcAuthContext *context)
  *
  * Returns: The resource key.
  */
-G_CONST_RETURN gchar*
+const gchar*
 epc_auth_context_get_key (const EpcAuthContext *context)
 {
   g_return_val_if_fail (NULL != context, NULL);
@@ -2749,7 +2749,7 @@ epc_auth_context_get_key (const EpcAuthContext *context)
  *
  * Returns: The password sent, or %NULL.
  */
-G_CONST_RETURN gchar*
+const gchar*
 epc_auth_context_get_password (const EpcAuthContext *context)
 {
   g_return_val_if_fail (NULL != context, NULL);
