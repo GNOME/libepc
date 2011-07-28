@@ -1,0 +1,137 @@
+# Russian translation for libepc.
+# Copyright (C) 2011 libepc's COPYRIGHT HOLDER
+# This file is distributed under the same license as the libepc package.
+# Yuri Myasoedov <omerta13@yandex.ru>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libepc master\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=libepc&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2011-06-15 10:00+0000\n"
+"PO-Revision-Date: 2011-07-28 11:23+0300\n"
+"Last-Translator: Yuri Myasoedov <omerta13@yandex.ru>\n"
+"Language-Team: Russian <gnome-cyr@gnome.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: ../libepc/consumer.c:1083
+#, c-format
+msgid "Unexpected element: '%s'"
+msgstr "Неожиданный элемент: «%s»"
+
+#: ../libepc/publisher.c:663
+msgid "Table of Contents"
+msgstr "Оглавление"
+
+#: ../libepc/publisher.c:697
+msgid "Sorry, no resources published yet."
+msgstr "Извините, ресурсы ещё не опубликованы."
+
+#: ../libepc/publisher.c:2642
+msgid "%a of %u on %h"
+msgstr "%a из %u на %h"
+
+#: ../libepc/shell.c:272
+#, c-format
+msgid "Cannot create Avahi client: %s"
+msgstr "Не удалось создать клиент Avahi: %s"
+
+#: ../libepc/shell.c:384
+#, c-format
+msgid "Cannot create Avahi service browser."
+msgstr "Не удалось создать браузер службы Avahi."
+
+#. Translators: This is just a generic default message for a progress bar.
+#: ../libepc/shell.c:472
+msgid "Operation in Progress"
+msgstr "Выполнение операции"
+
+#: ../libepc/shell.c:476
+msgid "No details known"
+msgstr "Подробности неизвестны"
+
+#: ../libepc/tls.c:170
+msgid "Generating Server Key"
+msgstr "Генерирование серверного ключа"
+
+#: ../libepc/tls.c:171
+msgid "This may take some time. Type on the keyboard, move your mouse, or browse the web to generate some entropy."
+msgstr "Это может занять некоторое время. Нажмите клавишу на клавиатуре, переместите мышь или откройте веб-страницу, чтобы создать немного энтропии."
+
+#: ../libepc/tls.c:196
+#, c-format
+msgid "Cannot create private server key: %s"
+msgstr "Не удалось создать личный серверный ключ: %s"
+
+#: ../libepc/tls.c:249
+#, c-format
+msgid "Cannot import private server key '%s': %s"
+msgstr "Не удалось импортировать серверный ключ «%s»: %s"
+
+#: ../libepc/tls.c:305
+#, c-format
+msgid "Cannot export private key to PEM format: %s"
+msgstr "Не удалось экспортировать личный ключ в формат PEM: %s"
+
+#: ../libepc/tls.c:319
+#, c-format
+msgid "Failed to create private key folder '%s': %s"
+msgstr "Не удалось создать папку личного ключа «%s»: %s"
+
+#: ../libepc/tls.c:335
+#, c-format
+msgid "Failed to create private key file '%s': %s"
+msgstr "Не удалось создать файл личного ключа «%s»: %s"
+
+#: ../libepc/tls.c:349
+#, c-format
+msgid "Failed to write private key file '%s': %s"
+msgstr "Не удалось записать файл личного ключа «%s»: %s"
+
+#: ../libepc/tls.c:421
+#, c-format
+msgid "Cannot create self signed server key for '%s': %s"
+msgstr "Не удалось создать самозаверенный серверный ключ для «%s»: %s"
+
+#: ../libepc/tls.c:475
+#, c-format
+msgid "Cannot import server certificate '%s': %s"
+msgstr "Не удалось импортировать сертификат сервера «%s»: %s"
+
+#: ../libepc/tls.c:530
+#, c-format
+msgid "Cannot export server certificate to PEM format: %s"
+msgstr "Не удалось экспортировать сертификат сервера в формат PEM: %s"
+
+#: ../libepc/tls.c:544
+#, c-format
+msgid "Failed to create server certificate folder '%s': %s"
+msgstr "Не удалось создать папку сервера сертификации «%s»: %s"
+
+#: ../libepc-ui/password-dialog.c:106
+msgid "<big><b>Authentication required.</b></big>"
+msgstr "<big><b>Требуется аутентификация.</b></big>"
+
+#: ../libepc-ui/password-dialog.c:117
+msgid "_Username:"
+msgstr "_Имя пользователя:"
+
+#: ../libepc-ui/password-dialog.c:123
+msgid "_Password:"
+msgstr "_Пароль:"
+
+#: ../libepc-ui/password-dialog.c:129
+msgid "Anonymous Authentication"
+msgstr "Анонимная аутентификация"
+
+#: ../libepc-ui/password-dialog.c:214
+#, c-format
+msgid "Data source <b>%s</b> requires authentication before permitting access."
+msgstr "Для получения доступа к источнику данных <b>%s</b> требуется аутентификация."
+
+#: ../libepc-ui/password-dialog.c:217
+msgid "Authentication required."
+msgstr "Требуется аутентификация."
+
