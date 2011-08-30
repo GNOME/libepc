@@ -146,7 +146,7 @@ examples_list_resources_LDADD			= libepc/libepc-1.0.la $(LIBEPC_LIBS)
 examples_lookup_resource_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 examples_lookup_resource_LDADD			= libepc/libepc-1.0.la $(LIBEPC_LIBS)
 examples_service_browser_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-examples_service_browser_LDADD			= libepc/libepc-1.0.la
+examples_service_browser_LDADD			= libepc/libepc-1.0.la $(LIBEPC_LIBS)
 examples_simple_publisher_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 examples_simple_publisher_LDADD			= libepc/libepc-1.0.la $(LIBEPC_LIBS)
 
