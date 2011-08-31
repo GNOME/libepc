@@ -35,7 +35,7 @@ list_keys (EpcConsumer *consumer,
       keys = g_list_sort (keys, (GCompareFunc) strcmp);
 
       for (iter = keys; iter; iter = iter->next)
-        gtk_combo_box_append_text (GTK_COMBO_BOX (keys_combo), iter->data);
+        gtk_combo_box_text_append (GTK_COMBO_BOX_TEXT (keys_combo), NULL, iter->data);
 
       gtk_combo_box_set_active (GTK_COMBO_BOX (keys_combo), 0);
       gtk_widget_set_sensitive (keys_combo, TRUE);
@@ -71,7 +71,7 @@ keys_combo_changed_cb (GtkComboBox *combo_box,
 
   /* retreive a the currently selected resource */
 
-  key = gtk_combo_box_get_active_text (combo_box);
+  key = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (combo_box));
 
   if (key)
     value = epc_consumer_lookup (consumer, key, &length, &error);
@@ -120,7 +120,7 @@ create_lookup_dialog (EpcConsumer *consumer,
 
   /* Setup the combo box listing keys. */
 
-  keys_combo = gtk_combo_box_new_text ();
+  keys_combo = gtk_combo_box_text_new ();
   gtk_widget_set_sensitive (keys_combo, FALSE);
 
   g_signal_connect (keys_combo, "changed",
@@ -165,7 +165,7 @@ create_lookup_dialog (EpcConsumer *consumer,
   /* Create the dialog widget. */
 
   dialog = gtk_dialog_new_with_buttons ("Published Value", NULL,
-                                        GTK_DIALOG_NO_SEPARATOR,
+                                        (GtkDialogFlags)0,
                                         GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
                                         NULL);
 

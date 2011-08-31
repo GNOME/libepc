@@ -1,3 +1,13 @@
+2011-08-31  Murray Cumming  <murrayc@murrayc.com>
+
+	Really use GTK+ 3.
+
+	* configure.ac: Check for gtk+-3.0 for libepc-ui.
+	* examples/consumer-ui.c:
+	* examples/publisher-ui.c: Port to GTK+ 3, though I just removed the 
+	GtkAboutBox url hook.
+	Bug #657679 (Frederic Peters)
+
 2011-06-15  Murray Cumming  <murrayc@murrayc.com>
 
 	Avoid use of deprecated G_CONST_RETURN.

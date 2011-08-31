@@ -80,7 +80,7 @@ PKG_CHECK_MODULES(LIBEPC,    [avahi-client >= 0.6
                               uuid         >= 1.36
                               $LIBSOUP
                               $GIO])
-PKG_CHECK_MODULES(LIBEPC_UI, [gtk+-2.0     >= 2.10])
+PKG_CHECK_MODULES(LIBEPC_UI, [gtk+-3.0     >= 3.0])
 
 AC_SUBST(AVAHI_UI_CFLAGS)
 AC_SUBST(AVAHI_UI_LIBS)

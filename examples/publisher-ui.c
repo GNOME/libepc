@@ -366,25 +366,6 @@ schedule_auto_save (void)
     auto_save_id = g_timeout_add (5 * 1000, auto_save_cb, NULL);
 }
 
-static void
-url_hook (GtkAboutDialog *dialog,
-          const gchar    *link,
-          gpointer        data G_GNUC_UNUSED)
-{
-  gchar *args[] = { "xdg-open", (gchar*) link, NULL };
-  GError *error = NULL;
-
-  gdk_spawn_on_screen (gtk_widget_get_screen (GTK_WIDGET (dialog)),
-                       NULL, args, NULL, G_SPAWN_SEARCH_PATH,
-                       NULL, NULL, NULL, &error);
-
-  if (error)
-    {
-      show_error (GTK_WIDGET (dialog), "Cannot follow link.", error);
-      g_error_free (error);
-    }
-}
-
 void
 about_button_clicked_cb (GtkWidget *widget)
 {
@@ -799,7 +780,6 @@ main (int   argc,
   g_set_application_name ("Easy Publisher Example");
 
   gtk_init (&argc, &argv);
-  gtk_about_dialog_set_url_hook (url_hook, NULL, NULL);
 
   builder = gtk_builder_new ();
   load_ui (argv[0]);
