@@ -65,7 +65,7 @@ G@Type@Class*
  *
  * Returns: The string representation of @value, or %NULL.
  */
-G_CONST_RETURN gchar*
+const gchar*
 @enum_name@_to_string (@EnumName@ value)
 {
   const G@Type@Value *@type@_value = g_@type@_get_value (@enum_name@_get_class (), value);

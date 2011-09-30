@@ -1,3 +1,10 @@
+2011-08-31  Ionut Biru <ibiru@archlinux.org>
+
+  Avoid use of deprecated G_CONST_RETURN
+    
+  * libepc/enums.c.in: Avoid use of deprecated G_CONST_RETURN.
+  Bug #660558
+
 	=== Release 0.4.1 ===
 	
 2011-08-31  Murray Cumming  <murrayc@murrayc.com>
