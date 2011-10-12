@@ -151,11 +151,11 @@ examples_simple_publisher_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 examples_simple_publisher_LDADD			= libepc/libepc-1.0.la $(LIBEPC_LIBS)
 
 examples_consumer_ui_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS) $(AVAHI_UI_CFLAGS)
-examples_consumer_ui_LDADD			= libepc/libepc-1.0.la libepc-ui/libepc-ui-1.0.la $(AVAHI_UI_LIBS) $(LIBEPC_LIBS)
+examples_consumer_ui_LDADD			= libepc/libepc-1.0.la libepc-ui/libepc-ui-1.0.la $(AVAHI_UI_LIBS) $(LIBEPC_LIBS) $(LIBEPC_UI_LIBS)
 examples_publisher_ui_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS) $(AVAHI_UI_CFLAGS) -rdynamic
-examples_publisher_ui_LDADD			= libepc/libepc-1.0.la libepc-ui/libepc-ui-1.0.la $(AVAHI_UI_LIBS) $(LIBEPC_LIBS)
+examples_publisher_ui_LDADD			= libepc/libepc-1.0.la libepc-ui/libepc-ui-1.0.la $(AVAHI_UI_LIBS) $(LIBEPC_LIBS) $(LIBEPC_UI_LIBS)
 examples_server_credentials_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS)
-examples_server_credentials_LDADD		= libepc/libepc-1.0.la libepc-ui/libepc-ui-1.0.la $(LIBEPC_LIBS)
+examples_server_credentials_LDADD		= libepc/libepc-1.0.la libepc-ui/libepc-ui-1.0.la $(LIBEPC_LIBS) $(LIBEPC_UI_LIBS)
 
 tests_libepc_tests_la_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 
@@ -180,7 +180,7 @@ tests_test_dispatcher_unique_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la
 tests_test_expand_name_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 tests_test_expand_name_LDADD			= libepc/libepc-1.0.la tests/libepc-tests.la $(LIBEPC_LIBS)
 tests_test_progress_hooks_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS) $(LIBEPC_UI_CFLAGS)
-tests_test_progress_hooks_LDADD			= libepc/libepc-1.0.la libepc-ui/libepc-ui-1.0.la tests/libepc-tests.la $(LIBEPC_LIBS)
+tests_test_progress_hooks_LDADD			= libepc/libepc-1.0.la libepc-ui/libepc-ui-1.0.la tests/libepc-tests.la $(LIBEPC_LIBS) $(LIBEPC_UI_LIBS)
 tests_test_publisher_bookmarks_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)
 tests_test_publisher_bookmarks_LDADD		= libepc/libepc-1.0.la tests/libepc-tests.la $(LIBEPC_LIBS)
 tests_test_publisher_change_name_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_CFLAGS)

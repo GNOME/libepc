@@ -1,3 +1,10 @@
+2011-10-12  Murray Cumming  <murrayc@murrayc.com>
+
+	examples: Fix linker problems.
+
+	* Makefile.am: Some examples used GTK+ but didn't link to it.
+	USe LIBEPC_UI_LIBS for these.
+
 2011-08-31  Ionut Biru <ibiru@archlinux.org>
 
   Avoid use of deprecated G_CONST_RETURN
