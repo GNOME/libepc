@@ -1,5 +1,11 @@
 2011-10-12  Murray Cumming  <murrayc@murrayc.com>
 
+	Build: examples: Avoiding some repetition.
+
+	* Makefile.am: Used variables to avoid copy/pasting.
+
+2011-10-12  Murray Cumming  <murrayc@murrayc.com>
+
 	examples: Fix linker problems.
 
 	* Makefile.am: Some examples used GTK+ but didn't link to it.
