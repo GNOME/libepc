@@ -1,3 +1,9 @@
+Release 0.4.3
+==============
+
+  * Correct the libepc-ui-1.0 pkg-config file.
+  (Michael Biebl) Bug #664502
+
 Release 0.4.2
 ==============
 
