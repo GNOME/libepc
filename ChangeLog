@@ -1,3 +1,9 @@
+2012-01-27  David King  <amigadave@amigadave.com>
+
+	Add gnutls to Requires of libepc-1.0.pc
+
+	* libepc-1.0.pc.in: Add gnutls to Requires.
+
 	=== Release 0.4.3 ===
 
 2011-10-12  Michael Biebl  <biebl@debian.org>
