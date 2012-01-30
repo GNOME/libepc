@@ -1,3 +1,5 @@
+	=== Release 0.4.4 ===
+
 2012-01-27  David King  <amigadave@amigadave.com>
 
 	Add gnutls to Requires of libepc-1.0.pc

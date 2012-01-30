@@ -1,3 +1,9 @@
+Release 0.4.4
+==============
+
+  * Correct the libepc-1.0 pkg-config file to mention gnutls
+  (David King) Bug #668882
+
 Release 0.4.3
 ==============
 
