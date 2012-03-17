@@ -1,0 +1,143 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Мирослав Николић <miroslavnikolic@rocketmail.com>, 2012.
+msgid ""
+msgstr ""
+"Project-Id-Version: libepc\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=libepc"
+"&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2012-01-30 21:31+0000\n"
+"PO-Revision-Date: 2012-03-17 12:03+0200\n"
+"Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
+"Language-Team: Serbian <gnom@prevod.org>\n"
+"Language: sr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=n==1? 3 : n%10==1 && n%100!=11 ? 0 : "
+"n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Project-Style: gnome\n"
+
+#: ../libepc/consumer.c:1083
+#, c-format
+msgid "Unexpected element: '%s'"
+msgstr "Неочекивани елемент: „%s“"
+
+#: ../libepc/publisher.c:663
+msgid "Table of Contents"
+msgstr "Садржај"
+
+#: ../libepc/publisher.c:697
+msgid "Sorry, no resources published yet."
+msgstr "Извините, извори нису још увек објављени."
+
+#: ../libepc/publisher.c:2642
+msgid "%a of %u on %h"
+msgstr "%a од %u на %h"
+
+#: ../libepc/shell.c:272
+#, c-format
+msgid "Cannot create Avahi client: %s"
+msgstr "Не могу да направим Авахи клијента: %s"
+
+#: ../libepc/shell.c:384
+#, c-format
+msgid "Cannot create Avahi service browser."
+msgstr "Не могу да направим прегледника Авахи услуге."
+
+#. Translators: This is just a generic default message for a progress bar.
+#: ../libepc/shell.c:472
+msgid "Operation in Progress"
+msgstr "Радња је у току"
+
+#: ../libepc/shell.c:476
+msgid "No details known"
+msgstr "Појединости нису познате"
+
+#: ../libepc/tls.c:170
+msgid "Generating Server Key"
+msgstr "Стварам кључ сервера"
+
+#: ../libepc/tls.c:171
+msgid ""
+"This may take some time. Type on the keyboard, move your mouse, or browse "
+"the web to generate some entropy."
+msgstr ""
+"Ово може да потраје. Куцајте на тастатури, померајте миша, или прегледајте "
+"веб да створите мало ентропије."
+
+#: ../libepc/tls.c:196
+#, c-format
+msgid "Cannot create private server key: %s"
+msgstr "Не могу да направим лични кључ сервера: %s"
+
+#: ../libepc/tls.c:249
+#, c-format
+msgid "Cannot import private server key '%s': %s"
+msgstr "Не могу да увезем лични кључ сервера „%s“: %s"
+
+#: ../libepc/tls.c:305
+#, c-format
+msgid "Cannot export private key to PEM format: %s"
+msgstr "Не могу да извезем лични кључ у ПЕМ облик: %s"
+
+#: ../libepc/tls.c:319
+#, c-format
+msgid "Failed to create private key folder '%s': %s"
+msgstr "Нисам успео да направим фасциклу личног кључа „%s“: %s"
+
+#: ../libepc/tls.c:335
+#, c-format
+msgid "Failed to create private key file '%s': %s"
+msgstr "Нисам успео да направим датотеку личног кључа „%s“: %s"
+
+#: ../libepc/tls.c:349
+#, c-format
+msgid "Failed to write private key file '%s': %s"
+msgstr "Нисам успео да запишем датотеку личног кључа „%s“: %s"
+
+#: ../libepc/tls.c:421
+#, c-format
+msgid "Cannot create self signed server key for '%s': %s"
+msgstr "Не могу да направим самопотписани кључ сервера за „%s“: %s"
+
+#: ../libepc/tls.c:475
+#, c-format
+msgid "Cannot import server certificate '%s': %s"
+msgstr "Не могу да увезем уверење сервера „%s“: %s"
+
+#: ../libepc/tls.c:530
+#, c-format
+msgid "Cannot export server certificate to PEM format: %s"
+msgstr "Не могу да извезем уверење сервера у ПЕМ облик: %s"
+
+#: ../libepc/tls.c:544
+#, c-format
+msgid "Failed to create server certificate folder '%s': %s"
+msgstr "Нисам успео да направим фасциклу уверења сервера „%s“: %s"
+
+#: ../libepc-ui/password-dialog.c:106
+msgid "<big><b>Authentication required.</b></big>"
+msgstr "<big><b>Потребно је пријављивање.</b></big>"
+
+#: ../libepc-ui/password-dialog.c:117
+msgid "_Username:"
+msgstr "_Корисник:"
+
+#: ../libepc-ui/password-dialog.c:123
+msgid "_Password:"
+msgstr "_Лозинка:"
+
+#: ../libepc-ui/password-dialog.c:129
+msgid "Anonymous Authentication"
+msgstr "Безимено пријављивање"
+
+#: ../libepc-ui/password-dialog.c:214
+#, c-format
+msgid "Data source <b>%s</b> requires authentication before permitting access."
+msgstr "Извор података <b>%s</b> захтева пријављивање како би допустио приступ."
+
+#: ../libepc-ui/password-dialog.c:217
+msgid "Authentication required."
+msgstr "Потребно је пријављивање."
