@@ -6,11 +6,10 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libepc\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=libepc\n"
-"POT-Creation-Date: 2008-03-24 09:58+0200\n"
-"PO-Revision-Date: 2008-03-24 09:58+0200\n"
-"Last-Translator: Giannis Katsampirhs <giannis1_86@hotmail.com>\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=libepc&component=general\n"
+"POT-Creation-Date: 2009-08-21 08:13+0000\n"
+"PO-Revision-Date: 2012-06-29 13:35+0200\n"
+"Last-Translator: Tom Tryfonidis <tomtryf@gmail.com>\n"
 "Language-Team: Greek <team@gnome.gr>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -22,28 +21,36 @@ msgstr ""
 msgid "Unexpected element: '%s'"
 msgstr "Μη προβλεπόμενο στοιχείο: '%s'"
 
-#: ../libepc/publisher.c:660
+#: ../libepc/publisher.c:659
 msgid "Table of Contents"
 msgstr "Πίνακας περιεχομένων"
 
-#: ../libepc/publisher.c:694
+#: ../libepc/publisher.c:693
 msgid "Sorry, no resources published yet."
 msgstr "Σας ζητάμε συγγνώμη, δεν δημοσιεύτηκαν ακόμη πόροι."
 
-#: ../libepc/publisher.c:2623
+#: ../libepc/publisher.c:2638
 msgid "%a of %u on %h"
 msgstr "%a από %u σε %h"
 
-#: ../libepc/shell.c:264
+#: ../libepc/shell.c:267
 #, c-format
 msgid "Cannot create Avahi client: %s"
 msgstr "Δεν είναι δυνατή η δημιουργία του πελάτη του avahi: %s"
 
-#: ../libepc/shell.c:455
-msgid "Operation Proceeded"
-msgstr "Η λειτουργία συνεχίστηκε"
+#: ../libepc/shell.c:379
+#, c-format
+#| msgid "Cannot create Avahi client: %s"
+msgid "Cannot create Avahi service browser."
+msgstr "Δεν είναι δυνατή η δημιουργία υπηρεσίας περιήγησης Avahi"
 
-#: ../libepc/shell.c:457
+#. Translators: This is just a generic default message for a progress bar.
+#: ../libepc/shell.c:467
+#| msgid "Operation Proceeded"
+msgid "Operation in Progress"
+msgstr "Λειτουργία σε εξέλιξη"
+
+#: ../libepc/shell.c:471
 msgid "No details known"
 msgstr "Δεν υπάρχουν γνωστές λεπτομέρειες"
 
@@ -52,13 +59,8 @@ msgid "Generating Server Key"
 msgstr "Δημιουργία κλειδιού εξυπηρετητή"
 
 #: ../libepc/tls.c:166
-msgid ""
-"This may take some time. Type on the keyboard, move your mouse, or browse "
-"the web to generate some entropy."
-msgstr ""
-"Αυτό μπορεί να διαρκέσει λίγο χρόνο. Πληκτρολογήστε στο πληκτρολόγιο, "
-"μετακινήστε το ποντίκι σας ή περιηγηθείτε στο δίκτυο για να δημιουργήσετε "
-"κάποια εντροπία."
+msgid "This may take some time. Type on the keyboard, move your mouse, or browse the web to generate some entropy."
+msgstr "Αυτό μπορεί να διαρκέσει λίγο χρόνο. Πληκτρολογήστε στο πληκτρολόγιο, μετακινήστε το ποντίκι σας ή περιηγηθείτε στο δίκτυο για να δημιουργήσετε κάποια εντροπία."
 
 #: ../libepc/tls.c:191
 #, c-format
@@ -93,8 +95,7 @@ msgstr "Αποτυχία κατά την εγγραφή του αρχείου π
 #: ../libepc/tls.c:416
 #, c-format
 msgid "Cannot create self signed server key for '%s': %s"
-msgstr ""
-"Δεν είναι δυνατή η δημιουργία προσωπικού κλειδιού εξυπηρετητή για το '%s': %s"
+msgstr "Δεν είναι δυνατή η δημιουργία προσωπικού κλειδιού εξυπηρετητή για το '%s': %s"
 
 #: ../libepc/tls.c:470
 #, c-format
@@ -109,8 +110,7 @@ msgstr "Δεν είναι δυνατή η εξαγωγή πιστοποιητι�
 #: ../libepc/tls.c:539
 #, c-format
 msgid "Failed to create server certificate folder '%s': %s"
-msgstr ""
-"Αποτυχία κατά τη δημιουργία του φακέλου πιστοποιητικού εξυπηρετητή '%s': %s"
+msgstr "Αποτυχία κατά τη δημιουργία του φακέλου πιστοποιητικού εξυπηρετητή '%s': %s"
 
 #: ../libepc-ui/password-dialog.c:102
 msgid "<big><b>Authentication required.</b></big>"
@@ -131,10 +131,9 @@ msgstr "Ανώνυμη πιστοποίηση"
 #: ../libepc-ui/password-dialog.c:205
 #, c-format
 msgid "Data source <b>%s</b> requires authentication before permitting access."
-msgstr ""
-"Η πηγή δεδομένων <b>%s</b> απαιτεί πιστοποίηση για να επιτρέψει την πρόσβασή "
-"της."
+msgstr "Η πηγή δεδομένων <b>%s</b> απαιτεί πιστοποίηση για να επιτρέψει την πρόσβασή της."
 
 #: ../libepc-ui/password-dialog.c:208
 msgid "Authentication required."
 msgstr "Απαιτείται πιστοποίηση."
+
