@@ -1,22 +1,23 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# Imam Musthaqim <userindesign@gmail.com>
+# Indonesian translation of libepc
+# Copyright (C) YEAR THE libepc'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the libepc package.
+# Imam Musthaqim <userindesign@gmail.com>, 2010
+# Andika Triwidada <andika@gmail.com>, 2012
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: libepc.HEAD\n"
+"Project-Id-Version: libepc master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=libepc&component=general\n"
-"POT-Creation-Date: 2010-03-24 16:01+0000\n"
-"PO-Revision-Date: 2009-04-14 19:20+0700\n"
-"Last-Translator: Imam Musthaqim <userindesign@gmail.com>\n"
-"Language-Team: INDONESIA <userindesign@gmail.com>\n"
+"POT-Creation-Date: 2010-04-14 05:51+0000\n"
+"PO-Revision-Date: 2012-09-08 23:53+0700\n"
+"Last-Translator: Andika Triwidada <andika@gmail.com>\n"
+"Language-Team: INDONESIA <gnome@i15n.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Indonesian\n"
-"X-Poedit-Country: INDONESIA\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Language: id\n"
 
 #: ../libepc/consumer.c:1079
 #, c-format
@@ -47,10 +48,9 @@ msgstr "Tidak dapat membuat browser layanan Avahi."
 
 #. Translators: This is just a generic default message for a progress bar.
 #: ../libepc/shell.c:467
-#, fuzzy
 #| msgid "Operation Proceeded"
 msgid "Operation in Progress"
-msgstr "Operasi Dilanjutkan"
+msgstr "Operasi Tengah Berlangsung"
 
 #: ../libepc/shell.c:471
 msgid "No details known"
