@@ -1,0 +1,146 @@
+# Hungarian translation for libepc.
+# Copyright (C) 2014 libepc's COPYRIGHT HOLDER
+# This file is distributed under the same license as the libepc package.
+#
+# Balázs Úr <urbalazs@gmail.com>, 2014.
+msgid ""
+msgstr ""
+"Project-Id-Version: libepc master\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=libepc&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2014-12-23 10:29+0000\n"
+"PO-Revision-Date: 2014-12-23 16:47+0100\n"
+"Last-Translator: Balázs Úr <urbalazs@gmail.com>\n"
+"Language-Team: Hungarian <gnome-hu-list@gnome.org>\n"
+"Language: hu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Lokalize 1.2\n"
+
+#: ../libepc/consumer.c:1083
+#, c-format
+msgid "Unexpected element: '%s'"
+msgstr "Váratlan elem: „%s”"
+
+#: ../libepc/publisher.c:663
+msgid "Table of Contents"
+msgstr "Tartalomjegyzék"
+
+#: ../libepc/publisher.c:697
+msgid "Sorry, no resources published yet."
+msgstr "Elnézést, még nincsenek közzétéve erőforrások."
+
+#: ../libepc/publisher.c:2642
+msgid "%a of %u on %h"
+msgstr "%a / %u ekkor: %h"
+
+#: ../libepc/shell.c:272
+#, c-format
+msgid "Cannot create Avahi client: %s"
+msgstr "Nem hozható létre Avahi kliens: %s"
+
+#: ../libepc/shell.c:384
+#, c-format
+msgid "Cannot create Avahi service browser."
+msgstr "Nem hozható létre Avahi szolgáltatásböngésző."
+
+#. Translators: This is just a generic default message for a progress bar.
+#: ../libepc/shell.c:472
+msgid "Operation in Progress"
+msgstr "A művelet folyamatban"
+
+#: ../libepc/shell.c:476
+msgid "No details known"
+msgstr "A részletek nem ismertek"
+
+#: ../libepc/tls.c:170
+msgid "Generating Server Key"
+msgstr "Kiszolgálókulcs előállítása"
+
+#: ../libepc/tls.c:171
+msgid ""
+"This may take some time. Type on the keyboard, move your mouse, or browse "
+"the web to generate some entropy."
+msgstr ""
+"Ez eltarthat egy ideig. Gépeljen a billentyűzeten, mozgassa az egeret, vagy "
+"böngésszen a weben az entrópia előállításához."
+
+#: ../libepc/tls.c:196
+#, c-format
+msgid "Cannot create private server key: %s"
+msgstr "Nem lehet előállítani a személyes kiszolgálókulcsot: %s"
+
+#: ../libepc/tls.c:249
+#, c-format
+msgid "Cannot import private server key '%s': %s"
+msgstr "Nem lehet importálni a(z) „%s” személyes kiszolgálókulcsot: '%s"
+
+#: ../libepc/tls.c:305
+#, c-format
+msgid "Cannot export private key to PEM format: %s"
+msgstr "Nem lehet exportálni a személyes kulcsot PEM formátumba: %s"
+
+#: ../libepc/tls.c:319
+#, c-format
+msgid "Failed to create private key folder '%s': %s"
+msgstr "A(z) „%s” személyes kulcs mappa létrehozása nem sikerült: %s"
+
+#: ../libepc/tls.c:335
+#, c-format
+msgid "Failed to create private key file '%s': %s"
+msgstr "A(z) „%s” személyes kulcs fájl létrehozása nem sikerült: %s"
+
+#: ../libepc/tls.c:349
+#, c-format
+msgid "Failed to write private key file '%s': %s"
+msgstr "A(z) „%s” személyes kulcs fájl írása nem sikerült: %s"
+
+#: ../libepc/tls.c:421
+#, c-format
+msgid "Cannot create self signed server key for '%s': %s"
+msgstr "Nem lehet előállítani a(z) „%s” önmagával aláírt kiszolgálókulcsát: %s"
+
+#: ../libepc/tls.c:475
+#, c-format
+msgid "Cannot import server certificate '%s': %s"
+msgstr "Nem lehet importálni a(z) „%s” kiszolgáló tanúsítványt: %s"
+
+#: ../libepc/tls.c:530
+#, c-format
+msgid "Cannot export server certificate to PEM format: %s"
+msgstr "Nem lehet exportálni a kiszolgáló tanúsítványát PEM formátumba: %s"
+
+#: ../libepc/tls.c:544
+#, c-format
+msgid "Failed to create server certificate folder '%s': %s"
+msgstr "A(z) „%s” kiszolgáló tanúsítvány mappa létrehozása nem sikerült: %s"
+
+#: ../libepc-ui/password-dialog.c:106
+msgid "<big><b>Authentication required.</b></big>"
+msgstr "<big><b>Hitelesítés szükséges.</b></big>"
+
+#: ../libepc-ui/password-dialog.c:117
+msgid "_Username:"
+msgstr "_Felhasználónév:"
+
+#: ../libepc-ui/password-dialog.c:123
+msgid "_Password:"
+msgstr "_Jelszó:"
+
+#: ../libepc-ui/password-dialog.c:129
+msgid "Anonymous Authentication"
+msgstr "Névtelen hitelesítés"
+
+#: ../libepc-ui/password-dialog.c:214
+#, c-format
+msgid "Data source <b>%s</b> requires authentication before permitting access."
+msgstr ""
+"A(z) <b>%s</b> adatforrás hitelesítést igényel a hozzáférés engedélyezése "
+"előtt."
+
+#: ../libepc-ui/password-dialog.c:217
+msgid "Authentication required."
+msgstr "Hitelesítés szükséges."
+
