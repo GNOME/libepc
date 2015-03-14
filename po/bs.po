@@ -1,0 +1,145 @@
+# Bosnian translation for bosnianuniversetranslation
+# Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
+# This file is distributed under the same license as the bosnianuniversetranslation package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: bosnianuniversetranslation\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=libepc&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2015-02-26 22:42+0000\n"
+"PO-Revision-Date: 2015-02-05 01:11+0000\n"
+"Last-Translator: Adem Jevric <ajevric1@etf.unsa.ba>\n"
+"Language-Team: Bosnian <bs@li.org>\n"
+"Language: bs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2015-02-05 06:46+0000\n"
+"X-Generator: Launchpad (build 17331)\n"
+
+#: ../libepc/consumer.c:1083
+#, c-format
+msgid "Unexpected element: '%s'"
+msgstr "Neočekivan element: '%s'"
+
+#: ../libepc/publisher.c:663
+msgid "Table of Contents"
+msgstr "Tabela Sadržaja"
+
+#: ../libepc/publisher.c:697
+msgid "Sorry, no resources published yet."
+msgstr "Žao nam je, još nema izdatih resursa."
+
+#: ../libepc/publisher.c:2642
+msgid "%a of %u on %h"
+msgstr "%a od %u na %h"
+
+#: ../libepc/shell.c:272
+#, c-format
+msgid "Cannot create Avahi client: %s"
+msgstr "Ne mogu kreirati Avahi klijenta: %s"
+
+#: ../libepc/shell.c:384
+#, c-format
+msgid "Cannot create Avahi service browser."
+msgstr "Ne mogu kreirati pretraživač Avahi klijenata."
+
+#. Translators: This is just a generic default message for a progress bar.
+#: ../libepc/shell.c:472
+msgid "Operation in Progress"
+msgstr "Operacija u toku"
+
+#: ../libepc/shell.c:476
+msgid "No details known"
+msgstr "Nepoznati detalji"
+
+#: ../libepc/tls.c:170
+msgid "Generating Server Key"
+msgstr "Pravim ključ za server"
+
+#: ../libepc/tls.c:171
+msgid ""
+"This may take some time. Type on the keyboard, move your mouse, or browse "
+"the web to generate some entropy."
+msgstr ""
+"Ovo može potrajati. Pišite nešto po tastaturi, pomjerajte miš, ili "
+"pretražjte mrežu da biste proizveli određenu entropiju."
+
+#: ../libepc/tls.c:196
+#, c-format
+msgid "Cannot create private server key: %s"
+msgstr "Ne mogu kreirati privatni ključ servera: %s"
+
+#: ../libepc/tls.c:249
+#, c-format
+msgid "Cannot import private server key '%s': %s"
+msgstr "Ne mogu uvesti privatni ključ servera '%s': %s"
+
+#: ../libepc/tls.c:305
+#, c-format
+msgid "Cannot export private key to PEM format: %s"
+msgstr "Ne mogu izvesti privati ključ PEM formata: %s"
+
+#: ../libepc/tls.c:319
+#, c-format
+msgid "Failed to create private key folder '%s': %s"
+msgstr "Nisam uspio u kreiranju privatnog foldera ključeva '%s': %s"
+
+#: ../libepc/tls.c:335
+#, c-format
+msgid "Failed to create private key file '%s': %s"
+msgstr "Nisam uspio u kreiranju privatnog fajla ključeva '%s': %s"
+
+#: ../libepc/tls.c:349
+#, c-format
+msgid "Failed to write private key file '%s': %s"
+msgstr "Nisam uspio u pisanju fajla ključeva '%s': %s"
+
+#: ../libepc/tls.c:421
+#, c-format
+msgid "Cannot create self signed server key for '%s': %s"
+msgstr "Ne mogu kreirati samopotpisani ključ servera za '%s': %s"
+
+#: ../libepc/tls.c:475
+#, c-format
+msgid "Cannot import server certificate '%s': %s"
+msgstr "Ne mogu uvesti certifikat servera '%s': %s"
+
+#: ../libepc/tls.c:530
+#, c-format
+msgid "Cannot export server certificate to PEM format: %s"
+msgstr "Ne mogu izvesti certifikat servera u PEM format: %s"
+
+#: ../libepc/tls.c:544
+#, c-format
+msgid "Failed to create server certificate folder '%s': %s"
+msgstr "Nisam uspio u kreiranju foldera certifikata servera '%s': %s"
+
+#: ../libepc-ui/password-dialog.c:106
+msgid "<big><b>Authentication required.</b></big>"
+msgstr "<big><b>Provjera identiteta potrebna.</b></big>"
+
+#: ../libepc-ui/password-dialog.c:117
+msgid "_Username:"
+msgstr "_Korisničko ime:"
+
+#: ../libepc-ui/password-dialog.c:123
+msgid "_Password:"
+msgstr "Lozinka:"
+
+#: ../libepc-ui/password-dialog.c:129
+msgid "Anonymous Authentication"
+msgstr "Anonimna provjera identiteta"
+
+#: ../libepc-ui/password-dialog.c:214
+#, c-format
+msgid "Data source <b>%s</b> requires authentication before permitting access."
+msgstr ""
+"Izvor podataka <b>%s</b> zahtijeva provjeru identiteta prije dopuštanja "
+"pristupa."
+
+#: ../libepc-ui/password-dialog.c:217
+msgid "Authentication required."
+msgstr "Provjera identiteta zahtjevana."
