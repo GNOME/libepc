@@ -524,16 +524,16 @@ epc_publisher_handle_contents (SoupServer        *server,
 
   if (contents)
     {
-      gconstpointer data;
+      gconstpointer contents_data;
       const gchar *type;
       gsize length = 0;
 
-      data = epc_contents_get_data (contents, &length);
+      contents_data = epc_contents_get_data (contents, &length);
       type = epc_contents_get_mime_type (contents);
 
-      if (data)
+      if (contents_data)
         {
-          soup_message_set_response (message, type, SOUP_MEMORY_COPY, (gpointer) data, length);
+          soup_message_set_response (message, type, SOUP_MEMORY_COPY, (gpointer) contents_data, length);
           soup_message_set_status (message, SOUP_STATUS_OK);
         }
       else if (epc_contents_is_stream (contents))
