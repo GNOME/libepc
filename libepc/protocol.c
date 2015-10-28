@@ -131,6 +131,10 @@ epc_protocol_get_service_type (EpcProtocol protocol)
 
       case EPC_PROTOCOL_UNKNOWN:
         return NULL;
+
+      default:
+        g_warning ("%s: Unexpected protocol.", G_STRFUNC);
+        break;
     }
 
   g_return_val_if_reached (NULL);
@@ -159,6 +163,10 @@ epc_protocol_get_uri_scheme (EpcProtocol  protocol)
 
       case EPC_PROTOCOL_UNKNOWN:
         return NULL;
+
+      default:
+        g_warning ("%s: Unexpected protocol.", G_STRFUNC);
+        break;
     }
 
   g_return_val_if_reached (NULL);

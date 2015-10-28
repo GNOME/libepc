@@ -2685,6 +2685,10 @@ epc_publisher_expand_name (const gchar  *name,
           case '%':
             subst = "%";
             break;
+
+          default:
+            g_warning ("%s: Unexpected character.", G_STRFUNC);
+            break;
         }
 
       if (subst)
