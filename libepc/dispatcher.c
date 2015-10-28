@@ -267,6 +267,10 @@ epc_service_group_cb (AvahiEntryGroup      *group,
           epc_shell_restart_avahi_client (G_STRLOC);
           break;
         }
+
+      default:
+        g_warning ("%s: Unexpected state.", G_STRFUNC);
+        break;
     }
 
   g_clear_error (&error);
@@ -452,6 +456,10 @@ epc_dispatcher_client_cb (AvahiClient      *client G_GNUC_UNUSED,
           g_debug ("%s: Waiting for Avahi server...", G_STRLOC);
 
         break;
+
+      default:
+        g_warning ("%s: Unexpected state.", G_STRFUNC);
+        break;
     }
 
   g_clear_error (&error);
@@ -587,6 +595,10 @@ epc_dispatcher_handle_collision (EpcDispatcher *self,
 
       case EPC_COLLISIONS_UNIQUE_SERVICE:
         epc_dispatcher_watch_other (self, domain);
+        break;
+
+      default:
+        g_warning ("%s: Unexpected collisions enum value.", G_STRFUNC);
         break;
     }
 }

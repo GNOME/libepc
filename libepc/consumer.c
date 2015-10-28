@@ -1073,6 +1073,10 @@ epc_consumer_list_parser_start_element (GMarkupParseContext *context G_GNUC_UNUS
 
       case EPC_LISTING_ELEMENT_NAME:
         break;
+
+      default:
+        g_warning ("%s: Unexpected element.", G_STRFUNC);
+        break;
     }
 
   if (element)
@@ -1110,6 +1114,10 @@ epc_consumer_list_parser_end_element (GMarkupParseContext *context G_GNUC_UNUSED
 
       case EPC_LISTING_ELEMENT_NONE:
         break;
+
+      default:
+        g_warning ("%s: Unexpected element.", G_STRFUNC);
+        break;
     }
 }
 
@@ -1134,6 +1142,10 @@ epc_consumer_list_parser_text (GMarkupParseContext *context G_GNUC_UNUSED,
       case EPC_LISTING_ELEMENT_ITEM:
       case EPC_LISTING_ELEMENT_LIST:
       case EPC_LISTING_ELEMENT_NONE:
+        break;
+
+      default:
+        g_warning ("%s: Unexpected element.", G_STRFUNC);
         break;
     }
 }
