@@ -27,7 +27,7 @@ default_system_bus_address=$(pkg-config dbus-1 --variable=system_bus_default_add
 
 EPC_DEBUG="${EPC_DEBUG:-1}" G_DEBUG="${G_DEBUG:-fatal-warnings}" \
 DBUS_SYSTEM_BUS_ADDRESS="${DBUS_SYSTEM_BUS_ADDRESS:-${default_system_bus_address}}" \
-"$@" 2> "$1.err" > "$1.out"
+"$@" 2> "$2.err" > "$2.out"
 
 result=$?
 
