@@ -101,7 +101,7 @@ typedef gboolean    (*EpcAuthHandler)    (EpcAuthContext *context,
  * These flags specify the authentication behaviour of an #EpcPublisher.
  */
 
-typedef enum /* <flags> */
+typedef enum /*< flags >*/
 {
   EPC_AUTH_DEFAULT =                     0,
   EPC_AUTH_PASSWORD_TEXT_NEEDED =       (1 << 0)

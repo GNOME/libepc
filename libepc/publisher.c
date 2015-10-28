@@ -33,7 +33,7 @@
 #include <libsoup/soup.h>
 #include <string.h>
 
-#if HAVE_LIBSOUP22
+#ifdef HAVE_LIBSOUP22
 #include <libsoup/soup-address.h>
 #include <libsoup/soup-server.h>
 #include <libsoup/soup-server-auth.h>
@@ -177,7 +177,7 @@ struct _EpcAuthContext
   EpcPublisher   *publisher;
   const gchar    *key;
 
-#if HAVE_LIBSOUP22
+#ifdef HAVE_LIBSOUP22
   SoupServerAuth *auth;
 #else
   SoupMessage    *message;
@@ -224,7 +224,7 @@ struct _EpcPublisherPrivate
   GMainLoop             *server_loop;
   SoupServer            *server;
 
-#if HAVE_LIBSOUP22
+#ifdef HAVE_LIBSOUP22
   SoupServerAuthContext  server_auth;
 #else
   SoupAuthDomain        *server_auth;
@@ -718,7 +718,7 @@ epc_publisher_handle_root (SoupServer        *server,
 }
 
 static void
-#if HAVE_LIBSOUP22
+#ifdef HAVE_LIBSOUP22
 epc_auth_context_init (EpcAuthContext *context,
                        EpcPublisher   *publisher,
                        SoupMessage    *message,
@@ -737,7 +737,7 @@ epc_auth_context_init (EpcAuthContext *context,
   context->key = epc_publisher_get_key (uri->path);
   context->resource = NULL;
 
-#if HAVE_LIBSOUP22
+#ifdef HAVE_LIBSOUP22
   context->auth = auth;
 #else
   context->message  = message;
@@ -751,7 +751,7 @@ epc_auth_context_init (EpcAuthContext *context,
     context->resource = publisher->priv->default_resource;
 }
 
-#if HAVE_LIBSOUP22
+#ifdef HAVE_LIBSOUP22
 
 static gboolean
 epc_publisher_server_auth_cb (SoupServerAuthContext *auth_ctx G_GNUC_UNUSED,
@@ -866,7 +866,7 @@ epc_publisher_init (EpcPublisher *self)
   self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self, EPC_TYPE_PUBLISHER, EpcPublisherPrivate);
   self->priv->protocol = EPC_PROTOCOL_HTTPS;
 
-#if HAVE_LIBSOUP22
+#ifdef HAVE_LIBSOUP22
   self->priv->server_auth.types = SOUP_AUTH_TYPE_DIGEST;
   self->priv->server_auth.callback = epc_publisher_server_auth_cb;
   self->priv->server_auth.user_data = self;
@@ -1079,7 +1079,7 @@ epc_publisher_compute_name (EpcPublisher *self)
 static void
 epc_publisher_remove_handlers (EpcPublisher *self)
 {
-#if HAVE_LIBSOUP22
+#ifdef HAVE_LIBSOUP22
   memset (&self->priv->server_auth.digest_info, 0,
           sizeof self->priv->server_auth.digest_info);
 #else
@@ -1103,7 +1103,7 @@ epc_publisher_add_server_callback (EpcPublisher       *self,
                                    const gchar        *path,
                                    SoupServerCallback  callback)
 {
-#if HAVE_LIBSOUP22
+#ifdef HAVE_LIBSOUP22
   soup_server_add_handler (self->priv->server, path,
                            &self->priv->server_auth,
                            callback, NULL, self);
@@ -1116,7 +1116,7 @@ epc_publisher_add_server_callback (EpcPublisher       *self,
 static void
 epc_publisher_install_handlers (EpcPublisher *self)
 {
-#if HAVE_LIBSOUP22
+#ifdef HAVE_LIBSOUP22
 
   memset (&self->priv->server_auth.digest_info, 0,
           sizeof self->priv->server_auth.digest_info);
@@ -1307,7 +1307,7 @@ epc_publisher_real_set_auth_flags (EpcPublisher *self,
   if (self->priv->server)
     epc_publisher_remove_handlers (self);
 
-#if HAVE_LIBSOUP22
+#ifdef HAVE_LIBSOUP22
   self->priv->server_auth.types =
     flags & EPC_AUTH_PASSWORD_TEXT_NEEDED ?
     SOUP_AUTH_TYPE_BASIC : SOUP_AUTH_TYPE_DIGEST;
@@ -2477,7 +2477,7 @@ epc_publisher_run_async (EpcPublisher  *self,
   if (!self->priv->server_started)
     {
       soup_server_run_async (self->priv->server);
-#if HAVE_LIBSOUP22
+#ifdef HAVE_LIBSOUP22
       g_object_unref (self->priv->server); /* work arround bug #494128 */
 #endif
       self->priv->server_started = TRUE;
@@ -2758,7 +2758,7 @@ epc_auth_context_get_password (const EpcAuthContext *context)
 {
   g_return_val_if_fail (NULL != context, NULL);
 
-#if HAVE_LIBSOUP22
+#ifdef HAVE_LIBSOUP22
 
   if (NULL != context->auth &&
       SOUP_AUTH_TYPE_BASIC == context->auth->type)
@@ -2792,7 +2792,7 @@ epc_auth_context_check_password (const EpcAuthContext *context,
   g_return_val_if_fail (NULL != context, FALSE);
   g_return_val_if_fail (NULL != password, FALSE);
 
-#if HAVE_LIBSOUP22
+#ifdef HAVE_LIBSOUP22
 
   return
     NULL != context->auth &&
