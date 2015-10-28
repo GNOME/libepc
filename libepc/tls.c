@@ -176,7 +176,7 @@ epc_tls_private_key_new (GError **error)
   epc_tls_check (context.rc);
 
   context.loop = g_main_loop_new (NULL, FALSE);
-  g_thread_create (epc_tls_private_key_thread, &context, FALSE, NULL);
+  g_thread_new (NULL, epc_tls_private_key_thread, &context);
   g_main_loop_run (context.loop);
   g_main_loop_unref (context.loop);
 
