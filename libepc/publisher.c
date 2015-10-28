@@ -911,6 +911,10 @@ epc_publisher_get_bookmark_type (EpcPublisher *self)
 
       case EPC_PROTOCOL_UNKNOWN:
         break;
+
+      default:
+        g_warning ("%s: Unexpected protocol.", G_STRFUNC);
+        break;
     }
 
   return NULL;
