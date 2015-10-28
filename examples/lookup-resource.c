@@ -67,7 +67,6 @@ main (int   argc,
 
   /* Initialize the toolkit. */
 
-  g_thread_init (NULL);
   g_type_init ();
 
   /* Parse command line options. */

@@ -85,7 +85,6 @@ main (void)
   gint result = 1;
 
   g_set_prgname (__FILE__);
-  g_thread_init (NULL);
   g_type_init ();
 
   if (!epc_test_init (5))

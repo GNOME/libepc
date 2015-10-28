@@ -205,8 +205,6 @@ main (int   argc,
 
   /* Initialize the toolkit */
 
-  g_thread_init (NULL);
-
   if (!gtk_init_with_args (&argc, &argv, NULL, entries, NULL, &error))
     {
       g_print ("Usage error: %s\n", error->message);

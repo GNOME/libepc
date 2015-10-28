@@ -19,7 +19,6 @@ main (int   argc,
   /* Initialize GTK+ and gnutls
    */
   gnutls_global_init ();
-  g_thread_init (NULL);
   gtk_init (&argc, &argv);
 
   /* Show a progress window when generating new keys.

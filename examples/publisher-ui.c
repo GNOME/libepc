@@ -776,7 +776,6 @@ main (int   argc,
   GtkWidget *text_view;
   GtkWidget *main_window;
 
-  g_thread_init (NULL);
   g_set_application_name ("Easy Publisher Example");
 
   gtk_init (&argc, &argv);

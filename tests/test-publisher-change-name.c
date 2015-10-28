@@ -69,7 +69,6 @@ main (int   argc G_GNUC_UNUSED,
   g_set_prgname (prgname);
   g_free (prgname);
 
-  g_thread_init (NULL);
   g_type_init ();
 
   hash = g_random_int ();

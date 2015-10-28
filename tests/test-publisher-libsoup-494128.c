@@ -54,7 +54,6 @@ main (int   argc G_GNUC_UNUSED,
   g_set_prgname (prgname);
   g_free (prgname);
 
-  g_thread_init (NULL);
   g_type_init ();
 
   loop = g_main_loop_new (NULL, FALSE);
