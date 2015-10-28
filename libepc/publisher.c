@@ -245,7 +245,7 @@ struct _EpcPublisherPrivate
   gchar                 *private_key_file;
 };
 
-static GStaticRecMutex epc_publisher_lock;
+static GRecMutex epc_publisher_lock;
 
 G_DEFINE_TYPE (EpcPublisher, epc_publisher, G_TYPE_OBJECT);
 
@@ -431,7 +431,7 @@ epc_publisher_track_client (EpcPublisher *self,
                             SoupServer   *server,
                             SoupSocket   *socket)
 {
-  g_static_rec_mutex_lock (&epc_publisher_lock);
+  g_rec_mutex_lock (&epc_publisher_lock);
 
   if (epc_publisher_check_client (self, server, socket))
     {
@@ -446,7 +446,7 @@ epc_publisher_track_client (EpcPublisher *self,
       return TRUE;
     }
   else
-    g_static_rec_mutex_unlock (&epc_publisher_lock);
+    g_rec_mutex_unlock (&epc_publisher_lock);
 
   return FALSE;
 }
@@ -467,7 +467,7 @@ epc_publisher_untrack_client (EpcPublisher *self,
       g_hash_table_replace (self->priv->clients, socket, tag);
     }
 
-  g_static_rec_mutex_unlock (&epc_publisher_lock);
+  g_rec_mutex_unlock (&epc_publisher_lock);
 }
 
 static void
@@ -763,7 +763,7 @@ epc_publisher_server_auth_cb (SoupServerAuthContext *auth_ctx G_GNUC_UNUSED,
   const char *user = NULL;
   EpcAuthContext context;
 
-  g_static_rec_mutex_lock (&epc_publisher_lock);
+  g_rec_mutex_lock (&epc_publisher_lock);
   epc_auth_context_init (&context, EPC_PUBLISHER (data), message, auth);
 
   if (NULL != auth)
@@ -778,7 +778,7 @@ epc_publisher_server_auth_cb (SoupServerAuthContext *auth_ctx G_GNUC_UNUSED,
              context.key, context.resource, context.resource ? context.resource->auth_handler : NULL,
              authorized);
 
-  g_static_rec_mutex_unlock (&epc_publisher_lock);
+  g_rec_mutex_unlock (&epc_publisher_lock);
 
   return authorized;
 }
@@ -793,7 +793,7 @@ epc_publisher_auth_filter (SoupAuthDomain *domain G_GNUC_UNUSED,
   gboolean authorized = TRUE;
   EpcAuthContext context;
 
-  g_static_rec_mutex_lock (&epc_publisher_lock);
+  g_rec_mutex_lock (&epc_publisher_lock);
   epc_auth_context_init (&context, EPC_PUBLISHER (data), message, NULL, NULL);
   authorized = (!context.resource || !context.resource->auth_handler);
 
@@ -802,7 +802,7 @@ epc_publisher_auth_filter (SoupAuthDomain *domain G_GNUC_UNUSED,
              context.key, context.resource, context.resource ? context.resource->auth_handler : NULL,
              authorized);
 
-  g_static_rec_mutex_unlock (&epc_publisher_lock);
+  g_rec_mutex_unlock (&epc_publisher_lock);
 
   return !authorized;
 }
@@ -817,7 +817,7 @@ epc_publisher_basic_auth_cb (SoupAuthDomain *domain G_GNUC_UNUSED,
   gboolean authorized = TRUE;
   EpcAuthContext context;
 
-  g_static_rec_mutex_lock (&epc_publisher_lock);
+  g_rec_mutex_lock (&epc_publisher_lock);
   epc_auth_context_init (&context, EPC_PUBLISHER (data), message, username, password);
 
   if (context.resource && context.resource->auth_handler)
@@ -828,7 +828,7 @@ epc_publisher_basic_auth_cb (SoupAuthDomain *domain G_GNUC_UNUSED,
              context.key, context.resource, context.resource ? context.resource->auth_handler : NULL,
              authorized);
 
-  g_static_rec_mutex_unlock (&epc_publisher_lock);
+  g_rec_mutex_unlock (&epc_publisher_lock);
 
   return authorized;
 }
@@ -842,7 +842,7 @@ epc_publisher_generic_auth_cb (SoupAuthDomain *domain G_GNUC_UNUSED,
   gboolean authorized = TRUE;
   EpcAuthContext context;
 
-  g_static_rec_mutex_lock (&epc_publisher_lock);
+  g_rec_mutex_lock (&epc_publisher_lock);
   epc_auth_context_init (&context, EPC_PUBLISHER (data), message, username, NULL);
 
   if (context.resource && context.resource->auth_handler)
@@ -853,7 +853,7 @@ epc_publisher_generic_auth_cb (SoupAuthDomain *domain G_GNUC_UNUSED,
              context.key, context.resource, context.resource ? context.resource->auth_handler : NULL,
              authorized);
 
-  g_static_rec_mutex_unlock (&epc_publisher_lock);
+  g_rec_mutex_unlock (&epc_publisher_lock);
 
   return authorized;
 }
@@ -1676,7 +1676,7 @@ epc_publisher_class_init (EpcPublisherClass *cls)
                                                         G_PARAM_STATIC_BLURB));
 
   g_type_class_add_private (cls, sizeof (EpcPublisherPrivate));
-  g_static_rec_mutex_init (&epc_publisher_lock);
+  g_rec_mutex_init (&epc_publisher_lock);
 }
 
 /**
@@ -1806,12 +1806,12 @@ epc_publisher_add_handler (EpcPublisher      *self,
   g_return_if_fail (NULL != handler);
   g_return_if_fail (NULL != key);
 
-  g_static_rec_mutex_lock (&epc_publisher_lock);
+  g_rec_mutex_lock (&epc_publisher_lock);
 
   resource = epc_resource_new (handler, user_data, destroy_data);
   g_hash_table_insert (self->priv->resources, g_strdup (key), resource);
 
-  g_static_rec_mutex_unlock (&epc_publisher_lock);
+  g_rec_mutex_unlock (&epc_publisher_lock);
 }
 
 /**
@@ -1909,7 +1909,7 @@ epc_publisher_remove (EpcPublisher *self,
   g_return_val_if_fail (EPC_IS_PUBLISHER (self), FALSE);
   g_return_val_if_fail (NULL != key, FALSE);
 
-  g_static_rec_mutex_lock (&epc_publisher_lock);
+  g_rec_mutex_lock (&epc_publisher_lock);
 
   if (self->priv->default_bookmark &&
       g_str_equal (key, self->priv->default_bookmark))
@@ -1922,7 +1922,7 @@ epc_publisher_remove (EpcPublisher *self,
     }
 
   success = g_hash_table_remove (self->priv->resources, key);
-  g_static_rec_mutex_unlock (&epc_publisher_lock);
+  g_rec_mutex_unlock (&epc_publisher_lock);
 
   return success;
 }
@@ -1953,14 +1953,14 @@ epc_publisher_lookup (EpcPublisher *self,
   g_return_val_if_fail (EPC_IS_PUBLISHER (self), NULL);
   g_return_val_if_fail (NULL != key, NULL);
 
-  g_static_rec_mutex_lock (&epc_publisher_lock);
+  g_rec_mutex_lock (&epc_publisher_lock);
 
   resource = g_hash_table_lookup (self->priv->resources, key);
 
   if (resource)
     data = resource->user_data;
 
-  g_static_rec_mutex_unlock (&epc_publisher_lock);
+  g_rec_mutex_unlock (&epc_publisher_lock);
 
   return data;
 }
@@ -1989,9 +1989,9 @@ epc_publisher_has_key (EpcPublisher *self,
   g_return_val_if_fail (EPC_IS_PUBLISHER (self), FALSE);
   g_return_val_if_fail (NULL != key, FALSE);
 
-  g_static_rec_mutex_lock (&epc_publisher_lock);
+  g_rec_mutex_lock (&epc_publisher_lock);
   resource = g_hash_table_lookup (self->priv->resources, key);
-  g_static_rec_mutex_unlock (&epc_publisher_lock);
+  g_rec_mutex_unlock (&epc_publisher_lock);
 
   return (NULL != resource);
 }
@@ -2046,13 +2046,13 @@ epc_publisher_list (EpcPublisher *self,
   if (pattern && *pattern)
     context.pattern = g_pattern_spec_new (pattern);
 
-  g_static_rec_mutex_lock (&epc_publisher_lock);
+  g_rec_mutex_lock (&epc_publisher_lock);
 
   g_hash_table_foreach (self->priv->resources,
                         epc_publisher_list_cb,
                         &context);
 
-  g_static_rec_mutex_unlock (&epc_publisher_lock);
+  g_rec_mutex_unlock (&epc_publisher_lock);
 
   if (context.pattern)
     g_pattern_spec_free (context.pattern);
@@ -2097,7 +2097,7 @@ epc_publisher_set_auth_handler (EpcPublisher   *self,
   g_return_if_fail (EPC_IS_PUBLISHER (self));
   g_return_if_fail (NULL != handler);
 
-  g_static_rec_mutex_lock (&epc_publisher_lock);
+  g_rec_mutex_lock (&epc_publisher_lock);
 
   resource = epc_publisher_find_resource (self, key);
 
@@ -2106,7 +2106,7 @@ epc_publisher_set_auth_handler (EpcPublisher   *self,
   else
     g_warning ("%s: No resource handler found for key `%s'", G_STRFUNC, key);
 
-  g_static_rec_mutex_unlock (&epc_publisher_lock);
+  g_rec_mutex_unlock (&epc_publisher_lock);
 }
 
 /**
@@ -2143,7 +2143,7 @@ epc_publisher_add_bookmark (EpcPublisher *self,
 
   g_return_if_fail (EPC_IS_PUBLISHER (self));
 
-  g_static_rec_mutex_lock (&epc_publisher_lock);
+  g_rec_mutex_lock (&epc_publisher_lock);
 
   resource = epc_publisher_find_resource (self, key);
 
@@ -2160,7 +2160,7 @@ epc_publisher_add_bookmark (EpcPublisher *self,
   else
     g_warning ("%s: No resource handler found for key `%s'", G_STRFUNC, key);
 
-  g_static_rec_mutex_unlock (&epc_publisher_lock);
+  g_rec_mutex_unlock (&epc_publisher_lock);
 }
 
 /**
@@ -2531,7 +2531,7 @@ epc_publisher_quit (EpcPublisher *self)
   if (self->priv->server_loop)
     g_main_loop_quit (self->priv->server_loop);
 
-  g_static_rec_mutex_lock (&epc_publisher_lock);
+  g_rec_mutex_lock (&epc_publisher_lock);
 
   if (self->priv->clients)
     g_hash_table_foreach (self->priv->clients,
@@ -2541,7 +2541,7 @@ epc_publisher_quit (EpcPublisher *self)
   g_slist_foreach (idle_clients, (GFunc) soup_socket_disconnect, NULL);
   g_slist_free (idle_clients);
 
-  g_static_rec_mutex_unlock (&epc_publisher_lock);
+  g_rec_mutex_unlock (&epc_publisher_lock);
 
   if (self->priv->dispatcher)
     {
