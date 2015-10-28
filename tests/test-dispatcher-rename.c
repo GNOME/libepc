@@ -86,8 +86,6 @@ main (void)
   gint result = EPC_TEST_MASK_ALL;
   GError *error = NULL;
 
-  g_type_init ();
-
   test_type = g_strdup_printf ("_test-%08x._tcp", g_random_int ());
   first_name = g_strdup_printf ("%s: %08x-1", __FILE__, g_random_int ());
   second_name = g_strdup_printf ("%s: %08x-2", __FILE__, g_random_int ());

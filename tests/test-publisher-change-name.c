@@ -69,8 +69,6 @@ main (int   argc G_GNUC_UNUSED,
   g_set_prgname (prgname);
   g_free (prgname);
 
-  g_type_init ();
-
   hash = g_random_int ();
   first_name = g_strdup_printf ("%s-%08x-1", g_get_prgname (), hash);
   second_name = g_strdup_printf ("%s-%08x-2", g_get_prgname (), hash);

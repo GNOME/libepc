@@ -61,8 +61,6 @@ main (void)
   gint hash = g_random_int ();
   GError *error = NULL;
 
-  g_type_init ();
-
   test_name = g_strdup_printf ("%s: %08x", __FILE__, hash);
   test_type = g_strdup_printf ("_test-%08x._tcp", g_random_int ());
 

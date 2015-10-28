@@ -59,8 +59,6 @@ main (void)
   GError *error = NULL;
   unsigned i;
 
-  g_type_init ();
-
   test_name = g_strdup_printf ("%s: %08x", __FILE__, hash);
 
   if (!epc_test_init (7))

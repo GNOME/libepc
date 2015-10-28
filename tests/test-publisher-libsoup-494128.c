@@ -54,8 +54,6 @@ main (int   argc G_GNUC_UNUSED,
   g_set_prgname (prgname);
   g_free (prgname);
 
-  g_type_init ();
-
   loop = g_main_loop_new (NULL, FALSE);
 
   g_print ("1) CREATE, DESTROY\n");

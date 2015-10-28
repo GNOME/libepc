@@ -85,7 +85,6 @@ main (void)
   gint result = 1;
 
   g_set_prgname (__FILE__);
-  g_type_init ();
 
   test_cookie1 = g_strdup_printf ("%08x-%08x-1", g_random_int (), g_random_int ());
   test_cookie2 = g_strdup_printf ("%08x-%08x-2", g_random_int (), g_random_int ());

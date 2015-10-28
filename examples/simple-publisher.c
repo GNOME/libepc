@@ -103,10 +103,7 @@ main (int   argc,
       { NULL, 0, 0, 0, NULL, NULL, NULL }
     };
 
-  /* Initialize the toolkit. */
-
   setlocale (LC_ALL, "");
-  g_type_init ();
 
   /* Parse command line options. */
 

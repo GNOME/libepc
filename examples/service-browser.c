@@ -49,10 +49,6 @@ main (int   argc,
       { NULL, 0, 0, 0, NULL, NULL, NULL }
     };
 
-  /* Initialize the toolkit. */
-
-  g_type_init ();
-
   /* Parse command line options. */
 
   options = g_option_context_new (NULL);
