@@ -1,0 +1,146 @@
+# Occitan translation of libepc.
+# Copyright (C) 2008 Free Software Foundation, Inc.
+# This file is distributed under the same license as the libepc package.
+# Cédric Valmary (totenoc.eu) <cvalmary@yahoo.fr>, 2016.
+msgid ""
+msgstr ""
+"Project-Id-Version: libepc HEAD fr\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=libepc&"
+"keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2013-12-19 14:33+0000\n"
+"PO-Revision-Date: 2016-03-21 17:51+0200\n"
+"Last-Translator: Cédric Valmary (totenoc.eu) <cvalmary@yahoo.fr>\n"
+"Language-Team: Tot En Òc\n"
+"Language: oc\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Virtaal 0.7.1\n"
+"X-Project-Style: gnome\n"
+
+#: ../libepc/consumer.c:1083
+#, c-format
+msgid "Unexpected element: '%s'"
+msgstr "Element inesperat : « %s »"
+
+#: ../libepc/publisher.c:663
+msgid "Table of Contents"
+msgstr "Ensenhador"
+
+#: ../libepc/publisher.c:697
+msgid "Sorry, no resources published yet."
+msgstr "O planhèm, cap de ressorsa es pas estada publicada."
+
+#: ../libepc/publisher.c:2642
+msgid "%a of %u on %h"
+msgstr "%a de %u sus %h"
+
+#: ../libepc/shell.c:272
+#, c-format
+msgid "Cannot create Avahi client: %s"
+msgstr "Impossible de crear lo client Avahi : %s"
+
+#: ../libepc/shell.c:384
+#, c-format
+msgid "Cannot create Avahi service browser."
+msgstr "Impossible de crear lo navigador de servicis Avahi."
+
+#. Translators: This is just a generic default message for a progress bar.
+#: ../libepc/shell.c:472
+msgid "Operation in Progress"
+msgstr "Operacion en cors"
+
+#: ../libepc/shell.c:476
+msgid "No details known"
+msgstr "Cap de detalh pas conegut"
+
+#: ../libepc/tls.c:170
+msgid "Generating Server Key"
+msgstr "Generacion de la clau del servidor"
+
+#: ../libepc/tls.c:171
+msgid ""
+"This may take some time. Type on the keyboard, move your mouse, or browse "
+"the web to generate some entropy."
+msgstr ""
+"Aquò pòt prendre un pauc de temps. Tapez sul clavièr, bougez vòstra mirga o "
+"navigatz sul Web per produire qualque entropia (donadas aleatòrias)."
+
+#: ../libepc/tls.c:196
+#, c-format
+msgid "Cannot create private server key: %s"
+msgstr "Impossible de crear la clau privada del servidor : %s"
+
+#: ../libepc/tls.c:249
+#, c-format
+msgid "Cannot import private server key '%s': %s"
+msgstr "Impossible d'importar la clau privada del servidor « %s » : %s"
+
+#: ../libepc/tls.c:305
+#, c-format
+msgid "Cannot export private key to PEM format: %s"
+msgstr "Impossible d'exportar la clau privada al format PEM : %s"
+
+#: ../libepc/tls.c:319
+#, c-format
+msgid "Failed to create private key folder '%s': %s"
+msgstr "Fracàs al moment de la creacion del dorsièr de clau privada « %s » : %s"
+
+#: ../libepc/tls.c:335
+#, c-format
+msgid "Failed to create private key file '%s': %s"
+msgstr "Fracàs al moment de la creacion del fichièr de clau privada « %s » : %s"
+
+#: ../libepc/tls.c:349
+#, c-format
+msgid "Failed to write private key file '%s': %s"
+msgstr "Fracàs al moment de l'escritura dins lo fichièr de clau privada « %s » : %s"
+
+#: ../libepc/tls.c:421
+#, c-format
+msgid "Cannot create self signed server key for '%s': %s"
+msgstr "Impossible de crear la clau auto-signada del servidor per « %s » : %s"
+
+#: ../libepc/tls.c:475
+#, c-format
+msgid "Cannot import server certificate '%s': %s"
+msgstr "Impossible d'importar lo certificat del servidor « %s » : %s"
+
+#: ../libepc/tls.c:530
+#, c-format
+msgid "Cannot export server certificate to PEM format: %s"
+msgstr "Impossible d'exportar lo certificat del servidor al format PEM : %s"
+
+#: ../libepc/tls.c:544
+#, c-format
+msgid "Failed to create server certificate folder '%s': %s"
+msgstr ""
+"Fracàs al moment de la creacion del dorsièr de certificat del servidor « %s » : %s"
+
+#: ../libepc-ui/password-dialog.c:106
+msgid "<big><b>Authentication required.</b></big>"
+msgstr "<big><b>Autentificacion obligatòria.</b></big>"
+
+#: ../libepc-ui/password-dialog.c:117
+msgid "_Username:"
+msgstr "_Nom d'utilizaire :"
+
+#: ../libepc-ui/password-dialog.c:123
+msgid "_Password:"
+msgstr "_Senhal :"
+
+#: ../libepc-ui/password-dialog.c:129
+msgid "Anonymous Authentication"
+msgstr "Autentificacion anonima"
+
+#: ../libepc-ui/password-dialog.c:214
+#, c-format
+msgid "Data source <b>%s</b> requires authentication before permitting access."
+msgstr ""
+"La font de donadas <b>%s</b> exigís una autentificacion per i poder "
+"accedir."
+
+#: ../libepc-ui/password-dialog.c:217
+msgid "Authentication required."
+msgstr "Autentificacion obligatòria."
