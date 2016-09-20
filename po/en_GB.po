@@ -1,50 +1,60 @@
 # English (British) translation.
 # Copyright (C) 2008 THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the libepc package.
-#
 # Philip Withnall <pwithnall@svn.gnome.org>
-#
+# Chris Leonard <cjlhomeaddress@gmail.com>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: libepc VERSION\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=libepc\n"
-"POT-Creation-Date: 2008-03-08 10:38+0000\n"
-"PO-Revision-Date: 2008-03-08 10:37+0000\n"
-"Last-Translator: Philip Withnall <pwithnall@svn.gnome.org>\n"
-"Language-Team: \n"
+"Report-Msgid-Bugs-To: "
+"http://bugzilla.gnome.org/enter_bug.cgi?product=libepc&component=general\n"
+"POT-Creation-Date: 2009-08-21 08:13+0000\n"
+"PO-Revision-Date: 2012-10-02 03:32-0400\n"
+"Last-Translator: Chris Leonard <cjlhomeaddress@gmail.com>\n"
+"Language-Team: Sugar Labs\n"
 "Language: en_GB\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Virtaal 0.7.1\n"
+"X-Project-Style: gnome\n"
 
 #: ../libepc/consumer.c:1079
 #, c-format
 msgid "Unexpected element: '%s'"
 msgstr "Unexpected element: '%s'"
 
-#: ../libepc/publisher.c:660
+#: ../libepc/publisher.c:659
 msgid "Table of Contents"
 msgstr "Table of Contents"
 
-#: ../libepc/publisher.c:694
+#: ../libepc/publisher.c:693
 msgid "Sorry, no resources published yet."
 msgstr "Sorry, no resources published yet."
 
-#: ../libepc/publisher.c:2623
+#: ../libepc/publisher.c:2638
 msgid "%a of %u on %h"
 msgstr "%a of %u on %h"
 
-#: ../libepc/shell.c:264
+#: ../libepc/shell.c:267
 #, c-format
 msgid "Cannot create Avahi client: %s"
 msgstr "Cannot create Avahi client: %s"
 
-#: ../libepc/shell.c:455
-msgid "Operation Proceeded"
-msgstr "Operation Proceeded"
+#: ../libepc/shell.c:379
+#, c-format
+#| msgid "Cannot create Avahi client: %s"
+msgid "Cannot create Avahi service browser."
+msgstr "Cannot create Avahi service browser."
 
-#: ../libepc/shell.c:457
+#. Translators: This is just a generic default message for a progress bar.
+#: ../libepc/shell.c:467
+#| msgid "Operation Proceeded"
+msgid "Operation in Progress"
+msgstr "Operation in Progress"
+
+#: ../libepc/shell.c:471
 msgid "No details known"
 msgstr "No details known"
 
