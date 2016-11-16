@@ -1,5 +1,5 @@
 AC_PREREQ([2.63])
-AC_INIT([libepc], [0.4.4], [https://bugzilla.gnome.org/enter_bug.cgi?product=libepc], [libepc], [http://live.gnome.org/libepc])
+AC_INIT([libepc], [0.4.5], [https://bugzilla.gnome.org/enter_bug.cgi?product=libepc], [libepc], [http://live.gnome.org/libepc])
 AM_INIT_AUTOMAKE([1.10.3 -Wall dist-bzip2 no-define subdir-objects])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])

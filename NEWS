@@ -1,3 +1,17 @@
+Release 0.4.5
+=============
+
+ * Replace (deprecated) g_thread_create() with g_thread_new().
+   (Murray Cumming)
+ * Remove use of deprecated g_type_init().
+   (Murray Cumming)
+ * Replace (deprecated) GStaticRecMutex with GRecMutex
+   (Murray Cumming)
+ * Don't use g_thread_init() or g_thread_supported().
+   (Murray Cumming)
+ * Avoid several compiler warnings.
+   (Murray Cumming)
+
 Release 0.4.4
 ==============
 
