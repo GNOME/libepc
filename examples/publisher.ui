@@ -5,7 +5,8 @@
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
     <signal handler="main_window_destroy_cb" name="destroy"/>
     <child>
-      <object class="GtkVBox" id="vbox">
+      <object class="GtkBox" id="vbox">
+        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
         <property name="visible">True</property>
         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
         <child>
@@ -76,7 +77,8 @@
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <property name="is_important">True</property>
                 <child>
-                  <object class="GtkHBox" id="service-name-hbox">
+                  <object class="GtkBox" id="service-name-hbox">
+                    <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
                     <property name="visible">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <property name="border_width">6</property>
@@ -130,7 +132,8 @@
           </packing>
         </child>
         <child>
-          <object class="GtkHPaned" id="hpaned">
+          <object class="GtkPaned" id="hpaned">
+            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
             <property name="height_request">300</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
@@ -162,7 +165,8 @@
               </packing>
             </child>
             <child>
-              <object class="GtkVBox" id="item-vbox">
+              <object class="GtkBox" id="item-vbox">
+                <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
@@ -336,7 +340,8 @@
     <property name="copyright" translatable="yes">Copyright &#xA9; 2007, 2008 Openismus GmbH</property>
     <property name="website">http://live.gnome.org/libepc</property>
     <child internal-child="vbox">
-      <object class="GtkVBox" id="dialog-vbox1">
+      <object class="GtkBox" id="dialog-vbox1">
+        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
         <property name="visible">True</property>
         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
         <property name="spacing">2</property>
