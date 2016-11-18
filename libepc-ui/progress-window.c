@@ -95,7 +95,7 @@ epc_progress_window_init (EpcProgressWindow *self)
   gtk_widget_set_halign (self->priv->message, 0.5);
   gtk_widget_set_valign (self->priv->message, 0.5);
 
-  vbox = gtk_vbox_new (FALSE, 6);
+  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
   gtk_box_pack_start (GTK_BOX (vbox), self->priv->title, FALSE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), self->priv->progress, FALSE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), self->priv->message, FALSE, TRUE, 0);

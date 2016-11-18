@@ -155,7 +155,7 @@ create_lookup_dialog (EpcConsumer *consumer,
 
   /* Attach the widgets to some vertical box. */
 
-  vbox = gtk_vbox_new (FALSE, 6);
+  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
   gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), keys_combo, FALSE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), scroller, TRUE, TRUE, 0);
