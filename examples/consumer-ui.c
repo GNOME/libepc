@@ -132,7 +132,8 @@ create_lookup_dialog (EpcConsumer *consumer,
   label = gtk_label_new (NULL);
   markup = g_markup_printf_escaped ("Values at <b>%s</b>:", publisher);
   gtk_label_set_markup (GTK_LABEL (label), markup);
-  gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+  gtk_widget_set_halign (label, 0.0);
+  gtk_widget_set_valign (label, 0.5);
   g_free (markup);
 
   /* Setup the text view and its scrollbars. */

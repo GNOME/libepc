@@ -101,28 +101,33 @@ epc_password_dialog_init (EpcPasswordDialog *self)
 
   icon = gtk_image_new_from_icon_name ("dialog-password",
                                    GTK_ICON_SIZE_DIALOG);
-  gtk_misc_set_alignment (GTK_MISC (icon), 0.5, 0.0);
+  gtk_widget_set_halign (icon, 0.5);
+  gtk_widget_set_valign (icon, 0.0);
 
   title = gtk_label_new (_("<big><b>Authentication required.</b></big>"));
-  gtk_misc_set_alignment (GTK_MISC (title), 0.0, 0.5);
+  gtk_widget_set_halign (title, 0.0);
+  gtk_widget_set_valign (title, 0.5);
   gtk_label_set_use_markup (GTK_LABEL (title), TRUE);
 
   self->priv->heading = gtk_label_new (NULL);
   gtk_label_set_justify (GTK_LABEL (self->priv->heading), GTK_JUSTIFY_LEFT);
   gtk_label_set_line_wrap (GTK_LABEL (self->priv->heading), TRUE);
   gtk_label_set_width_chars (GTK_LABEL (self->priv->heading), 45);
-  gtk_misc_set_alignment (GTK_MISC (self->priv->heading), 0.0, 0.0);
+  gtk_widget_set_halign (self->priv->heading, 0.0);
+  gtk_widget_set_valign (self->priv->heading, 0.0);
 
   self->priv->username = gtk_entry_new ();
   self->priv->username_label = gtk_label_new_with_mnemonic (_("_Username:"));
   gtk_label_set_mnemonic_widget (GTK_LABEL (self->priv->username_label), self->priv->username);
-  gtk_misc_set_alignment (GTK_MISC (self->priv->username_label), 0.0, 0.5);
+  gtk_widget_set_halign (self->priv->username_label, 0.0);
+  gtk_widget_set_valign (self->priv->username_label, 0.5);
   g_signal_connect_swapped (self->priv->username, "changed", G_CALLBACK (username_changed_cb), self);
 
   self->priv->password = gtk_entry_new ();
   self->priv->password_label = gtk_label_new_with_mnemonic (_("_Password:"));
   gtk_label_set_mnemonic_widget (GTK_LABEL (self->priv->password_label), self->priv->password);
-  gtk_misc_set_alignment (GTK_MISC (self->priv->password_label), 0.0, 0.5);
+  gtk_widget_set_halign (self->priv->password_label, 0.0);
+  gtk_widget_set_valign (self->priv->password_label, 0.5);
   gtk_entry_set_visibility (GTK_ENTRY (self->priv->password), FALSE);
   g_signal_connect_swapped (self->priv->password, "changed", G_CALLBACK (password_changed_cb), self);
 

@@ -83,7 +83,8 @@ epc_progress_window_init (EpcProgressWindow *self)
 
   self->priv->title = gtk_label_new (NULL);
   gtk_label_set_justify (GTK_LABEL (self->priv->title), GTK_JUSTIFY_CENTER);
-  gtk_misc_set_alignment (GTK_MISC (self->priv->title), 0.5, 0.5);
+  gtk_widget_set_halign (self->priv->title, 0.5);
+  gtk_widget_set_valign (self->priv->title, 0.5);
 
   self->priv->progress = gtk_progress_bar_new ();
   gtk_progress_bar_set_pulse_step (GTK_PROGRESS_BAR (self->priv->progress), 0.02);
@@ -91,7 +92,8 @@ epc_progress_window_init (EpcProgressWindow *self)
   self->priv->message = gtk_label_new (NULL);
   gtk_label_set_line_wrap (GTK_LABEL (self->priv->message), TRUE);
   gtk_label_set_justify (GTK_LABEL (self->priv->message), GTK_JUSTIFY_CENTER);
-  gtk_misc_set_alignment (GTK_MISC (self->priv->message), 0.5, 0.5);
+  gtk_widget_set_halign (self->priv->message, 0.5);
+  gtk_widget_set_valign (self->priv->message, 0.5);
 
   vbox = gtk_vbox_new (FALSE, 6);
   gtk_box_pack_start (GTK_BOX (vbox), self->priv->title, FALSE, TRUE, 0);
