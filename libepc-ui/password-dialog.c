@@ -168,12 +168,8 @@ epc_password_dialog_init (EpcPasswordDialog *self)
 
   gtk_widget_show_all (table);
 
-#if GTK_CHECK_VERSION (2, 14, 0)
   gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (self))),
-                      table, TRUE, TRUE, 0);
-#else
-  gtk_box_pack_start (GTK_BOX (GTK_DIALOG (self)->vbox), table, TRUE, TRUE, 0);
-#endif
+                      table, TRUE, TRUE);
 }
 
 static void

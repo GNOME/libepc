@@ -156,10 +156,10 @@ create_lookup_dialog (EpcConsumer *consumer,
   /* Attach the widgets to some vertical box. */
 
   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
-  gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (vbox), keys_combo, FALSE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (vbox), scroller, TRUE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (vbox), stats, FALSE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), keys_combo, FALSE, TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), scroller, TRUE, TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), stats, FALSE, TRUE);
   gtk_widget_set_margin_top (vbox, 6);
   gtk_widget_set_margin_bottom (vbox, 6);
   gtk_widget_set_margin_start (vbox, 6);
@@ -174,7 +174,7 @@ create_lookup_dialog (EpcConsumer *consumer,
                                         NULL);
 
   gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))),
-                      vbox, TRUE, TRUE, 0);
+                      vbox, TRUE, TRUE);
   gtk_window_set_default_size (GTK_WINDOW (dialog), 500, 350);
 
   return dialog;
