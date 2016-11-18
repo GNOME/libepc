@@ -9,7 +9,7 @@ AUTOMAKE_OPTIONS = 1.6
 # of using the various options.
 
 # The name of the module, e.g. 'glib'.
-DOC_MODULE=libepc-1.0
+DOC_MODULE=libepc-2.0
 
 # The top-level SGML file. You can change this if you want to.
 DOC_MAIN_SGML_FILE=$(DOC_MODULE)-docs.xml
@@ -70,8 +70,8 @@ expand_content_files=
 AM_CFLAGS = $(LIBEPC_CFLAGS)
 
 GTKDOC_LIBS = \
-	$(top_builddir)/libepc-ui/libepc-ui-1.0.la \
-	$(top_builddir)/libepc/libepc-1.0.la
+	$(top_builddir)/libepc-ui/libepc-ui-2.0.la \
+	$(top_builddir)/libepc/libepc-2.0.la
 
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
 include $(top_srcdir)/gtk-doc.make

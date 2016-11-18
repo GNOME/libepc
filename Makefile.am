@@ -10,8 +10,8 @@ ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 # -- DIRECTORY DECLARATIONS --
 # ============================
 
-libepc_includedir = $(includedir)/libepc-1.0/libepc
-libepc_ui_includedir = $(includedir)/libepc-ui-1.0/libepc-ui
+libepc_includedir = $(includedir)/libepc-2.0/libepc
+libepc_ui_includedir = $(includedir)/libepc-ui-2.0/libepc-ui
 pkgconfigdir = $(libdir)/pkgconfig
 
 gtkdoc_builddir=$(top_builddir)/docs/reference/libepc
@@ -23,8 +23,8 @@ gtkdoc_srcdir=$(top_srcdir)/docs/reference/libepc
 # ==================
 
 lib_LTLIBRARIES = \
-	libepc/libepc-1.0.la \
-	libepc-ui/libepc-ui-1.0.la
+	libepc/libepc-2.0.la \
+	libepc-ui/libepc-ui-2.0.la
 noinst_LTLIBRARIES = \
 	tests/libepc-tests.la
 noinst_PROGRAMS = \
@@ -77,15 +77,15 @@ libepc_ui_include_HEADERS = \
 	$(srcdir)/libepc-ui/password-dialog.h \
 	$(srcdir)/libepc-ui/progress-window.h
 pkgconfig_DATA = \
-	libepc-1.0.pc \
-	libepc-ui-1.0.pc
+	libepc-2.0.pc \
+	libepc-ui-2.0.pc
 dist_noinst_SCRIPTS = \
 	$(srcdir)/tests/test-runner.sh
 dist_noinst_DATA = \
 	$(srcdir)/examples/publisher.ui
 	$(srcdir)/gtk-doc.make \
-	$(gtkdoc_srcdir)/libepc-1.0-docs.xml \
-	$(gtkdoc_srcdir)/libepc-1.0-sections.txt \
+	$(gtkdoc_srcdir)/libepc-2.0-docs.xml \
+	$(gtkdoc_srcdir)/libepc-2.0-sections.txt \
 	$(srcdir)/intltool-extract.in \
 	$(srcdir)/intltool-merge.in \
 	$(srcdir)/intltool-update.in
@@ -99,7 +99,7 @@ BUILT_SOURCES = \
 	libepc/enums.h \
 	libepc/marshal.c \
 	libepc/marshal.h
-libepc_libepc_1_0_la_SOURCES = \
+libepc_libepc_2_0_la_SOURCES = \
 	$(libepc_include_HEADERS) \
 	libepc/consumer.c \
 	libepc/contents.c \
@@ -116,7 +116,7 @@ libepc_libepc_1_0_la_SOURCES = \
 	libepc/service-type.c \
 	libepc/shell.c \
 	libepc/tls.c
-libepc_ui_libepc_ui_1_0_la_SOURCES = \
+libepc_ui_libepc_ui_2_0_la_SOURCES = \
 	$(libepc_ui_include_HEADERS) \
 	libepc-ui/password-dialog.c \
 	libepc-ui/progress-window.c
@@ -135,16 +135,16 @@ AM_CFLAGS = \
 	-DGETTEXT_PACKAGE=\"@GETTEXT_PACKAGE@\"
 
 example_epc_cflags = $(AM_CFLAGS) $(LIBEPC_CFLAGS)
-example_epc_libs = libepc/libepc-1.0.la $(LIBEPC_LIBS)
+example_epc_libs = libepc/libepc-2.0.la $(LIBEPC_LIBS)
 example_epc_ui_cflags = $(example_epc_cflags) $(LIBEPC_UI_CFLAGS)
-example_epc_ui_libs = $(example_epc_libs) libepc-ui/libepc-ui-1.0.la $(LIBEPC_UI_LIBS)
+example_epc_ui_libs = $(example_epc_libs) libepc-ui/libepc-ui-2.0.la $(LIBEPC_UI_LIBS)
 
-libepc_libepc_1_0_la_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS) -DG_LOG_DOMAIN=\"libepc\"
-libepc_libepc_1_0_la_LDFLAGS			= $(LIBEPC_LIBS) -version-info $(LT_VERSION_INFO)
+libepc_libepc_2_0_la_CFLAGS			= $(AM_CFLAGS) $(LIBEPC_CFLAGS) -DG_LOG_DOMAIN=\"libepc\"
+libepc_libepc_2_0_la_LDFLAGS			= $(LIBEPC_LIBS) -version-info $(LT_VERSION_INFO)
 
-libepc_ui_libepc_ui_1_0_la_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_UI_CFLAGS) -DG_LOG_DOMAIN=\"libepc-ui\"
-libepc_ui_libepc_ui_1_0_la_LDFLAGS		= $(LIBEPC_UI_LIBS) -version-info $(LT_VERSION_INFO)
-libepc_ui_libepc_ui_1_0_la_LIBADD		= libepc/libepc-1.0.la
+libepc_ui_libepc_ui_2_0_la_CFLAGS		= $(AM_CFLAGS) $(LIBEPC_UI_CFLAGS) -DG_LOG_DOMAIN=\"libepc-ui\"
+libepc_ui_libepc_ui_2_0_la_LDFLAGS		= $(LIBEPC_UI_LIBS) -version-info $(LT_VERSION_INFO)
+libepc_ui_libepc_ui_2_0_la_LIBADD		= libepc/libepc-2.0.la
 
 examples_list_resources_CFLAGS			= $(example_epc_cflags)
 examples_list_resources_LDADD			= $(example_epc_libs)

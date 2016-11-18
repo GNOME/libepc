@@ -1,5 +1,5 @@
 AC_PREREQ([2.63])
-AC_INIT([libepc], [0.4.5], [https://bugzilla.gnome.org/enter_bug.cgi?product=libepc], [libepc], [http://live.gnome.org/libepc])
+AC_INIT([libepc], [1.9.1], [https://bugzilla.gnome.org/enter_bug.cgi?product=libepc], [libepc], [http://live.gnome.org/libepc])
 AM_INIT_AUTOMAKE([1.10.3 -Wall dist-bzip2 no-define subdir-objects])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
@@ -20,7 +20,7 @@ dnl    the last update, increment CURRENT, and set REVISION to 0.
 dnl 4. If any interfaces have been added, then increment AGE.
 dnl 5. If any interfaces have been removed, then set AGE to 0.
 dnl
-LT_VERSION_INFO="3:0:0"
+LT_VERSION_INFO="1:0:0"
 AC_SUBST(LT_VERSION_INFO)
 
 GETTEXT_PACKAGE=libepc
@@ -90,7 +90,7 @@ AC_SUBST(LIBEPC_LIBS)
 
 #AC_CHECK_HEADERS([fcntl.h sys/ioctl.h sys/socket.h])
 AC_TYPE_UINT16_T
- 
+
 #AC_CHECK_FUNCS([memset setlocale socket strchr])
 AC_CHECK_LIB([avahi-ui-gtk3],
              [aui_service_dialog_set_service_type_name],
@@ -103,7 +103,7 @@ AC_CONFIG_FILES([
   Makefile
   po/Makefile.in
   docs/reference/libepc/Makefile
-  libepc-1.0.pc libepc-ui-1.0.pc
+  libepc-2.0.pc libepc-ui-2.0.pc
 ])
 
 AC_OUTPUT
