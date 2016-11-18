@@ -95,7 +95,7 @@ password_changed_cb (EpcPasswordDialog *self)
 static void
 epc_password_dialog_init (EpcPasswordDialog *self)
 {
-  GtkWidget *icon, *title, *table;
+  GtkWidget *icon, *title, *grid;
 
   self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self, EPC_TYPE_PASSWORD_DIALOG, EpcPasswordDialogPrivate);
 
@@ -138,38 +138,68 @@ epc_password_dialog_init (EpcPasswordDialog *self)
                     "swapped-signal::notify::visible", anonymous_toggled_cb, self,
                     NULL);
 
-  table = gtk_table_new (5, 3, FALSE);
+  grid = gtk_grid_new ();
 
-  gtk_widget_set_margin_top (table, 6);
-  gtk_widget_set_margin_bottom (table, 6);
-  gtk_widget_set_margin_start (table, 6);
-  gtk_widget_set_margin_end (table, 6);
+  gtk_widget_set_margin_top (grid, 6);
+  gtk_widget_set_margin_bottom (grid, 6);
+  gtk_widget_set_margin_start (grid, 6);
+  gtk_widget_set_margin_end (grid, 6);
 
-  gtk_table_set_col_spacing (GTK_TABLE (table), 0, 12);
-  gtk_table_set_col_spacing (GTK_TABLE (table), 1, 6);
-  gtk_table_set_row_spacings (GTK_TABLE (table), 6);
+  //TODO: Use gtk_widget_set_margin_start() and gtk_widget_set_margin_end().
+  //gtk_grid_set_column_spacing (GTK_GRID (grid), 0, 12);
+  //gtk_grid_set_column_spacing (GTK_GRID (grid), 1, 6);
+  
+  gtk_grid_set_row_spacing (GTK_GRID (grid), 6);
 
-  gtk_table_attach (GTK_TABLE (table), icon,
-                    0, 1, 0, 5, GTK_FILL, GTK_FILL | GTK_EXPAND, 0, 0);
-  gtk_table_attach (GTK_TABLE (table), title,
-                    1, 3, 0, 1, GTK_FILL | GTK_EXPAND, GTK_FILL, 0, 0);
-  gtk_table_attach (GTK_TABLE (table), self->priv->heading,
-                    1, 3, 1, 2, GTK_FILL | GTK_EXPAND, GTK_FILL, 0, 0);
-  gtk_table_attach (GTK_TABLE (table), self->priv->username_label,
-                    1, 2, 2, 3, GTK_FILL, GTK_FILL, 0, 0);
-  gtk_table_attach (GTK_TABLE (table), self->priv->username,
-                    2, 3, 2, 3, GTK_FILL | GTK_EXPAND, GTK_FILL, 0, 0);
-  gtk_table_attach (GTK_TABLE (table), self->priv->password_label,
-                    1, 2, 3, 4, GTK_FILL, GTK_FILL, 0, 0);
-  gtk_table_attach (GTK_TABLE (table), self->priv->password,
-                    2, 3, 3, 4, GTK_FILL | GTK_EXPAND, GTK_FILL, 0, 0);
-  gtk_table_attach (GTK_TABLE (table), self->priv->anonymous,
-                    2, 3, 4, 5, GTK_FILL | GTK_EXPAND, GTK_FILL, 0, 0);
+  gtk_grid_attach (GTK_GRID (grid), icon,
+                    0, 1, 0, 5);
+  gtk_widget_set_hexpand (icon, true);
+  gtk_widget_set_vexpand (icon, true);
+  gtk_widget_set_margin_end (icon, 12);
 
-  gtk_widget_show_all (table);
+  gtk_grid_attach (GTK_GRID (grid), title,
+                    1, 2, 0, 1);
+  gtk_widget_set_hexpand (title, true);
+  gtk_widget_set_vexpand (title, true);
+  gtk_widget_set_margin_end (title, 6);
+
+  gtk_grid_attach (GTK_GRID (grid), self->priv->heading,
+                    1, 2, 1, 1);
+  gtk_widget_set_hexpand (self->priv->heading, true);
+  gtk_widget_set_vexpand (self->priv->heading, false);
+  gtk_widget_set_margin_end (self->priv->heading, 6);
+
+  gtk_grid_attach (GTK_GRID (grid), self->priv->username_label,
+                    1, 1, 2, 1);
+  gtk_widget_set_hexpand (self->priv->username_label, false);
+  gtk_widget_set_vexpand (self->priv->username_label, false);
+  gtk_widget_set_margin_end (self->priv->username_label, 6);
+
+  gtk_grid_attach (GTK_GRID (grid), self->priv->username,
+                    2, 1, 2, 1);
+  gtk_widget_set_hexpand (self->priv->username, true);
+  gtk_widget_set_vexpand (self->priv->username, false);
+
+  gtk_grid_attach (GTK_GRID (grid), self->priv->password_label,
+                    1, 1, 3, 1);
+  gtk_widget_set_hexpand (self->priv->password_label, false);
+  gtk_widget_set_vexpand (self->priv->password_label, false);
+  gtk_widget_set_margin_end (self->priv->password_label, 6);
+
+  gtk_grid_attach (GTK_GRID (grid), self->priv->password,
+                    2, 1, 3, 1);
+  gtk_widget_set_hexpand (self->priv->password, true);
+  gtk_widget_set_vexpand (self->priv->password, false);
+
+  gtk_grid_attach (GTK_GRID (grid), self->priv->anonymous,
+                    2, 1, 4, 1);
+  gtk_widget_set_hexpand (self->priv->anonymous, true);
+  gtk_widget_set_vexpand (self->priv->anonymous, false);
+
+  gtk_widget_show_all (grid);
 
   gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (self))),
-                      table, TRUE, TRUE);
+                      grid, TRUE, TRUE);
 }
 
 static void
