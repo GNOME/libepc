@@ -140,7 +140,11 @@ epc_password_dialog_init (EpcPasswordDialog *self)
 
   table = gtk_table_new (5, 3, FALSE);
 
-  gtk_container_set_border_width (GTK_CONTAINER (table), 6);
+  gtk_widget_set_margin_top (table, 6);
+  gtk_widget_set_margin_bottom (table, 6);
+  gtk_widget_set_margin_start (table, 6);
+  gtk_widget_set_margin_end (table, 6);
+
   gtk_table_set_col_spacing (GTK_TABLE (table), 0, 12);
   gtk_table_set_col_spacing (GTK_TABLE (table), 1, 6);
   gtk_table_set_row_spacings (GTK_TABLE (table), 6);

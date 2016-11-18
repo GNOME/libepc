@@ -160,7 +160,10 @@ create_lookup_dialog (EpcConsumer *consumer,
   gtk_box_pack_start (GTK_BOX (vbox), keys_combo, FALSE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), scroller, TRUE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), stats, FALSE, TRUE, 0);
-  gtk_container_set_border_width (GTK_CONTAINER (vbox), 6);
+  gtk_widget_set_margin_top (vbox, 6);
+  gtk_widget_set_margin_bottom (vbox, 6);
+  gtk_widget_set_margin_start (vbox, 6);
+  gtk_widget_set_margin_end (vbox, 6);
   gtk_widget_show_all (vbox);
 
   /* Create the dialog widget. */
