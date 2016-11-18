@@ -166,7 +166,7 @@ create_lookup_dialog (EpcConsumer *consumer,
 
   dialog = gtk_dialog_new_with_buttons ("Published Value", NULL,
                                         (GtkDialogFlags)0,
-                                        GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
+                                        _("_Close"), GTK_RESPONSE_CLOSE,
                                         NULL);
 
   gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))),
@@ -227,8 +227,8 @@ main (int   argc,
     }
 
   dialog = aui_service_dialog_new ("Choose an Easy Publish and Consume Service", NULL,
-                                   GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                   GTK_STOCK_CONNECT, GTK_RESPONSE_ACCEPT,
+                                   _("_Cancel"), GTK_RESPONSE_CANCEL,
+                                   _("Connect"), GTK_RESPONSE_ACCEPT,
                                    NULL);
 
   aui_service_dialog_set_browse_service_types (AUI_SERVICE_DIALOG (dialog),
@@ -273,8 +273,8 @@ main (int   argc,
 
       password_dialog =
         epc_password_dialog_new ("Easy Consumer Test", NULL, NULL,
-                                 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                 GTK_STOCK_CONNECT, GTK_RESPONSE_ACCEPT,
+                                 _("_Cancel"), GTK_RESPONSE_CANCEL,
+                                 _("Connect"), GTK_RESPONSE_ACCEPT,
                                  NULL);
 
       epc_password_dialog_set_anonymous_allowed (EPC_PASSWORD_DIALOG (password_dialog), FALSE);
