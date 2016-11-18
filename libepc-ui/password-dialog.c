@@ -99,7 +99,7 @@ epc_password_dialog_init (EpcPasswordDialog *self)
 
   self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self, EPC_TYPE_PASSWORD_DIALOG, EpcPasswordDialogPrivate);
 
-  icon = gtk_image_new_from_stock (GTK_STOCK_DIALOG_AUTHENTICATION,
+  icon = gtk_image_new_from_icon_name ("dialog-password",
                                    GTK_ICON_SIZE_DIALOG);
   gtk_misc_set_alignment (GTK_MISC (icon), 0.5, 0.0);
 
