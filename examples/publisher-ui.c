@@ -778,7 +778,7 @@ main (int   argc,
 
   g_set_application_name ("Easy Publisher Example");
 
-  gtk_init (&argc, &argv);
+  gtk_init ();
 
   builder = gtk_builder_new ();
   load_ui (argv[0]);

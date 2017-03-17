@@ -143,7 +143,7 @@ main (int   argc,
             break;
 
           case 3:
-            if (!gtk_init_check (&argc, &argv))
+            if (!gtk_init_check ())
               {
                 g_warning ("Cannot initialize UI");
                 continue;
