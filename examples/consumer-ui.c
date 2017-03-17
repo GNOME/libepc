@@ -197,6 +197,11 @@ main (int   argc,
   const gchar *application = "test-publisher";
   gboolean browse_all = FALSE;
 
+
+  /* Initialize the toolkit */
+
+  gtk_init ();
+
   GOptionEntry entries[] =
     {
       { "application", 'n', 0, G_OPTION_ARG_STRING, &application,
@@ -205,10 +210,9 @@ main (int   argc,
         N_("Browse all easy publishers"), NULL },
       { NULL, 0, 0, 0, NULL, NULL, NULL }
     };
-
-  /* Initialize the toolkit */
-
-  if (!gtk_init_with_args (&argc, &argv, NULL, entries, NULL, &error))
+  GOptionContext *context = g_option_context_new ("test-publisher");
+  g_option_context_add_main_entries (context, entries, GETTEXT_PACKAGE);
+  if (!g_option_context_parse (context, &argc, &argv, &error))
     {
       g_print ("Usage error: %s\n", error->message);
       g_clear_error (&error);
