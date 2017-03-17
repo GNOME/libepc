@@ -164,7 +164,6 @@ create_lookup_dialog (EpcConsumer *consumer,
   gtk_widget_set_margin_bottom (vbox, 6);
   gtk_widget_set_margin_start (vbox, 6);
   gtk_widget_set_margin_end (vbox, 6);
-  gtk_widget_show_all (vbox);
 
   /* Create the dialog widget. */
 

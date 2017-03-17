@@ -196,8 +196,6 @@ epc_password_dialog_init (EpcPasswordDialog *self)
   gtk_widget_set_hexpand (self->priv->anonymous, true);
   gtk_widget_set_vexpand (self->priv->anonymous, false);
 
-  gtk_widget_show_all (grid);
-
   gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (self))),
                       grid, TRUE, TRUE);
 }
