@@ -34,7 +34,14 @@ timestamp_handler_date (EpcPublisher *publisher G_GNUC_UNUSED,
   /* Create custom content */
 
   buffer = g_malloc (length);
+
+  // Ignore the gcc warning:
+  // error: ‘%x’ yields only last 2 digits of year in some locales [-Werror=format-y2k]
+  // because there doesn't seem to be any way to show 4 digits in the correct format for the locale.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-y2k"
   length = strftime (buffer, length, "%x", tm);
+#pragma GCC diagnostic pop
 
   return epc_contents_new ("text/plain", buffer, length, g_free);
 }
@@ -70,7 +77,14 @@ timestamp_handler_date_time (EpcPublisher *publisher G_GNUC_UNUSED,
   /* Create custom content */
 
   buffer = g_malloc (length);
+
+  // Ignore the gcc warning:
+  // error: ‘%x’ yields only last 2 digits of year in some locales [-Werror=format-y2k]
+  // because there doesn't seem to be any way to show 4 digits in the correct format for the locale.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-y2k"
   length = strftime (buffer, length, "%x %X", tm);
+#pragma GCC diagnostic pop
 
   return epc_contents_new ("text/plain", buffer, length, g_free);
 }
