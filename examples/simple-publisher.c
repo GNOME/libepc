@@ -22,20 +22,55 @@
 static EpcProtocol protocol = EPC_PROTOCOL_HTTPS;
 
 static EpcContents*
-timestamp_handler (EpcPublisher *publisher G_GNUC_UNUSED,
+timestamp_handler_date (EpcPublisher *publisher G_GNUC_UNUSED,
                    const gchar  *key G_GNUC_UNUSED,
                    gpointer      data)
 {
   time_t now = time (NULL);
   struct tm *tm = localtime (&now);
-  const gchar *format = data;
   gsize length = 60;
   gchar *buffer;
 
   /* Create custom content */
 
   buffer = g_malloc (length);
-  length = strftime (buffer, length, format, tm);
+  length = strftime (buffer, length, "%x", tm);
+
+  return epc_contents_new ("text/plain", buffer, length, g_free);
+}
+
+static EpcContents*
+timestamp_handler_time (EpcPublisher *publisher G_GNUC_UNUSED,
+                   const gchar  *key G_GNUC_UNUSED,
+                   gpointer      data)
+{
+  time_t now = time (NULL);
+  struct tm *tm = localtime (&now);
+  gsize length = 60;
+  gchar *buffer;
+
+  /* Create custom content */
+
+  buffer = g_malloc (length);
+  length = strftime (buffer, length, "%X", tm);
+
+  return epc_contents_new ("text/plain", buffer, length, g_free);
+}
+
+static EpcContents*
+timestamp_handler_date_time (EpcPublisher *publisher G_GNUC_UNUSED,
+                   const gchar  *key G_GNUC_UNUSED,
+                   gpointer      data)
+{
+  time_t now = time (NULL);
+  struct tm *tm = localtime (&now);
+  gsize length = 60;
+  gchar *buffer;
+
+  /* Create custom content */
+
+  buffer = g_malloc (length);
+  length = strftime (buffer, length, "%x %X", tm);
 
   return epc_contents_new ("text/plain", buffer, length, g_free);
 }
@@ -139,9 +174,9 @@ main (int   argc,
        * as no arguments are passed on the command line. */
 
       epc_publisher_add (publisher, "test", "value", -1);
-      epc_publisher_add_handler (publisher, "date", timestamp_handler, "%x", NULL);
-      epc_publisher_add_handler (publisher, "time", timestamp_handler, "%X", NULL);
-      epc_publisher_add_handler (publisher, "date-time", timestamp_handler, "%x %X", NULL);
+      epc_publisher_add_handler (publisher, "date", timestamp_handler_date, NULL, NULL);
+      epc_publisher_add_handler (publisher, "time", timestamp_handler_time, NULL, NULL);
+      epc_publisher_add_handler (publisher, "date-time", timestamp_handler_date_time, NULL, NULL);
 
       epc_publisher_add (publisher, "sensitive",
                          "This value is top secret.", -1);
