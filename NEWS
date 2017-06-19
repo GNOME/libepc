@@ -1,3 +1,9 @@
+Release 0.4.6
+=============
+
+* Examples: Avoid some compiler warnings in the examples.
+  (Murray Cumming)
+
 Release 0.4.5
 =============
 
