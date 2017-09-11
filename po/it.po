@@ -1,67 +1,69 @@
 # Italian translation for libepc	.
-# Copyright (C) 2009, Free Software Foundation, Inc.
+# Copyright (C) 2009, 2017, Free Software Foundation, Inc.
 # This file is distributed under the same license as the libepc package.
 # Luca Ferretti <elle.uca@libero.it>, 2009.
+# Milo Casagrande <milo@milo.name>, 2017.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: libepc\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=libepc&component=general\n"
-"POT-Creation-Date: 2009-08-21 08:13+0000\n"
-"PO-Revision-Date: 2009-08-21 10:43+0200\n"
-"Last-Translator: Luca Ferretti <elle.uca@libero.it>\n"
+"Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?"
+"product=libepc&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2017-03-17 20:27+0000\n"
+"PO-Revision-Date: 2017-09-11 14:32+0200\n"
+"Last-Translator: Milo Casagrande <milo@milo.name>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.1\n"
 
-#: ../libepc/consumer.c:1079
+#: ../libepc/consumer.c:1087
 #, c-format
 msgid "Unexpected element: '%s'"
-msgstr "Elemento inatteso: \"%s\""
+msgstr "Elemento inatteso: «%s»"
 
 # usato per creare una pagina html
-#: ../libepc/publisher.c:659
+#: ../libepc/publisher.c:663
 msgid "Table of Contents"
 msgstr "Indice"
 
-#: ../libepc/publisher.c:693
+#: ../libepc/publisher.c:697
 msgid "Sorry, no resources published yet."
 msgstr "Nessuna risorsa pubblicata."
 
 # %a nome del programma
 # %u nome dell'utente
 # %h nome dell'host
-#: ../libepc/publisher.c:2638
+#: ../libepc/publisher.c:2646
 msgid "%a of %u on %h"
 msgstr "%a di %u su %h"
 
-#: ../libepc/shell.c:267
+#: ../libepc/shell.c:272
 #, c-format
 msgid "Cannot create Avahi client: %s"
 msgstr "Impossibile creare il client Avahi: %s"
 
-#: ../libepc/shell.c:379
+#: ../libepc/shell.c:384
 #, c-format
 msgid "Cannot create Avahi service browser."
 msgstr "Impossibile creare l'esploratore di servizi Avahi."
 
 #. Translators: This is just a generic default message for a progress bar.
-#: ../libepc/shell.c:467
+#: ../libepc/shell.c:472
 msgid "Operation in Progress"
 msgstr "Operazione in corso"
 
-#: ../libepc/shell.c:471
+#: ../libepc/shell.c:476
 msgid "No details known"
 msgstr "Nessun dettaglio noto"
 
-#: ../libepc/tls.c:165
+#: ../libepc/tls.c:170
 msgid "Generating Server Key"
 msgstr "Generazione chiave server"
 
-#: ../libepc/tls.c:166
+#: ../libepc/tls.c:171
 msgid ""
 "This may take some time. Type on the keyboard, move your mouse, or browse "
 "the web to generate some entropy."
@@ -120,29 +122,29 @@ msgid "Failed to create server certificate folder '%s': %s"
 msgstr ""
 "Creazione della cartella «%s» del certificato del server non riuscita: %s"
 
-#: ../libepc-ui/password-dialog.c:102
+#: ../libepc-ui/password-dialog.c:107
 msgid "<big><b>Authentication required.</b></big>"
 msgstr "<big><b>Richiesta autenticazione.</b></big>"
 
-#: ../libepc-ui/password-dialog.c:113
+#: ../libepc-ui/password-dialog.c:120
 msgid "_Username:"
 msgstr "Nome _utente:"
 
-#: ../libepc-ui/password-dialog.c:119
+#: ../libepc-ui/password-dialog.c:127
 msgid "_Password:"
 msgstr "Pass_word:"
 
-#: ../libepc-ui/password-dialog.c:125
+#: ../libepc-ui/password-dialog.c:134
 msgid "Anonymous Authentication"
 msgstr "Autenticazione anonima"
 
-#: ../libepc-ui/password-dialog.c:205
+#: ../libepc-ui/password-dialog.c:247
 #, c-format
 msgid "Data source <b>%s</b> requires authentication before permitting access."
 msgstr ""
 "La sorgente di dati <b>%s</b> richiede l'autenticazione prima di permettere "
 "l'accesso."
 
-#: ../libepc-ui/password-dialog.c:208
+#: ../libepc-ui/password-dialog.c:250
 msgid "Authentication required."
 msgstr "Richiesta autenticazione."
