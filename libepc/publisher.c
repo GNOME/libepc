@@ -401,19 +401,28 @@ epc_publisher_chunk_cb (SoupMessage *message,
 static void
 epc_publisher_trace_client (const gchar *strfunc,
                             const gchar *message,
-                            SoupSocket  *socket)
+                            GSocket  *socket)
 {
-  SoupAddress *addr = soup_socket_get_remote_address (socket);
+  /* TODO: Using sockaddr.
+
+  GError *err = NULL;
+  GSocketAddress *addr = g_socket_get_remote_address (socket, &err);
+  if (err) {
+    g_warning ("%s", err->message);
+    g_error_free (err);
+    return;
+  }
 
   g_debug ("%s: %s: %s:%d", strfunc, message,
            soup_address_get_physical (addr),
            soup_address_get_port (addr));
+  */
 }
 
 static gboolean
 epc_publisher_check_client (EpcPublisher      *self,
                             SoupServer        *server,
-                            SoupSocket        *socket)
+                            GSocket        *socket)
 {
   if (server == self->priv->server)
     return TRUE;
@@ -421,7 +430,12 @@ epc_publisher_check_client (EpcPublisher      *self,
   if (EPC_DEBUG_LEVEL (1))
     epc_publisher_trace_client (G_STRFUNC, "stale client", socket);
 
-  soup_socket_disconnect (socket);
+  GError *err = NULL;
+  g_socket_close (socket, &err);
+  if (err) {
+    g_warning ("%s", err->message);
+    g_clear_error (&err);
+  }
 
   return FALSE;
 }
@@ -429,7 +443,7 @@ epc_publisher_check_client (EpcPublisher      *self,
 G_GNUC_WARN_UNUSED_RESULT static gboolean
 epc_publisher_track_client (EpcPublisher *self,
                             SoupServer   *server,
-                            SoupSocket   *socket)
+                            GSocket      *socket)
 {
   g_rec_mutex_lock (&epc_publisher_lock);
 
@@ -454,7 +468,7 @@ epc_publisher_track_client (EpcPublisher *self,
 static void
 epc_publisher_untrack_client (EpcPublisher *self,
                               SoupServer   *server,
-                              SoupSocket   *socket)
+                              GSocket   *socket)
 {
   if (epc_publisher_check_client (self, server, socket))
     {
@@ -489,7 +503,7 @@ epc_publisher_handle_contents (SoupServer        *server,
   SoupSocket *socket = context->sock;
   const gchar *path = context->path;
 #else
-  SoupSocket *socket = soup_client_context_get_socket (context);
+  GSocket *socket = soup_client_context_get_gsocket (context);
 #endif
 
   EpcPublisher *self = EPC_PUBLISHER (data);
@@ -574,7 +588,7 @@ epc_publisher_handle_list (SoupServer        *server,
   SoupSocket *socket = context->sock;
   const gchar *path = context->path;
 #else
-  SoupSocket *socket = soup_client_context_get_socket (context);
+  GSocket *socket = soup_client_context_get_gsocket (context);
 #endif
 
   const gchar *pattern = NULL;
@@ -636,7 +650,7 @@ epc_publisher_handle_root (SoupServer        *server,
   SoupSocket *socket = context->sock;
   const gchar *path = context->path;
 #else
-  SoupSocket *socket = soup_client_context_get_socket (context);
+  GSocket *socket = soup_client_context_get_gsocket (context);
 #endif
 
   EpcPublisher *self = data;
@@ -878,24 +892,63 @@ epc_publisher_init (EpcPublisher *self)
                                                g_object_unref, NULL);
 }
 
-static const gchar*
-epc_publisher_get_host (EpcPublisher     *self,
-                        struct sockaddr **sockaddr,
-                        gint             *addrlen)
+static GSocket*
+get_listener (EpcPublisher *self)
 {
-  SoupSocket *listener = soup_server_get_listener (self->priv->server);
-  SoupAddress *address = soup_socket_get_local_address (listener);
+  GSList *listeners = soup_server_get_listeners (self->priv->server);
+  g_return_val_if_fail (listeners, NULL);
 
-  if (sockaddr && addrlen)
-    *sockaddr = soup_address_get_sockaddr (address, addrlen);
+  return (GSocket*)listeners->data;
+}
 
-  return soup_address_get_name (address);
+static const gchar*
+epc_publisher_get_host (EpcPublisher     *self)
+{
+  GSocket *listener = get_listener (self);
+  g_return_val_if_fail (listener, NULL);
+
+  GError *err = NULL;
+  GSocketAddress *address = g_socket_get_local_address (listener, &err);
+  if (err) {
+    g_warning("%s", err->message);
+    return NULL;
+  }
+
+  GInetSocketAddress *inet = G_INET_SOCKET_ADDRESS (address);
+  g_return_val_if_fail (inet, NULL);
+
+  GInetAddress *ad = g_inet_socket_address_get_address (inet);
+  g_return_val_if_fail (ad, NULL);
+
+  return g_inet_address_to_string (ad);
 }
 
 static gint
 epc_publisher_get_port (EpcPublisher *self)
 {
-  return soup_server_get_port (self->priv->server);
+  GSocket *listener = get_listener (self);
+  g_return_val_if_fail (listener, 0);
+
+  GError *err = NULL;
+  GSocketAddress *address = g_socket_get_local_address (listener, &err);
+  if (err) {
+    g_warning("%s", err->message);
+    return 0;
+  }
+
+  GInetSocketAddress *inet = G_INET_SOCKET_ADDRESS (address);
+  g_return_val_if_fail (inet, 0);
+
+  return g_inet_socket_address_get_port (inet);
+}
+
+static GSocketFamily
+epc_publisher_get_family (EpcPublisher *self)
+{
+  GSocket *listener = get_listener (self);
+  g_return_val_if_fail (listener, 0);
+
+  return g_socket_get_family (listener);
 }
 
 static const gchar*
@@ -960,10 +1013,9 @@ epc_publisher_announce (EpcPublisher *self)
   gchar *service_sub_type;
 
   const gchar *host;
-  struct sockaddr *addr;
   gchar *path_record;
-  gint addrlen;
   gint port;
+  GSocketFamily family;
 
   g_return_if_fail (SOUP_IS_SERVER (self->priv->server));
 
@@ -976,8 +1028,9 @@ epc_publisher_announce (EpcPublisher *self)
 
   /* compute service address */
 
-  host = epc_publisher_get_host (self, &addr, &addrlen);
+  host = epc_publisher_get_host (self);
   port = epc_publisher_get_port (self);
+  family = epc_publisher_get_family (self);
 
   /* find all bookmark resources */
 
@@ -999,7 +1052,7 @@ epc_publisher_announce (EpcPublisher *self)
   epc_dispatcher_reset (self->priv->dispatcher);
 
   path_record = g_strconcat ("path=", self->priv->contents_path, NULL);
-  epc_dispatcher_add_service (self->priv->dispatcher, addr->sa_family,
+  epc_dispatcher_add_service (self->priv->dispatcher, family,
                               service_type, self->priv->service_domain,
                               host, port, path_record, NULL);
   g_free (path_record);
@@ -1029,7 +1082,7 @@ epc_publisher_announce (EpcPublisher *self)
       path = epc_publisher_get_path (self, key);
       path_record = g_strconcat ("path=", path, NULL);
 
-      epc_dispatcher_add_service (dispatcher, addr->sa_family, bookmark_type,
+      epc_dispatcher_add_service (dispatcher, family, bookmark_type,
                                   self->priv->service_domain, host, port,
                                   path_record, NULL);
 
@@ -1186,7 +1239,7 @@ epc_publisher_install_handlers (EpcPublisher *self)
 
 static void
 epc_publisher_client_disconnected_cb (EpcPublisher *self,
-                                      SoupSocket   *socket)
+                                      GSocket   *socket)
 {
   if (EPC_DEBUG_LEVEL (1))
     epc_publisher_trace_client (G_STRFUNC, "disconnected", socket);
@@ -1196,7 +1249,7 @@ epc_publisher_client_disconnected_cb (EpcPublisher *self,
 
 static void
 epc_publisher_new_connection_cb (EpcPublisher *self,
-                                 SoupSocket   *socket)
+                                 GSocket   *socket)
 {
   if (EPC_DEBUG_LEVEL (1))
     epc_publisher_trace_client (G_STRFUNC, "new client", socket);
@@ -1262,7 +1315,8 @@ epc_publisher_create_server (EpcPublisher  *self,
                      SOUP_SERVER_PORT, SOUP_ADDRESS_ANY_PORT,
                      NULL);
 
-  g_signal_connect_swapped (soup_server_get_listener (self->priv->server), "new-connection",
+  /* TODO */
+  g_signal_connect_swapped (get_listener (self), "new-connection",
                             G_CALLBACK (epc_publisher_new_connection_cb), self);
 
   epc_publisher_install_handlers (self);
@@ -1880,7 +1934,7 @@ epc_publisher_get_uri (EpcPublisher  *self,
 
   g_return_val_if_fail (EPC_IS_PUBLISHER (self), NULL);
 
-  host = epc_publisher_get_host (self, NULL, NULL);
+  host = epc_publisher_get_host (self);
   port = epc_publisher_get_port (self);
 
   if (!host)
@@ -2480,7 +2534,9 @@ epc_publisher_run_async (EpcPublisher  *self,
 
   if (!self->priv->server_started)
     {
-      soup_server_run_async (self->priv->server);
+      /* TODO: No longer necessary?
+       soup_server_run_async (self->priv->server);
+       */
 #ifdef HAVE_LIBSOUP22
       g_object_unref (self->priv->server); /* work arround bug #494128 */
 #endif
@@ -2495,7 +2551,7 @@ epc_publisher_disconnect_idle_cb (gpointer key,
                                   gpointer value,
                                   gpointer data)
 {
-  SoupSocket *socket = key;
+  GSocket *socket = key;
   GSList **clients = data;
 
   if (1 >= GPOINTER_TO_INT (value))
@@ -2542,7 +2598,7 @@ epc_publisher_quit (EpcPublisher *self)
                           epc_publisher_disconnect_idle_cb,
                           &idle_clients);
 
-  g_slist_foreach (idle_clients, (GFunc) soup_socket_disconnect, NULL);
+  g_slist_foreach (idle_clients, (GFunc) g_socket_close, NULL);
   g_slist_free (idle_clients);
 
   g_rec_mutex_unlock (&epc_publisher_lock);

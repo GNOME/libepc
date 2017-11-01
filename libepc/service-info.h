@@ -25,6 +25,7 @@
 #include <avahi-common/address.h>
 #include <avahi-common/strlst.h>
 #include <glib-object.h>
+#include <gio/gio.h>
 #include <sys/socket.h>
 
 G_BEGIN_DECLS
@@ -33,22 +34,6 @@ G_BEGIN_DECLS
 #define EPC_IS_SERVICE_INFO(obj) (NULL != (obj))
 
 typedef struct _EpcServiceInfo EpcServiceInfo;
-
-/**
- * EpcAddressFamily:
- * @EPC_ADDRESS_UNSPEC: No preferences exist. Use all address families supported.
- * @EPC_ADDRESS_IPV4: Exclusively use IPv4 for addressing network services.
- * @EPC_ADDRESS_IPV6: Exclusively use IPv6 for addressing network services.
- *
- * The address family to use for contacting network services.
- */
-typedef enum
-{
-  EPC_ADDRESS_UNSPEC = AF_UNSPEC,
-  EPC_ADDRESS_IPV4 = AF_INET,
-  EPC_ADDRESS_IPV6 = AF_INET6
-}
-EpcAddressFamily;
 
 GType                        epc_service_info_get_type           (void) G_GNUC_CONST;
 
@@ -73,7 +58,7 @@ const gchar*        epc_service_info_get_detail         (const EpcServiceInfo  *
                                                                   const gchar           *name);
 
 const gchar*        epc_service_info_get_interface      (const EpcServiceInfo  *info);
-EpcAddressFamily             epc_service_info_get_address_family (const EpcServiceInfo  *info);
+GSocketFamily       epc_service_info_get_address_family (const EpcServiceInfo  *info);
 const AvahiAddress* epc_service_info_get_address        (const EpcServiceInfo  *info);
 
 G_END_DECLS

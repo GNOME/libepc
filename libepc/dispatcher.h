@@ -88,7 +88,7 @@ gboolean              epc_dispatcher_run                    (EpcDispatcher      
 void                  epc_dispatcher_reset                  (EpcDispatcher        *dispatcher);
 
 void                  epc_dispatcher_add_service            (EpcDispatcher        *dispatcher,
-                                                             EpcAddressFamily      protocol,
+                                                             GSocketFamily         protocol,
                                                              const gchar          *type,
                                                              const gchar          *domain,
                                                              const gchar          *host,

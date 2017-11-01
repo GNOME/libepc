@@ -290,7 +290,7 @@ epc_consumer_init (EpcConsumer *self)
 {
   self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self, EPC_TYPE_CONSUMER, EpcConsumerPrivate);
   self->priv->loop = g_main_loop_new (NULL, FALSE);
-  self->priv->session = soup_session_async_new ();
+  self->priv->session = soup_session_new ();
 
   g_signal_connect (self->priv->session, "authenticate",
                     G_CALLBACK (epc_consumer_authenticate_cb), self);

@@ -894,7 +894,7 @@ epc_dispatcher_reset (EpcDispatcher *self)
  */
 void
 epc_dispatcher_add_service (EpcDispatcher    *self,
-                            EpcAddressFamily  protocol,
+                            GSocketFamily  protocol,
                             const gchar      *type,
                             const gchar      *domain,
                             const gchar      *host,

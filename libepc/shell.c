@@ -62,8 +62,10 @@ static AvahiClient   *epc_shell_avahi_client = NULL;
 static gboolean       epc_shell_restart_avahi_client_allowed = TRUE;
 static GArray        *epc_shell_watches = NULL;
 
+/*
 static void (*epc_shell_threads_enter)(void) = NULL;
 static void (*epc_shell_threads_leave)(void) = NULL;
+*/
 
 static const EpcShellProgressHooks  *epc_shell_progress_hooks = NULL;
 static gpointer                      epc_shell_progress_user_data = NULL;
@@ -93,6 +95,7 @@ epc_shell_get_debug_level (void)
   return level;
 }
 
+/*
 static void
 epc_shell_exit (void)
 {
@@ -114,6 +117,7 @@ epc_shell_exit (void)
   epc_shell_threads_enter = NULL;
   epc_shell_threads_leave = NULL;
 }
+*/
 
 static void
 epc_shell_init (void)
@@ -122,13 +126,15 @@ epc_shell_init (void)
     {
       gnutls_global_init ();
       avahi_set_allocator (avahi_glib_allocator ());
-      g_atexit (epc_shell_exit);
+      /* deprecated: g_atexit (epc_shell_exit); */
 
       epc_shell_avahi_poll = avahi_glib_poll_new (NULL, G_PRIORITY_DEFAULT);
       g_assert (NULL != epc_shell_avahi_poll);
 
+      /* TODO?
       bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
       bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
+      */
     }
 }
 

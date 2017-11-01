@@ -285,19 +285,19 @@ epc_service_info_get_interface (const EpcServiceInfo *self)
  * @info: a #EpcServiceInfo
  *
  * Retrieves the address family for contacting the service,
- * or #EPC_ADDRESS_UNSPEC when that information is not available.
+ * or #G_SOCKET_FAMILY_INVALID when that information is not available.
  *
- * Returns: A #EpcAddressFamily.
+ * Returns: A #GSocketFamily.
  */
-EpcAddressFamily
+GSocketFamily
 epc_service_info_get_address_family (const EpcServiceInfo *self)
 {
-  g_return_val_if_fail (NULL != self, EPC_ADDRESS_UNSPEC);
+  g_return_val_if_fail (NULL != self, G_SOCKET_FAMILY_INVALID);
 
   if (self->address)
     return avahi_proto_to_af (self->address->proto);
 
-  return EPC_ADDRESS_UNSPEC;
+  return G_SOCKET_FAMILY_INVALID;
 }
 
 /**
