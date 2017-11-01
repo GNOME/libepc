@@ -46,22 +46,6 @@ PKG_CHECK_EXISTS([glib-2.0],
 AC_SUBST(GLIB_GENMARSHAL)
 AC_SUBST(GLIB_MKENUMS)
 
-LIBSOUP_24="libsoup-2.4 >= 2.3"
-LIBSOUP_22="libsoup-2.2 >= 2.2"
-AC_MSG_CHECKING([for a suitable API version of libsoup])
-PKG_CHECK_EXISTS([$LIBSOUP_24],
-                 [LIBSOUP_API=2.4
-                  LIBSOUP=$LIBSOUP_24],
-                 [PKG_CHECK_EXISTS([$LIBSOUP_22],
-                                   [LIBSOUP_API=2.2
-                                    LIBSOUP=$LIBSOUP_22
-                                    AC_DEFINE([HAVE_LIBSOUP22],
-                                              [1],
-                                              [Define to 1 if you still want to use libsoup 2.2.])],
-                                   [AC_MSG_ERROR([no suitable libsoup API version found])])])
-AC_MSG_RESULT([$LIBSOUP_API])
-AC_SUBST(LIBSOUP_API)
-
 GIO_REQUIREMENT="gio-2.0 >= 2.15.1"
 AC_MSG_CHECKING([for gio])
 PKG_CHECK_EXISTS([$GIO_REQUIREMENT],
@@ -78,7 +62,7 @@ PKG_CHECK_MODULES(LIBEPC,    [avahi-client >= 0.6
                               gobject-2.0  >= 2.4
                               gnutls       >= 1.4
                               uuid         >= 1.36
-                              $LIBSOUP
+                              libsoup-2.4  >= 2.48
                               $GIO])
 PKG_CHECK_MODULES(LIBEPC_UI, [gtk+-4.0     >= 3.0])
 

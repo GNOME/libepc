@@ -177,68 +177,6 @@ static guint signals[SIGNAL_LAST];
 
 G_DEFINE_TYPE (EpcConsumer, epc_consumer, G_TYPE_OBJECT);
 
-#ifdef HAVE_LIBSOUP22
-
-static void
-epc_consumer_authenticate_cb (SoupSession  *session G_GNUC_UNUSED,
-                              SoupMessage  *message,
-                              gchar        *auth_type G_GNUC_UNUSED,
-                              gchar        *auth_realm,
-                              gchar       **username,
-                              gchar       **password,
-                              gpointer      data)
-{
-  EpcConsumer *self = EPC_CONSUMER (data);
-
-  if (EPC_DEBUG_LEVEL (1))
-    g_debug ("%s: path=%s, realm=%s, username=%s, password=%s",
-             G_STRLOC, soup_message_get_uri (message)->path,
-             auth_realm, *username, *password);
-
-  g_free (*username);
-  g_free (*password);
-
-  *username = g_strdup (self->priv->username ? self->priv->username : "");
-  *password = g_strdup (self->priv->password ? self->priv->password : "");
-
-  if (EPC_DEBUG_LEVEL (1))
-    g_debug ("%s: path=%s, realm=%s, username=%s, password=%s",
-             G_STRLOC, soup_message_get_uri (message)->path,
-             auth_realm, *username, *password);
-}
-
-static void
-epc_consumer_reauthenticate_cb (SoupSession  *session,
-                                SoupMessage  *message,
-                                gchar        *auth_type,
-                                gchar        *auth_realm,
-                                gchar       **username,
-                                gchar       **password,
-                                gpointer      data)
-{
-  EpcConsumer *self = EPC_CONSUMER (data);
-  gboolean handled = FALSE;
-
-  if (EPC_DEBUG_LEVEL (1))
-    g_debug ("%s: path=%s, realm=%s, username=%s, password=%s, handled=%d",
-             G_STRLOC, soup_message_get_uri (message)->path,
-             auth_realm, *username, *password, handled);
-
-  g_signal_emit (self, signals[SIGNAL_AUTHENTICATE],
-                 0, auth_realm, &handled);
-
-  if (EPC_DEBUG_LEVEL (1))
-    g_debug ("%s: path=%s, realm=%s, username=%s, password=%s, handled=%d",
-             G_STRLOC, soup_message_get_uri (message)->path,
-             auth_realm, *username, *password, handled);
-
-  if (handled)
-    epc_consumer_authenticate_cb (session, message, auth_realm,
-                                  auth_type, username, password, data);
-}
-
-#else
-
 static void
 epc_consumer_authenticate_cb (SoupSession  *session G_GNUC_UNUSED,
                               SoupMessage  *message,
@@ -283,8 +221,6 @@ epc_consumer_authenticate_cb (SoupSession  *session G_GNUC_UNUSED,
     }
 }
 
-#endif
-
 static void
 epc_consumer_init (EpcConsumer *self)
 {
@@ -294,10 +230,6 @@ epc_consumer_init (EpcConsumer *self)
 
   g_signal_connect (self->priv->session, "authenticate",
                     G_CALLBACK (epc_consumer_authenticate_cb), self);
-#ifdef HAVE_LIBSOUP22
-  g_signal_connect (self->priv->session, "reauthenticate",
-                    G_CALLBACK (epc_consumer_reauthenticate_cb), self);
-#endif
 }
 
 static void
@@ -1015,13 +947,8 @@ epc_consumer_lookup (EpcConsumer  *self,
 
   if (SOUP_STATUS_IS_SUCCESSFUL (status))
     {
-#ifdef HAVE_LIBSOUP22
-      const gsize response_length = request->response.length;
-      gconstpointer response_data = request->response.body;
-#else
       const gsize response_length = request->response_body->length;
       gconstpointer response_data = request->response_body->data;
-#endif
 
       if (length)
         *length = response_length;
@@ -1219,17 +1146,10 @@ epc_consumer_list (EpcConsumer  *self,
                                             G_MARKUP_TREAT_CDATA_AS_TEXT,
                                             &state, NULL);
 
-#ifdef HAVE_LIBSOUP22
-      g_markup_parse_context_parse (context,
-                                    request->response.body,
-                                    request->response.length,
-                                    error);
-#else
       g_markup_parse_context_parse (context,
                                     request->response_body->data,
                                     request->response_body->length,
                                     error);
-#endif
 
       g_markup_parse_context_free (context);
     }
