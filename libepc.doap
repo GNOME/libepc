@@ -7,7 +7,7 @@
   <name xml:lang="en">libepc</name>
   <shortdesc xml:lang="en">Easy Publish and Consume library</shortdesc>
   <download-page rdf:resource="http://download.gnome.org/sources/libepc" />
-  <bug-database rdf:resource="https://bugzilla.gnome.org/browse.cgi?product=libepc" />
+  <bug-database rdf:resource="https://gitlab.gnome.org/GNOME/libepc/issues/" />
 
   <maintainer>
     <foaf:Person>
