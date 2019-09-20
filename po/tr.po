@@ -1,0 +1,148 @@
+# Turkish translation for libepc.
+# Copyright (C) 2019 libepc's COPYRIGHT HOLDER
+# This file is distributed under the same license as the libepc package.
+#
+# Sabri Ünal <libreajans@gmail.com>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libepc master\n"
+"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/libepc/issues\n"
+"POT-Creation-Date: 2019-08-23 08:10+0000\n"
+"PO-Revision-Date: 2019-08-23 20:36+0300\n"
+"Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
+"Language-Team: Turkish <tr@li.org>\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#: ../libepc/consumer.c:1014
+#, c-format
+msgid "Unexpected element: '%s'"
+msgstr "Beklenmeyen öge: '%s'"
+
+#: ../libepc/publisher.c:603
+msgid "Table of Contents"
+msgstr "İçindekiler"
+
+#: ../libepc/publisher.c:637
+msgid "Sorry, no resources published yet."
+msgstr "Üzgünüz, henüz kaynak yayınlanmadı."
+
+# %a: the program name
+# %h: the machine's host name in title case
+# %u: the user's login name in title case
+#: ../libepc/publisher.c:2533
+msgid "%a of %u on %h"
+msgstr "Uygulama: %a, kullanıcı: %u, ana makine adı: %h"
+
+#: ../libepc/shell.c:278
+#, c-format
+msgid "Cannot create Avahi client: %s"
+msgstr "Avahi istemcisi oluşturulamadı: %s"
+
+#: ../libepc/shell.c:390
+#, c-format
+msgid "Cannot create Avahi service browser."
+msgstr "Avahi servis tarayıcı oluşturulamadı."
+
+#. Translators: This is just a generic default message for a progress bar.
+#: ../libepc/shell.c:478
+msgid "Operation in Progress"
+msgstr "İşlem Devam Ediyor"
+
+#: ../libepc/shell.c:482
+msgid "No details known"
+msgstr "Ayrıntılar bilinmiyor"
+
+#: ../libepc/tls.c:170
+msgid "Generating Server Key"
+msgstr "Sunucu Anahtarı Oluşturuluyor"
+
+#: ../libepc/tls.c:171
+msgid ""
+"This may take some time. Type on the keyboard, move your mouse, or browse "
+"the web to generate some entropy."
+msgstr ""
+"Bu biraz zaman alabilir. Biraz entropi oluşturmak için klavyeye tuşlayın, "
+"farenizi hareket ettirin veya internette gezinin."
+
+#: ../libepc/tls.c:191
+#, c-format
+msgid "Cannot create private server key: %s"
+msgstr "Özel sunucu anahtarı oluşturulamadı: %s"
+
+#: ../libepc/tls.c:244
+#, c-format
+msgid "Cannot import private server key '%s': %s"
+msgstr "'%s' özel sunucu anahtarı içe aktarılamadı: %s"
+
+#: ../libepc/tls.c:300
+#, c-format
+msgid "Cannot export private key to PEM format: %s"
+msgstr "Özel anahtar PEM biçiminde dışa aktarılamadı: %s"
+
+#: ../libepc/tls.c:314
+#, c-format
+msgid "Failed to create private key folder '%s': %s"
+msgstr "'%s' özel anahtar dizini oluşturulamadı: %s"
+
+#: ../libepc/tls.c:330
+#, c-format
+msgid "Failed to create private key file '%s': %s"
+msgstr "'%s' özel anahtar dosyası oluşturulamadı: %s"
+
+#: ../libepc/tls.c:344
+#, c-format
+msgid "Failed to write private key file '%s': %s"
+msgstr "'%s' özel anahtar dosyası yazılamadı : %s"
+
+#: ../libepc/tls.c:416
+#, c-format
+msgid "Cannot create self signed server key for '%s': %s"
+msgstr " '%s' için kendinden imzalı sunucu anahtarı oluşturulamadı: %s"
+
+#: ../libepc/tls.c:470
+#, c-format
+msgid "Cannot import server certificate '%s': %s"
+msgstr "'%s' sunucu sertifikası içe aktarılamadı: %s"
+
+#: ../libepc/tls.c:525
+#, c-format
+msgid "Cannot export server certificate to PEM format: %s"
+msgstr "Sunucu sertifikası PEM biçiminde dışa atarılamadı: %s"
+
+#: ../libepc/tls.c:539
+#, c-format
+msgid "Failed to create server certificate folder '%s': %s"
+msgstr "'%s' sunucu sertifikası dizini oluşturulamadı: %s"
+
+#: ../libepc-ui/password-dialog.c:107
+msgid "<big><b>Authentication required.</b></big>"
+msgstr "<big><b>Kimlik doğrulaması gerekli.</b></big>"
+
+#: ../libepc-ui/password-dialog.c:120
+msgid "_Username:"
+msgstr "K_ullanıcı adı:"
+
+#: ../libepc-ui/password-dialog.c:127
+msgid "_Password:"
+msgstr "Pa_rola:"
+
+#: ../libepc-ui/password-dialog.c:134
+msgid "Anonymous Authentication"
+msgstr "Anonim Kimlik Doğrulaması"
+
+#: ../libepc-ui/password-dialog.c:247
+#, c-format
+msgid "Data source <b>%s</b> requires authentication before permitting access."
+msgstr ""
+"Veri kaynağı <b>%s</b> erişime izin vermeden önce kimlik doğrulaması "
+"gerektiriyor."
+
+#: ../libepc-ui/password-dialog.c:250
+msgid "Authentication required."
+msgstr "Kimlik doğrulaması gerekli."
