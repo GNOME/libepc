@@ -1,0 +1,143 @@
+# Dutch translation for libepc.
+# Copyright (C) 2017 libepc's COPYRIGHT HOLDER
+# This file is distributed under the same license as the libepc package.
+# Nathan Follens <nthn@unseen.is>, 2017-2018.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libepc master\n"
+"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/libepc/issues\n"
+"POT-Creation-Date: 2019-09-20 09:51+0000\n"
+"PO-Revision-Date: 2018-03-13 20:40+0100\n"
+"Last-Translator: Nathan Follens <nthn@unseen.is>\n"
+"Language-Team: Dutch <gnome-nl-list@gnome.org>\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#: ../libepc/consumer.c:1014
+#, c-format
+msgid "Unexpected element: '%s'"
+msgstr "Onverwacht element: ‘%s’"
+
+#: ../libepc/publisher.c:603
+msgid "Table of Contents"
+msgstr "Inhoudsopgave"
+
+#: ../libepc/publisher.c:637
+msgid "Sorry, no resources published yet."
+msgstr "Sorry, er zijn nog geen bronnen gepubliceerd."
+
+#: ../libepc/publisher.c:2533
+msgid "%a of %u on %h"
+msgstr "%a van %u op %h"
+
+#: ../libepc/shell.c:278
+#, c-format
+msgid "Cannot create Avahi client: %s"
+msgstr "Kan Avahi-cliënt niet aanmaken: %s"
+
+#: ../libepc/shell.c:390
+#, c-format
+msgid "Cannot create Avahi service browser."
+msgstr "Kan Avahi-dienstbrowser niet aanmaken."
+
+#. Translators: This is just a generic default message for a progress bar.
+#: ../libepc/shell.c:478
+msgid "Operation in Progress"
+msgstr "Bewerking wordt uitgevoerd"
+
+#: ../libepc/shell.c:482
+msgid "No details known"
+msgstr "Geen details bekend"
+
+#: ../libepc/tls.c:170
+msgid "Generating Server Key"
+msgstr "Serversleutel genereren"
+
+#: ../libepc/tls.c:171
+msgid ""
+"This may take some time. Type on the keyboard, move your mouse, or browse "
+"the web to generate some entropy."
+msgstr ""
+"Dit kan even duren. Typ op het toetsenbord, beweeg uw muis of surf op het "
+"internet om wat entropie te genereren."
+
+#: ../libepc/tls.c:191
+#, c-format
+msgid "Cannot create private server key: %s"
+msgstr "Kan privéserversleutel niet aanmaken: %s"
+
+#: ../libepc/tls.c:244
+#, c-format
+msgid "Cannot import private server key '%s': %s"
+msgstr "Kan privéserversleutel ‘%s’ niet importeren: %s"
+
+#: ../libepc/tls.c:300
+#, c-format
+msgid "Cannot export private key to PEM format: %s"
+msgstr "Kan privésleutel niet exporteren naar PEM-formaat: %s"
+
+#: ../libepc/tls.c:314
+#, c-format
+msgid "Failed to create private key folder '%s': %s"
+msgstr "Aanmaken van privésleutelmap ‘%s’ mislukt: %s"
+
+#: ../libepc/tls.c:330
+#, c-format
+msgid "Failed to create private key file '%s': %s"
+msgstr "Aanmaken van privésleutelbestand ‘%s’ mislukt: %s"
+
+#: ../libepc/tls.c:344
+#, c-format
+msgid "Failed to write private key file '%s': %s"
+msgstr "Schrijven van privésleutelbestand ‘%s’ mislukt: %s"
+
+#: ../libepc/tls.c:416
+#, c-format
+msgid "Cannot create self signed server key for '%s': %s"
+msgstr "Kan zelfondertekende serversleutel voor ‘%s’ niet aanmaken: %s"
+
+#: ../libepc/tls.c:470
+#, c-format
+msgid "Cannot import server certificate '%s': %s"
+msgstr "Kan servercertificaat ‘%s’ niet importeren: %s"
+
+#: ../libepc/tls.c:525
+#, c-format
+msgid "Cannot export server certificate to PEM format: %s"
+msgstr "Kan servercertificaat niet exporteren naar PEM-formaat: %s"
+
+#: ../libepc/tls.c:539
+#, c-format
+msgid "Failed to create server certificate folder '%s': %s"
+msgstr "Aanmaken van servercertificaatmap ‘%s’ mislukt: %s"
+
+#: ../libepc-ui/password-dialog.c:107
+msgid "<big><b>Authentication required.</b></big>"
+msgstr "<big><b>Authenticatie vereist.</b></big>"
+
+#: ../libepc-ui/password-dialog.c:120
+msgid "_Username:"
+msgstr "Gebr_uikersnaam:"
+
+#: ../libepc-ui/password-dialog.c:127
+msgid "_Password:"
+msgstr "_Wachtwoord:"
+
+#: ../libepc-ui/password-dialog.c:134
+msgid "Anonymous Authentication"
+msgstr "Anonieme authenticatie"
+
+#: ../libepc-ui/password-dialog.c:247
+#, c-format
+msgid "Data source <b>%s</b> requires authentication before permitting access."
+msgstr ""
+"Gegevensbron <b>%s</b> vereist authenticatie vooraleer toegang wordt gegeven."
+
+#: ../libepc-ui/password-dialog.c:250
+msgid "Authentication required."
+msgstr "Authenticatie vereist."
