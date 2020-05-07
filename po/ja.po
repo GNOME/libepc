@@ -1,15 +1,17 @@
 # libepc ja.po.
-# Copyright (C) 2008 Free Software Foundation.
+# Copyright (C) 2008, 2012, 2020 Free Software Foundation.
 # This file is distributed under the same license as the libepc package.
 # Takeshi AIHANA <takeshi.aihana@gmail.com>, 2008.
+# Jiro Matsuzawa <jmatsuzawa@src.gnome.org>, 2012.
+# sicklylife <translation@sicklylife.jp>, 2020.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: libepc trunk\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/libepc/issues\n"
 "POT-Creation-Date: 2020-03-30 15:31+0000\n"
-"PO-Revision-Date: 2012-01-01 19:55+0900\n"
-"Last-Translator: Jiro Matsuzawa <jmatsuzawa@src.gnome.org>\n"
+"PO-Revision-Date: 2020-05-07 23:00+0900\n"
+"Last-Translator: sicklylife <translation@sicklylife.jp>\n"
 "Language-Team: Japanese <takeshi.aihana@gmail.com>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -45,10 +47,8 @@ msgstr "Avahi サービス・ブラウザーを生成できません"
 
 #. Translators: This is just a generic default message for a progress bar.
 #: ../libepc/shell.c:478
-#, fuzzy
-#| msgid "Operation Proceeded"
 msgid "Operation in Progress"
-msgstr "実行中"
+msgstr "処理を実行中"
 
 #: ../libepc/shell.c:482
 msgid "No details known"
