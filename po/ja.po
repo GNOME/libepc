@@ -6,9 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libepc trunk\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=libepc&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2011-11-21 21:35+0000\n"
+"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/libepc/issues\n"
+"POT-Creation-Date: 2020-03-30 15:31+0000\n"
 "PO-Revision-Date: 2012-01-01 19:55+0900\n"
 "Last-Translator: Jiro Matsuzawa <jmatsuzawa@src.gnome.org>\n"
 "Language-Team: Japanese <takeshi.aihana@gmail.com>\n"
@@ -17,41 +16,41 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../libepc/consumer.c:1083
+#: ../libepc/consumer.c:1014
 #, c-format
 msgid "Unexpected element: '%s'"
 msgstr "想定外の要素: '%s'"
 
-#: ../libepc/publisher.c:663
+#: ../libepc/publisher.c:603
 msgid "Table of Contents"
 msgstr "目次"
 
-#: ../libepc/publisher.c:697
+#: ../libepc/publisher.c:637
 msgid "Sorry, no resources published yet."
 msgstr "すみません、未だ公開しているリソースはありません。"
 
-#: ../libepc/publisher.c:2642
+#: ../libepc/publisher.c:2533
 msgid "%a of %u on %h"
 msgstr "%a (%u) @%h"
 
-#: ../libepc/shell.c:272
+#: ../libepc/shell.c:278
 #, c-format
 msgid "Cannot create Avahi client: %s"
 msgstr "Avahi のクライアントを生成できません: %s"
 
-#: ../libepc/shell.c:384
+#: ../libepc/shell.c:390
 #, c-format
 msgid "Cannot create Avahi service browser."
 msgstr "Avahi サービス・ブラウザーを生成できません"
 
 #. Translators: This is just a generic default message for a progress bar.
-#: ../libepc/shell.c:472
+#: ../libepc/shell.c:478
 #, fuzzy
 #| msgid "Operation Proceeded"
 msgid "Operation in Progress"
 msgstr "実行中"
 
-#: ../libepc/shell.c:476
+#: ../libepc/shell.c:482
 msgid "No details known"
 msgstr "詳細は不明です"
 
@@ -67,77 +66,77 @@ msgstr ""
 "この処理は時間がかかります。任意のエントロピーを生成するためにキーボードから"
 "何か入力したりマウスを動かしたり、あるいはウェブを参照してみて下さい。"
 
-#: ../libepc/tls.c:196
+#: ../libepc/tls.c:191
 #, c-format
 msgid "Cannot create private server key: %s"
 msgstr "サーバー側の秘密鍵を生成できません: %s"
 
-#: ../libepc/tls.c:249
+#: ../libepc/tls.c:244
 #, c-format
 msgid "Cannot import private server key '%s': %s"
 msgstr "サーバー側の秘密鍵である '%s' を取り込めません: %s"
 
-#: ../libepc/tls.c:305
+#: ../libepc/tls.c:300
 #, c-format
 msgid "Cannot export private key to PEM format: %s"
 msgstr "秘密鍵を PEM 形式に変換できません: %s"
 
-#: ../libepc/tls.c:319
+#: ../libepc/tls.c:314
 #, c-format
 msgid "Failed to create private key folder '%s': %s"
 msgstr "'%s' という秘密鍵のフォルダーの生成に失敗しました: %s"
 
-#: ../libepc/tls.c:335
+#: ../libepc/tls.c:330
 #, c-format
 msgid "Failed to create private key file '%s': %s"
 msgstr "'%s' という秘密鍵のファイルの生成に失敗しました: %s"
 
-#: ../libepc/tls.c:349
+#: ../libepc/tls.c:344
 #, c-format
 msgid "Failed to write private key file '%s': %s"
 msgstr "'%s' という秘密鍵のファイルへの書き込みに失敗しました: %s"
 
-#: ../libepc/tls.c:421
+#: ../libepc/tls.c:416
 #, c-format
 msgid "Cannot create self signed server key for '%s': %s"
 msgstr "'%s' という Self-Signed なサーバーの鍵を生成できません: %s"
 
-#: ../libepc/tls.c:475
+#: ../libepc/tls.c:470
 #, c-format
 msgid "Cannot import server certificate '%s': %s"
 msgstr "'%s' というサーバー側の証明書を取り込めません: %s"
 
-#: ../libepc/tls.c:530
+#: ../libepc/tls.c:525
 #, c-format
 msgid "Cannot export server certificate to PEM format: %s"
 msgstr "サーバー側の証明書を PEM 形式に変換できません: %s"
 
-#: ../libepc/tls.c:544
+#: ../libepc/tls.c:539
 #, c-format
 msgid "Failed to create server certificate folder '%s': %s"
 msgstr "サーバー側で '%s' という証明書用フォルダーの生成に失敗しました: %s"
 
-#: ../libepc-ui/password-dialog.c:106
+#: ../libepc-ui/password-dialog.c:107
 msgid "<big><b>Authentication required.</b></big>"
 msgstr "<big><b>認証が必要です</b></big>"
 
-#: ../libepc-ui/password-dialog.c:117
+#: ../libepc-ui/password-dialog.c:120
 msgid "_Username:"
 msgstr "ユーザー名(_U):"
 
-#: ../libepc-ui/password-dialog.c:123
+#: ../libepc-ui/password-dialog.c:127
 msgid "_Password:"
 msgstr "パスワード(_P):"
 
-#: ../libepc-ui/password-dialog.c:129
+#: ../libepc-ui/password-dialog.c:134
 msgid "Anonymous Authentication"
 msgstr "匿名の認証"
 
-#: ../libepc-ui/password-dialog.c:214
+#: ../libepc-ui/password-dialog.c:247
 #, c-format
 msgid "Data source <b>%s</b> requires authentication before permitting access."
 msgstr "<b>%s</b> というデータにアクセスするには認証が必要です。"
 
-#: ../libepc-ui/password-dialog.c:217
+#: ../libepc-ui/password-dialog.c:250
 msgid "Authentication required."
 msgstr "認証が必要です"
