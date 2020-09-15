@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: libepc master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/libepc/issues\n"
 "POT-Creation-Date: 2020-05-07 15:47+0000\n"
-"PO-Revision-Date: 2020-09-16 00:45+0200\n"
+"PO-Revision-Date: 2020-09-16 00:50+0200\n"
 "Language-Team: Croatian <hr@li.org>\n"
 "Language: hr\n"
 "MIME-Version: 1.0\n"
@@ -44,7 +44,7 @@ msgstr "Nemoguće stvaranje Avahi klijenta: %s"
 #: ../libepc/shell.c:390
 #, c-format
 msgid "Cannot create Avahi service browser."
-msgstr "Nemoguće stvaranje preglednika Avahi usluge"
+msgstr "Nemoguće stvaranje preglednika Avahi usluge."
 
 #. Translators: This is just a generic default message for a progress bar.
 #: ../libepc/shell.c:478
@@ -64,18 +64,18 @@ msgid ""
 "This may take some time. Type on the keyboard, move your mouse, or browse "
 "the web to generate some entropy."
 msgstr ""
-"Ovo može potrajati. Tipkajte po tipkovnici, pomičite miš ili pregledajte web "
-"kako bi stvorili nešto entropije."
+"Ovo može potrajati. Tipkajte po tipkovnici, pomičite miš ili pregledavajte "
+"web kako bi stvorili nešto entropije."
 
 #: ../libepc/tls.c:191
 #, c-format
 msgid "Cannot create private server key: %s"
-msgstr "Nemoguće stvaranje ključa privatnog poslužitelja: %s"
+msgstr "Nemoguće stvaranje privatnog ključa poslužitelja: %s"
 
 #: ../libepc/tls.c:244
 #, c-format
 msgid "Cannot import private server key '%s': %s"
-msgstr "Nemoguće uvažanje ključa privatnog poslužitelja '%s': %s"
+msgstr "Nemoguće uvažanje privatnog ključa poslužitelja '%s': %s"
 
 #: ../libepc/tls.c:300
 #, c-format
